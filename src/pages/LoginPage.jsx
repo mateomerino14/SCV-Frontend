@@ -88,7 +88,10 @@ function LoginPage() {
             className={styles.input}
           />
           <button onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ? <EyeOff size={18} className="text-gray-400" /> : <Eye size={18} className="text-gray-400" />}
+            {showPassword
+              ? <EyeOff size={18} className="text-gray-400" />
+              : <Eye size={18} className="text-gray-400" />
+            }
           </button>
         </div>
         {errorMsg && <p className={styles.errorMsg}>{errorMsg}</p>}
