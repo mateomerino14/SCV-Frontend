@@ -11,6 +11,7 @@ function useCrearViaje(usuario) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showMapa, setShowMapa] = useState(false)
+  const [showConfirmacion, setShowConfirmacion] = useState(false)
 
   const tarifaDiaria = parseFloat(usuario?.Cargo?.monto_diario ?? 0)
 
@@ -25,40 +26,62 @@ function useCrearViaje(usuario) {
   const dias = calcularDias()
   const montoTotal = dias * tarifaDiaria
 
+  const mostrarError = (msg) => {
+    setError(msg)
+    setTimeout(() => setError(''), 3000)
+  }
+
   const handleConfirmarMapa = (direccion) => {
     setDestino(direccion)
     setShowMapa(false)
   }
 
-  const handleConfirmar = async () => {
+  const handleAbrirConfirmacion = () => {
     if (!motivo || !destino || !fechaInicio || !fechaFin) {
-      setError('Completa todos los campos requeridos')
-      setTimeout(() => setError(''), 3000)
+      mostrarError('Completa todos los campos requeridos')
       return
     }
     if (dias <= 0) {
-      setError('La fecha fin debe ser posterior a la fecha inicio')
-      setTimeout(() => setError(''), 3000)
+      mostrarError('La fecha fin debe ser posterior a la fecha inicio')
       return
     }
-    setLoading(true)
-    const data = await crearViaje({
-      motivo,
-      destino,
-      fecha_inicio: fechaInicio,
-      fecha_fin: fechaFin,
-      tipo,
-      entorno_destino: entorno,
-      monto_asignado: montoTotal
-    })
-    setLoading(false)
-    if (data.error) {
-      setError(data.error)
-      setTimeout(() => setError(''), 3000)
-      return
-    }
-    window.location.href = '/dashboard/empleado'
+    setShowConfirmacion(true)
   }
+
+  const handleConfirmar = async () => {
+  if (!motivo || !destino || !fechaInicio || !fechaFin) {
+    mostrarError('Completa todos los campos requeridos')
+    return
+  }
+  if (dias <= 0) {
+    mostrarError('La fecha fin debe ser posterior a la fecha inicio')
+    return
+  }
+  setLoading(true)
+  const data = await crearViaje({
+    motivo,
+    destino,
+    fecha_inicio: fechaInicio,
+    fecha_fin: fechaFin,
+    tipo,
+    entorno_destino: entorno,
+    monto_asignado: montoTotal,
+  })
+  setLoading(false)
+
+  if (data.error) {
+    mostrarError(data.error)
+    return
+  }
+
+  setShowConfirmacion(true)
+  setMotivo('')
+  setDestino('')
+  setFechaInicio('')
+  setFechaFin('')
+  setTipo('Nacional')
+  setEntorno('Urbano')
+}
 
   return {
     motivo, setMotivo,
@@ -74,8 +97,10 @@ function useCrearViaje(usuario) {
     error,
     showMapa, setShowMapa,
     handleConfirmarMapa,
+    handleAbrirConfirmacion,
     handleConfirmar,
+    showConfirmacion, setShowConfirmacion,
   }
 }
 
-export default useCrearViaje
+export default useCrearViaje;

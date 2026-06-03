@@ -1,33 +1,31 @@
 import { COLORS } from '../../constants'
+import { useNavigate } from 'react-router-dom'
 
 const styles = {
-  container: "rounded-xl p-5 mb-4 text-white shadow-lg",
-  emptyContainer: "rounded-xl p-8 text-white text-center flex flex-col items-center justify-center gap-2",
-  motivo: "text-sm font-bold font-inter uppercase leading-tight mb-1",
-  fecha: "text-xs font-inter mb-1 opacity-70",
-  destino: "text-sm font-inter mb-3 opacity-80",
-  badges: "flex gap-2 mb-4",
-  badge: "text-xs font-bold font-nunito px-2 py-1 rounded",
-  gastoLabel: "text-xs font-inter uppercase opacity-70",
+  container: "rounded-xl overflow-hidden shadow-lg mb-4 flex flex-col h-[355px]",
+  emptyContainer: "rounded-xl p-8 text-white text-center flex flex-col items-center justify-center gap-2 h-[340px]",
+  topSection: "p-5 shrink-0 h-[130px] overflow-hidden",
+  motivo: "text-lg font-bold font-inter uppercase leading-tight mb-1 text-white line-clamp-2",
+  fecha: "text-xs font-inter opacity-70 text-white mt-3",
+  bottomSection: "p-5 flex flex-col flex-1 overflow-hidden",
+  destinoRow: "flex flex-col gap-2 mb-3",
+  destino: "font-inter font-semibold text-sm line-clamp-2",
+  badgesRow: "flex gap-2 flex-wrap",
+  badge: "text-xs font-bold font-nunito px-2 py-1 rounded-xl whitespace-nowrap",
+  gastoRow: "flex justify-between items-end mb-1 mt-auto",
+  gastoLabel: "text-xs font-inter uppercase font-bold mb-2",
   gastoMonto: "text-2xl font-bold font-inter",
-  presupuestoLabel: "text-xs font-inter uppercase opacity-70 text-right",
+  presupuestoLabel: "text-xs font-inter uppercase font-bold text-right mb-2",
   presupuestoMonto: "text-sm font-bold font-inter text-right",
-  progressBar: "w-full h-1 rounded mt-2 mb-3",
-  progress: "h-1 rounded",
-  detalles: "text-xs font-bold font-inter cursor-pointer hover:underline mt-1",
+  progressBar: "w-full h-2 rounded mt-2 mb-3",
+  progress: "h-2 rounded",
+  detalles: "text-xs font-bold font-inter cursor-pointer",
 }
 
-const badgeColors = {
-  Nacional: "bg-yellow-400 text-black",
-  Internacional: "bg-blue-500 text-white",
-  Urbano: "bg-gray-500 text-white",
-  Rural: "bg-green-600 text-white",
-}
-
-const formatFecha = (fecha) =>
-  new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
+const formatFecha = (fecha) => new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
 
 function ViajeEnCursoCard({ viaje }) {
+  const navigate = useNavigate();
   if (!viaje) {
     return (
       <div
@@ -48,46 +46,56 @@ function ViajeEnCursoCard({ viaje }) {
   const excede = porcentaje >= 100
 
   return (
-    <div className="rounded-xl overflow-hidden shadow-lg mb-4">
-
-      <div className="p-5" style={{ backgroundColor: COLORS.backgroundSecondary }}>
-        <p className="text-sm font-bold font-inter uppercase leading-tight mb-1 text-white">
-          {viaje.motivo}
-        </p>
-        <p className="text-xs font-inter opacity-70 text-white">
-          {formatFecha(viaje.fecha_inicio)} - {formatFecha(viaje.fecha_fin)}
-        </p>
+    <div className={styles.container}>
+      <div className={styles.topSection} style={{ backgroundColor: COLORS.backgroundSecondary }}>
+        <p className={styles.motivo}>{viaje.motivo.toUpperCase()}</p>
+        <p className={styles.fecha}>{formatFecha(viaje.fecha_inicio)} - {formatFecha(viaje.fecha_fin)}</p>
       </div>
 
-      <div className="p-5" style={{ backgroundColor: COLORS.background }}>
-        <p className="text-sm font-inter mb-3" style={{ color: COLORS.labels }}>{viaje.destino}</p>
-        <div className={styles.badges}>
-          <span className={`${styles.badge} ${badgeColors[viaje.tipo]}`}>{viaje.tipo.toUpperCase()}</span>
-          <span className={`${styles.badge} ${badgeColors[viaje.entorno_destino]}`}>{viaje.entorno_destino.toUpperCase()}</span>
+      <div className={styles.bottomSection} style={{ backgroundColor: COLORS.background, minHeight: '200px' }}>
+        <div className={styles.destinoRow}>
+          <div className={styles.badgesRow}>
+            <span
+              className={styles.badge}
+              style={{ backgroundColor: COLORS.travel_types, color: COLORS.text_types_text }}
+            >
+              {viaje.tipo.toUpperCase()}
+            </span>
+            <span
+              className={styles.badge}
+              style={{ backgroundColor: COLORS.enviroment_types, color: COLORS.text_enviroment_types }}
+            >
+              {viaje.entorno_destino.toUpperCase()}
+            </span>
+          </div>
+          <p className={styles.destino} style={{ color: COLORS.labels }}>{viaje.destino}</p>
         </div>
-        <div className="flex justify-between items-end mb-1">
+
+        <div className="flex-1" />
+
+        <div className={styles.gastoRow}>
           <div>
-            <p className={styles.gastoLabel} style={{ color: COLORS.labels }}>Gasto Acumulado</p>
-            <p className={styles.gastoMonto} style={{ color: excede ? '#ff4444' : COLORS.secondary }}>
+            <p className={styles.gastoLabel} style={{ color: COLORS.text }}>Gasto Acumulado</p>
+            <p className={styles.gastoMonto} style={{ color: excede ? COLORS.secondary : COLORS.title }}>
               {viaje.gastoAcumulado.toFixed(2)} Bs
             </p>
           </div>
           <div>
-            <p className={styles.presupuestoLabel} style={{ color: COLORS.labels }}>Presupuesto</p>
+            <p className={styles.presupuestoLabel} style={{ color: COLORS.text }}>Presupuesto</p>
             <p className={styles.presupuestoMonto} style={{ color: COLORS.text }}>
               {parseFloat(viaje.monto_asignado).toFixed(2)} Bs
             </p>
           </div>
         </div>
-        <div className={styles.progressBar} style={{ backgroundColor: COLORS.dataFields }}>
+
+        <div className={styles.progressBar} style={{ backgroundColor: COLORS.bar }}>
           <div
             className={styles.progress}
-            style={{ width: `${porcentaje}%`, backgroundColor: excede ? '#ff4444' : COLORS.secondary }}
+            style={{ width: `${porcentaje}%`, backgroundColor: excede ? COLORS.secondary : COLORS.title }}
           />
         </div>
-        <p className={styles.detalles} style={{ color: COLORS.secondary }}>DETALLES →</p>
+        <p className={styles.detalles} style={{ color: COLORS.title }}  onClick={() => navigate(`/dashboard/empleado/viaje/${viaje.id_viaje}`)}>DETALLES →</p>
       </div>
-
     </div>
   )
 }
