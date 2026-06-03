@@ -10,6 +10,7 @@ function useLogin() {
   const [forgotEmail, setForgotEmail] = useState('')
   const [codeExpiresAt, setCodeExpiresAt] = useState(null)
   const [showEmailModal, setShowEmailModal] = useState(false)
+  const [showContraseniavencida, setShowContraseniavencida] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [showExpiredModal, setShowExpiredModal] = useState(false)
@@ -29,41 +30,30 @@ function useLogin() {
   }
 
 
-  const redirectByRole = (token) => {
+const redirectByRole = (token) => {
   const decoded = jwtDecode(token)
-  if (decoded.id_rol === 3) {
-    window.location.href = '/dashboard/empleado'
-  } else {
-    window.location.href = '/dashboard'
-  }
+  const rol = decoded.id_rol
+  if (rol === 1) window.location.href = '/dashboard/administrador'
+  else if (rol === 2) window.location.href = '/dashboard/supervisor'
+  else if (rol === 4) window.location.href = '/dashboard/revisor'
+  else window.location.href = '/dashboard/empleado'
 }
 
-  const handleLogin = async () => {
-    if (!email && !password) {
-      showError('Rellene los campos requeridos')
-      return
-    }
-    if (!email) {
-      showError('Ingresa tu correo electrónico')
-      return
-    }
-    if (!password) {
-      showError('Ingresa tu contraseña')
-      return
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      showError('Ingresa un correo electrónico válido')
-      return
-    }
-    const data = await login(email, password)
-    if (data.token) {
-      localStorage.setItem('token', data.token)
-       redirectByRole(data.token)
-    } else {
-      showError('La contraseña o el email son incorrectos')
-    }
+const handleLogin = async () => {
+  if (!email && !password) { showError('Rellene los campos requeridos'); return }
+  if (!email) { showError('Ingresa tu correo electrónico'); return }
+  if (!password) { showError('Ingresa tu contraseña'); return }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) { showError('Ingresa un correo electrónico válido'); return }
+
+  const data = await login(email, password)
+  if (data.token) {
+    localStorage.setItem('token', data.token)
+    redirectByRole(data.token)
+  } else {
+    showError(data.error || 'La contraseña o el email son incorrectos')
   }
+}
 
   const handleForgotPassword = () => setShowEmailModal(true)
 
@@ -123,6 +113,9 @@ function useLogin() {
     showExpiredModal,
     showNonExistentModal,
     closeAllModals,
+    showContraseniavencida,
+    setShowContraseniavencida,
+    redirectByRole,
     handleLogin,
     handleForgotPassword,
     handleSendEmail,
