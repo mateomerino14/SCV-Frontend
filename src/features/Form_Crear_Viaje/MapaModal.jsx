@@ -37,10 +37,11 @@ function MapaModal({ isOpen, onClose, onConfirm }) {
     setPosition(latlng)
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json`
+        `https://nominatim.openstreetmap.org/reverse?lat=${latlng.lat}&lon=${latlng.lng}&format=json&accept-language=es`
       )
       const data = await res.json()
-      setAddress(data.display_name || `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`)
+      let directionReal=data.display_name?.split(",").slice(-3).map((item)=>item.trim()).join(",")
+      setAddress(directionReal || `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`)
     } catch {
       setAddress(`${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`)
     }
@@ -88,4 +89,4 @@ function MapaModal({ isOpen, onClose, onConfirm }) {
   )
 }
 
-export default MapaModal
+export default MapaModal;

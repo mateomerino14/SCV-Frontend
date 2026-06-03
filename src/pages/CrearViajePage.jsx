@@ -1,36 +1,43 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Target, MapPin, Calendar } from 'lucide-react'
+import { ArrowLeft, Target, MapPin } from 'lucide-react'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import ResumenCorporativo from '../features/Form_Crear_Viaje/ResumenCorporativo'
 import PoliticasViaje from '../features/Form_Crear_Viaje/PoliticasViaje'
 import MapaModal from '../features/Form_Crear_Viaje/MapaModal'
+import InputField from '../components/ui/InputField'
 import useCrearViaje from '../hooks/useCrearViaje'
 import useDashboard from '../hooks/useDashboard'
 import { COLORS } from '../constants'
+import SessionExpiredModal from '../features/Login/SessionExpiredModal'
+import ConfirmacionModal from "../features/Form_Crear_Viaje/ConfirmacionModal"
+import MenuDinamico from '../layouts/Menu/MenuDinamico'
+import useMenu from '../hooks/useMenu'
 
 const styles = {
   page: "min-h-screen flex flex-col",
-  content: "flex-1 px-5 py-6 max-w-7xl mx-auto w-full",
+  content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-xs font-bold font-inter uppercase mb-1",
+  planLabel: "text-md font-semibold font-inter uppercase mb-3 tracking-wide",
   title: "text-3xl font-bold font-inter mb-6",
   grid: "grid grid-cols-1 md:grid-cols-2 gap-8",
-  formCard: "rounded-2xl p-6 flex flex-col gap-5",
-  badgeWrapper: "flex items-center gap-3 mb-2",
+  formCard: "rounded-2xl p-6 flex flex-col gap-5 shadow-lg",
+  badgeWrapper: "flex items-center gap-3 mb-2 w-fit p-3 rounded-lg",
   badgeIcon: "rounded-full p-2",
   badgeInfo: "flex flex-col",
-  badgeLabel: "text-xs font-inter uppercase opacity-70",
+  badgeLabel: "text-xs font-inter uppercase opacity-70 font-semibold",
   badgeCargo: "text-sm font-bold font-inter",
-  fieldLabel: "text-xs font-bold font-inter uppercase mb-1",
-  inputWrapper: "flex items-center gap-3 rounded-xl px-4 py-3",
   input: "bg-transparent w-full outline-none font-inter text-sm",
-  dateRow: "grid grid-cols-2 gap-3",
-  radioGroup: "flex gap-3",
-  radioBtn: "flex items-center gap-2 px-4 py-2 rounded-xl border cursor-pointer font-inter text-sm font-bold transition-colors",
-  confirmBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer transition-colors mt-2",
-  errorMsg: "text-xs font-inter italic text-center",
+  dateRow: "grid grid-cols-1 md:grid-cols-2 gap-3",
+  radioRow: "grid grid-cols-1 md:grid-cols-2 gap-4",
+  radioGroup: "flex flex-col gap-2",
+  radioLabel: "text-xs font-bold font-inter uppercase mb-1",
+  radioBtns: "flex gap-2 flex-wrap",
+  radioBtn: "flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer font-inter text-sm font-bold transition-colors",
+  confirmBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer transition-colors mt-3",
+  errorMsg: "text-xs font-inter italic text-center mt-3",
   rightCol: "flex flex-col gap-4",
+  politicasWrapper: "px-5 pb-6 max-w-8xl mx-auto w-full",
 }
 
 function CrearViajePage() {
@@ -48,149 +55,153 @@ function CrearViajePage() {
     loading,
     error,
     showMapa, setShowMapa,
+    showConfirmacion,setShowConfirmacion,
     handleConfirmarMapa,
     handleConfirmar,
+    handleAbrirConfirmacion,
   } = useCrearViaje(usuario)
+  const { menuAbierto, abrirMenu, cerrarMenu,sessionExpired, handleSessionExpiredClose } = useMenu()
+  const today = new Date().toISOString().split('T')[0]
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
-      <Navbar text="Registro de Viaje" />
-
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+      <Navbar text="Registro de Viaje" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
+      <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate('/dashboard/empleado')}>
-          <ArrowLeft size={18} style={{ color: COLORS.labels }} />
+          <ArrowLeft size={25} style={{ color: COLORS.title }} />
         </button>
 
-        <p className={styles.planLabel} style={{ color: COLORS.secondary }}>Planificación de Itinerario</p>
+        <p className={styles.planLabel} style={{ color: COLORS.title }}>Planificación de Itinerario</p>
         <h1 className={styles.title} style={{ color: COLORS.backgroundSecondary }}>Nuevo Registro de Viaje</h1>
 
+        <div className={styles.badgeWrapper} style={{ backgroundColor: COLORS.backgroundHeader }}>
+          <div className={styles.badgeIcon} style={{ backgroundColor: COLORS.primary }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 2L12 7H18L13 11L15 16L10 13L5 16L7 11L2 7H8L10 2Z" fill="white" />
+            </svg>
+          </div>
+          <div className={styles.badgeInfo}>
+            <span className={styles.badgeLabel} style={{ color: COLORS.labels }}>Cargo</span>
+            <span className={styles.badgeCargo} style={{ color: COLORS.primary }}>
+              {usuario?.Cargo?.nombre?.toUpperCase() || '—'}
+            </span>
+          </div>
+        </div>
+
         <div className={styles.grid}>
-          <div className={styles.formCard} style={{ backgroundColor: COLORS.backgroundHeader }}>
-            <div className={styles.badgeWrapper}>
-              <div className={styles.badgeIcon} style={{ backgroundColor: COLORS.primary }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 2L12 7H18L13 11L15 16L10 13L5 16L7 11L2 7H8L10 2Z" fill="white" />
-                </svg>
-              </div>
-              <div className={styles.badgeInfo}>
-                <span className={styles.badgeLabel} style={{ color: COLORS.labels }}>Cargo</span>
-                <span className={styles.badgeCargo} style={{ color: COLORS.secondary }}>
-                  {usuario?.Cargo?.nombre?.toUpperCase() || '—'}
-                </span>
-              </div>
-            </div>
+          <div className={styles.formCard} style={{ backgroundColor: COLORS.background }}>
 
-            <div>
-              <p className={styles.fieldLabel} style={{ color: COLORS.labels }}>Motivo</p>
-              <div className={styles.inputWrapper} style={{ backgroundColor: COLORS.dataFields }}>
-                <Target size={16} style={{ color: COLORS.labels }} />
-                <input
-                  type="text"
-                  placeholder="Inspección técnica y de producción..."
-                  value={motivo}
-                  onChange={(e) => setMotivo(e.target.value)}
-                  className={styles.input}
-                  style={{ color: COLORS.text }}
-                />
-              </div>
-            </div>
+            <InputField
+              label="Motivo"
+              icon={<Target size={16} style={{ color: COLORS.labels }} />}
+            >
+              <input
+                type="text"
+                placeholder="Inspección técnica y de producción..."
+                value={motivo}
+                onChange={(e) => setMotivo(e.target.value)}
+                className={styles.input}
+                maxLength={100}
+                style={{ color: COLORS.text }}
+              />
+            </InputField>
 
-            <div>
-              <p className={styles.fieldLabel} style={{ color: COLORS.labels }}>Destino</p>
-              <div className={styles.inputWrapper} style={{ backgroundColor: COLORS.dataFields }}>
+            <InputField
+              label="Destino"
+              icon={
                 <button onClick={() => setShowMapa(true)}>
                   <MapPin size={16} style={{ color: COLORS.secondary, cursor: 'pointer' }} />
                 </button>
-                <input
-                  type="text"
-                  placeholder="¿A dónde se dirige?"
-                  value={destino}
-                  onChange={(e) => setDestino(e.target.value)}
-                  className={styles.input}
-                  style={{ color: COLORS.text }}
-                />
-              </div>
-            </div>
+              }
+            >
+              <input
+                type="text"
+                placeholder="¿A dónde se dirige?"
+                value={destino}
+                onChange={(e) => setDestino(e.target.value)}
+                className={styles.input}
+                maxLength={60}
+                style={{ color: COLORS.text }}
+              />
+            </InputField>
 
             <div className={styles.dateRow}>
-              <div>
-                <p className={styles.fieldLabel} style={{ color: COLORS.labels }}>Fecha Inicio</p>
-                <div className={styles.inputWrapper} style={{ backgroundColor: COLORS.dataFields }}>
-                  <Calendar size={16} style={{ color: COLORS.labels }} />
-                  <input
-                    type="date"
-                    value={fechaInicio}
-                    onChange={(e) => setFechaInicio(e.target.value)}
-                    className={styles.input}
-                    style={{ color: COLORS.text }}
-                  />
-                </div>
-              </div>
-              <div>
-                <p className={styles.fieldLabel} style={{ color: COLORS.labels }}>Fecha Fin</p>
-                <div className={styles.inputWrapper} style={{ backgroundColor: COLORS.dataFields }}>
-                  <Calendar size={16} style={{ color: COLORS.labels }} />
-                  <input
-                    type="date"
-                    value={fechaFin}
-                    onChange={(e) => setFechaFin(e.target.value)}
-                    className={styles.input}
-                    style={{ color: COLORS.text }}
-                  />
-                </div>
-              </div>
+              <InputField label="Fecha Inicio">
+                <input
+                  type="date"
+                  value={fechaInicio}
+                  onChange={(e) => setFechaInicio(e.target.value)}
+                  className={styles.input}
+                  min={today}
+                  style={{ color: COLORS.text }}
+                />
+              </InputField>
+              <InputField label="Fecha Fin">
+                <input
+                  type="date"
+                  value={fechaFin}
+                  onChange={(e) => setFechaFin(e.target.value)}
+                  className={styles.input}
+                  min={today}
+                  style={{ color: COLORS.text }}
+                />
+              </InputField>
             </div>
 
-            <div>
-              <p className={styles.fieldLabel} style={{ color: COLORS.labels }}>Tipo de Viaje</p>
+            <div className={styles.radioRow}>
               <div className={styles.radioGroup}>
-                {['Nacional', 'Internacional'].map((t) => (
-                  <button
-                    key={t}
-                    className={styles.radioBtn}
-                    onClick={() => setTipo(t)}
-                    style={{
-                      backgroundColor: tipo === t ? COLORS.primary : COLORS.dataFields,
-                      borderColor: tipo === t ? COLORS.primary : COLORS.fields,
-                      color: tipo === t ? COLORS.background : COLORS.labels,
-                    }}
-                  >
-                    {t}
-                  </button>
-                ))}
+                <p className={styles.radioLabel} style={{ color: COLORS.labels }}>Tipo de Viaje</p>
+                <div className={styles.radioBtns}>
+                  {['Nacional', 'Internacional'].map((t) => (
+                    <button
+                      key={t}
+                      className={styles.radioBtn}
+                      onClick={() => setTipo(t)}
+                      style={{
+                        backgroundColor: tipo === t ? COLORS.primary : COLORS.dataFields,
+                        borderColor: tipo === t ? COLORS.primary : COLORS.fields,
+                        color: tipo === t ? COLORS.background : COLORS.labels,
+                      }}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <p className={styles.fieldLabel} style={{ color: COLORS.labels }}>Entorno de Destino</p>
               <div className={styles.radioGroup}>
-                {['Urbano', 'Rural'].map((e) => (
-                  <button
-                    key={e}
-                    className={styles.radioBtn}
-                    onClick={() => setEntorno(e)}
-                    style={{
-                      backgroundColor: entorno === e ? COLORS.primary : COLORS.dataFields,
-                      borderColor: entorno === e ? COLORS.primary : COLORS.fields,
-                      color: entorno === e ? COLORS.background : COLORS.labels,
-                    }}
-                  >
-                    {e}
-                  </button>
-                ))}
+                <p className={styles.radioLabel} style={{ color: COLORS.labels }}>Entorno de Destino</p>
+                <div className={styles.radioBtns}>
+                  {['Urbano', 'Rural'].map((e) => (
+                    <button
+                      key={e}
+                      className={styles.radioBtn}
+                      onClick={() => setEntorno(e)}
+                      style={{
+                        backgroundColor: entorno === e ? COLORS.primary : COLORS.dataFields,
+                        borderColor: entorno === e ? COLORS.primary : COLORS.fields,
+                        color: entorno === e ? COLORS.background : COLORS.labels,
+                      }}
+                    >
+                      {e}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
             {error && <p className={styles.errorMsg} style={{ color: COLORS.secondary }}>{error}</p>}
 
-            <button
-              className={styles.confirmBtn}
-              style={{ backgroundColor: loading ? COLORS.fields : COLORS.secondary }}
-              onClick={handleConfirmar}
-              disabled={loading}
-            >
-              {loading ? 'Confirmando...' : 'Confirmar Viaje'}
-            </button>
+              <button
+                  className={styles.confirmBtn}
+                  style={{ backgroundColor: loading ? COLORS.fields : COLORS.secondary }}
+                  onClick={handleConfirmar}
+                  disabled={loading}
+                >
+                  {loading ? 'Enviando...' : 'Confirmar Viaje'}
+                </button>
           </div>
 
           <div className={styles.rightCol}>
@@ -201,9 +212,12 @@ function CrearViajePage() {
               tipo={tipo}
               entorno={entorno}
             />
-            <PoliticasViaje />
           </div>
         </div>
+      </div>
+
+      <div className={styles.politicasWrapper}>
+        <PoliticasViaje />
       </div>
 
       <MapaModal
@@ -212,6 +226,10 @@ function CrearViajePage() {
         onConfirm={handleConfirmarMapa}
       />
 
+      <ConfirmacionModal
+        isOpen={showConfirmacion}
+        onClose={()=>setShowConfirmacion(false)}
+      />
       <Footer />
     </div>
   )
