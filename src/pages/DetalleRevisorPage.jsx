@@ -96,7 +96,7 @@ const formatFechaHora = (f) =>
   new Date(f).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 
 const estadoConfig = {
-  APROBADO_SUPERVISOR: { label: 'Aprobación Preliminar', bg: '#85aff3ab', color: '#000a65' },
+  APROBADO_SUPERVISOR: { label: 'Apr. Preliminar', bg: '#85aff3ab', color: '#000a65' },
   APROBADO_FINAL: { label: 'Aprobado', bg: '#d4edda', color: '#155724' },
   RECHAZADO: { label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203' },
 }

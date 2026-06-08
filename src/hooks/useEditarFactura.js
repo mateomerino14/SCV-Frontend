@@ -22,17 +22,26 @@ function useEditarFactura(id_gasto) {
       if (datosGasto.error) return
       setIdViaje(datosGasto.id_viaje || null)
       setModificadoManualmente(datosGasto.modificado || false)
+
+      const factura = datosGasto.Factura
+      const monto = parseFloat(factura?.monto_parcial || 0)
+      const impuesto = factura?.Factura_Impuestos?.[0]?.Impuesto
+      const porcentaje = impuesto?.porcentaje || 0
+      const iva = parseFloat(((monto * porcentaje) / 100).toFixed(2))
+      const montoTotal = parseFloat(datosGasto.monto_total || 0)
+
       setDatos({
         proveedor: datosGasto.Proveedor?.nombre || '',
-        numero_factura: datosGasto.Factura?.numero_factura || '',
+        numero_factura: factura?.numero_factura || '',
         nit: datosGasto.Proveedor?.numero_doc_fiscal || '',
-        fecha_emision: datosGasto.Factura?.fecha_emision || '',
-        monto: parseFloat(datosGasto.Factura?.monto_parcial || 0).toString(),
-        iva: '',
-        monto_total: parseFloat(datosGasto.monto_total || 0).toString(),
+        fecha_emision: factura?.fecha_emision || '',
+        monto: monto > 0 ? monto.toString() : '',
+        iva: iva > 0 ? iva.toString() : '',
+        monto_total: montoTotal > 0 ? montoTotal.toString() : '',
         tipo_doc: datosGasto.tipo || 'F',
-        detalle: datosGasto.Factura?.Detalle_Factura || [],
+        detalle: factura?.Detalle_Factura || [],
       })
+
       if (datosGasto.Imagen?.url_archivo) {
         setImagenExistente(datosGasto.Imagen.url_archivo)
         setPreviewImagen(datosGasto.Imagen.url_archivo)
@@ -90,12 +99,21 @@ function useEditarFactura(id_gasto) {
     if (Object.keys(errores).length > 0) { setErroresCampo(errores); return }
     setErroresCampo({})
     setLoading(true)
+
+    const monto = parseFloat(datos.monto || 0)
+    const iva = parseFloat(datos.iva || 0)
+    const montoTotal = parseFloat((monto + iva).toFixed(2))
+
     const payload = {
       ...datos,
+      monto,
+      iva,
+      monto_total: montoTotal,
       id_viaje: idViaje,
       mantener_imagen: !!imagenExistente,
       modificado_manualmente: modificadoManualmente,
     }
+
     const data = await actualizarFactura(id_gasto, payload, imagen)
     setLoading(false)
     if (data.error) { mostrarError(data.error); return }

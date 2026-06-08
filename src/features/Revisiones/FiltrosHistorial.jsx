@@ -23,7 +23,7 @@ const styles = {
 
 const tabsDefault = [
   { valor: 'TODOS', label: 'Todos' },
-  { valor: 'APROBADO_SUPERVISOR', label: 'Aprobación Preliminar' },
+  { valor: 'APROBADO_SUPERVISOR', label: 'Apr. Preliminar' },
   { valor: 'APROBADO_FINAL', label: 'Aprobado' },
   { valor: 'RECHAZADO', label: 'Rechazado' },
 ]

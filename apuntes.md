@@ -24,6 +24,10 @@
 
 [?] Retención en factura (definir comportamiento)
 
+[?] Ver el tema de eliminar viajes cada cierto periodo, consultar eso
+
+[?] Consultar mejora en cuanto a la api de deteccion de imagen
+
 [?] Validación de facturas: impedir registrar facturas del mismo proveedor en la misma fecha (confirmar requerimiento)
 
 [X] Cambio obligatorio de contraseña cada 90 días
@@ -61,3 +65,14 @@
     - Un revisor o supervisor no debe poder calificarse, aprobarse o revisarse a sí mismo un viaje.
     - Validar si es correcto que un administrador visualice su propio usuario en los módulos de administración.
     - Verificar otros escenarios similares para garantizar la coherencia de permisos y evitar acciones sobre registros propios.
+
+[X] Se egrega doble observacion repetida cuando agrego una, por alguna razon al revisar
+
+[X] Que las etiquetas que dice especialmente aprobacion preeliminar y aprobacion final no sean largas sino abreviar por ejemplo APR.PREELIMINAR APR.FINAL
+
+[X] Que los controles de que un viaje no puede ser revisado por dos personas, osea sea entre supervisores y entre revisores, osea si un empleado esta viendo por ejemplo detalles de su viaje enviado a revision, es ilogico que me bloquees el acceso a mi como supervisor, osea que ese control se aplica a empleados con mismos roles comoo revisores y por otro lado entre supervisores
+
+
+[X] Ver correo oficial, arreglar, en el deploy se bueguea el envio de correo por alguna razon, exnvio, no pasa al pop up de verificacion o de codigo de verificacion, directo a lo que es codigo ha expirado, se queda en el pop up de ingrese su correo electronico con el boton que dice enviando
+
+[X] Al editar un gasto de factura no me dejar editar el iva o bueno puedo editarlo pero al darle a guardar no guarda en ninguno sea factura o recibo, ni en registrar ni en editar

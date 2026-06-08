@@ -89,7 +89,7 @@ const alertaConfig = {
 
 const estadoConfig = {
   EN_REVISION: { label: 'En Revisión', bg: COLORS.error, color: COLORS.secondary },
-  APROBADO_SUPERVISOR: { label: 'Aprobación Preliminar', bg: '#85aff3ab', color: '#000a65' },
+  APROBADO_SUPERVISOR: { label: 'Apr. Preliminar', bg: '#85aff3ab', color: '#000a65' },
   APROBADO_FINAL: { label: 'Aprobado', bg: '#d4edda', color: '#155724' },
   RECHAZADO: { label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203' },
 }

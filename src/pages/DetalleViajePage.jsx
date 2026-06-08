@@ -57,7 +57,7 @@ const estadoLabels = {
 const estadoTexto = {
   EN_CURSO: 'En Curso',
   EN_REVISION: 'En Revisión',
-  APROBADO_SUPERVISOR: 'Aprobación Preliminar',
+  APROBADO_SUPERVISOR: 'Apr. Preliminar',
   APROBADO_FINAL: 'Aprobado',
   RECHAZADO: 'Rechazado',
 }

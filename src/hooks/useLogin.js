@@ -29,45 +29,51 @@ function useLogin() {
     setShowNonExistentModal(false)
   }
 
-
-const redirectByRole = (token) => {
-  const decoded = jwtDecode(token)
-  const rol = decoded.id_rol
-  if (rol === 1) window.location.href = '/dashboard/administrador'
-  else if (rol === 2) window.location.href = '/dashboard/supervisor'
-  else if (rol === 4) window.location.href = '/dashboard/revisor'
-  else window.location.href = '/dashboard/empleado'
-}
-
-const handleLogin = async () => {
-  if (!email && !password) { showError('Rellene los campos requeridos'); return }
-  if (!email) { showError('Ingresa tu correo electrónico'); return }
-  if (!password) { showError('Ingresa tu contraseña'); return }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) { showError('Ingresa un correo electrónico válido'); return }
-
-  const data = await login(email, password)
-  if (data.token) {
-    localStorage.setItem('token', data.token)
-    redirectByRole(data.token)
-  } else {
-    showError(data.error || 'La contraseña o el email son incorrectos')
+  const redirectByRole = (token) => {
+    const decoded = jwtDecode(token)
+    const rol = decoded.id_rol
+    if (rol === 1) window.location.href = '/dashboard/administrador'
+    else if (rol === 2) window.location.href = '/dashboard/supervisor'
+    else if (rol === 4) window.location.href = '/dashboard/revisor'
+    else window.location.href = '/dashboard/empleado'
   }
-}
+
+  const handleLogin = async () => {
+    if (!email && !password) { showError('Rellene los campos requeridos'); return }
+    if (!email) { showError('Ingresa tu correo electrónico'); return }
+    if (!password) { showError('Ingresa tu contraseña'); return }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) { showError('Ingresa un correo electrónico válido'); return }
+
+    const data = await login(email, password)
+    if (data.token) {
+      localStorage.setItem('token', data.token)
+      redirectByRole(data.token)
+    } else {
+      showError(data.error || 'La contraseña o el email son incorrectos')
+    }
+  }
 
   const handleForgotPassword = () => setShowEmailModal(true)
 
   const handleSendEmail = async (emailValue) => {
-    const data = await checkEmail(emailValue)
-    if (data.exists) {
+    try {
+      const data = await checkEmail(emailValue)
+      if (!data.exists) {
+        setShowEmailModal(false)
+        setShowNonExistentModal(true)
+        return
+      }
       const result = await sendCode(emailValue)
+      if (result.error || !result.expiracion) {
+        return
+      }
       setForgotEmail(emailValue)
       setCodeExpiresAt(result.expiracion)
       setShowEmailModal(false)
       setShowConfirmModal(true)
-    } else {
-      setShowEmailModal(false)
-      setShowNonExistentModal(true)
+    } catch {
+      // silently fail — el botón del EmailModal vuelve a su estado normal
     }
   }
 
@@ -76,7 +82,7 @@ const handleLogin = async () => {
     if (data.message === 'Código verificado correctamente') {
       closeAllModals()
       localStorage.setItem('token', data.token)
-        redirectByRole(data.token)
+      redirectByRole(data.token)
     } else if (data.error === 'Código expirado') {
       setShowConfirmModal(false)
       setShowExpiredModal(true)
@@ -87,14 +93,17 @@ const handleLogin = async () => {
   }
 
   const handleResendCode = async () => {
-    const result = await sendCode(forgotEmail)
-    setCodeExpiresAt(result.expiracion)
-    setShowErrorModal(false)
-    setShowExpiredModal(false)
-    setShowConfirmModal(true)
- }
-
-
+    try {
+      const result = await sendCode(forgotEmail)
+      if (result.error || !result.expiracion) return
+      setCodeExpiresAt(result.expiracion)
+      setShowErrorModal(false)
+      setShowExpiredModal(false)
+      setShowConfirmModal(true)
+    } catch {
+      // silently fail
+    }
+  }
 
   const handleExpired = () => {
     setShowConfirmModal(false)
