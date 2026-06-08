@@ -4,7 +4,7 @@ import Button from '../../components/ui/Button'
 import { COLORS } from '../../constants'
 
 const styles = {
-  overlay: 'fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm',
+  overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
   scrollWrapper: 'w-full max-w-sm md:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl',
   card: 'flex flex-col p-6 gap-3',
   iconWrapper: 'rounded-full p-4 self-center',
@@ -12,6 +12,7 @@ const styles = {
   grid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
   inputLabel: 'text-xs font-bold font-inter uppercase mb-1',
   input: 'w-full border rounded-xl px-3 py-2.5 text-sm font-inter outline-none',
+  errorCampo: 'text-xs font-inter mt-1',
   dropdownWrapper: 'relative',
   dropdownBtn: 'w-full border rounded-xl px-3 py-2.5 text-sm font-inter flex items-center justify-between cursor-pointer',
   dropdownMenu: 'absolute z-20 w-full border rounded-xl mt-1 shadow-lg overflow-hidden',
@@ -27,7 +28,10 @@ const rolesOpciones = [
   { value: 4, label: 'Revisor' },
 ]
 
-function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, formData, setFormData, cargos, loading, error }) {
+const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]*$/
+const soloNumerosRegex = /^[0-9]*$/
+
+function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, formData, setFormData, cargos, loading, error, erroresCampo = {}, setErroresCampo }) {
   const [dropdownCargo, setDropdownCargo] = useState(false)
   const [dropdownRol, setDropdownRol] = useState(false)
 
@@ -37,17 +41,32 @@ function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, 
   const rolSeleccionado = rolesOpciones.find((r) => r.value === formData.id_rol)
   const esNuevo = titulo === 'Nuevo Usuario'
 
-  const campo = (key, label, type, placeholder) => (
+  const handleChange = (key, valor, filtro, maxLen) => {
+    if (filtro && !filtro.test(valor)) return
+    if (maxLen && valor.length > maxLen) return
+    setFormData((prev) => ({ ...prev, [key]: valor }))
+    setErroresCampo?.((prev) => ({ ...prev, [key]: undefined }))
+  }
+
+  const campoTexto = (key, label, placeholder, filtro, maxLen) => (
     <div key={key}>
       <p className={styles.inputLabel} style={{ color: COLORS.labels }}>{label}</p>
       <input
         className={styles.input}
-        style={{ borderColor: COLORS.dataFields, color: COLORS.text, backgroundColor: COLORS.background }}
-        type={type}
+        style={{
+          borderColor: erroresCampo[key] ? '#f87171' : COLORS.dataFields,
+          color: COLORS.text,
+          backgroundColor: COLORS.background,
+        }}
+        type="text"
         placeholder={placeholder}
         value={formData[key] || ''}
-        onChange={(e) => setFormData((prev) => ({ ...prev, [key]: e.target.value }))}
+        onChange={(e) => handleChange(key, e.target.value, filtro, maxLen)}
+        maxLength={maxLen}
       />
+      {erroresCampo[key] && (
+        <p className={styles.errorCampo} style={{ color: '#ef4444' }}>{erroresCampo[key]}</p>
+      )}
     </div>
   )
 
@@ -61,24 +80,59 @@ function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, 
           <p className={styles.titulo} style={{ color: COLORS.text }}>{titulo}</p>
 
           <div className={styles.grid}>
-            {campo('nombre', 'Nombre', 'text', 'Juan')}
-            {campo('apellido_paterno', 'Apellido Paterno', 'text', 'García')}
-            {campo('apellido_materno', 'Apellido Materno', 'text', 'López (opcional)')}
-            {campo('email_corporativo', 'Correo Corporativo', 'email', 'juan@empresa.com')}
-            {campo('telefono', 'Teléfono', 'text', '71234567 (opcional)')}
-            {campo('numero_dependencia', 'N° Dependencia', 'text', 'Ej: DEP-001')}
-            {campo('numero_seccion', 'N° Sección', 'text', 'Ej: SEC-01')}
+            {campoTexto('nombre', 'Nombre', 'Juan', soloLetrasRegex, 30)}
+            {campoTexto('apellido_paterno', 'Apellido Paterno', 'García', soloLetrasRegex, 30)}
+            {campoTexto('apellido_materno', 'Apellido Materno (opcional)', 'López', soloLetrasRegex, 30)}
+
+            <div>
+              <p className={styles.inputLabel} style={{ color: COLORS.labels }}>Correo Corporativo</p>
+              <input
+                className={styles.input}
+                style={{
+                  borderColor: erroresCampo.email_corporativo ? '#f87171' : COLORS.dataFields,
+                  color: COLORS.text,
+                  backgroundColor: COLORS.background,
+                }}
+                type="email"
+                placeholder="juan@empresa.com"
+                value={formData.email_corporativo || ''}
+                onChange={(e) => {
+                  if (e.target.value.length > 100) return
+                  setFormData((prev) => ({ ...prev, email_corporativo: e.target.value }))
+                  setErroresCampo?.((prev) => ({ ...prev, email_corporativo: undefined }))
+                }}
+                maxLength={100}
+              />
+              {erroresCampo.email_corporativo && (
+                <p className={styles.errorCampo} style={{ color: '#ef4444' }}>{erroresCampo.email_corporativo}</p>
+              )}
+            </div>
+
+            {campoTexto('telefono', 'Teléfono (opcional)', '71234567', soloNumerosRegex, 20)}
+            {campoTexto('numero_dependencia', 'N° Dependencia', 'Ej: DEP-001', null, 50)}
+            {campoTexto('numero_seccion', 'N° Sección', 'Ej: SEC-01', null, 50)}
+
             {esNuevo && (
               <div>
                 <p className={styles.inputLabel} style={{ color: COLORS.labels }}>Contraseña</p>
                 <input
                   className={styles.input}
-                  style={{ borderColor: COLORS.dataFields, color: COLORS.text, backgroundColor: COLORS.background }}
+                  style={{
+                    borderColor: erroresCampo.contrasenia ? '#f87171' : COLORS.dataFields,
+                    color: COLORS.text,
+                    backgroundColor: COLORS.background,
+                  }}
                   type="password"
                   placeholder="Mínimo 6 caracteres"
-                  value={formData.contrasenia}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, contrasenia: e.target.value }))}
+                  value={formData.contrasenia || ''}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, contrasenia: e.target.value }))
+                    setErroresCampo?.((prev) => ({ ...prev, contrasenia: undefined }))
+                  }}
                 />
+                {erroresCampo.contrasenia && (
+                  <p className={styles.errorCampo} style={{ color: '#ef4444' }}>{erroresCampo.contrasenia}</p>
+                )}
               </div>
             )}
           </div>
@@ -89,12 +143,19 @@ function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, 
               <div className={styles.dropdownWrapper}>
                 <button
                   className={styles.dropdownBtn}
-                  style={{ borderColor: COLORS.dataFields, backgroundColor: COLORS.background, color: cargoSeleccionado ? COLORS.text : COLORS.labels }}
+                  style={{
+                    borderColor: erroresCampo.id_cargo ? '#f87171' : COLORS.dataFields,
+                    backgroundColor: COLORS.background,
+                    color: cargoSeleccionado ? COLORS.text : COLORS.labels,
+                  }}
                   onClick={() => { setDropdownCargo(!dropdownCargo); setDropdownRol(false) }}
                 >
                   <span>{cargoSeleccionado ? cargoSeleccionado.nombre : 'Seleccionar cargo'}</span>
                   {dropdownCargo ? <ChevronUp size={16} style={{ color: COLORS.labels }} /> : <ChevronDown size={16} style={{ color: COLORS.labels }} />}
                 </button>
+                {erroresCampo.id_cargo && (
+                  <p className={styles.errorCampo} style={{ color: '#ef4444' }}>{erroresCampo.id_cargo}</p>
+                )}
                 {dropdownCargo && (
                   <div className={styles.dropdownMenu} style={{ backgroundColor: COLORS.background, borderColor: COLORS.dataFields }}>
                     <div style={{ maxHeight: `${4 * 44}px`, overflowY: 'auto' }}>
@@ -109,7 +170,11 @@ function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, 
                               color: sel ? COLORS.primary : COLORS.text,
                               borderTop: `1px solid ${COLORS.dataFields}`,
                             }}
-                            onClick={() => { setFormData((prev) => ({ ...prev, id_cargo: c.id_cargo })); setDropdownCargo(false) }}
+                            onClick={() => {
+                              setFormData((prev) => ({ ...prev, id_cargo: c.id_cargo }))
+                              setErroresCampo?.((prev) => ({ ...prev, id_cargo: undefined }))
+                              setDropdownCargo(false)
+                            }}
                           >
                             <span>{c.nombre}</span>
                             {sel && <Check size={14} style={{ color: COLORS.primary }} />}

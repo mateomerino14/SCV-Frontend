@@ -4,6 +4,7 @@ import MenuDinamico from '../layouts/Menu/MenuDinamico'
 import SessionExpiredModal from '../features/Login/SessionExpiredModal'
 import ContraseniavencidaModal from '../features/Login/ContraseniavencidaModal'
 import ViajeRevisionItem from '../features/Revisiones/ViajeRevisionItem'
+import EmptyState from '../components/ui/EmptyState'
 import useRevisionRevisor from '../hooks/useRevisionRevisor'
 import useMenu from '../hooks/useMenu'
 import useContraseniavencida from '../hooks/useContraseniavencida'
@@ -59,7 +60,19 @@ function RevisionRevisorPage() {
 
         {loading && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>Cargando...</p>}
         {error && <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>{error}</p>}
-        {!loading && viajes.length === 0 && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>No hay solicitudes pendientes</p>}
+
+        {!loading && viajes.length === 0 && (
+          <EmptyState
+            titulo="Sin solicitudes pendientes"
+            subtitulo="No hay viajes esperando revisión final en este momento"
+            icono={
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path d="M6 26L10 14L16 20L22 10L26 26H6Z" fill="rgba(255,255,255,0.6)" />
+                <circle cx="22" cy="8" r="3" fill="rgba(255,255,255,0.4)" />
+              </svg>
+            }
+          />
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {!loading && viajes.map((viaje) => (

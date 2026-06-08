@@ -23,67 +23,51 @@ const styles = {
   textarea: "w-full bg-transparent outline-none font-inter text-sm resize-none",
   guardarBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer mt-3",
   cancelarBtn: "w-full py-3 rounded-xl font-bold font-nunito text-base cursor-pointer mt-2 border",
-  errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
   exitoMsg: "text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2",
 }
 
 function RegistrarGastoPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { menuAbierto, usuario, abrirMenu, cerrarMenu,sessionExpired, handleSessionExpiredClose} = useMenu()
+  const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
 
   const {
     tipo, setTipo,
-    fecha, setFecha,
-    proveedor, setProveedor,
-    monto,
-    descripcion, setDescripcion,
-    idCategoria, setIdCategoria,
-    categorias,
-    previewImagen,
-    loading,
-    error,
-    exito,
-    handleImagenChange,
-    handleEliminarImagen,
-    handleMontoChange,
-    handleGuardar,
+    fecha, proveedor, monto, descripcion,
+    idCategoria, categorias,
+    previewImagen, loading, error, erroresCampo, exito,
+    handleImagenChange, handleEliminarImagen,
+    handleMontoChange, handleProveedorChange,
+    handleDescripcionChange, handleFechaChange,
+    handleCategoriaChange, handleGuardar,
   } = useRegistrarGasto(id)
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Registro de Gastos" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
-
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
       <div className={styles.content}>
-
-        <button
-          className={styles.backBtn}
-          onClick={() => navigate(`/dashboard/empleado/viaje/${id}`)}
-        >
+        <button className={styles.backBtn} onClick={() => navigate(`/dashboard/empleado/viaje/${id}`)}>
           <ArrowLeft size={25} style={{ color: COLORS.title }} />
         </button>
 
         <p className={styles.planLabel} style={{ color: COLORS.title }}>
           Ingresa los datos de tu nuevo gasto
         </p>
-        <h1 className={styles.title} style={{ color: COLORS.text }}>
-          Registro de Gasto
-        </h1>
+        <h1 className={styles.title} style={{ color: COLORS.text }}>Registro de Gasto</h1>
 
         <div className={styles.card} style={{ backgroundColor: COLORS.background }}>
-
           <TipoRegistro tipo={tipo} onChange={setTipo} />
 
-          <CampoGasto label="Fecha del Gasto">
+          <CampoGasto label="Fecha del Gasto" error={erroresCampo.fecha}>
             <input
               className={styles.input}
               style={{ color: COLORS.text }}
               type="date"
               value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
+              onChange={(e) => handleFechaChange(e.target.value)}
             />
           </CampoGasto>
 
@@ -92,13 +76,14 @@ function RegistrarGastoPage() {
               className={styles.input}
               style={{ color: COLORS.text }}
               type="text"
-              placeholder="Nombre de Proveedor"
+              placeholder="Nombre del proveedor"
               value={proveedor}
-              onChange={(e) => setProveedor(e.target.value)}
+              onChange={(e) => handleProveedorChange(e.target.value)}
+              maxLength={50}
             />
           </CampoGasto>
 
-          <CampoGasto label="Monto" sufijo="Bs">
+          <CampoGasto label="Monto" sufijo="Bs" error={erroresCampo.monto}>
             <input
               className={styles.input}
               style={{ color: COLORS.text }}
@@ -110,21 +95,23 @@ function RegistrarGastoPage() {
             />
           </CampoGasto>
 
-          <CampoGasto label="Descripción">
+          <CampoGasto label="Descripción" error={erroresCampo.descripcion}>
             <textarea
               className={styles.textarea}
               style={{ color: COLORS.text }}
               placeholder="Detalle el motivo del gasto..."
               rows={3}
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={(e) => handleDescripcionChange(e.target.value)}
+              maxLength={100}
             />
           </CampoGasto>
 
           <SelectorCategoria
             categorias={categorias}
             idCategoria={idCategoria}
-            onChange={setIdCategoria}
+            onChange={handleCategoriaChange}
+            error={erroresCampo.categoria}
           />
 
           <ComprobanteCarga
@@ -132,24 +119,11 @@ function RegistrarGastoPage() {
             onChange={handleImagenChange}
             onEliminar={handleEliminarImagen}
           />
-
         </div>
 
         {exito && (
-          <p
-            className={styles.exitoMsg}
-            style={{ color: '#155724', backgroundColor: '#d4edda' }}
-          >
-             Gasto registrado correctamente
-          </p>
-        )}
-
-        {error && (
-          <p
-            className={styles.errorMsg}
-            style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}
-          >
-            {error}
+          <p className={styles.exitoMsg} style={{ color: '#155724', backgroundColor: '#d4edda' }}>
+            Gasto registrado correctamente
           </p>
         )}
 
@@ -169,7 +143,6 @@ function RegistrarGastoPage() {
         >
           Cancelar
         </button>
-
       </div>
       <Footer />
     </div>

@@ -1,35 +1,6 @@
-import axios from 'axios'
+import api from './api'
 
 const BASE_URL = import.meta.env.VITE_API_URL
-
-const getToken = () => localStorage.getItem('token')
-
-const api = axios.create({
-  baseURL: BASE_URL,
-})
-
-api.interceptors.request.use((config) => {
-  const token = getToken()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response?.status
-    const mensaje = error.response?.data?.error || ''
-    if (
-      status === 401 ||
-      (status === 400 && mensaje.includes('Token inválido'))
-    ) {
-      window.dispatchEvent(new CustomEvent('session-expired'))
-    }
-    return Promise.reject(error)
-  }
-)
 
 export const getMe = async () => {
   try {
@@ -89,10 +60,7 @@ export const extraerFactura = async (file) => {
   try {
     const formData = new FormData()
     formData.append('factura', file)
-    const token = getToken()
-    const res = await axios.post(`${BASE_URL}/factura/extraer`, formData, {
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-    })
+    const res = await api.post('/factura/extraer', formData)
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al extraer la factura' }
@@ -104,10 +72,7 @@ export const guardarFactura = async (datos, imagenFile) => {
     const formData = new FormData()
     formData.append('datos', JSON.stringify(datos))
     if (imagenFile) formData.append('imagen', imagenFile)
-    const token = getToken()
-    const res = await axios.post(`${BASE_URL}/factura/guardar`, formData, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const res = await api.post('/factura/guardar', formData)
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al guardar la factura' }
@@ -128,10 +93,7 @@ export const registrarGasto = async (datos, imagenFile) => {
     const formData = new FormData()
     formData.append('datos', JSON.stringify(datos))
     if (imagenFile) formData.append('imagen', imagenFile)
-    const token = getToken()
-    const res = await axios.post(`${BASE_URL}/gasto/registrar`, formData, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const res = await api.post('/gasto/registrar', formData)
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al registrar el gasto' }
@@ -152,10 +114,7 @@ export const actualizarGasto = async (id_gasto, datos, imagenFile) => {
     const formData = new FormData()
     formData.append('datos', JSON.stringify(datos))
     if (imagenFile) formData.append('imagen', imagenFile)
-    const token = getToken()
-    const res = await axios.put(`${BASE_URL}/gasto/${id_gasto}/actualizar`, formData, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const res = await api.put(`/gasto/${id_gasto}/actualizar`, formData)
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al actualizar el gasto' }
@@ -167,10 +126,7 @@ export const actualizarFactura = async (id_gasto, datos, imagenFile) => {
     const formData = new FormData()
     formData.append('datos', JSON.stringify(datos))
     if (imagenFile) formData.append('imagen', imagenFile)
-    const token = getToken()
-    const res = await axios.put(`${BASE_URL}/factura/${id_gasto}/actualizar`, formData, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const res = await api.put(`/factura/${id_gasto}/actualizar`, formData)
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al actualizar la factura' }
@@ -208,10 +164,7 @@ export const actualizarFotoPerfil = async (imagenFile) => {
   try {
     const formData = new FormData()
     formData.append('foto', imagenFile)
-    const token = getToken()
-    const res = await axios.put(`${BASE_URL}/usuario/me/foto`, formData, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const res = await api.put('/usuario/me/foto', formData)
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al actualizar la foto' }

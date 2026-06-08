@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { getDetalleRevision, aprobarViaje, rechazarViaje, agregarComentario, editarComentario, eliminarComentario } from '../services/supervisorService'
+import { getDetalleRevision, aprobarViaje, rechazarViaje, agregarComentario, editarComentario, eliminarComentario, bloquearRevision, liberarRevision } from '../services/supervisorService'
 
 function useDetalleRevision(id_viaje) {
   const [datos, setDatos] = useState(null)
   const [loading, setLoading] = useState(true)
   const [loadingAccion, setLoadingAccion] = useState(false)
   const [error, setError] = useState('')
+  const [bloqueado, setBloqueado] = useState(false)
   const [showAprobar, setShowAprobar] = useState(false)
   const [showRechazar, setShowRechazar] = useState(false)
   const [showSinObservaciones, setShowSinObservaciones] = useState(false)
@@ -18,14 +19,27 @@ function useDetalleRevision(id_viaje) {
 
   useEffect(() => {
     if (!id_viaje) return
+
     const cargar = async () => {
       setLoading(true)
+      const bloqueo = await bloquearRevision(id_viaje)
+      if (bloqueo.error) {
+        setError(bloqueo.error)
+        setBloqueado(true)
+        setLoading(false)
+        return
+      }
       const data = await getDetalleRevision(id_viaje)
       setLoading(false)
       if (data.error) { setError(data.error); return }
       setDatos(data)
     }
+
     cargar()
+
+    return () => {
+      liberarRevision(id_viaje)
+    }
   }, [id_viaje])
 
   const mostrarError = (msg) => { setError(msg); setTimeout(() => setError(''), 3000) }
@@ -110,7 +124,7 @@ function useDetalleRevision(id_viaje) {
   }
 
   return {
-    datos, loading, loadingAccion, error,
+    datos, loading, loadingAccion, error, bloqueado,
     showAprobar, setShowAprobar,
     showRechazar, setShowRechazar,
     showSinObservaciones, setShowSinObservaciones,

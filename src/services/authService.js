@@ -4,7 +4,8 @@ const BASE_URL = import.meta.env.VITE_API_URL
 
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' }
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' },
 })
 
 export const login = async (email, password) => {
@@ -13,6 +14,16 @@ export const login = async (email, password) => {
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Credenciales incorrectas' }
+  }
+}
+
+export const logout = async () => {
+  try {
+    await api.post('/login/logout')
+  } catch (e) {
+    console.error('Error al cerrar sesión:', e)
+  } finally {
+    localStorage.removeItem('token')
   }
 }
 

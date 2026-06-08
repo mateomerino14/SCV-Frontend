@@ -3,6 +3,7 @@ import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuAdministrador from '../layouts/Menu/Menu_Administrador'
 import FormularioCargoModal from '../features/Admin/FormularioCargoModal'
+import EmptyState from '../components/ui/EmptyState'
 import useGestionCargos from '../hooks/useGestionCargos'
 import useMenu from '../hooks/useMenu'
 import Button from '../components/ui/Button'
@@ -27,7 +28,7 @@ const styles = {
   accionesRow: 'flex items-center gap-2 shrink-0',
   accionBtn: 'w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer',
   fab: 'fixed bottom-24 right-5 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer z-10',
-  overlay: 'fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm',
+  overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
   confirmCard: 'items-center flex flex-col p-6 rounded-xl w-full max-w-xs mx-4 gap-2 shadow-xl',
   confirmTitle: 'text-2xl font-bold font-inter text-center mt-3',
   confirmLabel: 'font-inter text-center text-sm m-3',
@@ -41,22 +42,22 @@ const styles = {
 function GestionCargosPage() {
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
   const {
-  cargos, loading, loadingAccion, error,
-  busqueda, setBusqueda,
-  cargoSeleccionado,
-  showCrear, setShowCrear,
-  showEditar, setShowEditar,
-  showSuspender, setShowSuspender,
-  showExito, setShowExito,
-  mensajeExito, formData, setFormData,
-  sugerenciasCargo,
-  abrirCrear, abrirEditar, abrirSuspender,
-  handleCrear, handleEditar, handleToggleActivo,
-} = useGestionCargos()
+    cargos, loading, loadingAccion, error, erroresCampo, setErroresCampo,
+    busqueda, setBusqueda,
+    cargoSeleccionado,
+    showCrear, setShowCrear,
+    showEditar, setShowEditar,
+    showSuspender, setShowSuspender,
+    showExito, setShowExito,
+    mensajeExito, formData, setFormData,
+    sugerenciasCargo,
+    abrirCrear, abrirEditar, abrirSuspender,
+    handleCrear, handleEditar, handleToggleActivo,
+  } = useGestionCargos()
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
-        <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Gestión de Cargos" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
       <MenuAdministrador isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
@@ -116,9 +117,17 @@ function GestionCargosPage() {
         ))}
 
         {!loading && cargos.length === 0 && (
-          <p className="text-sm font-inter text-center py-8" style={{ color: COLORS.labels }}>
-            No se encontraron cargos
-          </p>
+          <EmptyState
+            titulo="Sin cargos registrados"
+            subtitulo="No se encontraron cargos con los filtros aplicados"
+            icono={
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect x="8" y="10" width="16" height="12" rx="2" fill="rgba(255,255,255,0.4)" />
+                <path d="M12 10V8C12 6.9 12.9 6 14 6H18C19.1 6 20 6.9 20 8V10" stroke="rgba(255,255,255,0.7)" strokeWidth="2" />
+                <path d="M12 16H20" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            }
+          />
         )}
 
         <div className={styles.avisoCard} style={{ backgroundColor: COLORS.error }}>
@@ -140,27 +149,29 @@ function GestionCargosPage() {
         onConfirm={handleCrear}
         titulo="Agregar Nuevo Cargo"
         subtitulo="Defina las especificaciones del nuevo rol dentro de la estructura organizacional."
-        btnLabel="Guardar Cargo"
+        btnLabel="Registrar"
         formData={formData}
         setFormData={setFormData}
         loading={loadingAccion}
-        error={error}
+        erroresCampo={erroresCampo}
+        setErroresCampo={setErroresCampo}
         sugerencias={sugerenciasCargo}
-        />
+      />
 
-        <FormularioCargoModal
+      <FormularioCargoModal
         isOpen={showEditar}
         onClose={() => setShowEditar(false)}
         onConfirm={handleEditar}
         titulo="Editar Cargo"
         subtitulo="Actualice la información estructural y financiera para la posición seleccionada."
-        btnLabel="Actualizar Cargo"
+        btnLabel="Actualizar"
         formData={formData}
         setFormData={setFormData}
         loading={loadingAccion}
-        error={error}
+        erroresCampo={erroresCampo}
+        setErroresCampo={setErroresCampo}
         sugerencias={sugerenciasCargo}
-        />
+      />
 
       {showSuspender && (
         <div className={styles.overlay}>

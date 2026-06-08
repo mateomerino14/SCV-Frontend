@@ -5,6 +5,7 @@ import SessionExpiredModal from '../features/Login/SessionExpiredModal'
 import ContraseniavencidaModal from '../features/Login/ContraseniavencidaModal'
 import ViajeHistorialItem from '../features/Revisiones/ViajeHistorialItem'
 import FiltrosHistorial from '../features/Revisiones/FiltrosHistorial'
+import EmptyState from '../components/ui/EmptyState'
 import useHistorialRevisor from '../hooks/useHistorialRevisor'
 import useMenu from '../hooks/useMenu'
 import useContraseniavencida from '../hooks/useContraseniavencida'
@@ -54,7 +55,19 @@ function HistorialRevisorPage() {
 
         {loading && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>Cargando...</p>}
         {error && <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>{error}</p>}
-        {!loading && viajes.length === 0 && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>No hay revisiones en el historial</p>}
+
+        {!loading && viajes.length === 0 && (
+          <EmptyState
+            titulo="Sin revisiones en el historial"
+            subtitulo="Aún no has procesado ninguna revisión final"
+            icono={
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect x="6" y="8" width="20" height="16" rx="3" fill="rgba(255,255,255,0.3)" />
+                <path d="M10 14H22M10 18H18" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            }
+          />
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {!loading && viajes.map((viaje) => (

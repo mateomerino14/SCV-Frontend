@@ -89,8 +89,8 @@ const alertaConfig = {
 
 const estadoConfig = {
   EN_REVISION: { label: 'En Revisión', bg: COLORS.error, color: COLORS.secondary },
-  APROBADO_SUPERVISOR: { label: 'Aprobado por Supervisor', bg: '#85aff3ab', color: '#000a65' },
-  APROBADO_FINAL: { label: 'Aprobado Final', bg: '#d4edda', color: '#155724' },
+  APROBADO_SUPERVISOR: { label: 'Aprobación Preliminar', bg: '#85aff3ab', color: '#000a65' },
+  APROBADO_FINAL: { label: 'Aprobado', bg: '#d4edda', color: '#155724' },
   RECHAZADO: { label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203' },
 }
 
@@ -129,7 +129,7 @@ function DetalleRevisionPage() {
   const [obsSeleccionada, setObsSeleccionada] = useState(null)
 
   const {
-    datos, loading, loadingAccion, error,
+    datos, loading, loadingAccion, error, bloqueado,
     showAprobar, setShowAprobar,
     showRechazar, setShowRechazar,
     showSinObservaciones, setShowSinObservaciones,
@@ -158,6 +158,35 @@ function DetalleRevisionPage() {
         <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
         <div className="flex-1 flex items-center justify-center">
           <p style={{ color: COLORS.labels }}>Cargando...</p>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (bloqueado) {
+    return (
+      <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
+        <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+        <Navbar text="Detalle de Revisión" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
+        <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-12">
+          <div className="rounded-full p-5" style={{ backgroundColor: COLORS.error }}>
+            <AlertTriangle size={36} style={{ color: COLORS.secondary }} />
+          </div>
+          <p className="text-base font-bold font-inter text-center mt-2" style={{ color: COLORS.text }}>
+            Revisión no disponible
+          </p>
+          <p className="text-sm font-inter text-center" style={{ color: COLORS.labels }}>
+            {error}
+          </p>
+          <button
+            className="mt-4 py-2.5 px-8 rounded-xl font-bold font-nunito text-sm"
+            style={{ backgroundColor: COLORS.primary, color: COLORS.background }}
+            onClick={() => navigate(origen)}
+          >
+            Volver
+          </button>
         </div>
         <Footer />
       </div>
@@ -285,10 +314,7 @@ function DetalleRevisionPage() {
                     className={styles.detalleBtn}
                     style={{ color: COLORS.primary, marginTop: 'auto' }}
                     onClick={() => navigate(`/dashboard/supervisor/gasto/${gasto.id_gasto}`, {
-                      state: {
-                        from: `/dashboard/supervisor/revision/${id}`,
-                        origenViaje: origen,
-                      }
+                      state: { from: `/dashboard/supervisor/revision/${id}`, origenViaje: origen }
                     })}
                   >
                     DETALLES →

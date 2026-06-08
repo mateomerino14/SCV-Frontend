@@ -37,12 +37,7 @@ const styles = {
   estadoBadge: "text-xs font-semibold font-inter px-3 py-2 rounded-xl text-center mb-4",
 }
 
-const estadoLabels = {
-  EN_REVISION: 'Este viaje ya fue enviado a revisión',
-  APROBADO_SUPERVISOR: 'En Revisión Final',
-  APROBADO_FINAL: 'Este viaje fue aprobado definitivamente',
-  RECHAZADO: 'Este viaje fue rechazado',
-}
+
 
 const estadoColors = {
   EN_CURSO: { backgroundColor: COLORS.primary, color: COLORS.background },
@@ -52,11 +47,18 @@ const estadoColors = {
   RECHAZADO: { backgroundColor: '#ffa7a8aa', color: '#500203' },
 }
 
+const estadoLabels = {
+  EN_REVISION: 'Este viaje ya fue enviado a revisión',
+  APROBADO_SUPERVISOR: 'En espera de aprobación final',
+  APROBADO_FINAL: 'Este viaje fue aprobado definitivamente',
+  RECHAZADO: 'Este viaje fue rechazado',
+}
+
 const estadoTexto = {
   EN_CURSO: 'En Curso',
   EN_REVISION: 'En Revisión',
-  APROBADO_SUPERVISOR: 'En Revisión Final',
-  APROBADO_FINAL: 'Aprobado Final',
+  APROBADO_SUPERVISOR: 'Aprobación Preliminar',
+  APROBADO_FINAL: 'Aprobado',
   RECHAZADO: 'Rechazado',
 }
 
@@ -76,6 +78,7 @@ function DetalleViajePage() {
     viaje, gastos, gastosMostrados, gastoAcumulado, excedePresupuesto,
     viajeEnCurso, loading, loadingEnvio, error, justificacion, setJustificacion,
     observaciones, showTodosGastos, setShowTodosGastos, showEliminarModal,
+    loadingEliminar,
     showConfirmarRevisionModal, handlePedirEnviarRevision, handleConfirmarEnviarRevision,
     handleCancelarEnviarRevision, handlePedirEliminar, handleConfirmarEliminar, handleCancelarEliminar,
   } = useDetalleViaje(id)
@@ -253,7 +256,12 @@ function DetalleViajePage() {
         )}
       </div>
 
-      <EliminarGastoModal isOpen={showEliminarModal} onClose={handleCancelarEliminar} onConfirm={handleConfirmarEliminar} />
+      <EliminarGastoModal
+        isOpen={showEliminarModal}
+        onClose={handleCancelarEliminar}
+        onConfirm={handleConfirmarEliminar}
+        loading={loadingEliminar}
+      />
       <ConfirmarRevisionModal isOpen={showConfirmarRevisionModal} onClose={handleCancelarEnviarRevision} onConfirm={handleConfirmarEnviarRevision} />
       <Footer />
     </div>
