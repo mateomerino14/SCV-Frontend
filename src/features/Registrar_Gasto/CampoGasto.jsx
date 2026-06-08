@@ -7,13 +7,20 @@ const styles = {
   inputRow: "flex items-center gap-2",
   input: "w-full bg-transparent outline-none font-inter text-sm",
   sufijo: "text-sm font-bold font-inter",
+  errorCampo: "text-xs font-inter mt-1",
 }
 
-function CampoGasto({ label, children, sufijo }) {
+function CampoGasto({ label, children, sufijo, error }) {
   return (
     <div className={styles.wrapper}>
       <p className={styles.label} style={{ color: COLORS.labels }}>{label}</p>
-      <div className={styles.inputBox} style={{ borderColor: COLORS.dataFields }}>
+      <div
+        className={styles.inputBox}
+        style={{
+          borderColor: error ? '#f87171' : COLORS.dataFields,
+          borderWidth: error ? '1.5px' : '1px',
+        }}
+      >
         <div className={styles.inputRow}>
           {children}
           {sufijo && (
@@ -21,6 +28,7 @@ function CampoGasto({ label, children, sufijo }) {
           )}
         </div>
       </div>
+      {error && <p className={styles.errorCampo} style={{ color: '#ef4444' }}>{error}</p>}
     </div>
   )
 }

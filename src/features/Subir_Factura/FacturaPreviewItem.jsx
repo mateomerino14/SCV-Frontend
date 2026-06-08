@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import { COLORS } from '../../constants'
 
@@ -13,11 +12,8 @@ const styles = {
   expandido: "px-3 pb-3",
 }
 
-function FacturaPreviewItem({ factura, index, seleccionado, onSeleccionar, onEliminar, children }) {
-  const [expandido, setExpandido] = useState(false)
-
+function FacturaPreviewItem({ factura, index, seleccionado, expandido, onSeleccionar, onEliminar, children }) {
   const handleToggle = () => {
-    setExpandido(!expandido)
     onSeleccionar(index)
   }
 
@@ -30,47 +26,25 @@ function FacturaPreviewItem({ factura, index, seleccionado, onSeleccionar, onEli
     : factura.nombre
 
   const obtenerColorEstado = () => {
-    if (factura.guardado) {
-      return '#008330'
-    }
-    if (factura.errorGuardado) {
-      return COLORS.secondary
-    }
-    if (factura.loading) {
-      return COLORS.labels
-    }
-    if (factura.error) {
-      return COLORS.secondary
-    }
+    if (factura.guardado) return '#008330'
+    if (factura.errorGuardado) return COLORS.secondary
+    if (factura.loading) return COLORS.labels
+    if (factura.error) return COLORS.secondary
     return COLORS.primary
   }
 
   const obtenerTextoEstado = () => {
-    if (factura.guardado) {
-      return 'Guardado correctamente'
-    }
-    if (factura.errorGuardado) {
-      return `Error al guardar`
-    }
-    if (factura.loading) {
-      return 'Procesando...'
-    }
-    if (factura.error) {
-      return 'Error al leer'
-    }
+    if (factura.guardado) return 'Guardado correctamente'
+    if (factura.errorGuardado) return 'Error al guardar'
+    if (factura.loading) return 'Procesando...'
+    if (factura.error) return 'Error al leer'
     return 'Listo'
   }
 
   const obtenerColorBorde = () => {
-    if (factura.guardado) {
-      return '#008330'
-    }
-    if (factura.errorGuardado) {
-      return COLORS.secondary
-    }
-    if (seleccionado) {
-      return COLORS.primary
-    }
+    if (factura.guardado) return '#008330'
+    if (factura.errorGuardado) return COLORS.secondary
+    if (expandido) return COLORS.primary
     return COLORS.dataFields
   }
 
@@ -79,7 +53,7 @@ function FacturaPreviewItem({ factura, index, seleccionado, onSeleccionar, onEli
       className={styles.container}
       style={{
         borderColor: obtenerColorBorde(),
-        backgroundColor: seleccionado ? COLORS.backgroundHeader : 'transparent',
+        backgroundColor: expandido ? COLORS.backgroundHeader : 'transparent',
       }}
     >
       <div className={styles.header} onClick={handleToggle}>
@@ -89,17 +63,11 @@ function FacturaPreviewItem({ factura, index, seleccionado, onSeleccionar, onEli
             <p className={styles.nombre} style={{ color: COLORS.text }}>
               {nombreMostrado}
             </p>
-            <p
-              className={styles.estado}
-              style={{ color: obtenerColorEstado() }}
-            >
+            <p className={styles.estado} style={{ color: obtenerColorEstado() }}>
               {obtenerTextoEstado()}
             </p>
             {factura.errorGuardado && (
-              <p
-                className={styles.errorGuardado}
-                style={{ color: COLORS.secondary }}
-              >
+              <p className={styles.errorGuardado} style={{ color: COLORS.secondary }}>
                 {factura.errorGuardado}
               </p>
             )}

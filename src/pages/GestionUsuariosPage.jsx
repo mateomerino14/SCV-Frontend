@@ -3,6 +3,7 @@ import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuAdministrador from '../layouts/Menu/Menu_Administrador'
 import FormularioUsuarioModal from '../features/Admin/FormularioUsuarioModal'
+import EmptyState from '../components/ui/EmptyState'
 import useGestionUsuarios from '../hooks/useGestionUsuarios'
 import useMenu from '../hooks/useMenu'
 import Button from '../components/ui/Button'
@@ -29,7 +30,7 @@ const styles = {
   accionesRow: 'flex items-center gap-2 shrink-0',
   accionBtn: 'w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer',
   fab: 'fixed bottom-24 right-5 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer z-10',
-  overlay: 'fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm',
+  overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
   confirmCard: 'items-center flex flex-col p-6 rounded-xl w-full max-w-xs mx-4 gap-2 shadow-xl',
   confirmTitle: 'text-2xl font-bold font-inter text-center mt-3',
   confirmLabel: 'font-inter text-center text-sm m-3',
@@ -49,13 +50,13 @@ const tabs = [
 const rolConfig = {
   ADMINISTRADOR: { label: 'Administrador', bg: '#d4edda', color: '#155724' },
   SUPERVISOR: { label: 'Supervisor', bg: '#85aff3ab', color: '#000a65' },
-  EMPLEADO: { label: 'Empleado', bg: COLORS.text_enviroment_types, color: COLORS.background},
+  EMPLEADO: { label: 'Empleado', bg: COLORS.text_enviroment_types, color: COLORS.background },
 }
 
 function GestionUsuariosPage() {
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
   const {
-    usuarios, cargos, loading, loadingAccion, error,
+    usuarios, cargos, loading, loadingAccion, error, erroresCampo, setErroresCampo,
     busqueda, setBusqueda, filtroRol, setFiltroRol,
     usuarioSeleccionado,
     showCrear, setShowCrear,
@@ -152,13 +153,20 @@ function GestionUsuariosPage() {
         })}
 
         {!loading && usuarios.length === 0 && (
-          <p className="text-sm font-inter text-center py-8" style={{ color: COLORS.labels }}>
-            No se encontraron usuarios
-          </p>
+          <EmptyState
+            titulo="Sin usuarios registrados"
+            subtitulo="No se encontraron usuarios con los filtros aplicados"
+            icono={
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <circle cx="16" cy="12" r="5" fill="rgba(255,255,255,0.6)" />
+                <path d="M6 26C6 21 10 18 16 18C22 18 26 21 26 26" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            }
+          />
         )}
 
         <div className={styles.avisoCard} style={{ backgroundColor: COLORS.error }}>
-          <Ban size={22} style={{ color: COLORS.secondary, shrink: 0 }} />
+          <Ban size={22} style={{ color: COLORS.secondary }} />
           <div className={styles.avisoTexto}>
             <p className={styles.avisoTitulo} style={{ color: COLORS.secondary }}>Suspender Cuenta</p>
             <p className={styles.avisoSub} style={{ color: COLORS.secondary }}>Inhabilita el acceso temporalmente</p>
@@ -181,6 +189,8 @@ function GestionUsuariosPage() {
         cargos={cargos}
         loading={loadingAccion}
         error={error}
+        erroresCampo={erroresCampo}
+        setErroresCampo={setErroresCampo}
       />
 
       <FormularioUsuarioModal
@@ -194,6 +204,8 @@ function GestionUsuariosPage() {
         cargos={cargos}
         loading={loadingAccion}
         error={error}
+        erroresCampo={erroresCampo}
+        setErroresCampo={setErroresCampo}
       />
 
       {showSuspender && (

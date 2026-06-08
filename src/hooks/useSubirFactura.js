@@ -4,10 +4,10 @@ import { extraerFactura, guardarFactura } from '../services/dashboardService'
 function useSubirFactura(id_viaje) {
   const [facturas, setFacturas] = useState([])
   const [indexActual, setIndexActual] = useState(null)
+  const [expandidoIndex, setExpandidoIndex] = useState(null)
   const [loadingGuardar, setLoadingGuardar] = useState(false)
   const [error, setError] = useState('')
   const [resumenGuardado, setResumenGuardado] = useState(null)
-  const [modificadoManualmente, setModificadoManualmente] = useState(false)
   const [showEliminarModal, setShowEliminarModal] = useState(false)
   const [indiceAEliminar, setIndiceAEliminar] = useState(null)
 
@@ -26,21 +26,17 @@ function useSubirFactura(id_viaje) {
       error: null,
       guardado: false,
       errorGuardado: null,
+      erroresCampo: {},
+      modificadoManualmente: false,
     }))
 
     let baseIndex = 0
-
-    setFacturas((prev) => {
-      baseIndex = prev.length
-      return [...prev, ...nuevas]
-    })
-
+    setFacturas((prev) => { baseIndex = prev.length; return [...prev, ...nuevas] })
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     for (let i = 0; i < nuevas.length; i++) {
       const index = baseIndex + i
       const data = await extraerFactura(nuevas[i].file)
-
       setFacturas((prev) =>
         prev.map((f, idx) =>
           idx === index
@@ -48,19 +44,20 @@ function useSubirFactura(id_viaje) {
             : f
         )
       )
-
       setIndexActual((prevIndex) => {
-        if (prevIndex === null && !data.error) {
-          return index
-        }
+        if (prevIndex === null && !data.error) return index
         return prevIndex
+      })
+      setExpandidoIndex((prevExpandido) => {
+        if (prevExpandido === null && !data.error) return index
+        return prevExpandido
       })
     }
   }
 
   const handleSeleccionarFactura = (index) => {
+    setExpandidoIndex((prev) => prev === index ? null : index)
     setIndexActual(index)
-    setModificadoManualmente(false)
   }
 
   const handlePedirEliminarFactura = (indice) => {
@@ -70,17 +67,10 @@ function useSubirFactura(id_viaje) {
 
   const handleConfirmarEliminarFactura = () => {
     const facturaAEliminar = facturas[indiceAEliminar]
-
-    if (facturaAEliminar?.preview) {
-      URL.revokeObjectURL(facturaAEliminar.preview)
-    }
-
+    if (facturaAEliminar?.preview) URL.revokeObjectURL(facturaAEliminar.preview)
     setFacturas((prev) => prev.filter((_, i) => i !== indiceAEliminar))
-
-    if (indexActual === indiceAEliminar) {
-      setIndexActual(null)
-    }
-
+    if (indexActual === indiceAEliminar) setIndexActual(null)
+    if (expandidoIndex === indiceAEliminar) setExpandidoIndex(null)
     setShowEliminarModal(false)
     setIndiceAEliminar(null)
   }
@@ -91,70 +81,76 @@ function useSubirFactura(id_viaje) {
   }
 
   const handleCambioDato = (campo, valor) => {
-    if (indexActual === null) {
-      return
-    }
+    if (indexActual === null) return
     setFacturas((prev) =>
       prev.map((f, i) =>
         i === indexActual
-          ? { ...f, datos: { ...f.datos, [campo]: valor } }
+          ? {
+              ...f,
+              datos: { ...f.datos, [campo]: valor },
+              erroresCampo: { ...f.erroresCampo, [campo]: undefined },
+              modificadoManualmente: true,
+            }
           : f
       )
     )
-    setModificadoManualmente(true)
   }
 
   const handleCambioDetalle = (idx, campo, valor) => {
-    if (indexActual === null) {
-      return
-    }
+    if (indexActual === null) return
     setFacturas((prev) =>
       prev.map((f, i) => {
-        if (i !== indexActual) {
-          return f
-        }
+        if (i !== indexActual) return f
         const detalle = [...f.datos.detalle]
         detalle[idx] = { ...detalle[idx], [campo]: valor }
-        return { ...f, datos: { ...f.datos, detalle } }
+        return { ...f, datos: { ...f.datos, detalle }, modificadoManualmente: true }
       })
     )
-    setModificadoManualmente(true)
   }
 
   const handleAgregarDetalle = (item) => {
-    if (indexActual === null) {
-      return
-    }
+    if (indexActual === null) return
     setFacturas((prev) =>
       prev.map((f, i) =>
         i === indexActual
-          ? { ...f, datos: { ...f.datos, detalle: [...(f.datos.detalle || []), item] } }
+          ? {
+              ...f,
+              datos: { ...f.datos, detalle: [...(f.datos.detalle || []), item] },
+              modificadoManualmente: true,
+            }
           : f
       )
     )
-    setModificadoManualmente(true)
   }
 
   const handleEliminarDetalle = (idx) => {
-    if (indexActual === null) {
-      return
-    }
+    if (indexActual === null) return
     setFacturas((prev) =>
       prev.map((f, i) =>
         i === indexActual
-          ? { ...f, datos: { ...f.datos, detalle: f.datos.detalle.filter((_, j) => j !== idx) } }
+          ? {
+              ...f,
+              datos: { ...f.datos, detalle: f.datos.detalle.filter((_, j) => j !== idx) },
+              modificadoManualmente: true,
+            }
           : f
       )
     )
-    setModificadoManualmente(true)
+  }
+
+  const validarFactura = (factura) => {
+    const errores = {}
+    if (!factura.datos.proveedor?.trim()) errores.proveedor = 'El proveedor es requerido'
+    if (!factura.datos.numero_factura?.trim()) errores.numero_factura = 'El número de factura es requerido'
+    if (!factura.datos.fecha_emision) errores.fecha_emision = 'La fecha de emisión es requerida'
+    if (!factura.datos.monto || parseFloat(factura.datos.monto) <= 0) errores.monto = 'El monto es requerido y debe ser mayor a 0'
+    return errores
   }
 
   const handleGuardar = async () => {
     const facturasListas = facturas.filter((f) => f.datos !== null && !f.loading && !f.guardado)
-    if (facturasListas.length === 0) {
-      mostrarError('No hay facturas listas para guardar')
-      return
-    }
+    if (facturasListas.length === 0) { mostrarError('No hay facturas listas para guardar'); return }
+
     setLoadingGuardar(true)
     setResumenGuardado(null)
     let totalGuardadas = 0
@@ -162,39 +158,37 @@ function useSubirFactura(id_viaje) {
 
     for (let i = 0; i < facturas.length; i++) {
       const factura = facturas[i]
+      if (!factura.datos || factura.loading || factura.guardado) continue
 
-      if (!factura.datos || factura.loading || factura.guardado) {
+      const errores = validarFactura(factura)
+      if (Object.keys(errores).length > 0) {
+        setFacturas((prev) =>
+          prev.map((f, idx) =>
+            idx === i
+              ? { ...f, erroresCampo: errores, errorGuardado: 'Completa los campos requeridos' }
+              : f
+          )
+        )
+        totalErrores++
         continue
       }
-      console.log('archivo a guardar:', factura.file)
-      console.log('nombre:', factura.file?.name)
-      console.log('size:', factura.file?.size)
-      console.log('type:', factura.file?.type)
 
       const data = await guardarFactura(
-        { id_viaje, ...factura.datos, modificado_manualmente: modificadoManualmente },
+        { id_viaje, ...factura.datos, modificado_manualmente: factura.modificadoManualmente },
         factura.file
       )
 
       if (data.error) {
         totalErrores++
         setFacturas((prev) =>
-          prev.map((f, idx) =>
-            idx === i
-              ? { ...f, errorGuardado: data.error }
-              : f
-          )
+          prev.map((f, idx) => idx === i ? { ...f, errorGuardado: data.error } : f)
         )
       } else {
         totalGuardadas++
-        if (factura.preview) {
-          URL.revokeObjectURL(factura.preview)
-        }
+        if (factura.preview) URL.revokeObjectURL(factura.preview)
         setFacturas((prev) =>
           prev.map((f, idx) =>
-            idx === i
-              ? { ...f, guardado: true, errorGuardado: null }
-              : f
+            idx === i ? { ...f, guardado: true, errorGuardado: null, erroresCampo: {} } : f
           )
         )
       }
@@ -202,7 +196,6 @@ function useSubirFactura(id_viaje) {
 
     setLoadingGuardar(false)
     setResumenGuardado({ guardadas: totalGuardadas, errores: totalErrores })
-    setModificadoManualmente(false)
   }
 
   const facturaActual = indexActual !== null ? facturas[indexActual] : null
@@ -213,10 +206,10 @@ function useSubirFactura(id_viaje) {
     facturas,
     facturaActual,
     indexActual,
+    expandidoIndex,
     loadingGuardar,
     error,
     resumenGuardado,
-    modificadoManualmente,
     showEliminarModal,
     hayFacturasConError,
     todasGuardadas,

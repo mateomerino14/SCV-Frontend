@@ -7,9 +7,11 @@ const styles = {
 
 const tabs = [
   { valor: 'TODOS', label: 'Todos' },
-  { valor: 'APROBADO', label: 'Aceptados' },
-  { valor: 'RECHAZADO', label: 'Rechazados' },
+  { valor: 'EN_CURSO', label: 'En Curso' },
   { valor: 'EN_REVISION', label: 'En Revisión' },
+  { valor: 'APROBADO_SUPERVISOR', label: 'Aprobación Preliminar' },
+  { valor: 'APROBADO_FINAL', label: 'Aprobado' },
+  { valor: 'RECHAZADO', label: 'Rechazado' },
 ]
 
 function FiltroTabs({ filtroActivo, onChange }) {

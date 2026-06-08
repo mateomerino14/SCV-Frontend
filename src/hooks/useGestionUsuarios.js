@@ -7,6 +7,7 @@ function useGestionUsuarios() {
   const [loading, setLoading] = useState(true)
   const [loadingAccion, setLoadingAccion] = useState(false)
   const [error, setError] = useState('')
+  const [erroresCampo, setErroresCampo] = useState({})
   const [busqueda, setBusqueda] = useState('')
   const [filtroRol, setFiltroRol] = useState('TODOS')
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
@@ -37,11 +38,56 @@ function useGestionUsuarios() {
     setTimeout(() => setError(''), 4000)
   }
 
-  const emailYaExiste = (email, idExcluir = null) => {
-    return usuarios.some(
+  const emailYaExiste = (email, idExcluir = null) =>
+    usuarios.some(
       (u) => u.email_corporativo.toLowerCase() === email.toLowerCase() &&
         (idExcluir ? u.id_usuario !== idExcluir : true)
     )
+
+  const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const soloNumeros = /^[0-9]+$/
+
+  const validarCampos = (esNuevo, idExcluir = null) => {
+    const errores = {}
+    if (!formData.nombre.trim()) errores.nombre = 'El nombre es requerido'
+    else if (!soloLetras.test(formData.nombre.trim())) errores.nombre = 'Solo puede contener letras'
+    else if (formData.nombre.trim().length > 30) errores.nombre = 'Máximo 30 caracteres'
+
+    if (!formData.apellido_paterno.trim()) errores.apellido_paterno = 'El apellido paterno es requerido'
+    else if (!soloLetras.test(formData.apellido_paterno.trim())) errores.apellido_paterno = 'Solo puede contener letras'
+    else if (formData.apellido_paterno.trim().length > 30) errores.apellido_paterno = 'Máximo 30 caracteres'
+
+    if (formData.apellido_materno.trim()) {
+      if (!soloLetras.test(formData.apellido_materno.trim())) errores.apellido_materno = 'Solo puede contener letras'
+      else if (formData.apellido_materno.trim().length > 30) errores.apellido_materno = 'Máximo 30 caracteres'
+    }
+
+    if (!formData.email_corporativo.trim()) errores.email_corporativo = 'El correo es requerido'
+    else if (!emailRegex.test(formData.email_corporativo)) errores.email_corporativo = 'Ingresa un correo válido'
+    else if (formData.email_corporativo.length > 100) errores.email_corporativo = 'Máximo 100 caracteres'
+    else if (emailYaExiste(formData.email_corporativo, idExcluir)) errores.email_corporativo = 'Ya existe un usuario con ese correo'
+
+    if (formData.telefono.trim()) {
+      if (!soloNumeros.test(formData.telefono.trim())) errores.telefono = 'Solo puede contener números'
+      else if (formData.telefono.trim().length < 7) errores.telefono = 'Mínimo 7 dígitos'
+      else if (formData.telefono.trim().length > 20) errores.telefono = 'Máximo 20 dígitos'
+    }
+
+    if (!formData.numero_dependencia.trim()) errores.numero_dependencia = 'El número de dependencia es requerido'
+    else if (formData.numero_dependencia.trim().length > 50) errores.numero_dependencia = 'Máximo 50 caracteres'
+
+    if (!formData.numero_seccion.trim()) errores.numero_seccion = 'El número de sección es requerido'
+    else if (formData.numero_seccion.trim().length > 50) errores.numero_seccion = 'Máximo 50 caracteres'
+
+    if (!formData.id_cargo) errores.id_cargo = 'Selecciona un cargo'
+
+    if (esNuevo) {
+      if (!formData.contrasenia) errores.contrasenia = 'La contraseña es requerida'
+      else if (formData.contrasenia.length < 6) errores.contrasenia = 'Mínimo 6 caracteres'
+    }
+
+    return errores
   }
 
   const usuariosFiltrados = usuarios.filter((u) => {
@@ -59,6 +105,7 @@ function useGestionUsuarios() {
       numero_dependencia: '', numero_seccion: '',
     })
     setError('')
+    setErroresCampo({})
     setShowCrear(true)
   }
 
@@ -77,6 +124,7 @@ function useGestionUsuarios() {
       numero_seccion: usuario.numero_seccion || '',
     })
     setError('')
+    setErroresCampo({})
     setShowEditar(true)
   }
 
@@ -86,23 +134,9 @@ function useGestionUsuarios() {
   }
 
   const handleCrear = async () => {
-    if (!formData.nombre || !formData.apellido_paterno || !formData.email_corporativo || !formData.contrasenia || !formData.id_cargo) {
-      mostrarError('Completa todos los campos requeridos')
-      return
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email_corporativo)) {
-      mostrarError('Ingresa un correo electrónico válido')
-      return
-    }
-    if (emailYaExiste(formData.email_corporativo)) {
-      mostrarError('Ya existe un usuario con ese correo corporativo')
-      return
-    }
-    if (formData.contrasenia.length < 6) {
-      mostrarError('La contraseña debe tener al menos 6 caracteres')
-      return
-    }
+    const errores = validarCampos(true)
+    if (Object.keys(errores).length > 0) { setErroresCampo(errores); return }
+    setErroresCampo({})
     setLoadingAccion(true)
     const data = await crearUsuario({ ...formData, activo: true })
     setLoadingAccion(false)
@@ -114,29 +148,14 @@ function useGestionUsuarios() {
   }
 
   const handleEditar = async () => {
-    if (!formData.nombre || !formData.apellido_paterno || !formData.email_corporativo || !formData.id_cargo) {
-      mostrarError('Completa todos los campos requeridos')
-      return
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email_corporativo)) {
-      mostrarError('Ingresa un correo electrónico válido')
-      return
-    }
-    if (emailYaExiste(formData.email_corporativo, usuarioSeleccionado.id_usuario)) {
-      mostrarError('Ya existe un usuario con ese correo corporativo')
-      return
-    }
+    const errores = validarCampos(false, usuarioSeleccionado.id_usuario)
+    if (Object.keys(errores).length > 0) { setErroresCampo(errores); return }
+    setErroresCampo({})
     const payload = {
-      nombre: formData.nombre,
-      apellido_paterno: formData.apellido_paterno,
-      apellido_materno: formData.apellido_materno,
-      email_corporativo: formData.email_corporativo,
-      telefono: formData.telefono,
-      id_cargo: formData.id_cargo,
-      id_rol: formData.id_rol,
-      numero_dependencia: formData.numero_dependencia,
-      numero_seccion: formData.numero_seccion,
+      nombre: formData.nombre, apellido_paterno: formData.apellido_paterno,
+      apellido_materno: formData.apellido_materno, email_corporativo: formData.email_corporativo,
+      telefono: formData.telefono, id_cargo: formData.id_cargo, id_rol: formData.id_rol,
+      numero_dependencia: formData.numero_dependencia, numero_seccion: formData.numero_seccion,
     }
     setLoadingAccion(true)
     const data = await actualizarUsuario(usuarioSeleccionado.id_usuario, payload)
@@ -163,25 +182,14 @@ function useGestionUsuarios() {
 
   return {
     usuarios: usuariosFiltrados,
-    cargos,
-    loading,
-    loadingAccion,
-    error,
-    busqueda, setBusqueda,
-    filtroRol, setFiltroRol,
+    cargos, loading, loadingAccion, error, erroresCampo, setErroresCampo,
+    busqueda, setBusqueda, filtroRol, setFiltroRol,
     usuarioSeleccionado,
-    showCrear, setShowCrear,
-    showEditar, setShowEditar,
-    showSuspender, setShowSuspender,
-    showExito, setShowExito,
-    mensajeExito,
-    formData, setFormData,
-    abrirCrear,
-    abrirEditar,
-    abrirSuspender,
-    handleCrear,
-    handleEditar,
-    handleToggleActivo,
+    showCrear, setShowCrear, showEditar, setShowEditar,
+    showSuspender, setShowSuspender, showExito, setShowExito,
+    mensajeExito, formData, setFormData,
+    abrirCrear, abrirEditar, abrirSuspender,
+    handleCrear, handleEditar, handleToggleActivo,
   }
 }
 

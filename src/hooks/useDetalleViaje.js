@@ -6,6 +6,7 @@ function useDetalleViaje(id_viaje) {
   const [gastos, setGastos] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadingEnvio, setLoadingEnvio] = useState(false)
+  const [loadingEliminar, setLoadingEliminar] = useState(false)
   const [error, setError] = useState('')
   const [justificacion, setJustificacion] = useState('')
   const [observaciones, setObservaciones] = useState([])
@@ -28,9 +29,7 @@ function useDetalleViaje(id_viaje) {
           data.error.includes('Token inválido') ||
           data.error.includes('token no proporcionado') ||
           data.error.includes('suspendida')
-        if (!esErrorSesion) {
-          setError(data.error)
-        }
+        if (!esErrorSesion) setError(data.error)
         return
       }
 
@@ -95,7 +94,9 @@ function useDetalleViaje(id_viaje) {
   }
 
   const handleConfirmarEliminar = async () => {
+    setLoadingEliminar(true)
     const data = await eliminarGasto(gastoAEliminar)
+    setLoadingEliminar(false)
     setShowEliminarModal(false)
     setGastoAEliminar(null)
     if (data.error) {
@@ -119,6 +120,7 @@ function useDetalleViaje(id_viaje) {
     viajeEnCurso,
     loading,
     loadingEnvio,
+    loadingEliminar,
     error,
     justificacion,
     setJustificacion,

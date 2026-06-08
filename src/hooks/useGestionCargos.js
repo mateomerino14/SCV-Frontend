@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getCargos, crearCargo, actualizarCargo, suspenderCargo, activarCargo } from '../services/adminService'
 
 const MAX_MONTO = 99999.99
+const MAX_NOMBRE = 50
 
 function useGestionCargos() {
   const [cargos, setCargos] = useState([])
@@ -9,6 +10,7 @@ function useGestionCargos() {
   const [loading, setLoading] = useState(true)
   const [loadingAccion, setLoadingAccion] = useState(false)
   const [error, setError] = useState('')
+  const [erroresCampo, setErroresCampo] = useState({})
   const [busqueda, setBusqueda] = useState('')
   const [cargoSeleccionado, setCargoSeleccionado] = useState(null)
   const [showCrear, setShowCrear] = useState(false)
@@ -24,10 +26,7 @@ function useGestionCargos() {
     setLoading(true)
     const data = await getCargos()
     setLoading(false)
-    if (!data.error) {
-      setCargos(data)
-      setTodosLosCargos(data)
-    }
+    if (!data.error) { setCargos(data); setTodosLosCargos(data) }
   }
 
   const mostrarError = (msg) => {
@@ -46,25 +45,35 @@ function useGestionCargos() {
       )
     : []
 
-  const cargoYaExiste = (nombre, idExcluir = null) => {
-    return todosLosCargos.some(
+  const cargoYaExiste = (nombre, idExcluir = null) =>
+    todosLosCargos.some(
       (c) => c.nombre.toLowerCase() === nombre.toLowerCase() &&
         (idExcluir ? c.id_cargo !== idExcluir : true)
     )
-  }
 
-  const validarMonto = (valor) => {
-    const num = parseFloat(valor)
-    if (isNaN(num) || num <= 0) return 'El monto debe ser mayor a 0'
-    if (num > MAX_MONTO) return `El monto no puede superar ${MAX_MONTO} Bs`
-    const decimales = valor.toString().split('.')[1]
-    if (decimales && decimales.length > 2) return 'El monto no puede tener más de 2 decimales'
-    return null
+  const validarCampos = (idExcluir = null) => {
+    const errores = {}
+    if (!formData.nombre.trim()) {
+      errores.nombre = 'El nombre del cargo es requerido'
+    } else if (formData.nombre.trim().length > MAX_NOMBRE) {
+      errores.nombre = 'Máximo 50 caracteres'
+    } else if (cargoYaExiste(formData.nombre.trim(), idExcluir)) {
+      errores.nombre = 'Ya existe un cargo con ese nombre'
+    }
+    if (!formData.monto_diario) {
+      errores.monto_diario = 'El sueldo diario es requerido'
+    } else {
+      const num = parseFloat(formData.monto_diario)
+      if (isNaN(num) || num <= 0) errores.monto_diario = 'Debe ser mayor a 0'
+      else if (num > MAX_MONTO) errores.monto_diario = `No puede superar ${MAX_MONTO} Bs`
+    }
+    return errores
   }
 
   const abrirCrear = () => {
     setFormData({ nombre: '', monto_diario: '' })
     setError('')
+    setErroresCampo({})
     setShowCrear(true)
   }
 
@@ -72,6 +81,7 @@ function useGestionCargos() {
     setCargoSeleccionado(cargo)
     setFormData({ nombre: cargo.nombre, monto_diario: cargo.monto_diario })
     setError('')
+    setErroresCampo({})
     setShowEditar(true)
   }
 
@@ -81,17 +91,9 @@ function useGestionCargos() {
   }
 
   const handleCrear = async () => {
-    if (!formData.nombre.trim() || !formData.monto_diario) {
-      mostrarError('Completa todos los campos requeridos')
-      return
-    }
-    if (cargoYaExiste(formData.nombre.trim())) {
-      mostrarError('Ya existe un cargo con ese nombre')
-      return
-    }
-    const errorMonto = validarMonto(formData.monto_diario)
-    if (errorMonto) { mostrarError(errorMonto); return }
-
+    const errores = validarCampos()
+    if (Object.keys(errores).length > 0) { setErroresCampo(errores); return }
+    setErroresCampo({})
     setLoadingAccion(true)
     const data = await crearCargo({
       nombre: formData.nombre.trim(),
@@ -107,17 +109,9 @@ function useGestionCargos() {
   }
 
   const handleEditar = async () => {
-    if (!formData.nombre.trim() || !formData.monto_diario) {
-      mostrarError('Completa todos los campos requeridos')
-      return
-    }
-    if (cargoYaExiste(formData.nombre.trim(), cargoSeleccionado.id_cargo)) {
-      mostrarError('Ya existe un cargo con ese nombre')
-      return
-    }
-    const errorMonto = validarMonto(formData.monto_diario)
-    if (errorMonto) { mostrarError(errorMonto); return }
-
+    const errores = validarCampos(cargoSeleccionado.id_cargo)
+    if (Object.keys(errores).length > 0) { setErroresCampo(errores); return }
+    setErroresCampo({})
     setLoadingAccion(true)
     const data = await actualizarCargo(cargoSeleccionado.id_cargo, {
       nombre: formData.nombre.trim(),
@@ -147,9 +141,7 @@ function useGestionCargos() {
   return {
     cargos: cargosFiltrados,
     todosLosCargos,
-    loading,
-    loadingAccion,
-    error,
+    loading, loadingAccion, error, erroresCampo, setErroresCampo,
     busqueda, setBusqueda,
     cargoSeleccionado,
     showCrear, setShowCrear,
@@ -159,12 +151,8 @@ function useGestionCargos() {
     mensajeExito,
     formData, setFormData,
     sugerenciasCargo,
-    abrirCrear,
-    abrirEditar,
-    abrirSuspender,
-    handleCrear,
-    handleEditar,
-    handleToggleActivo,
+    abrirCrear, abrirEditar, abrirSuspender,
+    handleCrear, handleEditar, handleToggleActivo,
   }
 }
 

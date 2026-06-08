@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getMe } from '../services/dashboardService'
+import { logout } from '../services/authService'
 
 function useMenu() {
   const [menuAbierto, setMenuAbierto] = useState(false)
@@ -9,9 +10,7 @@ function useMenu() {
   const cargarUsuario = useCallback(async () => {
     try {
       const data = await getMe()
-      if (!data.error) {
-        setUsuario(data)
-      }
+      if (!data.error) setUsuario(data)
     } catch (e) {
       console.error('Error al cargar usuario:', e)
     }
@@ -27,6 +26,15 @@ function useMenu() {
     return () => window.removeEventListener('session-expired', handleExpired)
   }, [])
 
+  useEffect(() => {
+    const intervalo = setInterval(async () => {
+      const token = localStorage.getItem('token')
+      if (!token) return
+      await getMe()
+    }, 5 * 60 * 1000)
+    return () => clearInterval(intervalo)
+  }, [])
+
   const abrirMenu = () => {
     cargarUsuario()
     setMenuAbierto(true)
@@ -34,8 +42,8 @@ function useMenu() {
 
   const cerrarMenu = () => setMenuAbierto(false)
 
-  const handleSessionExpiredClose = () => {
-    localStorage.removeItem('token')
+  const handleSessionExpiredClose = async () => {
+    await logout()
     setSessionExpired(false)
     window.location.href = '/'
   }

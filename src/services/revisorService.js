@@ -1,15 +1,4 @@
-import axios from 'axios'
-
-const BASE_URL = import.meta.env.VITE_API_URL
-const getToken = () => localStorage.getItem('token')
-
-const api = axios.create({ baseURL: BASE_URL })
-
-api.interceptors.request.use((config) => {
-  const token = getToken()
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
+import api from './api'
 
 export const getPendientesRevisor = async (filtros = {}) => {
   try {
@@ -97,5 +86,23 @@ export const getEmpleadosRevisor = async () => {
     return res.data
   } catch (error) {
     return { error: 'Error al obtener empleados' }
+  }
+}
+
+export const bloquearRevisionRevisor = async (id_viaje) => {
+  try {
+    const res = await api.post(`/revisor/${id_viaje}/bloquear`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al bloquear revisión' }
+  }
+}
+
+export const liberarRevisionRevisor = async (id_viaje) => {
+  try {
+    const res = await api.post(`/revisor/${id_viaje}/liberar`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al liberar revisión' }
   }
 }
