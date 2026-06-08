@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, AlertTriangle, Plus, Pencil, Trash2 } from 'lucide-react'
+import { ArrowLeft, AlertTriangle, Plus, Pencil, Trash2, Download } from 'lucide-react'
+import * as XLSX from 'xlsx'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
@@ -10,9 +11,9 @@ import SinObservacionesModal from '../features/Revisiones/SinObservacionesModal'
 import AgregarComentarioModal from '../features/Revisiones/AgregarComentarioModal'
 import EditarComentarioModal from '../features/Revisiones/EditarComentarioModal'
 import ConfirmarEliminarComentarioModal from '../features/Revisiones/ConfirmarEliminarComentarioModal'
-import useDetalleRevision from '../hooks/useDetalleRevision'
-import useMenu from '../hooks/useMenu'
 import SessionExpiredModal from '../features/Login/SessionExpiredModal'
+import useDetalleRevisor from '../hooks/useDetalleRevisor'
+import useMenu from '../hooks/useMenu'
 import { COLORS } from '../constants'
 
 const AVATAR_DEFAULT = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg"
@@ -80,6 +81,7 @@ const styles = {
   accionBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center',
   errorMsg: 'text-xs font-inter italic text-center py-3 px-3 rounded-xl mb-3',
   exitoBadge: 'text-sm font-bold font-inter text-center py-3 px-4 rounded-xl mb-4',
+  exportBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer flex items-center justify-center gap-2 mb-4',
 }
 
 const alertaConfig = {
@@ -87,18 +89,17 @@ const alertaConfig = {
   ALCOHOL: { label: 'Alcohol', color: '#721c24', bg: '#f8d7da' },
 }
 
-const estadoConfig = {
-  EN_REVISION: { label: 'En Revisión', bg: COLORS.error, color: COLORS.secondary },
-  APROBADO_SUPERVISOR: { label: 'Aprobación Preliminar', bg: '#85aff3ab', color: '#000a65' },
-  APROBADO_FINAL: { label: 'Aprobado', bg: '#d4edda', color: '#155724' },
-  RECHAZADO: { label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203' },
-}
-
 const formatFecha = (f) =>
   new Date(f).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 
 const formatFechaHora = (f) =>
   new Date(f).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+
+const estadoConfig = {
+  APROBADO_SUPERVISOR: { label: 'Aprobación Preliminar', bg: '#85aff3ab', color: '#000a65' },
+  APROBADO_FINAL: { label: 'Aprobado', bg: '#d4edda', color: '#155724' },
+  RECHAZADO: { label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203' },
+}
 
 function PresupuestoBar({ gastoAcumulado, montoAsignado }) {
   const porcentaje = montoAsignado > 0 ? Math.min((gastoAcumulado / montoAsignado) * 100, 100) : 0
@@ -119,11 +120,11 @@ function PresupuestoBar({ gastoAcumulado, montoAsignado }) {
   )
 }
 
-function DetalleRevisionPage() {
+function DetalleRevisorPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const origen = location.state?.from || '/dashboard/supervisor'
+  const origen = location.state?.from || '/dashboard/revisor'
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
   const [showAgregarObs, setShowAgregarObs] = useState(false)
   const [obsSeleccionada, setObsSeleccionada] = useState(null)
@@ -133,8 +134,8 @@ function DetalleRevisionPage() {
     showAprobar, setShowAprobar,
     showRechazar, setShowRechazar,
     showSinObservaciones, setShowSinObservaciones,
-    observaciones,
     accionCompletada,
+    observaciones,
     comentarioAgregado, resetComentarioAgregado,
     comentarioEditando, setComentarioEditando,
     comentarioEliminando, setComentarioEliminando,
@@ -144,17 +145,58 @@ function DetalleRevisionPage() {
     handleAbrirEdicion, handleConfirmarEdicion,
     handleAbrirEliminacion, handleConfirmarEliminacion,
     editarObservacion,
-  } = useDetalleRevision(id)
+  } = useDetalleRevisor(id)
 
   useEffect(() => {
     if (comentarioAgregado) { setShowAgregarObs(false); resetComentarioAgregado() }
   }, [comentarioAgregado])
 
+  const exportarExcel = () => {
+    if (!datos) return
+    const { viaje, gastos } = datos
+    const infoViaje = [{
+      'Empleado': `${viaje.Usuario?.nombre} ${viaje.Usuario?.apellido_paterno}`,
+      'Cargo': viaje.Usuario?.Cargo?.nombre,
+      'Motivo': viaje.motivo,
+      'Destino': viaje.destino,
+      'Fecha Inicio': viaje.fecha_inicio,
+      'Fecha Fin': viaje.fecha_fin,
+      'Tipo': viaje.tipo,
+      'Entorno': viaje.entorno_destino,
+      'Presupuesto (Bs)': parseFloat(viaje.monto_asignado).toFixed(2),
+      'Estado': viaje.estado,
+    }]
+    const infoGastos = gastos.map((g) => ({
+      'Tipo': { F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio' }[g.tipo] || g.tipo,
+      'Proveedor': g.Proveedor?.nombre || '',
+      'Categoría': g.Categoria_Gasto?.nombre || '',
+      'N° Factura': g.Factura?.numero_factura || '',
+      'Fecha Emisión': g.Factura?.fecha_emision || g.fecha_gasto,
+      'NIT/CI': g.Proveedor?.numero_doc_fiscal || '',
+      'Monto (Bs)': parseFloat(g.monto_total).toFixed(2),
+      'Descripción': g.descripcion || '',
+    }))
+    const infoFacturas = gastos.flatMap((g) =>
+      (g.Factura?.Detalle_Factura || []).map((d) => ({
+        'N° Factura': g.Factura?.numero_factura || '',
+        'Producto': d.nombre_producto,
+        'Cantidad': d.cantidad,
+        'Precio Unitario (Bs)': parseFloat(d.precio).toFixed(2),
+        'Subtotal (Bs)': (d.cantidad * parseFloat(d.precio)).toFixed(2),
+      }))
+    )
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(infoViaje), 'Viaje')
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(infoGastos), 'Gastos')
+    if (infoFacturas.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(infoFacturas), 'Detalle Facturas')
+    XLSX.writeFile(wb, `Informe_Viaje_${id}_${viaje.Usuario?.apellido_paterno || ''}.xlsx`)
+  }
+
   if (loading) {
     return (
       <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Detalle de Revisión" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
+        <Navbar text="Detalle de Revisión Final" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
         <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
         <div className="flex-1 flex items-center justify-center">
           <p style={{ color: COLORS.labels }}>Cargando...</p>
@@ -168,7 +210,7 @@ function DetalleRevisionPage() {
     return (
       <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Detalle de Revisión" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
+        <Navbar text="Detalle de Revisión Final" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
         <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
         <div className="flex-1 flex flex-col items-center justify-center gap-3 px-6 py-12">
           <div className="rounded-full p-5" style={{ backgroundColor: COLORS.error }}>
@@ -196,23 +238,23 @@ function DetalleRevisionPage() {
   if (!datos) return null
 
   const { viaje, gastos, comentarios, gastoAcumulado, excedePresupuesto, alertas } = datos
-  const esPendiente = viaje.estado === 'EN_REVISION'
-  const estadoActual = estadoConfig[viaje.estado] || estadoConfig['EN_REVISION']
+  const esPendiente = viaje.estado === 'APROBADO_SUPERVISOR'
+  const estadoActual = estadoConfig[viaje.estado] || estadoConfig['APROBADO_SUPERVISOR']
+  const obsComentarios = (comentarios || []).filter((c) => c.tipo === 'OBSERVACION')
+  const justificacion = (comentarios || []).find((c) => c.tipo === 'JUSTIFICACION')
+  const montoLiquidacion = excedePresupuesto
+    ? gastoAcumulado - parseFloat(viaje.monto_asignado)
+    : parseFloat(viaje.monto_asignado) - gastoAcumulado
   const totalIVA = gastos.reduce((sum, g) => {
     const monto = parseFloat(g.Factura?.monto_parcial || 0)
     const total = parseFloat(g.monto_total || 0)
     return sum + Math.max(0, total - monto)
   }, 0)
-  const montoLiquidacion = excedePresupuesto
-    ? gastoAcumulado - parseFloat(viaje.monto_asignado)
-    : parseFloat(viaje.monto_asignado) - gastoAcumulado
-  const obsComentarios = (comentarios || []).filter((c) => c.tipo === 'OBSERVACION')
-  const justificacion = (comentarios || []).find((c) => c.tipo === 'JUSTIFICACION')
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Detalle de Revisión" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
+      <Navbar text="Detalle de Revisión Final" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
       <div className={styles.content}>
@@ -282,14 +324,9 @@ function DetalleRevisionPage() {
         <div className={styles.gastosSection}>
           <div className={styles.gastosHeader}>
             <p className={styles.gastosTitulo} style={{ color: COLORS.title }}>Desglose de Gastos</p>
-            {gastos.length > 3 && (
-              <p className="text-xs font-bold font-inter cursor-pointer" style={{ color: COLORS.secondary }} onClick={() => navigate(`/dashboard/supervisor/revision/${id}/gastos`)}>
-                VER TODO
-              </p>
-            )}
           </div>
           <div className={styles.gastosGrid}>
-            {gastos.slice(0, 3).map((gasto) => {
+            {gastos.map((gasto) => {
               const tipoLabels = { F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio' }
               const tieneFactura = !!gasto.Factura
               const fechaGasto = new Date(gasto.fecha_gasto).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -313,8 +350,8 @@ function DetalleRevisionPage() {
                   <p
                     className={styles.detalleBtn}
                     style={{ color: COLORS.primary, marginTop: 'auto' }}
-                    onClick={() => navigate(`/dashboard/supervisor/gasto/${gasto.id_gasto}`, {
-                      state: { from: `/dashboard/supervisor/revision/${id}`, origenViaje: origen }
+                    onClick={() => navigate(`/dashboard/revisor/gasto/${gasto.id_gasto}`, {
+                      state: { from: `/dashboard/revisor/revision/${id}`, origenViaje: origen }
                     })}
                   >
                     DETALLES →
@@ -341,6 +378,15 @@ function DetalleRevisionPage() {
             <p className="text-sm font-bold font-inter" style={{ color: COLORS.title }}>Bs. {gastoAcumulado.toFixed(2)}</p>
           </div>
         </div>
+
+        <button
+          className={styles.exportBtn}
+          style={{ backgroundColor: COLORS.primary, color: COLORS.background, border: `1px solid ${COLORS.dataFields}` }}
+          onClick={exportarExcel}
+        >
+          <Download size={16} />
+          Exportar Informe Excel
+        </button>
 
         {(esPendiente || obsComentarios.length > 0) && (
           <div className={styles.obsSection}>
@@ -378,8 +424,8 @@ function DetalleRevisionPage() {
         )}
 
         {accionCompletada && (
-          <p className={styles.exitoBadge} style={{ backgroundColor: accionCompletada === 'APROBADO' ? '#d4edda' : '#ffa7a8aa', color: accionCompletada === 'APROBADO' ? '#155724' : '#500203' }}>
-            {accionCompletada === 'APROBADO' ? 'Viaje aprobado correctamente' : 'Viaje rechazado correctamente'}
+          <p className={styles.exitoBadge} style={{ backgroundColor: accionCompletada === 'APROBADO_FINAL' ? '#d4edda' : '#ffa7a8aa', color: accionCompletada === 'APROBADO_FINAL' ? '#155724' : '#500203' }}>
+            {accionCompletada === 'APROBADO_FINAL' ? 'Viaje aprobado correctamente' : 'Viaje rechazado correctamente'}
           </p>
         )}
 
@@ -416,4 +462,4 @@ function DetalleRevisionPage() {
   )
 }
 
-export default DetalleRevisionPage;
+export default DetalleRevisorPage;

@@ -31,8 +31,8 @@ const styles = {
 }
 
 const estadoConfig = {
-  APROBADO_SUPERVISOR: { label: 'Aprobado por Supervisor', color: '#000a65', bg: '#85aff3ab', puntoColor: '#000a65' },
-  APROBADO_FINAL: { label: 'Aprobado Final', color: '#155724', bg: '#d4edda', puntoColor: '#2d7a3a' },
+  APROBADO_SUPERVISOR: { label: 'Aprobación Preliminar', color: '#000a65', bg: '#85aff3ab', puntoColor: '#000a65' },
+  APROBADO_FINAL: { label: 'Aprobado', color: '#155724', bg: '#d4edda', puntoColor: '#2d7a3a' },
   RECHAZADO: { label: 'Rechazado', color: '#500203', bg: '#ffa7a8aa', puntoColor: '#D20F12' },
 }
 

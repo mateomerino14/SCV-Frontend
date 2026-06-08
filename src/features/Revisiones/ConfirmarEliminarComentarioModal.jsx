@@ -3,7 +3,7 @@ import Button from '../../components/ui/Button'
 import { COLORS } from '../../constants'
 
 const styles = {
-  overlay: 'fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm',
+  overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
   card: 'items-center flex flex-col p-6 rounded-xl w-full max-w-xs mx-4 gap-2',
   iconWrapper: 'rounded-full p-4',
   title: 'text-2xl font-bold font-inter leading-tight text-center mt-3',

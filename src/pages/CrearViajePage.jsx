@@ -10,7 +10,7 @@ import useCrearViaje from '../hooks/useCrearViaje'
 import useDashboard from '../hooks/useDashboard'
 import { COLORS } from '../constants'
 import SessionExpiredModal from '../features/Login/SessionExpiredModal'
-import ConfirmacionModal from "../features/Form_Crear_Viaje/ConfirmacionModal"
+import ConfirmacionModal from '../features/Form_Crear_Viaje/ConfirmacionModal'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
 import useMenu from '../hooks/useMenu'
 
@@ -44,23 +44,23 @@ function CrearViajePage() {
   const navigate = useNavigate()
   const { usuario } = useDashboard()
   const {
-    motivo, setMotivo,
-    destino, setDestino,
-    fechaInicio, setFechaInicio,
-    fechaFin, setFechaFin,
+    motivo, destino,
+    fechaInicio, fechaFin,
     tipo, setTipo,
     entorno, setEntorno,
-    montoTotal,
-    tarifaDiaria,
-    loading,
-    error,
+    montoTotal, tarifaDiaria,
+    loading, error, erroresCampo,
     showMapa, setShowMapa,
-    showConfirmacion,setShowConfirmacion,
+    showConfirmacion, setShowConfirmacion,
+    handleMotivoChange,
+    handleDestinoChange,
+    handleFechaInicioChange,
+    handleFechaFinChange,
     handleConfirmarMapa,
     handleConfirmar,
-    handleAbrirConfirmacion,
   } = useCrearViaje(usuario)
-  const { menuAbierto, abrirMenu, cerrarMenu,sessionExpired, handleSessionExpiredClose } = useMenu()
+
+  const { menuAbierto, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
   const today = new Date().toISOString().split('T')[0]
 
   return (
@@ -68,6 +68,7 @@ function CrearViajePage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Registro de Viaje" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
+
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate('/dashboard/empleado')}>
           <ArrowLeft size={25} style={{ color: COLORS.title }} />
@@ -96,12 +97,13 @@ function CrearViajePage() {
             <InputField
               label="Motivo"
               icon={<Target size={16} style={{ color: COLORS.labels }} />}
+              error={erroresCampo.motivo}
             >
               <input
                 type="text"
                 placeholder="Inspección técnica y de producción..."
                 value={motivo}
-                onChange={(e) => setMotivo(e.target.value)}
+                onChange={(e) => handleMotivoChange(e.target.value)}
                 className={styles.input}
                 maxLength={100}
                 style={{ color: COLORS.text }}
@@ -115,12 +117,13 @@ function CrearViajePage() {
                   <MapPin size={16} style={{ color: COLORS.secondary, cursor: 'pointer' }} />
                 </button>
               }
+              error={erroresCampo.destino}
             >
               <input
                 type="text"
                 placeholder="¿A dónde se dirige?"
                 value={destino}
-                onChange={(e) => setDestino(e.target.value)}
+                onChange={(e) => handleDestinoChange(e.target.value)}
                 className={styles.input}
                 maxLength={60}
                 style={{ color: COLORS.text }}
@@ -128,21 +131,21 @@ function CrearViajePage() {
             </InputField>
 
             <div className={styles.dateRow}>
-              <InputField label="Fecha Inicio">
+              <InputField label="Fecha Inicio" error={erroresCampo.fechaInicio}>
                 <input
                   type="date"
                   value={fechaInicio}
-                  onChange={(e) => setFechaInicio(e.target.value)}
+                  onChange={(e) => handleFechaInicioChange(e.target.value)}
                   className={styles.input}
                   min={today}
                   style={{ color: COLORS.text }}
                 />
               </InputField>
-              <InputField label="Fecha Fin">
+              <InputField label="Fecha Fin" error={erroresCampo.fechaFin}>
                 <input
                   type="date"
                   value={fechaFin}
-                  onChange={(e) => setFechaFin(e.target.value)}
+                  onChange={(e) => handleFechaFinChange(e.target.value)}
                   className={styles.input}
                   min={today}
                   style={{ color: COLORS.text }}
@@ -192,16 +195,18 @@ function CrearViajePage() {
               </div>
             </div>
 
-            {error && <p className={styles.errorMsg} style={{ color: COLORS.secondary }}>{error}</p>}
+            {error && (
+              <p className={styles.errorMsg} style={{ color: COLORS.secondary }}>{error}</p>
+            )}
 
-              <button
-                  className={styles.confirmBtn}
-                  style={{ backgroundColor: loading ? COLORS.fields : COLORS.secondary }}
-                  onClick={handleConfirmar}
-                  disabled={loading}
-                >
-                  {loading ? 'Enviando...' : 'Confirmar Viaje'}
-                </button>
+            <button
+              className={styles.confirmBtn}
+              style={{ backgroundColor: loading ? COLORS.fields : COLORS.secondary }}
+              onClick={handleConfirmar}
+              disabled={loading}
+            >
+              {loading ? 'Enviando...' : 'Confirmar Viaje'}
+            </button>
           </div>
 
           <div className={styles.rightCol}>
@@ -228,8 +233,9 @@ function CrearViajePage() {
 
       <ConfirmacionModal
         isOpen={showConfirmacion}
-        onClose={()=>setShowConfirmacion(false)}
+        onClose={() => setShowConfirmacion(false)}
       />
+
       <Footer />
     </div>
   )

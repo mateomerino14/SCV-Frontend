@@ -1,16 +1,14 @@
-import { useEffect, useState } from 'react'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
-import FiltrosPendientes from '../features/Revisiones/FiltrosPendientes'
+import SessionExpiredModal from '../features/Login/SessionExpiredModal'
+import ContraseniavencidaModal from '../features/Login/ContraseniavencidaModal'
 import ViajeRevisionItem from '../features/Revisiones/ViajeRevisionItem'
 import EmptyState from '../components/ui/EmptyState'
-import useRevisionesPendientes from '../hooks/useRevisionesPendientes'
+import useRevisionRevisor from '../hooks/useRevisionRevisor'
 import useMenu from '../hooks/useMenu'
 import useContraseniavencida from '../hooks/useContraseniavencida'
-import ContraseniavencidaModal from '../features/Login/ContraseniavencidaModal'
-import SessionExpiredModal from '../features/Login/SessionExpiredModal'
-import { getEmpleados } from '../services/supervisorService'
+import FiltrosPendientes from '../features/Revisiones/FiltrosPendientes'
 import { COLORS } from '../constants'
 
 const styles = {
@@ -27,17 +25,10 @@ const styles = {
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-3',
 }
 
-function RevisionesPendientesPage() {
+function RevisionRevisorPage() {
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
-  const { viajes, totalViajes, loading, error, filtros, setFiltros, filtroEstado, setFiltroEstado, aplicarFiltros, limpiarFiltros } = useRevisionesPendientes()
   const { showModal, loading: loadingCambio, error: errorCambio, handleCambio } = useContraseniavencida()
-  const [empleados, setEmpleados] = useState([])
-
-  useEffect(() => {
-    getEmpleados().then((data) => {
-      if (!data.error) setEmpleados(data)
-    })
-  }, [])
+  const { viajes, empleados, totalViajes, loading, error, filtros, setFiltros, aplicarFiltros, limpiarFiltros } = useRevisionRevisor()
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
@@ -47,17 +38,15 @@ function RevisionesPendientesPage() {
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{ color: COLORS.title }}>Revisión de Rendiciones</p>
-        <h1 className={styles.title} style={{ color: COLORS.text }}>Pendientes de Aprobación</h1>
+        <p className={styles.planLabel} style={{ color: COLORS.title }}>Revisión Final</p>
+        <h1 className={styles.title} style={{ color: COLORS.text }}>Pendientes de Revisión Final</h1>
         <p className={styles.subtitulo} style={{ color: COLORS.text_enviroment_types }}>
-          Gestiona y valida los gastos corporativos reportados. El sistema resalta automáticamente anomalías en las políticas de viaje.
+          Viajes aprobados por el supervisor que requieren tu revisión final.
         </p>
 
         <FiltrosPendientes
           filtros={filtros}
           setFiltros={setFiltros}
-          filtroEstado={filtroEstado}
-          setFiltroEstado={setFiltroEstado}
           onAplicar={aplicarFiltros}
           onLimpiar={limpiarFiltros}
           empleados={empleados}
@@ -75,7 +64,7 @@ function RevisionesPendientesPage() {
         {!loading && viajes.length === 0 && (
           <EmptyState
             titulo="Sin solicitudes pendientes"
-            subtitulo="No hay viajes esperando revisión en este momento"
+            subtitulo="No hay viajes esperando revisión final en este momento"
             icono={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M6 26L10 14L16 20L22 10L26 26H6Z" fill="rgba(255,255,255,0.6)" />
@@ -90,8 +79,8 @@ function RevisionesPendientesPage() {
             <ViajeRevisionItem
               key={viaje.id_viaje}
               viaje={viaje}
-              rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
-              origenDetalle="/dashboard/supervisor"
+              rutaDetalle={`/dashboard/revisor/revision/${viaje.id_viaje}`}
+              origenDetalle="/dashboard/revisor"
             />
           ))}
         </div>
@@ -101,4 +90,4 @@ function RevisionesPendientesPage() {
   )
 }
 
-export default RevisionesPendientesPage;
+export default RevisionRevisorPage;

@@ -4,6 +4,7 @@ import Footer from '../layouts/Footer'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
 import FiltrosHistorial from '../features/Revisiones/FiltrosHistorial'
 import ViajeHistorialItem from '../features/Revisiones/ViajeHistorialItem'
+import EmptyState from '../components/ui/EmptyState'
 import useHistorialRevisiones from '../hooks/useHistorialRevisiones'
 import useMenu from '../hooks/useMenu'
 import { getEmpleados } from '../services/supervisorService'
@@ -59,7 +60,19 @@ function HistorialRevisionesPage() {
         </div>
 
         {loading && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>Cargando...</p>}
-        {!loading && viajes.length === 0 && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>No hay revisiones realizadas</p>}
+
+        {!loading && viajes.length === 0 && (
+          <EmptyState
+            titulo="Sin revisiones realizadas"
+            subtitulo="Aún no has procesado ninguna solicitud de viaje"
+            icono={
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <rect x="6" y="8" width="20" height="16" rx="3" fill="rgba(255,255,255,0.3)" />
+                <path d="M10 14H22M10 18H18" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            }
+          />
+        )}
 
         {!loading && viajes.length > 0 && (
           <div className={styles.grid}>

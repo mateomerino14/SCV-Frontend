@@ -35,28 +35,16 @@ const styles = {
 function SubirFacturaPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { menuAbierto, usuario, abrirMenu, cerrarMenu ,sessionExpired, handleSessionExpiredClose} = useMenu()
+  const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
 
   const {
-    facturas,
-    facturaActual,
-    indexActual,
-    loadingGuardar,
-    error,
-    resumenGuardado,
-    modificadoManualmente,
-    showEliminarModal,
-    hayFacturasConError,
-    todasGuardadas,
-    handleAgregarArchivos,
-    handleSeleccionarFactura,
-    handlePedirEliminarFactura,
-    handleConfirmarEliminarFactura,
-    handleCancelarEliminarFactura,
-    handleCambioDato,
-    handleAgregarDetalle,
-    handleEliminarDetalle,
-    handleGuardar,
+    facturas, facturaActual, indexActual, expandidoIndex,
+    loadingGuardar, error, resumenGuardado, showEliminarModal,
+    hayFacturasConError, todasGuardadas,
+    handleAgregarArchivos, handleSeleccionarFactura,
+    handlePedirEliminarFactura, handleConfirmarEliminarFactura,
+    handleCancelarEliminarFactura, handleCambioDato,
+    handleAgregarDetalle, handleEliminarDetalle, handleGuardar,
   } = useSubirFactura(id)
 
   return (
@@ -65,19 +53,12 @@ function SubirFacturaPage() {
       <Navbar text="Registro de Facturas" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
       <div className={styles.content}>
-        <button
-          className={styles.backBtn}
-          onClick={() => navigate(`/dashboard/empleado/viaje/${id}`)}
-        >
+        <button className={styles.backBtn} onClick={() => navigate(`/dashboard/empleado/viaje/${id}`)}>
           <ArrowLeft size={25} style={{ color: COLORS.title }} />
         </button>
 
-        <p className={styles.planLabel} style={{ color: COLORS.title }}>
-          Proceso de Gastos
-        </p>
-        <h1 className={styles.title} style={{ color: COLORS.text }}>
-          Digitalización de Factura
-        </h1>
+        <p className={styles.planLabel} style={{ color: COLORS.title }}>Proceso de Gastos</p>
+        <h1 className={styles.title} style={{ color: COLORS.text }}>Digitalización de Factura</h1>
         <p className={styles.descripcion} style={{ color: COLORS.text_enviroment_types }}>
           Capture su comprobante de gasto para el procesamiento automático mediante IA.
           Asegúrese de que todos los datos sean legibles.
@@ -91,9 +72,7 @@ function SubirFacturaPage() {
 
         {facturas.length > 0 && (
           <div className={styles.card} style={{ backgroundColor: COLORS.background }}>
-            <p className={styles.sectionTitle} style={{ color: COLORS.labels }}>
-              Facturas Cargadas
-            </p>
+            <p className={styles.sectionTitle} style={{ color: COLORS.labels }}>Facturas Cargadas</p>
 
             {facturas.map((factura, indice) => (
               <FacturaPreviewItem
@@ -101,49 +80,48 @@ function SubirFacturaPage() {
                 factura={factura}
                 index={indice}
                 seleccionado={indexActual === indice}
+                expandido={expandidoIndex === indice}
                 onSeleccionar={handleSeleccionarFactura}
                 onEliminar={handlePedirEliminarFactura}
               >
                 {factura.datos && (
                   <>
                     <div className="hidden md:grid md:grid-cols-3 gap-4 mt-3">
-
                       <SeccionImagen factura={factura} />
-
                       <div>
                         <FormularioFactura
                           datos={factura.datos}
                           onChange={handleCambioDato}
-                          modificadoManualmente={modificadoManualmente}
+                          modificadoManualmente={factura.modificadoManualmente}
+                          erroresCampo={factura.erroresCampo || {}}
+                          guardado={factura.guardado}
                         />
                       </div>
-
                       <div>
                         <DetalleFacturaPanel
                           detalle={factura.datos.detalle || []}
                           onAgregar={handleAgregarDetalle}
                           onEliminar={handleEliminarDetalle}
+                          guardado={factura.guardado}
                         />
                       </div>
-
                     </div>
 
                     <div className="md:hidden mt-3 flex flex-col gap-4">
-
                       <SeccionImagen factura={factura} />
-
                       <FormularioFactura
                         datos={factura.datos}
                         onChange={handleCambioDato}
-                        modificadoManualmente={modificadoManualmente}
+                        modificadoManualmente={factura.modificadoManualmente}
+                        erroresCampo={factura.erroresCampo || {}}
+                        guardado={factura.guardado}
                       />
-
                       <DetalleFacturaPanel
                         detalle={factura.datos.detalle || []}
                         onAgregar={handleAgregarDetalle}
                         onEliminar={handleEliminarDetalle}
+                        guardado={factura.guardado}
                       />
-
                     </div>
                   </>
                 )}
@@ -153,23 +131,12 @@ function SubirFacturaPage() {
         )}
 
         {resumenGuardado && (
-          <div
-            className={styles.resumenCard}
-            style={{
-              backgroundColor: resumenGuardado.errores > 0 ? '#fef3cd' : '#d4edda',
-            }}
-          >
-            <p
-              className={styles.resumenTexto}
-              style={{ color: resumenGuardado.errores > 0 ? '#856404' : '#155724' }}
-            >
+          <div className={styles.resumenCard} style={{ backgroundColor: resumenGuardado.errores > 0 ? '#fef3cd' : '#d4edda' }}>
+            <p className={styles.resumenTexto} style={{ color: resumenGuardado.errores > 0 ? '#856404' : '#155724' }}>
               {resumenGuardado.guardadas} factura{resumenGuardado.guardadas !== 1 ? 's' : ''} guardada{resumenGuardado.guardadas !== 1 ? 's' : ''} correctamente
             </p>
             {resumenGuardado.errores > 0 && (
-              <p
-                className={styles.resumenSubtexto}
-                style={{ color: '#856404' }}
-              >
+              <p className={styles.resumenSubtexto} style={{ color: '#856404' }}>
                 {resumenGuardado.errores} factura{resumenGuardado.errores !== 1 ? 's' : ''} con error — revisa las marcadas en rojo
               </p>
             )}
@@ -177,10 +144,7 @@ function SubirFacturaPage() {
         )}
 
         {error && (
-          <p
-            className={styles.errorMsg}
-            style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}
-          >
+          <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
             {error}
           </p>
         )}
@@ -214,7 +178,6 @@ function SubirFacturaPage() {
             Volver al viaje
           </button>
         )}
-
       </div>
 
       <EliminarFacturaModal

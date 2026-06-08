@@ -1,5 +1,10 @@
 import { useEffect } from 'react'
 
+const MAX_PROVEEDOR = 50
+const MAX_FACTURA = 50
+const MAX_NIT = 10
+const MAX_MONTO = 99999.99
+
 function useFormularioFactura(datos, onChange) {
   const monto = parseFloat(datos.monto || 0)
   const iva = parseFloat(datos.iva || 0)
@@ -8,7 +13,6 @@ function useFormularioFactura(datos, onChange) {
 
   useEffect(() => {
     const ivaActual = parseFloat(datos.iva || 0)
-
     if (ivaActual > 0 && datos.tipo_doc !== 'F') {
       onChange('tipo_doc', 'F')
     } else if (ivaActual === 0 && datos.tipo_doc !== 'R') {
@@ -19,38 +23,17 @@ function useFormularioFactura(datos, onChange) {
   const validarDecimal = (valor) => {
     const soloDecimalValido = valor.replace(',', '.').replace(/[^0-9.]/g, '')
     const partes = soloDecimalValido.split('.')
-
-    if (partes.length > 2) {
-      return null
-    }
-
-    if (partes.length === 2 && partes[1].length > 2) {
-      return null
-    }
-
+    if (partes.length > 2) return null
+    if (partes.length === 2 && partes[1].length > 2) return null
     return soloDecimalValido
-  }
-
-  const validarNit = (valor) => {
-    const soloNumeros = valor.replace(/[^0-9]/g, '')
-
-    if (soloNumeros.length > 10) {
-      return soloNumeros.slice(0, 10)
-    }
-
-    return soloNumeros
   }
 
   const handleCampoChange = (campo, valor) => {
     if (campo === 'monto' || campo === 'iva') {
       const valorValidado = validarDecimal(valor)
-
-      if (valorValidado === null) {
-        return
-      }
-
+      if (valorValidado === null) return
+      if (valorValidado !== '' && parseFloat(valorValidado) > MAX_MONTO) return
       onChange(campo, valorValidado)
-
       const nuevoMonto = campo === 'monto' ? parseFloat(valorValidado || 0) : monto
       const nuevoIva = campo === 'iva' ? parseFloat(valorValidado || 0) : iva
       onChange('monto_total', (nuevoMonto + nuevoIva).toFixed(2))
@@ -58,14 +41,20 @@ function useFormularioFactura(datos, onChange) {
     }
 
     if (campo === 'nit') {
-      const valorValidado = validarNit(valor)
-      onChange(campo, valorValidado)
+      const soloNumeros = valor.replace(/[^0-9]/g, '').slice(0, MAX_NIT)
+      onChange(campo, soloNumeros)
       return
     }
 
     if (campo === 'numero_factura') {
-      const soloAlfanumerico = valor.replace(/[^a-zA-Z0-9\-\/]/g, '')
+      const soloAlfanumerico = valor.replace(/[^a-zA-Z0-9\-\/]/g, '').slice(0, MAX_FACTURA)
       onChange(campo, soloAlfanumerico)
+      return
+    }
+
+    if (campo === 'proveedor') {
+      if (valor.length > MAX_PROVEEDOR) return
+      onChange(campo, valor)
       return
     }
 

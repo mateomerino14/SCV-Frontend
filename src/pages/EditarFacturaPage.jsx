@@ -32,22 +32,11 @@ function EditarFacturaPage() {
   const navigate = useNavigate()
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
 
-
   const {
-    datos,
-    previewImagen,
-    loading,
-    loadingDatos,
-    error,
-    guardado,
-    modificadoManualmente,
-    idViaje,
-    handleCambioDato,
-    handleAgregarDetalle,
-    handleEliminarDetalle,
-    handleImagenChange,
-    handleEliminarImagen,
-    handleGuardar,
+    datos, previewImagen, loading, loadingDatos,
+    error, erroresCampo, guardado, modificadoManualmente, idViaje,
+    handleCambioDato, handleAgregarDetalle, handleEliminarDetalle,
+    handleImagenChange, handleEliminarImagen, handleGuardar,
   } = useEditarFactura(id)
 
   if (loadingDatos || !datos) {
@@ -70,11 +59,9 @@ function EditarFacturaPage() {
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Editar Factura" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
-
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
       <div className={styles.content}>
-
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <ArrowLeft size={25} style={{ color: COLORS.title }} />
         </button>
@@ -82,9 +69,7 @@ function EditarFacturaPage() {
         <p className={styles.planLabel} style={{ color: COLORS.title }}>
           Modifica los datos de la factura
         </p>
-        <h1 className={styles.title} style={{ color: COLORS.text }}>
-          Editar Factura
-        </h1>
+        <h1 className={styles.title} style={{ color: COLORS.text }}>Editar Factura</h1>
 
         <div className={styles.grid}>
           <div className={styles.columna}>
@@ -98,15 +83,14 @@ function EditarFacturaPage() {
               />
             )}
           </div>
-
           <div>
             <FormularioFactura
               datos={datos}
               onChange={handleCambioDato}
               modificadoManualmente={modificadoManualmente}
+              erroresCampo={erroresCampo}
             />
           </div>
-
           <div>
             <DetalleFacturaPanel
               detalle={datos.detalle || []}
@@ -130,6 +114,7 @@ function EditarFacturaPage() {
             datos={datos}
             onChange={handleCambioDato}
             modificadoManualmente={modificadoManualmente}
+            erroresCampo={erroresCampo}
           />
           <DetalleFacturaPanel
             detalle={datos.detalle || []}
@@ -139,10 +124,7 @@ function EditarFacturaPage() {
         </div>
 
         {error && (
-          <p
-            className={styles.errorMsg}
-            style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}
-          >
+          <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
             {error}
           </p>
         )}
@@ -163,7 +145,6 @@ function EditarFacturaPage() {
         >
           Cancelar
         </button>
-
       </div>
 
       <ExitoModal

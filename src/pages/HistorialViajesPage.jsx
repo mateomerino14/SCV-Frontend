@@ -1,9 +1,9 @@
-import { useNavigate } from 'react-router-dom'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import FiltroTabs from '../features/Historial_Viajes/FiltroTabs'
 import ViajeRecienteItem from '../features/Dashboard_Empleado/ViajeRecienteItem'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
+import EmptyState from '../components/ui/EmptyState'
 import useHistorialViajes from '../hooks/useHistorialViajes'
 import useMenu from '../hooks/useMenu'
 import SessionExpiredModal from '../features/Login/SessionExpiredModal'
@@ -42,7 +42,16 @@ function HistorialViajesPage() {
         )}
 
         {!loading && viajesFiltrados.length === 0 && (
-          <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>No hay viajes para mostrar</p>
+          <EmptyState
+            titulo="Sin viajes registrados"
+            subtitulo="Aún no tienes viajes en esta categoría"
+            icono={
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path d="M16 4C16 4 8 12 8 18C8 22.4 11.6 26 16 26C20.4 26 24 22.4 24 18C24 12 16 4 16 4Z" fill="rgba(255,255,255,0.5)" />
+                <circle cx="16" cy="18" r="3" fill="rgba(255,255,255,0.9)" />
+              </svg>
+            }
+          />
         )}
 
         {!loading && viajesFiltrados.map((viaje) => (

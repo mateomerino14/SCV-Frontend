@@ -32,25 +32,16 @@ function EditarGastoPage() {
   const navigate = useNavigate()
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
 
-
   const {
     tipo, setTipo,
-    fecha, setFecha,
-    proveedor, setProveedor,
-    monto,
-    descripcion, setDescripcion,
-    idCategoria, setIdCategoria,
-    categorias,
-    previewImagen,
-    loading,
-    loadingDatos,
-    error,
-    guardado,
-    idViaje,
-    handleImagenChange,
-    handleEliminarImagen,
-    handleMontoChange,
-    handleGuardar,
+    fecha, proveedor, monto, descripcion,
+    idCategoria, categorias,
+    previewImagen, loading, loadingDatos,
+    error, erroresCampo, guardado, idViaje,
+    handleImagenChange, handleEliminarImagen,
+    handleMontoChange, handleProveedorChange,
+    handleDescripcionChange, handleFechaChange,
+    handleCategoriaChange, handleGuardar,
   } = useEditarGasto(id)
 
   if (loadingDatos) {
@@ -80,21 +71,18 @@ function EditarGastoPage() {
         <p className={styles.planLabel} style={{ color: COLORS.title }}>
           Modifica los datos del gasto
         </p>
-        <h1 className={styles.title} style={{ color: COLORS.text }}>
-          Editar Gasto
-        </h1>
+        <h1 className={styles.title} style={{ color: COLORS.text }}>Editar Gasto</h1>
 
         <div className={styles.card} style={{ backgroundColor: COLORS.background }}>
-
           <TipoRegistro tipo={tipo} onChange={setTipo} />
 
-          <CampoGasto label="Fecha del Gasto">
+          <CampoGasto label="Fecha del Gasto" error={erroresCampo.fecha}>
             <input
               className={styles.input}
               style={{ color: COLORS.text }}
               type="date"
               value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
+              onChange={(e) => handleFechaChange(e.target.value)}
             />
           </CampoGasto>
 
@@ -103,13 +91,14 @@ function EditarGastoPage() {
               className={styles.input}
               style={{ color: COLORS.text }}
               type="text"
-              placeholder="Nombre de Proveedor"
+              placeholder="Nombre del proveedor"
               value={proveedor}
-              onChange={(e) => setProveedor(e.target.value)}
+              onChange={(e) => handleProveedorChange(e.target.value)}
+              maxLength={50}
             />
           </CampoGasto>
 
-          <CampoGasto label="Monto" sufijo="Bs">
+          <CampoGasto label="Monto" sufijo="Bs" error={erroresCampo.monto}>
             <input
               className={styles.input}
               style={{ color: COLORS.text }}
@@ -121,21 +110,23 @@ function EditarGastoPage() {
             />
           </CampoGasto>
 
-          <CampoGasto label="Descripción">
+          <CampoGasto label="Descripción" error={erroresCampo.descripcion}>
             <textarea
               className={styles.textarea}
               style={{ color: COLORS.text }}
               placeholder="Detalle el motivo del gasto..."
               rows={3}
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={(e) => handleDescripcionChange(e.target.value)}
+              maxLength={100}
             />
           </CampoGasto>
 
           <SelectorCategoria
             categorias={categorias}
             idCategoria={idCategoria}
-            onChange={setIdCategoria}
+            onChange={handleCategoriaChange}
+            error={erroresCampo.categoria}
           />
 
           <ComprobanteCarga
@@ -143,14 +134,10 @@ function EditarGastoPage() {
             onChange={handleImagenChange}
             onEliminar={handleEliminarImagen}
           />
-
         </div>
 
         {error && (
-          <p
-            className={styles.errorMsg}
-            style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}
-          >
+          <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
             {error}
           </p>
         )}
@@ -171,7 +158,6 @@ function EditarGastoPage() {
         >
           Cancelar
         </button>
-
       </div>
 
       <ExitoModal
@@ -180,7 +166,6 @@ function EditarGastoPage() {
         mensaje="El gasto fue actualizado correctamente."
         onAceptar={() => navigate(`/dashboard/empleado/viaje/${idViaje}`)}
       />
-
       <Footer />
     </div>
   )
