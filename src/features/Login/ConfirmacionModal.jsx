@@ -6,15 +6,16 @@ import Button from '../../components/ui/Button'
 const CODE_LENGTH = 7
 
 const styles = {
-  icon: "rounded-full p-5 border-4 border-white",
-  title: "text-2xl font-bold font-inter",
-  description: "font-inter text-sm",
-  label: "font-inter font-bold",
-  digitInput: "w-10 h-12 text-center text-white font-bold font-inter text-lg outline-none rounded-lg border-2 border-white",
-  resentMsg: "text-white text-xs font-inter italic text-center",
+  icon: 'rounded-full p-5 border-4 border-white',
+  title: 'text-2xl font-bold font-inter',
+  description: 'font-inter text-sm',
+  label: 'font-inter font-bold',
+  digitInput: 'w-10 h-12 text-center text-white font-bold font-inter text-lg outline-none rounded-lg border-2',
+  resentMsg: 'text-white text-xs font-inter italic text-center',
+  errorMsg: 'text-white text-xs font-inter italic text-center w-full',
 }
 
-function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, expiresAt }) {
+function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, expiresAt, codeError, verifying }) {
   const [digits, setDigits] = useState(Array(CODE_LENGTH).fill(''))
   const [resentMsg, setResentMsg] = useState('')
   const [resending, setResending] = useState(false)
@@ -76,6 +77,8 @@ function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, exp
 
   const handleVerify = () => onVerify(digits.join(''))
 
+  const hasError = !!codeError
+
   return (
     <ModalBase isOpen={isOpen}>
       <div className={styles.icon} style={{ backgroundColor: '#000000' }}>
@@ -97,17 +100,31 @@ function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, exp
             onChange={(e) => handleChange(e.target.value, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             className={styles.digitInput}
-            style={{ backgroundColor: '#000000' }}
+            style={{
+              backgroundColor: '#000000',
+              borderColor: hasError ? '#fca5a5' : 'white',
+            }}
           />
         ))}
       </div>
 
-      {resentMsg && <p className={styles.resentMsg}>{resentMsg}</p>}
+      {codeError && <p className={styles.errorMsg}>{codeError}</p>}
+      {resentMsg && !codeError && <p className={styles.resentMsg}>{resentMsg}</p>}
 
       <div className="w-full flex flex-col gap-3">
-        <Button text="Verificar" variant="primary" onClick={handleVerify} />
-        <Button text={resending ? 'Reenviando...' : 'Reenviar Codigo'} variant="primary" onClick={handleResend} />
-        <Button text="Cancelar" variant="secondary" onClick={onClose}></Button>
+        <Button
+          text={verifying ? 'Verificando...' : 'Verificar'}
+          variant="primary"
+          onClick={handleVerify}
+          disabled={verifying}
+        />
+        <Button
+          text={resending ? 'Reenviando...' : 'Reenviar Codigo'}
+          variant="primary"
+          onClick={handleResend}
+          disabled={resending || verifying}
+        />
+        <Button text="Cancelar" variant="secondary" onClick={onClose} disabled={verifying} />
       </div>
     </ModalBase>
   )

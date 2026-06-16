@@ -1,14 +1,17 @@
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
-import SessionExpiredModal from '../features/Login/SessionExpiredModal'
-import ContraseniavencidaModal from '../features/Login/ContraseniavencidaModal'
+import FiltrosPendientes from '../features/Revisiones/FiltrosPendientes'
 import ViajeRevisionItem from '../features/Revisiones/ViajeRevisionItem'
 import EmptyState from '../components/ui/EmptyState'
+import SessionExpiredModal from '../features/Login/SessionExpiredModal'
+import ContraseniavencidaModal from '../features/Login/ContraseniavencidaModal'
 import useRevisionRevisor from '../hooks/useRevisionRevisor'
 import useMenu from '../hooks/useMenu'
 import useContraseniavencida from '../hooks/useContraseniavencida'
-import FiltrosPendientes from '../features/Revisiones/FiltrosPendientes'
+import { tomarRevisionRevisor } from '../services/revisorService'
+import { useState } from 'react'
 import { COLORS } from '../constants'
 
 const styles = {
@@ -26,22 +29,39 @@ const styles = {
 }
 
 function RevisionRevisorPage() {
+  const navigate = useNavigate()
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
   const { showModal, loading: loadingCambio, error: errorCambio, handleCambio } = useContraseniavencida()
-  const { viajes, empleados, totalViajes, loading, error, filtros, setFiltros, aplicarFiltros, limpiarFiltros } = useRevisionRevisor()
+  const { viajes, empleados, totalViajes, loading, error, filtros, setFiltros, aplicarFiltros, limpiarFiltros, recargar } = useRevisionRevisor()
+  const [tomando, setTomando] = useState(null)
+  const [errorTomar, setErrorTomar] = useState('')
+
+  const handleTomar = async (id_viaje) => {
+  setTomando(id_viaje)
+  setErrorTomar('')
+  const data = await tomarRevisionRevisor(id_viaje)
+  setTomando(null)
+  if (data.error) {
+    setErrorTomar(data.error)
+    setTimeout(() => setErrorTomar(''), 3000)
+    recargar()
+    return
+  }
+  recargar()
+}
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <ContraseniavencidaModal isOpen={showModal} onConfirm={handleCambio} loading={loadingCambio} error={errorCambio} />
-      <Navbar text="Revisiones Pendientes" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
+      <Navbar text="Solicitudes Pendientes" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
       <div className={styles.content}>
         <p className={styles.planLabel} style={{ color: COLORS.title }}>Revisión Final</p>
-        <h1 className={styles.title} style={{ color: COLORS.text }}>Pendientes de Revisión Final</h1>
+        <h1 className={styles.title} style={{ color: COLORS.text }}>Solicitudes Pendientes</h1>
         <p className={styles.subtitulo} style={{ color: COLORS.text_enviroment_types }}>
-          Viajes aprobados por el supervisor que requieren tu revisión final.
+          Asígnate un viaje para su revisión final. Solo tú podrás procesarlo una vez asignado.
         </p>
 
         <FiltrosPendientes
@@ -59,7 +79,11 @@ function RevisionRevisorPage() {
         </div>
 
         {loading && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>Cargando...</p>}
-        {error && <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>{error}</p>}
+        {(error || errorTomar) && (
+          <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
+            {error || errorTomar}
+          </p>
+        )}
 
         {!loading && viajes.length === 0 && (
           <EmptyState
@@ -81,6 +105,8 @@ function RevisionRevisorPage() {
               viaje={viaje}
               rutaDetalle={`/dashboard/revisor/revision/${viaje.id_viaje}`}
               origenDetalle="/dashboard/revisor"
+              onTomar={handleTomar}
+              tomando={tomando === viaje.id_viaje}
             />
           ))}
         </div>

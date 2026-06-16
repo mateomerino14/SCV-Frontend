@@ -39,7 +39,7 @@ function useCrearViaje(usuario) {
   }
 
   const handleDestinoChange = (valor) => {
-    if (valor.length > 60) return
+    if (valor.length > 200) return
     setDestino(valor)
     setErroresCampo((prev) => ({ ...prev, destino: undefined }))
   }

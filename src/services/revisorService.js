@@ -13,16 +13,34 @@ export const getPendientesRevisor = async (filtros = {}) => {
   }
 }
 
-export const getHistorialRevisor = async (filtros = {}) => {
+export const getMisRevisionesRevisor = async (filtros = {}) => {
   try {
     const params = {}
     if (filtros.fecha_inicio) params.fecha_inicio = filtros.fecha_inicio
     if (filtros.fecha_fin) params.fecha_fin = filtros.fecha_fin
     if (filtros.id_empleado) params.id_empleado = filtros.id_empleado
-    const res = await api.get('/revisor/historial', { params })
+    const res = await api.get('/revisor/mis-revisiones', { params })
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al obtener historial' }
+    return { error: error.response?.data?.error || 'Error al obtener mis revisiones' }
+  }
+}
+
+export const tomarRevisionRevisor = async (id_viaje) => {
+  try {
+    const res = await api.post(`/revisor/${id_viaje}/tomar`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al tomar la revisión' }
+  }
+}
+
+export const devolverRevisionRevisor = async (id_viaje) => {
+  try {
+    const res = await api.post(`/revisor/${id_viaje}/devolver`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al devolver la revisión' }
   }
 }
 
@@ -86,23 +104,5 @@ export const getEmpleadosRevisor = async () => {
     return res.data
   } catch (error) {
     return { error: 'Error al obtener empleados' }
-  }
-}
-
-export const bloquearRevisionRevisor = async (id_viaje) => {
-  try {
-    const res = await api.post(`/revisor/${id_viaje}/bloquear`)
-    return res.data
-  } catch (error) {
-    return { error: error.response?.data?.error || 'Error al bloquear revisión' }
-  }
-}
-
-export const liberarRevisionRevisor = async (id_viaje) => {
-  try {
-    const res = await api.post(`/revisor/${id_viaje}/liberar`)
-    return res.data
-  } catch (error) {
-    return { error: error.response?.data?.error || 'Error al liberar revisión' }
   }
 }

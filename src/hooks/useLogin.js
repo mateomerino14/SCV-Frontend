@@ -6,7 +6,7 @@ function useLogin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const [forgotEmail, setForgotEmail] = useState('')
   const [codeExpiresAt, setCodeExpiresAt] = useState(null)
   const [showEmailModal, setShowEmailModal] = useState(false)
@@ -15,11 +15,11 @@ function useLogin() {
   const [showErrorModal, setShowErrorModal] = useState(false)
   const [showExpiredModal, setShowExpiredModal] = useState(false)
   const [showNonExistentModal, setShowNonExistentModal] = useState(false)
-
-  const showError = (msg) => {
-    setErrorMsg(msg)
-    setTimeout(() => setErrorMsg(''), 3000)
-  }
+  const [showInvalidEmailModal, setShowInvalidEmailModal] = useState(false)
+  const [invalidEmailReason, setInvalidEmailReason] = useState('')
+  const [codeError, setCodeError] = useState('')
+  const [verifying, setVerifying] = useState(false)
+  const [logging, setLogging] = useState(false)
 
   const closeAllModals = () => {
     setShowEmailModal(false)
@@ -27,6 +27,8 @@ function useLogin() {
     setShowErrorModal(false)
     setShowExpiredModal(false)
     setShowNonExistentModal(false)
+    setShowInvalidEmailModal(false)
+    setCodeError('')
   }
 
   const redirectByRole = (token) => {
@@ -38,19 +40,49 @@ function useLogin() {
     else window.location.href = '/dashboard/empleado'
   }
 
-  const handleLogin = async () => {
-    if (!email && !password) { showError('Rellene los campos requeridos'); return }
-    if (!email) { showError('Ingresa tu correo electrónico'); return }
-    if (!password) { showError('Ingresa tu contraseña'); return }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) { showError('Ingresa un correo electrónico válido'); return }
+  const handleEmailChange = (value) => {
+    setEmail(value)
+    setFieldErrors((prev) => ({ ...prev, email: undefined }))
+  }
 
+  const handlePasswordChange = (value) => {
+    setPassword(value)
+    setFieldErrors((prev) => ({ ...prev, password: undefined }))
+  }
+
+  const handleLogin = async () => {
+    const errors = {}
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+    if (!email) {
+      errors.email = 'El correo electrónico es requerido'
+    } else if (!emailRegex.test(email)) {
+      errors.email = 'Ingresa un correo electrónico válido'
+    }
+
+    if (!password) {
+      errors.password = 'La contraseña es requerida'
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      return
+    }
+
+    setFieldErrors({})
+    setLogging(true)
     const data = await login(email, password)
+    setLogging(false)
+    console.log('LOGIN RESPONSE:', data)
     if (data.token) {
       localStorage.setItem('token', data.token)
       redirectByRole(data.token)
     } else {
-      showError(data.error || 'La contraseña o el email son incorrectos')
+      if (data.error?.includes('suspendida')) {
+        setFieldErrors({ password: 'Tu cuenta está suspendida, contacta al administrador.' })
+      } else {
+        setFieldErrors({ password: 'El correo o la contraseña son incorrectos' })
+      }
     }
   }
 
@@ -65,20 +97,31 @@ function useLogin() {
         return
       }
       const result = await sendCode(emailValue)
-      if (result.error || !result.expiracion) {
+      if (result.error) {
+        setShowEmailModal(false)
+        setInvalidEmailReason(result.error)
+        setShowInvalidEmailModal(true)
         return
       }
+      if (!result.expiracion) return
       setForgotEmail(emailValue)
       setCodeExpiresAt(result.expiracion)
       setShowEmailModal(false)
       setShowConfirmModal(true)
-    } catch {
-      // silently fail — el botón del EmailModal vuelve a su estado normal
-    }
+    } catch {}
   }
 
   const handleVerifyCode = async (codeValue) => {
+    if (!codeValue || codeValue.trim().length < 7) {
+      setCodeError('Ingresa el código completo de 7 dígitos')
+      return
+    }
+
+    setCodeError('')
+    setVerifying(true)
     const data = await verifyCode(forgotEmail, codeValue)
+    setVerifying(false)
+
     if (data.message === 'Código verificado correctamente') {
       closeAllModals()
       localStorage.setItem('token', data.token)
@@ -97,12 +140,11 @@ function useLogin() {
       const result = await sendCode(forgotEmail)
       if (result.error || !result.expiracion) return
       setCodeExpiresAt(result.expiracion)
+      setCodeError('')
       setShowErrorModal(false)
       setShowExpiredModal(false)
       setShowConfirmModal(true)
-    } catch {
-      // silently fail
-    }
+    } catch {}
   }
 
   const handleExpired = () => {
@@ -111,21 +153,28 @@ function useLogin() {
   }
 
   return {
-    email, setEmail,
-    password, setPassword,
+    email,
+    password,
     showPassword, setShowPassword,
-    errorMsg,
+    fieldErrors,
     codeExpiresAt,
+    codeError,
+    verifying,
+    logging,
     showEmailModal,
     showConfirmModal,
     showErrorModal,
     showExpiredModal,
     showNonExistentModal,
+    showInvalidEmailModal,
+    invalidEmailReason,
     closeAllModals,
     showContraseniavencida,
     setShowContraseniavencida,
     redirectByRole,
     handleLogin,
+    handleEmailChange,
+    handlePasswordChange,
     handleForgotPassword,
     handleSendEmail,
     handleVerifyCode,

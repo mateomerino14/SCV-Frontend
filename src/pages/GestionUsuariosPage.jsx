@@ -19,8 +19,8 @@ const styles = {
   subtitulo: 'text-sm font-inter mb-5',
   searchWrapper: 'flex items-center border rounded-xl px-3 py-2 gap-2 mb-4',
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
-  tabsRow: 'flex gap-2 mb-4',
-  tab: 'flex-1 py-1.5 rounded-full text-xs font-bold font-inter cursor-pointer border text-center transition-colors',
+  tabsRow: 'flex gap-2 mb-4 flex-wrap',
+  tab: 'py-1.5 px-3 rounded-full text-xs font-bold font-inter cursor-pointer border text-center transition-colors',
   usuarioCard: 'rounded-2xl p-4 mb-3 shadow-sm flex items-center gap-3',
   avatar: 'w-11 h-11 rounded-full object-cover shrink-0',
   usuarioInfo: 'flex flex-col flex-1 min-w-0',
@@ -45,12 +45,16 @@ const tabs = [
   { valor: 'TODOS', label: 'Todos' },
   { valor: 'EMPLEADO', label: 'Empleados' },
   { valor: 'SUPERVISOR', label: 'Supervisores' },
+  { valor: 'REVISOR', label: 'Revisores' },
+  { valor: 'ADMINISTRADOR', label: 'Administradores' },
 ]
 
 const rolConfig = {
   ADMINISTRADOR: { label: 'Administrador', bg: '#d4edda', color: '#155724' },
   SUPERVISOR: { label: 'Supervisor', bg: '#85aff3ab', color: '#000a65' },
+  REVISOR: { label: 'Revisor', bg: '#fef3cd', color: '#856404' },
   EMPLEADO: { label: 'Empleado', bg: COLORS.text_enviroment_types, color: COLORS.background },
+  ADMINISTRADOR: { label: 'Administrador', bg: '#d4edda', color: '#155724' },
 }
 
 function GestionUsuariosPage() {

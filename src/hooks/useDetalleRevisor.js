@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getDetalleRevisor, aprobarViajeRevisor, rechazarViajeRevisor, agregarComentarioRevisor, editarComentarioRevisor, eliminarComentarioRevisor, bloquearRevisionRevisor, liberarRevisionRevisor } from '../services/revisorService'
+import { getDetalleRevisor, aprobarViajeRevisor, rechazarViajeRevisor, agregarComentarioRevisor, editarComentarioRevisor, eliminarComentarioRevisor, devolverRevisionRevisor } from '../services/revisorService'
 
 function useDetalleRevisor(id_viaje) {
   const [datos, setDatos] = useState(null)
@@ -22,23 +22,17 @@ function useDetalleRevisor(id_viaje) {
 
     const cargar = async () => {
       setLoading(true)
-      const bloqueo = await bloquearRevisionRevisor(id_viaje)
-      if (bloqueo.error) {
-        setError(bloqueo.error)
-        setBloqueado(true)
-        setLoading(false)
-        return
-      }
       const data = await getDetalleRevisor(id_viaje)
       setLoading(false)
-      if (!data.error) setDatos(data)
+      if (data.error) {
+        setError(data.error)
+        setBloqueado(true)
+        return
+      }
+      setDatos(data)
     }
 
     cargar()
-
-    return () => {
-      liberarRevisionRevisor(id_viaje)
-    }
   }, [id_viaje])
 
   const mostrarError = (msg) => { setError(msg); setTimeout(() => setError(''), 3000) }
@@ -74,20 +68,27 @@ function useDetalleRevisor(id_viaje) {
     setDatos((prev) => ({ ...prev, viaje: { ...prev.viaje, estado: 'RECHAZADO' } }))
   }
 
+  const handleDevolver = async () => {
+    const data = await devolverRevisionRevisor(id_viaje)
+    if (data.error) { mostrarError(data.error); return }
+    window.history.back()
+  }
+
   const editarObservacion = (index, valor) => {
     setObservaciones((prev) => { const n = [...prev]; n[index] = valor; return n })
   }
 
   const handleAgregarComentario = async () => {
-    const obs = observaciones.filter((o) => o.trim() !== '')
-    if (obs.length === 0) { mostrarError('Agrega al menos una observación'); return }
+    const texto = observaciones[0]?.trim()
+    if (!texto) { mostrarError('Debes escribir una observación'); return }
     setLoadingAccion(true)
-    for (const o of obs) await agregarComentarioRevisor(id_viaje, o)
+    const data = await agregarComentarioRevisor(id_viaje, texto)
     setLoadingAccion(false)
+    if (data.error) { mostrarError(data.error); return }
     setObservaciones([''])
     setComentarioAgregado(true)
-    const data = await getDetalleRevisor(id_viaje)
-    if (!data.error) setDatos(data)
+    const updated = await getDetalleRevisor(id_viaje)
+    if (!updated.error) setDatos(updated)
   }
 
   const handleAbrirEdicion = (obs) => {
@@ -134,6 +135,7 @@ function useDetalleRevisor(id_viaje) {
     handleAprobar,
     handlePedirRechazar,
     handleRechazar,
+    handleDevolver,
     handleAgregarComentario,
     handleAbrirEdicion, handleConfirmarEdicion,
     handleAbrirEliminacion, handleConfirmarEliminacion,

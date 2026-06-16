@@ -71,7 +71,7 @@ function useGestionUsuarios() {
     if (formData.telefono.trim()) {
       if (!soloNumeros.test(formData.telefono.trim())) errores.telefono = 'Solo puede contener números'
       else if (formData.telefono.trim().length < 7) errores.telefono = 'Mínimo 7 dígitos'
-      else if (formData.telefono.trim().length > 20) errores.telefono = 'Máximo 20 dígitos'
+      else if (formData.telefono.trim().length > 8) errores.telefono = 'Máximo 8 dígitos'
     }
 
     if (!formData.numero_dependencia.trim()) errores.numero_dependencia = 'El número de dependencia es requerido'
@@ -148,24 +148,29 @@ function useGestionUsuarios() {
   }
 
   const handleEditar = async () => {
-    const errores = validarCampos(false, usuarioSeleccionado.id_usuario)
-    if (Object.keys(errores).length > 0) { setErroresCampo(errores); return }
-    setErroresCampo({})
-    const payload = {
-      nombre: formData.nombre, apellido_paterno: formData.apellido_paterno,
-      apellido_materno: formData.apellido_materno, email_corporativo: formData.email_corporativo,
-      telefono: formData.telefono, id_cargo: formData.id_cargo, id_rol: formData.id_rol,
-      numero_dependencia: formData.numero_dependencia, numero_seccion: formData.numero_seccion,
-    }
-    setLoadingAccion(true)
-    const data = await actualizarUsuario(usuarioSeleccionado.id_usuario, payload)
-    setLoadingAccion(false)
-    if (data.error) { mostrarError(data.error); return }
-    setShowEditar(false)
-    setMensajeExito('Usuario actualizado correctamente')
-    setShowExito(true)
-    await cargar()
+  const errores = validarCampos(false, usuarioSeleccionado.id_usuario)
+  if (Object.keys(errores).length > 0) { setErroresCampo(errores); return }
+  setErroresCampo({})
+  const payload = {
+    nombre: formData.nombre,
+    apellido_paterno: formData.apellido_paterno,
+    apellido_materno: formData.apellido_materno,
+    email_corporativo: formData.email_corporativo,
+    telefono: formData.telefono?.trim() || null,
+    id_cargo: formData.id_cargo,
+    id_rol: formData.id_rol,
+    numero_dependencia: formData.numero_dependencia,
+    numero_seccion: formData.numero_seccion,
   }
+  setLoadingAccion(true)
+  const data = await actualizarUsuario(usuarioSeleccionado.id_usuario, payload)
+  setLoadingAccion(false)
+  if (data.error) { mostrarError(data.error); return }
+  setShowEditar(false)
+  setMensajeExito('Usuario actualizado correctamente')
+  setShowExito(true)
+  await cargar()
+}
 
   const handleToggleActivo = async () => {
     setLoadingAccion(true)

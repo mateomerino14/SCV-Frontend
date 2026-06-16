@@ -42,13 +42,15 @@ function usePerfil() {
   }
 
   const handleGuardarTelefono = async () => {
-    if (telefono.length > 20) {
-      mostrarError('El teléfono no puede tener más de 20 caracteres')
+    const telefonoLimpio = telefono.trim()
+
+    if (telefonoLimpio && !/^[0-9]{7,8}$/.test(telefonoLimpio)) {
+      mostrarError('El teléfono debe tener 7 u 8 dígitos numéricos')
       return
     }
 
     setGuardando(true)
-    const data = await actualizarPerfil({ telefono: telefono.trim() || null })
+    const data = await actualizarPerfil({ telefono: telefonoLimpio || null })
     setGuardando(false)
 
     if (data.error) {
@@ -60,7 +62,7 @@ function usePerfil() {
     setTelefono(data.telefono || '')
     setEditandoTelefono(false)
     mostrarExito('Teléfono actualizado correctamente')
-  }
+}
 
   const handleGuardarEmail = async () => {
     if (!email.trim()) {

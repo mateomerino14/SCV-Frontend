@@ -13,16 +13,34 @@ export const getPendientes = async (filtros = {}) => {
   }
 }
 
-export const getHistorialRevisiones = async (filtros = {}) => {
+export const getMisRevisiones = async (filtros = {}) => {
   try {
     const params = {}
     if (filtros.fecha_inicio) params.fecha_inicio = filtros.fecha_inicio
     if (filtros.fecha_fin) params.fecha_fin = filtros.fecha_fin
     if (filtros.id_empleado) params.id_empleado = filtros.id_empleado
-    const res = await api.get('/revision/historial', { params })
+    const res = await api.get('/revision/mis-revisiones', { params })
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al obtener historial' }
+    return { error: error.response?.data?.error || 'Error al obtener mis revisiones' }
+  }
+}
+
+export const tomarRevision = async (id_viaje) => {
+  try {
+    const res = await api.post(`/revision/${id_viaje}/tomar`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al tomar la revisión' }
+  }
+}
+
+export const devolverRevision = async (id_viaje) => {
+  try {
+    const res = await api.post(`/revision/${id_viaje}/devolver`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al devolver la revisión' }
   }
 }
 
@@ -86,23 +104,5 @@ export const eliminarComentario = async (id_viaje, id_comentario) => {
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al eliminar comentario' }
-  }
-}
-
-export const bloquearRevision = async (id_viaje) => {
-  try {
-    const res = await api.post(`/revision/${id_viaje}/bloquear`)
-    return res.data
-  } catch (error) {
-    return { error: error.response?.data?.error || 'Error al bloquear revisión' }
-  }
-}
-
-export const liberarRevision = async (id_viaje) => {
-  try {
-    const res = await api.post(`/revision/${id_viaje}/liberar`)
-    return res.data
-  } catch (error) {
-    return { error: error.response?.data?.error || 'Error al liberar revisión' }
   }
 }

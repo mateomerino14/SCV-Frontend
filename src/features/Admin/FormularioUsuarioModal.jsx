@@ -108,7 +108,7 @@ function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, 
               )}
             </div>
 
-            {campoTexto('telefono', 'Teléfono (opcional)', '71234567', soloNumerosRegex, 20)}
+            {campoTexto('telefono', 'Teléfono (opcional)', '71234567', soloNumerosRegex, 8)}
             {campoTexto('numero_dependencia', 'N° Dependencia', 'Ej: DEP-001', null, 50)}
             {campoTexto('numero_seccion', 'N° Sección', 'Ej: SEC-01', null, 50)}
 

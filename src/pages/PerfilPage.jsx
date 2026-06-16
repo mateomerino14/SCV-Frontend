@@ -267,10 +267,10 @@ function PerfilPage() {
                     className={styles.inputEdicion}
                     style={{ color: COLORS.text, borderColor: COLORS.primary }}
                     value={telefono}
-                    maxLength={20}
+                    maxLength={8}
                     type="tel"
-                    inputMode="tel"
-                    onChange={(e) => setTelefono(e.target.value)}
+                    inputMode="numeric"
+                    onChange={(e) => setTelefono(e.target.value.replace(/[^0-9]/g, ''))}
                     autoFocus
                   />
                 ) : (
@@ -327,20 +327,20 @@ function PerfilPage() {
           )}
 
           {usuario?.numero_seccion && (
-          <div className={styles.campoWrapperLast}>
-            <div className={styles.campoIzq}>
-              <div className={styles.iconoCampo} style={{ backgroundColor: COLORS.backgroundHeader }}>
-                <Layers size={16} style={{ color: COLORS.title }} />
-              </div>
-              <div className={styles.campoInfo}>
-                <p className={styles.campoLabel} style={{ color: COLORS.labels }}>N° Sección</p>
-                <p className={styles.campoValor} style={{ color: COLORS.text }}>
-                  {usuario.numero_seccion}
-                </p>
+            <div className={styles.campoWrapperLast}>
+              <div className={styles.campoIzq}>
+                <div className={styles.iconoCampo} style={{ backgroundColor: COLORS.backgroundHeader }}>
+                  <Layers size={16} style={{ color: COLORS.title }} />
+                </div>
+                <div className={styles.campoInfo}>
+                  <p className={styles.campoLabel} style={{ color: COLORS.labels }}>N° Sección</p>
+                  <p className={styles.campoValor} style={{ color: COLORS.text }}>
+                    {usuario.numero_seccion}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
         </div>
 
         {exito && (

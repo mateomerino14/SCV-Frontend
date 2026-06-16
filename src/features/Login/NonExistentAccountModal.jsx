@@ -3,19 +3,23 @@ import ModalBase from './ModalBase'
 import Button from '../../components/ui/Button'
 
 const styles = {
-  icon: "rounded-full p-5 border-4 border-white",
-  title: "text-2xl font-bold font-inter",
-  description: "font-inter text-sm",
+  icon: 'rounded-full p-5 border-4 border-white',
+  title: 'text-2xl font-bold font-inter',
+  description: 'font-inter text-sm',
 }
 
-function NonExistentAccountModal({ isOpen, onClose }) {
+function NonExistentAccountModal({ isOpen, onClose, mensaje }) {
   return (
     <ModalBase isOpen={isOpen}>
       <div className={styles.icon} style={{ backgroundColor: '#000000' }}>
         <AlertCircle size={36} color="white" />
       </div>
-      <h2 className={styles.title}>Cuenta Inexistente</h2>
-      <p className={styles.description}>El correo ingresado no esta ligado a una cuenta existente</p>
+      <h2 className={styles.title}>
+        {mensaje ? 'Correo No Válido' : 'Cuenta Inexistente'}
+      </h2>
+      <p className={styles.description}>
+        {mensaje || 'El correo ingresado no está ligado a una cuenta existente'}
+      </p>
       <div className="w-full">
         <Button text="Volver al Inicio" variant="primary" onClick={onClose} />
       </div>
@@ -23,4 +27,4 @@ function NonExistentAccountModal({ isOpen, onClose }) {
   )
 }
 
-export default NonExistentAccountModal
+export default NonExistentAccountModal;

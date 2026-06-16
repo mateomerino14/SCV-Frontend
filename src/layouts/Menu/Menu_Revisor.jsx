@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ClipboardList, History, Briefcase, Plane, User, Settings, LogOut, X } from 'lucide-react'
+import { ClipboardList, BookOpen, Briefcase, Plane, User, Settings, LogOut, X } from 'lucide-react'
 import { COLORS } from '../../constants'
 
 const AVATAR_DEFAULT = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg"
@@ -23,8 +23,8 @@ const styles = {
 }
 
 const opciones = [
-  { path: '/dashboard/revisor', label: 'Pendientes', icono: ClipboardList },
-  { path: '/dashboard/revisor/historial', label: 'Historial', icono: History },
+  { path: '/dashboard/revisor', label: 'Solicitudes Pendientes', icono: ClipboardList },
+  { path: '/dashboard/revisor/historial', label: 'Mis Revisiones', icono: BookOpen },
   { path: '/dashboard/empleado', label: 'Viajes Personales', icono: Briefcase },
   { path: '/dashboard/empleado/historial', label: 'Mis Viajes', icono: Plane },
   { path: '/dashboard/revisor/perfil', label: 'Perfil', icono: User },
@@ -37,15 +37,8 @@ function MenuRevisor({ isOpen, onClose, usuario }) {
 
   if (!isOpen) return null
 
-  const handleNavegar = (path) => {
-    navigate(path)
-    onClose()
-  }
-
-  const handleCerrarSesion = () => {
-    localStorage.removeItem('token')
-    navigate('/')
-  }
+  const handleNavegar = (path) => { navigate(path); onClose() }
+  const handleCerrarSesion = () => { localStorage.removeItem('token'); navigate('/') }
 
   const esActivo = (path) => {
     if (path === '/dashboard/revisor' || path === '/dashboard/empleado') {
@@ -56,34 +49,20 @@ function MenuRevisor({ isOpen, onClose, usuario }) {
 
   return (
     <div className={styles.overlay}>
-      <div
-        className={styles.backdrop}
-        style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
-        onClick={onClose}
-      />
+      <div className={styles.backdrop} style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} onClick={onClose} />
       <div className={styles.drawer} style={{ backgroundColor: COLORS.background }}>
         <div className={styles.header} style={{ borderColor: COLORS.dataFields }}>
-          <img
-            src={usuario?.foto_perfil || AVATAR_DEFAULT}
-            alt="avatar"
-            className={styles.avatar}
-            style={{ borderColor: COLORS.primary }}
-          />
+          <img src={usuario?.foto_perfil || AVATAR_DEFAULT} alt="avatar" className={styles.avatar} style={{ borderColor: COLORS.primary }} />
           <div className={styles.headerInfo}>
             <p className={styles.headerNombre} style={{ color: COLORS.text }}>
-              {usuario?.nombre && usuario?.apellido_paterno
-                ? `${usuario.nombre} ${usuario.apellido_paterno}`
-                : 'Usuario'}
+              {usuario?.nombre && usuario?.apellido_paterno ? `${usuario.nombre} ${usuario.apellido_paterno}` : 'Usuario'}
             </p>
-            <p className={styles.headerCargo} style={{ color: COLORS.labels }}>
-              {usuario?.Cargo?.nombre || ''}
-            </p>
+            <p className={styles.headerCargo} style={{ color: COLORS.labels }}>{usuario?.Cargo?.nombre || ''}</p>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>
             <X size={20} style={{ color: COLORS.labels }} />
           </button>
         </div>
-
         <div className={styles.nav}>
           {opciones.map(({ path, label, icono: Icono }) => (
             <div
@@ -93,15 +72,11 @@ function MenuRevisor({ isOpen, onClose, usuario }) {
               onClick={() => handleNavegar(path)}
             >
               <Icono size={20} style={{ color: esActivo(path) ? COLORS.primary : COLORS.labels }} />
-              <p className={styles.opcionLabel} style={{ color: esActivo(path) ? COLORS.primary : COLORS.text }}>
-                {label}
-              </p>
+              <p className={styles.opcionLabel} style={{ color: esActivo(path) ? COLORS.primary : COLORS.text }}>{label}</p>
             </div>
           ))}
         </div>
-
         <div className={styles.separador} style={{ borderColor: COLORS.dataFields }} />
-
         <div className={styles.cerrarBtn} onClick={handleCerrarSesion}>
           <LogOut size={20} style={{ color: COLORS.secondary }} />
           <p className={styles.cerrarLabel} style={{ color: COLORS.secondary }}>Cerrar Sesión</p>

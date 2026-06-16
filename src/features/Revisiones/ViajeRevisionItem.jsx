@@ -20,7 +20,7 @@ const styles = {
   lugar: 'text-sm font-inter mb-3',
   spacer: 'flex-1',
   divider: 'border-t mb-3',
-  infoRow: 'flex justify-between items-end mb-4',
+  infoRow: 'flex justify-between items-end mb-3',
   infoItem: 'flex flex-col',
   infoLabel: 'text-xs font-semibold font-inter uppercase mb-0.5',
   infoValor: 'text-2xl font-semibold font-inter leading-none',
@@ -30,7 +30,8 @@ const styles = {
   estadoTexto: 'text-sm font-inter',
   alertasRow: 'flex gap-2 flex-wrap mb-3',
   alertaBadge: 'text-xs font-bold font-inter px-2.5 py-1 rounded-lg flex items-center gap-1',
-  detallesBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center tracking-widest',
+  botonesRow: 'flex gap-2',
+  btn: 'flex-1 h-9 rounded-xl font-bold font-nunito text-xs cursor-pointer text-center tracking-wide flex items-center justify-center',
 }
 
 const alertaConfig = {
@@ -43,7 +44,7 @@ const formatFecha = (f1, f2) => {
   return `${new Date(f1).toLocaleDateString('es-ES', opts)} - ${new Date(f2).toLocaleDateString('es-ES', opts)}`
 }
 
-function ViajeRevisionItem({ viaje, rutaDetalle, origenDetalle }) {
+function ViajeRevisionItem({ viaje, rutaDetalle, origenDetalle, onTomar, onDevolver, tomando }) {
   const navigate = useNavigate()
   const esObservado = viaje.estadoRevision === 'OBSERVADO'
   const ruta = rutaDetalle || `/dashboard/supervisor/revision/${viaje.id_viaje}`
@@ -109,13 +110,52 @@ function ViajeRevisionItem({ viaje, rutaDetalle, origenDetalle }) {
           </div>
         )}
 
-        <button
-          className={styles.detallesBtn}
-          style={{ backgroundColor: COLORS.title, color: COLORS.background }}
-          onClick={() => navigate(ruta, { state: { from: origen } })}
-        >
-          Revisar Detalles
-        </button>
+        <div className={styles.botonesRow}>
+          {onTomar ? (
+            <>
+              <button
+                className={styles.btn}
+                style={{ backgroundColor: 'transparent', border: `1.5px solid ${COLORS.title}`, color: COLORS.title }}
+                onClick={() => navigate(ruta, { state: { from: origen } })}
+              >
+                Ver
+              </button>
+              <button
+                className={styles.btn}
+                style={{ backgroundColor: COLORS.primary, color: COLORS.background, opacity: tomando ? 0.7 : 1 }}
+                onClick={() => onTomar(viaje.id_viaje)}
+                disabled={tomando}
+              >
+                {tomando ? 'Asignando...' : 'Asignarme'}
+              </button>
+            </>
+          ) : onDevolver ? (
+            <>
+              <button
+                className={styles.btn}
+                style={{ backgroundColor: COLORS.title, color: COLORS.background }}
+                onClick={() => navigate(ruta, { state: { from: origen } })}
+              >
+                Revisar
+              </button>
+              <button
+                className={styles.btn}
+                style={{ backgroundColor: 'transparent', border: `1.5px solid ${COLORS.secondary}`, color: COLORS.secondary }}
+                onClick={() => onDevolver(viaje.id_viaje)}
+              >
+                Devolver
+              </button>
+            </>
+          ) : (
+            <button
+              className={styles.btn}
+              style={{ backgroundColor: COLORS.title, color: COLORS.background }}
+              onClick={() => navigate(ruta, { state: { from: origen } })}
+            >
+              Revisar Detalles
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

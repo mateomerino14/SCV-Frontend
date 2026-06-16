@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { getPendientes } from '../services/supervisorService'
 
+const POLLING_INTERVAL = 30 * 1000
+
 function useRevisionesPendientes() {
   const [viajes, setViajes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -9,9 +11,7 @@ function useRevisionesPendientes() {
   const [filtroEstado, setFiltroEstado] = useState('TODOS')
 
   const cargar = async (f = filtros) => {
-    setLoading(true)
     const data = await getPendientes(f)
-    setLoading(false)
     if (data.error) {
       setError(data.error)
       return
@@ -20,7 +20,19 @@ function useRevisionesPendientes() {
   }
 
   useEffect(() => {
-    cargar()
+    const iniciar = async () => {
+      setLoading(true)
+      await cargar()
+      setLoading(false)
+    }
+
+    iniciar()
+
+    const polling = setInterval(() => {
+      cargar()
+    }, POLLING_INTERVAL)
+
+    return () => clearInterval(polling)
   }, [])
 
   const aplicarFiltros = () => cargar(filtros)
@@ -50,6 +62,7 @@ function useRevisionesPendientes() {
     setFiltroEstado,
     aplicarFiltros,
     limpiarFiltros,
+    recargar: cargar,
   }
 }
 

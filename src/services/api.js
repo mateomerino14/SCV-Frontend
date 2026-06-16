@@ -31,9 +31,21 @@ api.interceptors.response.use(
     const status = error.response?.status
     const mensaje = error.response?.data?.error || ''
 
+    const esRutaLogin = solicitudOriginal.url?.includes('/login') &&
+      !solicitudOriginal.url?.includes('/login/refresh') &&
+      !solicitudOriginal.url?.includes('/login/send-code') &&
+      !solicitudOriginal.url?.includes('/login/verify-code')
+
+    if (esRutaLogin) {
+      return Promise.reject(error)
+    }
+
     const esTokenExpirado = status === 401 && mensaje === 'Token expirado'
     const esTokenInvalido = status === 401 && mensaje.includes('Token inválido')
-    const esSuspendido = status === 401 && mensaje.includes('suspendida')
+    const esSuspendido = status === 401 && (
+      mensaje.includes('suspendida') ||
+      mensaje.includes('Usuario no válido')
+    )
     const esSinToken = status === 401 && mensaje.includes('token no proporcionado')
     const esRutaRefresh = solicitudOriginal.url?.includes('/login/refresh')
 
@@ -63,6 +75,7 @@ api.interceptors.response.use(
         api.defaults.headers.common.Authorization = `Bearer ${nuevoToken}`
         procesarCola(null, nuevoToken)
         solicitudOriginal.headers.Authorization = `Bearer ${nuevoToken}`
+        window.dispatchEvent(new CustomEvent('token-refreshed'))
         return api(solicitudOriginal)
       } catch (refreshError) {
         procesarCola(refreshError, null)

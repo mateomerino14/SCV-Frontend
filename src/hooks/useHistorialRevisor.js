@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getHistorialRevisor, getEmpleadosRevisor } from '../services/revisorService'
+import { getMisRevisionesRevisor, getEmpleadosRevisor } from '../services/revisorService'
 
 function useHistorialRevisor() {
   const [viajes, setViajes] = useState([])
@@ -7,16 +7,16 @@ function useHistorialRevisor() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filtros, setFiltros] = useState({ fecha_inicio: '', fecha_fin: '', id_empleado: '' })
-  const [filtroEstado, setFiltroEstado] = useState('TODOS')
+  const [filtroEstado, setFiltroEstado] = useState('APROBADO_SUPERVISOR')
 
   useEffect(() => {
-    cargar({})
+    cargar()
     getEmpleadosRevisor().then((data) => { if (!data.error) setEmpleados(data) })
   }, [])
 
-  const cargar = async (f) => {
+  const cargar = async (f = filtros) => {
     setLoading(true)
-    const data = await getHistorialRevisor(f)
+    const data = await getMisRevisionesRevisor(f)
     setLoading(false)
     if (data.error) { setError(data.error); return }
     setViajes(data)
@@ -27,13 +27,16 @@ function useHistorialRevisor() {
   const limpiarFiltros = () => {
     const vacios = { fecha_inicio: '', fecha_fin: '', id_empleado: '' }
     setFiltros(vacios)
-    setFiltroEstado('TODOS')
-    cargar({})
+    setFiltroEstado('APROBADO_SUPERVISOR')
+    cargar(vacios)
   }
 
-  const viajesFiltrados = filtroEstado === 'TODOS'
-    ? viajes
-    : viajes.filter((v) => v.estado === filtroEstado)
+  const viajesFiltrados = viajes.filter((v) => {
+    if (filtroEstado === 'APROBADO_SUPERVISOR') return v.estado === 'APROBADO_SUPERVISOR'
+    if (filtroEstado === 'APROBADO_FINAL') return v.estado === 'APROBADO_FINAL'
+    if (filtroEstado === 'RECHAZADO') return v.estado === 'RECHAZADO'
+    return true
+  })
 
   return {
     viajes: viajesFiltrados,
@@ -41,6 +44,7 @@ function useHistorialRevisor() {
     loading,
     error,
     filtros, setFiltros,
+    recargar: cargar,
     filtroEstado, setFiltroEstado,
     aplicarFiltros,
     limpiarFiltros,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getDetalleRevision, aprobarViaje, rechazarViaje, agregarComentario, editarComentario, eliminarComentario, bloquearRevision, liberarRevision } from '../services/supervisorService'
+import { getDetalleRevision, aprobarViaje, rechazarViaje, agregarComentario, editarComentario, eliminarComentario, devolverRevision } from '../services/supervisorService'
 
 function useDetalleRevision(id_viaje) {
   const [datos, setDatos] = useState(null)
@@ -22,24 +22,17 @@ function useDetalleRevision(id_viaje) {
 
     const cargar = async () => {
       setLoading(true)
-      const bloqueo = await bloquearRevision(id_viaje)
-      if (bloqueo.error) {
-        setError(bloqueo.error)
-        setBloqueado(true)
-        setLoading(false)
-        return
-      }
       const data = await getDetalleRevision(id_viaje)
       setLoading(false)
-      if (data.error) { setError(data.error); return }
+      if (data.error) {
+        setError(data.error)
+        setBloqueado(true)
+        return
+      }
       setDatos(data)
     }
 
     cargar()
-
-    return () => {
-      liberarRevision(id_viaje)
-    }
   }, [id_viaje])
 
   const mostrarError = (msg) => { setError(msg); setTimeout(() => setError(''), 3000) }
@@ -76,6 +69,12 @@ function useDetalleRevision(id_viaje) {
     if (data.error) { mostrarError(data.error); return }
     setShowRechazar(false)
     setAccionCompletada('RECHAZADO')
+  }
+
+  const handleDevolver = async () => {
+    const data = await devolverRevision(id_viaje)
+    if (data.error) { mostrarError(data.error); return }
+    window.history.back()
   }
 
   const handleAgregarComentario = async () => {
@@ -137,6 +136,7 @@ function useDetalleRevision(id_viaje) {
     handleAprobar,
     handlePedirRechazar,
     handleRechazar,
+    handleDevolver,
     handleAgregarComentario,
     handleAbrirEdicion, handleConfirmarEdicion,
     handleAbrirEliminacion, handleConfirmarEliminacion,

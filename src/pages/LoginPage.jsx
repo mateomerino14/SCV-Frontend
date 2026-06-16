@@ -11,32 +11,34 @@ import useLogin from '../hooks/useLogin'
 import { LOGIN_IMAGE } from '../constants'
 
 const styles = {
-  page: "min-h-screen bg-gray-100 flex items-center justify-center",
-  mobileContainer: "md:hidden bg-white w-full max-w-sm mx-4 rounded-2xl shadow-lg overflow-hidden",
-  mobileHeader: "px-6 pt-6",
-  mobileTitle: "text-2xl font-bold font-inter",
-  mobileSubtitle: "text-gray-500 text-sm font-inter",
-  mobileImageWrapper: "px-6 my-4",
-  mobileImage: "w-full h-40 object-cover rounded-xl",
-  mobileForm: "px-6 pb-6",
-  desktopContainer: "hidden md:flex bg-white w-[80vw] rounded-2xl shadow-lg overflow-hidden h-[85vh]",
-  desktopImage: "w-full h-full object-cover",
-  desktopForm: "w-1/2 flex flex-col justify-center px-16 py-12",
-  formSection: "flex flex-col gap-5 w-full",
-  label: "text-sm font-bold font-inter text-gray-600 uppercase",
-  inputWrapper: "flex items-center border rounded-lg px-4 py-3 gap-2 mt-1",
-  input: "w-full outline-none font-inter text-base",
-  errorMsg: "text-red-600 text-sm mt-1 font-inter italic text-center",
-  forgotPassword: "text-red-600 text-sm font-inter cursor-pointer hover:underline",
+  page: 'min-h-screen bg-gray-100 flex items-center justify-center',
+  mobileContainer: 'md:hidden bg-white w-full max-w-sm mx-4 rounded-2xl shadow-lg overflow-hidden animate-fade-in',
+  mobileHeader: 'px-6 pt-6',
+  mobileTitle: 'text-2xl font-bold font-inter',
+  mobileSubtitle: 'text-gray-500 text-sm font-inter',
+  mobileImageWrapper: 'px-6 my-4',
+  mobileImage: 'w-full h-40 object-cover rounded-xl',
+  mobileForm: 'px-6 pb-6',
+  desktopContainer: 'hidden md:flex bg-white w-[80vw] rounded-2xl shadow-lg overflow-hidden h-[85vh] animate-fade-in',
+  desktopImage: 'w-full h-full object-cover',
+  desktopForm: 'w-1/2 flex flex-col justify-center px-16 py-12',
+  formSection: 'flex flex-col gap-5 w-full',
+  label: 'text-sm font-bold font-inter text-gray-600 uppercase',
+  inputWrapper: 'flex items-center border rounded-lg px-4 py-3 gap-2 mt-1',
+  input: 'w-full outline-none font-inter text-base',
+  errorMsg: 'text-red-600 text-xs font-inter italic mt-1 text-left',
+  forgotPassword: 'text-red-600 text-sm font-inter cursor-pointer hover:underline',
 }
 
 function LoginPage() {
   const {
-    email, setEmail,
-    password, setPassword,
+    email,
+    password,
     showPassword, setShowPassword,
-    errorMsg,
+    fieldErrors,
     codeExpiresAt,
+    showInvalidEmailModal,
+    invalidEmailReason,
     showEmailModal,
     showConfirmModal,
     showErrorModal,
@@ -44,7 +46,12 @@ function LoginPage() {
     showNonExistentModal,
     closeAllModals,
     handleLogin,
+    codeError,
+    verifying,
+    logging,
     handleForgotPassword,
+    handleEmailChange,
+    handlePasswordChange,
     handleSendEmail,
     handleVerifyCode,
     handleResendCode,
@@ -59,16 +66,23 @@ function LoginPage() {
 
       <div>
         <label className={styles.label}>Correo Corporativo</label>
-        <div className={styles.inputWrapper}>
+        <div
+          className={styles.inputWrapper}
+          style={{ borderColor: fieldErrors.email ? '#dc2626' : '#e5e7eb' }}
+        >
           <Mail size={18} className="text-gray-400" />
           <input
             type="email"
             placeholder="nombre@empresa.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => handleEmailChange(e.target.value)}
             className={styles.input}
+            disabled={logging}
           />
         </div>
+        {fieldErrors.email && (
+          <p className={styles.errorMsg}>{fieldErrors.email}</p>
+        )}
       </div>
 
       <div>
@@ -78,26 +92,37 @@ function LoginPage() {
             ¿Olvidaste tu contraseña?
           </button>
         </div>
-        <div className={styles.inputWrapper}>
+        <div
+          className={styles.inputWrapper}
+          style={{ borderColor: fieldErrors.password ? '#dc2626' : '#e5e7eb' }}
+        >
           <Lock size={18} className="text-gray-400" />
           <input
             type={showPassword ? 'text' : 'password'}
             placeholder="••••••••••••••••"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => handlePasswordChange(e.target.value)}
             className={styles.input}
+            disabled={logging}
           />
-          <button onClick={() => setShowPassword(!showPassword)}>
+          <button onClick={() => setShowPassword(!showPassword)} disabled={logging}>
             {showPassword
               ? <EyeOff size={18} className="text-gray-400" />
               : <Eye size={18} className="text-gray-400" />
             }
           </button>
         </div>
-        {errorMsg && <p className={styles.errorMsg}>{errorMsg}</p>}
+        {fieldErrors.password && (
+          <p className={styles.errorMsg}>{fieldErrors.password}</p>
+        )}
       </div>
 
-      <Button text="Iniciar Sesión" variant="primary" onClick={handleLogin} />
+      <Button
+        text={logging ? 'Iniciando...' : 'Iniciar Sesión'}
+        variant="primary"
+        onClick={handleLogin}
+        disabled={logging}
+      />
       <AppLogo />
     </div>
   )
@@ -128,10 +153,20 @@ function LoginPage() {
       </div>
 
       <EmailModal isOpen={showEmailModal} onClose={closeAllModals} onSend={handleSendEmail} />
-      <ConfirmacionModal isOpen={showConfirmModal} onClose={closeAllModals} onVerify={handleVerifyCode} onResend={handleResendCode} onExpired={handleExpired} expiresAt={codeExpiresAt} />
+      <ConfirmacionModal
+        isOpen={showConfirmModal}
+        onClose={closeAllModals}
+        onVerify={handleVerifyCode}
+        onResend={handleResendCode}
+        onExpired={handleExpired}
+        expiresAt={codeExpiresAt}
+        codeError={codeError}
+        verifying={verifying}
+      />
       <ErrorModal isOpen={showErrorModal} onClose={closeAllModals} onResend={handleResendCode} />
       <ExpiredCodeModal isOpen={showExpiredModal} onClose={closeAllModals} onResend={handleResendCode} />
       <NonExistentAccountModal isOpen={showNonExistentModal} onClose={closeAllModals} />
+      <NonExistentAccountModal isOpen={showInvalidEmailModal} onClose={closeAllModals} mensaje={invalidEmailReason} />
     </div>
   )
 }

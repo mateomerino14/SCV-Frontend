@@ -10,7 +10,8 @@ import useMenu from '../hooks/useMenu'
 import useContraseniavencida from '../hooks/useContraseniavencida'
 import ContraseniavencidaModal from '../features/Login/ContraseniavencidaModal'
 import SessionExpiredModal from '../features/Login/SessionExpiredModal'
-import { getEmpleados } from '../services/supervisorService'
+import { getEmpleados, tomarRevision } from '../services/supervisorService'
+import { useNavigate } from 'react-router-dom'
 import { COLORS } from '../constants'
 
 const styles = {
@@ -28,29 +29,44 @@ const styles = {
 }
 
 function RevisionesPendientesPage() {
+  const navigate = useNavigate()
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
-  const { viajes, totalViajes, loading, error, filtros, setFiltros, filtroEstado, setFiltroEstado, aplicarFiltros, limpiarFiltros } = useRevisionesPendientes()
+  const { viajes, totalViajes, loading, error, filtros, setFiltros, filtroEstado, setFiltroEstado, aplicarFiltros, limpiarFiltros, recargar } = useRevisionesPendientes()
   const { showModal, loading: loadingCambio, error: errorCambio, handleCambio } = useContraseniavencida()
   const [empleados, setEmpleados] = useState([])
+  const [tomando, setTomando] = useState(null)
+  const [errorTomar, setErrorTomar] = useState('')
 
   useEffect(() => {
-    getEmpleados().then((data) => {
-      if (!data.error) setEmpleados(data)
-    })
+    getEmpleados().then((data) => { if (!data.error) setEmpleados(data) })
   }, [])
+
+  const handleTomar = async (id_viaje) => {
+  setTomando(id_viaje)
+  setErrorTomar('')
+  const data = await tomarRevision(id_viaje)
+  setTomando(null)
+  if (data.error) {
+    setErrorTomar(data.error)
+    setTimeout(() => setErrorTomar(''), 3000)
+    recargar()
+    return
+  }
+  recargar()
+}
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <ContraseniavencidaModal isOpen={showModal} onConfirm={handleCambio} loading={loadingCambio} error={errorCambio} />
-      <Navbar text="Revisiones Pendientes" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
+      <Navbar text="Solicitudes Pendientes" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
       <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
       <div className={styles.content}>
         <p className={styles.planLabel} style={{ color: COLORS.title }}>Revisión de Rendiciones</p>
-        <h1 className={styles.title} style={{ color: COLORS.text }}>Pendientes de Aprobación</h1>
+        <h1 className={styles.title} style={{ color: COLORS.text }}>Solicitudes Pendientes</h1>
         <p className={styles.subtitulo} style={{ color: COLORS.text_enviroment_types }}>
-          Gestiona y valida los gastos corporativos reportados. El sistema resalta automáticamente anomalías en las políticas de viaje.
+          Asígnate un viaje para revisarlo. Solo tú podrás procesarlo una vez asignado.
         </p>
 
         <FiltrosPendientes
@@ -70,7 +86,11 @@ function RevisionesPendientesPage() {
         </div>
 
         {loading && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>Cargando...</p>}
-        {error && <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>{error}</p>}
+        {(error || errorTomar) && (
+          <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
+            {error || errorTomar}
+          </p>
+        )}
 
         {!loading && viajes.length === 0 && (
           <EmptyState
@@ -92,6 +112,8 @@ function RevisionesPendientesPage() {
               viaje={viaje}
               rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
               origenDetalle="/dashboard/supervisor"
+              onTomar={handleTomar}
+              tomando={tomando === viaje.id_viaje}
             />
           ))}
         </div>

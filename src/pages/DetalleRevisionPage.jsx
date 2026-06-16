@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, AlertTriangle, Plus, Pencil, Trash2 } from 'lucide-react'
+import { jwtDecode } from 'jwt-decode'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
@@ -13,6 +14,7 @@ import ConfirmarEliminarComentarioModal from '../features/Revisiones/ConfirmarEl
 import useDetalleRevision from '../hooks/useDetalleRevision'
 import useMenu from '../hooks/useMenu'
 import SessionExpiredModal from '../features/Login/SessionExpiredModal'
+import { tomarRevision } from '../services/supervisorService'
 import { COLORS } from '../constants'
 
 const AVATAR_DEFAULT = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg"
@@ -80,6 +82,7 @@ const styles = {
   accionBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center',
   errorMsg: 'text-xs font-inter italic text-center py-3 px-3 rounded-xl mb-3',
   exitoBadge: 'text-sm font-bold font-inter text-center py-3 px-4 rounded-xl mb-4',
+  asignarseCard: 'rounded-2xl p-5 mb-4 flex flex-col gap-3',
 }
 
 const alertaConfig = {
@@ -127,6 +130,8 @@ function DetalleRevisionPage() {
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
   const [showAgregarObs, setShowAgregarObs] = useState(false)
   const [obsSeleccionada, setObsSeleccionada] = useState(null)
+  const [tomando, setTomando] = useState(false)
+  const [errorTomar, setErrorTomar] = useState('')
 
   const {
     datos, loading, loadingAccion, error, bloqueado,
@@ -149,6 +154,26 @@ function DetalleRevisionPage() {
   useEffect(() => {
     if (comentarioAgregado) { setShowAgregarObs(false); resetComentarioAgregado() }
   }, [comentarioAgregado])
+
+  const getMiId = () => {
+    try {
+      const token = localStorage.getItem('token')
+      return jwtDecode(token)?.id_usuario
+    } catch { return null }
+  }
+
+  const handleAsignarme = async () => {
+    setTomando(true)
+    setErrorTomar('')
+    const data = await tomarRevision(id)
+    setTomando(false)
+    if (data.error) {
+      setErrorTomar(data.error)
+      setTimeout(() => setErrorTomar(''), 3000)
+      return
+    }
+    window.location.reload()
+  }
 
   if (loading) {
     return (
@@ -195,9 +220,13 @@ function DetalleRevisionPage() {
 
   if (!datos) return null
 
-  const { viaje, gastos, comentarios, gastoAcumulado, excedePresupuesto, alertas } = datos
-  const esPendiente = viaje.estado === 'EN_REVISION'
-  const estadoActual = estadoConfig[viaje.estado] || estadoConfig['EN_REVISION']
+ const { viaje, gastos, comentarios, gastoAcumulado, excedePresupuesto, alertas } = datos
+const esPendiente = viaje.estado === 'EN_REVISION'
+const estadoActual = estadoConfig[viaje.estado] || estadoConfig['EN_REVISION']
+const miId = getMiId()
+const esMio = viaje.id_supervisor_asignado === miId
+const sinAsignar = !viaje.id_supervisor_asignado
+const puedeAccionar = esPendiente && esMio
   const totalIVA = gastos.reduce((sum, g) => {
     const monto = parseFloat(g.Factura?.monto_parcial || 0)
     const total = parseFloat(g.monto_total || 0)
@@ -342,11 +371,11 @@ function DetalleRevisionPage() {
           </div>
         </div>
 
-        {(esPendiente || obsComentarios.length > 0) && (
+        {(puedeAccionar || obsComentarios.length > 0) && (
           <div className={styles.obsSection}>
             <div className={styles.obsTituloRow}>
               <p className={styles.obsTitulo} style={{ color: COLORS.title }}>Observaciones</p>
-              {esPendiente && (
+              {puedeAccionar && (
                 <div className={styles.obsBotonesRow}>
                   <button className={styles.obsBtn} style={{ backgroundColor: COLORS.secondary }} onClick={() => setShowAgregarObs(true)}>
                     <Plus size={18} style={{ color: COLORS.background }} />
@@ -363,7 +392,7 @@ function DetalleRevisionPage() {
             {obsComentarios.map((obs) => {
               const seleccionada = obsSeleccionada?.id_comentario === obs.id_comentario
               return (
-                <div key={obs.id_comentario} className={styles.obsItem} style={{ cursor: esPendiente ? 'pointer' : 'default' }} onClick={() => esPendiente && setObsSeleccionada(seleccionada ? null : obs)}>
+                <div key={obs.id_comentario} className={styles.obsItem} style={{ cursor: puedeAccionar ? 'pointer' : 'default' }} onClick={() => puedeAccionar && setObsSeleccionada(seleccionada ? null : obs)}>
                   <div className={styles.obsBulletRow}>
                     <div className={styles.obsBullet} style={{ backgroundColor: seleccionada ? COLORS.primary : COLORS.secondary }} />
                     <p className={styles.obsFecha} style={{ color: COLORS.text_enviroment_types }}>{formatFechaHora(obs.fecha)}</p>
@@ -377,13 +406,41 @@ function DetalleRevisionPage() {
           </div>
         )}
 
+        {errorTomar && (
+          <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
+            {errorTomar}
+          </p>
+        )}
+
+        {error && !bloqueado && (
+          <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
+            {error}
+          </p>
+        )}
+
         {accionCompletada && (
           <p className={styles.exitoBadge} style={{ backgroundColor: accionCompletada === 'APROBADO' ? '#d4edda' : '#ffa7a8aa', color: accionCompletada === 'APROBADO' ? '#155724' : '#500203' }}>
             {accionCompletada === 'APROBADO' ? 'Viaje aprobado correctamente' : 'Viaje rechazado correctamente'}
           </p>
         )}
 
-        {esPendiente && !accionCompletada && (
+        {esPendiente && sinAsignar && !accionCompletada && (
+          <div className="mb-4">
+            <p className="text-sm font-inter mb-3 text-center" style={{ color: COLORS.labels }}>
+              Este viaje no está asignado. Asígnate para poder aprobarlo o rechazarlo.
+            </p>
+            <button
+              className={styles.accionBtn}
+              style={{ backgroundColor: COLORS.primary, color: COLORS.background, opacity: tomando ? 0.7 : 1, width: '100%' }}
+              onClick={handleAsignarme}
+              disabled={tomando}
+            >
+              {tomando ? 'Asignando...' : 'Asignarme este viaje'}
+            </button>
+          </div>
+        )}
+
+        {puedeAccionar && !accionCompletada && (
           <div className="mb-4">
             <div className={styles.accionesRow}>
               <button className={styles.accionBtn} style={{ backgroundColor: COLORS.primary, color: COLORS.background }} onClick={() => setShowAprobar(true)}>

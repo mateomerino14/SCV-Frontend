@@ -60,11 +60,7 @@
 
 [X] Ajustar los filtros de viajes en el historial, ya que se realizaron cambios en los nombres de los estados (por ejemplo, de "Aceptado" a "Aprobado"). Revisar también otras secciones que puedan verse afectadas por estos cambios para asegurar la correcta aplicación de los filtros.
 
-[X] Revisar las reglas de visibilidad y permisos según el rol:
-    - Un revisor no debe visualizar ni gestionar sus propios viajes.
-    - Un revisor o supervisor no debe poder calificarse, aprobarse o revisarse a sí mismo un viaje.
-    - Validar si es correcto que un administrador visualice su propio usuario en los módulos de administración.
-    - Verificar otros escenarios similares para garantizar la coherencia de permisos y evitar acciones sobre registros propios.
+[X] Revisar las reglas de visibilidad y permisos según el rol: - Un revisor no debe visualizar ni gestionar sus propios viajes. - Un revisor o supervisor no debe poder calificarse, aprobarse o revisarse a sí mismo un viaje. - Validar si es correcto que un administrador visualice su propio usuario en los módulos de administración. - Verificar otros escenarios similares para garantizar la coherencia de permisos y evitar acciones sobre registros propios.
 
 [X] Se egrega doble observacion repetida cuando agrego una, por alguna razon al revisar
 
@@ -72,7 +68,14 @@
 
 [X] Que los controles de que un viaje no puede ser revisado por dos personas, osea sea entre supervisores y entre revisores, osea si un empleado esta viendo por ejemplo detalles de su viaje enviado a revision, es ilogico que me bloquees el acceso a mi como supervisor, osea que ese control se aplica a empleados con mismos roles comoo revisores y por otro lado entre supervisores
 
-
 [X] Ver correo oficial, arreglar, en el deploy se bueguea el envio de correo por alguna razon, exnvio, no pasa al pop up de verificacion o de codigo de verificacion, directo a lo que es codigo ha expirado, se queda en el pop up de ingrese su correo electronico con el boton que dice enviando
 
 [X] Al editar un gasto de factura no me dejar editar el iva o bueno puedo editarlo pero al darle a guardar no guarda en ninguno sea factura o recibo, ni en registrar ni en editar
+
+[?] Revisar el tema del refresh, actualiza los roles pero el menu por rol de buguea cuando cambio de roles
+
+[?] Refactorizacion
+
+[?] Manuales
+
+[?] Deployados
