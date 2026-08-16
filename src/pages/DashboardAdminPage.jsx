@@ -1,4 +1,4 @@
-import { Users, Briefcase, Plane, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Users, Briefcase, Plane, Clock, CheckCircle, XCircle, Wallet } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
@@ -34,13 +34,18 @@ const styles = {
 }
 
 const viajesConfig = [
+  { key: 'viajesEnRevisionViaje', label: 'Rev. Previa', icono: Clock, color: '#5b00a0', bg: '#e8d5ff' },
+  { key: 'viajesAprViaje', label: 'Esperando Apr.', icono: CheckCircle, color: '#7a5900', bg: '#ffd700aa' },
+  { key: 'viajesEnRevisionTesorero', label: 'Esperando Fondos', icono: Wallet, color: '#8a4b00', bg: '#ffd8a8aa' },
   { key: 'viajesEnCurso', label: 'En Curso', icono: Plane, color: COLORS.primary, bg: COLORS.error },
   { key: 'viajesEnRevision', label: 'En Revisión', icono: Clock, color: '#000a65', bg: '#85aff3ab' },
-  { key: 'viajesAprobados', label: 'Aprobados', icono: CheckCircle, color: '#155724', bg: '#d4edda' },
+  { key: 'viajesAprSupervisor', label: 'Apr. Supervisor', icono: CheckCircle, color: '#7a5900', bg: '#ffd700aa' },
+  { key: 'viajesAprAprobador', label: 'Apr. Aprobador', icono: CheckCircle, color: '#000a65', bg: '#85aff3ab' },
+  { key: 'viajesAprobados', label: 'Aprobado Final', icono: CheckCircle, color: '#155724', bg: '#d4edda' },
   { key: 'viajesRechazados', label: 'Rechazados', icono: XCircle, color: '#500203', bg: '#ffa7a8aa' },
 ]
 
-const ROL_COLORS = [COLORS.primary, '#4a7fd4', '#2d7a3a', COLORS.secondary]
+const ROL_COLORS = [COLORS.primary, '#4a7fd4', '#2d7a3a', COLORS.secondary, '#7a5900']
 
 const RADIAN = Math.PI / 180
 const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
@@ -56,24 +61,38 @@ const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) =>
 }
 
 function DashboardAdminPage() {
-  const { menuAbierto, usuario, abrirMenu, cerrarMenu,sessionExpired, handleSessionExpiredClose  } = useMenu()
+  const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
   const { datos, loading } = useDashboardAdmin()
-const { showModal, loading: loadingCambio, error: errorCambio, handleCambio } = useContraseniavencida()
+  const { showModal, loading: loadingCambio, error: errorCambio, handleCambio } = useContraseniavencida()
+
   const totalViajes = datos
-    ? datos.viajesEnCurso + datos.viajesEnRevision + datos.viajesAprobados + datos.viajesRechazados
+    ? (datos.viajesEnRevisionViaje || 0) +
+      (datos.viajesAprViaje || 0) +
+      (datos.viajesEnRevisionTesorero || 0) +
+      (datos.viajesEnCurso || 0) +
+      (datos.viajesEnRevision || 0) +
+      (datos.viajesAprSupervisor || 0) +
+      (datos.viajesAprAprobador || 0) +
+      (datos.viajesAprobados || 0) +
+      (datos.viajesRechazados || 0)
     : 0
 
   const barViajesData = datos ? [
-    { name: 'En Curso', valor: datos.viajesEnCurso, fill: COLORS.primary },
-    { name: 'Revisión', valor: datos.viajesEnRevision, fill: '#4a7fd4' },
-    { name: 'Aprobados', valor: datos.viajesAprobados, fill: '#2d7a3a' },
-    { name: 'Rechazados', valor: datos.viajesRechazados, fill: COLORS.secondary },
+    { name: 'Rev. Previa', valor: datos.viajesEnRevisionViaje || 0, fill: '#5b00a0' },
+    { name: 'Esp. Apr.', valor: datos.viajesAprViaje || 0, fill: '#7a5900' },
+    { name: 'Esp. Fondos', valor: datos.viajesEnRevisionTesorero || 0, fill: '#c47a1f' },
+    { name: 'En Curso', valor: datos.viajesEnCurso || 0, fill: COLORS.primary },
+    { name: 'En Rev.', valor: datos.viajesEnRevision || 0, fill: '#4a7fd4' },
+    { name: 'Apr. Sup.', valor: datos.viajesAprSupervisor || 0, fill: '#c49000' },
+    { name: 'Apr. Apr.', valor: datos.viajesAprAprobador || 0, fill: '#000a65' },
+    { name: 'Aprobado', valor: datos.viajesAprobados || 0, fill: '#2d7a3a' },
+    { name: 'Rechazado', valor: datos.viajesRechazados || 0, fill: COLORS.secondary },
   ] : []
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <ContraseniavencidaModal isOpen={showModal} onConfirm={handleCambio} loading={loadingCambio} error={errorCambio}/>
+      <ContraseniavencidaModal isOpen={showModal} onConfirm={handleCambio} loading={loadingCambio} error={errorCambio} />
       <Navbar text="Dashboard" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
       <MenuAdministrador isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
 
@@ -158,10 +177,10 @@ const { showModal, loading: loadingCambio, error: errorCambio, handleCambio } = 
                 <p className={styles.chartSub} style={{ color: COLORS.labels }}>
                   {totalViajes} viajes registrados en total
                 </p>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={barViajesData} barCategoryGap="30%">
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={barViajesData} barCategoryGap="20%">
                     <CartesianGrid strokeDasharray="3 3" stroke={COLORS.dataFields} />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fontFamily: 'Inter', fill: COLORS.labels }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 7.5, fontFamily: 'Inter', fill: COLORS.labels }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 10, fontFamily: 'Inter', fill: COLORS.labels }} axisLine={false} tickLine={false} allowDecimals={false} />
                     <Tooltip
                       formatter={(value) => [`${value} viajes`]}

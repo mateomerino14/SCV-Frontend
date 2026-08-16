@@ -1,7 +1,5 @@
 import api from './api'
 
-const BASE_URL = import.meta.env.VITE_API_URL
-
 export const getMe = async () => {
   try {
     const res = await api.get('/usuario/me')
@@ -38,12 +36,21 @@ export const obtenerDetalleViaje = async (id_viaje) => {
   }
 }
 
-export const enviarRevision = async (id_viaje, justificacion) => {
+export const confirmarFinalizacion = async (id_viaje, justificacion) => {
   try {
-    const res = await api.put(`/viaje/${id_viaje}/enviar-revision`, { justificacion })
+    const res = await api.put(`/viaje/${id_viaje}/confirmar-finalizacion`, { justificacion })
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al enviar a revisión' }
+    return { error: error.response?.data?.error || 'Error al confirmar finalización' }
+  }
+}
+
+export const editarViaje = async (id_viaje, datos) => {
+  try {
+    const res = await api.put(`/viaje/${id_viaje}/editar`, datos)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al editar el viaje' }
   }
 }
 
@@ -75,7 +82,10 @@ export const guardarFactura = async (datos, imagenFile) => {
     const res = await api.post('/factura/guardar', formData)
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al guardar la factura' }
+    return {
+      error: error.response?.data?.error || 'Error al guardar la factura',
+      requiereAutorizacion: !!error.response?.data?.requiereAutorizacion,
+    }
   }
 }
 
@@ -96,7 +106,10 @@ export const registrarGasto = async (datos, imagenFile) => {
     const res = await api.post('/gasto/registrar', formData)
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al registrar el gasto' }
+    return {
+      error: error.response?.data?.error || 'Error al registrar el gasto',
+      requiereAutorizacion: !!error.response?.data?.requiereAutorizacion,
+    }
   }
 }
 
@@ -117,7 +130,10 @@ export const actualizarGasto = async (id_gasto, datos, imagenFile) => {
     const res = await api.put(`/gasto/${id_gasto}/actualizar`, formData)
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al actualizar el gasto' }
+    return {
+      error: error.response?.data?.error || 'Error al actualizar el gasto',
+      requiereAutorizacion: !!error.response?.data?.requiereAutorizacion,
+    }
   }
 }
 
@@ -129,16 +145,19 @@ export const actualizarFactura = async (id_gasto, datos, imagenFile) => {
     const res = await api.put(`/factura/${id_gasto}/actualizar`, formData)
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al actualizar la factura' }
+    return {
+      error: error.response?.data?.error || 'Error al actualizar la factura',
+      requiereAutorizacion: !!error.response?.data?.requiereAutorizacion,
+    }
   }
 }
 
-export const getHistorialViajes = async () => {
+export const getHistorialViajes = async (pagina = 1, limite = 20, filtro = 'TODOS') => {
   try {
-    const res = await api.get('/viaje/historial')
+    const res = await api.get('/viaje/historial', { params: { pagina, limite, filtro } })
     return res.data
   } catch (error) {
-    return { error: error.response?.data?.error || 'Error al obtener el historial de viajes' }
+    return { error: error.response?.data?.error || 'Error al obtener el historial' }
   }
 }
 
@@ -168,5 +187,34 @@ export const actualizarFotoPerfil = async (imagenFile) => {
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al actualizar la foto' }
+  }
+}
+
+export const enviarReciboAgrupado = async (id_viaje, tipo, internacional = false) => {
+  try {
+    const res = await api.post(`/gasto/viaje/${id_viaje}/recibo/${tipo}`, null, { params: { internacional } })
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al generar el recibo' }
+  }
+}
+
+
+export const enviarReciboIndividual = async (id_gasto) => {
+  try {
+    const res = await api.post(`/gasto/${id_gasto}/recibo`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al generar el recibo' }
+  }
+}
+
+
+export const enviarViajeARevision = async (id_viaje) => {
+  try {
+    const res = await api.put(`/viaje/${id_viaje}/enviar-revision`)
+    return res.data
+  } catch (error) {
+    return { error: error.response?.data?.error || 'Error al enviar el viaje a revisión' }
   }
 }

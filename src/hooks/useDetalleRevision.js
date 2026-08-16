@@ -10,12 +10,15 @@ function useDetalleRevision(id_viaje) {
   const [showAprobar, setShowAprobar] = useState(false)
   const [showRechazar, setShowRechazar] = useState(false)
   const [showSinObservaciones, setShowSinObservaciones] = useState(false)
-  const [observaciones, setObservaciones] = useState([''])
   const [accionCompletada, setAccionCompletada] = useState(null)
   const [comentarioAgregado, setComentarioAgregado] = useState(false)
   const [comentarioEditando, setComentarioEditando] = useState(null)
   const [comentarioEliminando, setComentarioEliminando] = useState(null)
   const [textoEdicion, setTextoEdicion] = useState('')
+
+  const [gastoActivo, setGastoActivo] = useState(null)
+  const [showObsGasto, setShowObsGasto] = useState(false)
+  const [nuevoTexto, setNuevoTexto] = useState('')
 
   useEffect(() => {
     if (!id_viaje) return
@@ -49,10 +52,17 @@ function useDetalleRevision(id_viaje) {
     if (data.error) { mostrarError(data.error); return }
     setShowAprobar(false)
     setAccionCompletada('APROBADO')
+    setDatos((prev) => ({ ...prev, viaje: { ...prev.viaje, estado: 'APROBADO_SUPERVISOR' } }))
   }
 
+  const cicloActual = () => datos?.viaje?.ciclo_revision || 1
+
   const handlePedirRechazar = () => {
-    const obsGuardadas = (datos?.comentarios || []).filter((c) => c.tipo === 'OBSERVACION')
+    const obsGuardadas = (datos?.comentarios || []).filter((c) =>
+      c.tipo === 'OBSERVACION' &&
+      (c.ciclo_revision || 1) === cicloActual() &&
+      c.id_gasto != null
+    )
     if (obsGuardadas.length === 0) {
       setShowSinObservaciones(true)
     } else {
@@ -61,14 +71,13 @@ function useDetalleRevision(id_viaje) {
   }
 
   const handleRechazar = async () => {
-    const obsGuardadas = (datos?.comentarios || []).filter((c) => c.tipo === 'OBSERVACION')
-    const textos = obsGuardadas.map((o) => o.descripcion)
     setLoadingAccion(true)
-    const data = await rechazarViaje(id_viaje, textos)
+    const data = await rechazarViaje(id_viaje)
     setLoadingAccion(false)
     if (data.error) { mostrarError(data.error); return }
     setShowRechazar(false)
     setAccionCompletada('RECHAZADO')
+    setDatos((prev) => ({ ...prev, viaje: { ...prev.viaje, estado: 'RECHAZADO' } }))
   }
 
   const handleDevolver = async () => {
@@ -77,14 +86,36 @@ function useDetalleRevision(id_viaje) {
     window.history.back()
   }
 
+  const abrirObservacionesGasto = (id_gasto) => {
+    setGastoActivo(id_gasto)
+    setNuevoTexto('')
+    setShowObsGasto(true)
+  }
+
+  const cerrarObservacionesGasto = () => {
+    setShowObsGasto(false)
+    setGastoActivo(null)
+    setNuevoTexto('')
+  }
+
+  const observacionesDelGastoActivo = () => {
+    if (!gastoActivo || !datos?.comentarios) return []
+    return datos.comentarios.filter((c) => c.tipo === 'OBSERVACION' && c.id_gasto === gastoActivo)
+  }
+
+  const contarObservacionesGasto = (id_gasto) => {
+    if (!datos?.comentarios) return 0
+    return datos.comentarios.filter((c) => c.tipo === 'OBSERVACION' && c.id_gasto === id_gasto).length
+  }
+
   const handleAgregarComentario = async () => {
-    const texto = observaciones[0]?.trim()
+    const texto = nuevoTexto.trim()
     if (!texto) { mostrarError('Debes escribir una observación'); return }
     setLoadingAccion(true)
-    const data = await agregarComentario(id_viaje, texto)
+    const data = await agregarComentario(id_viaje, texto, gastoActivo)
     setLoadingAccion(false)
     if (data.error) { mostrarError(data.error); return }
-    setObservaciones([''])
+    setNuevoTexto('')
     setComentarioAgregado(true)
     await recargar()
   }
@@ -118,21 +149,19 @@ function useDetalleRevision(id_viaje) {
 
   const resetComentarioAgregado = () => setComentarioAgregado(false)
 
-  const editarObservacion = (i, val) => {
-    setObservaciones((prev) => prev.map((o, idx) => (idx === i ? val : o)))
-  }
-
   return {
     datos, loading, loadingAccion, error, bloqueado,
     showAprobar, setShowAprobar,
     showRechazar, setShowRechazar,
     showSinObservaciones, setShowSinObservaciones,
-    observaciones,
     accionCompletada,
     comentarioAgregado, resetComentarioAgregado,
     comentarioEditando, setComentarioEditando,
     comentarioEliminando, setComentarioEliminando,
     textoEdicion, setTextoEdicion,
+    gastoActivo, showObsGasto, nuevoTexto, setNuevoTexto,
+    abrirObservacionesGasto, cerrarObservacionesGasto,
+    observacionesDelGastoActivo, contarObservacionesGasto,
     handleAprobar,
     handlePedirRechazar,
     handleRechazar,
@@ -140,7 +169,6 @@ function useDetalleRevision(id_viaje) {
     handleAgregarComentario,
     handleAbrirEdicion, handleConfirmarEdicion,
     handleAbrirEliminacion, handleConfirmarEliminacion,
-    editarObservacion,
   }
 }
 

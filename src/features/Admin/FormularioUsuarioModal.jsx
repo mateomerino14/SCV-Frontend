@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { User, ChevronDown, ChevronUp, Check } from 'lucide-react'
 import Button from '../../components/ui/Button'
+import SelectorCargo from './SelectorCargo'
 import { COLORS } from '../../constants'
+
+const AVATAR_DEFAULT = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg"
 
 const styles = {
   overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
   scrollWrapper: 'w-full max-w-sm md:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl',
   card: 'flex flex-col p-6 gap-3',
+  avatarWrapper: 'flex justify-center mb-2',
+  avatar: 'w-20 h-20 rounded-full object-cover border-4',
   iconWrapper: 'rounded-full p-4 self-center',
   titulo: 'text-2xl font-bold font-inter text-center mb-5',
   grid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
@@ -15,7 +21,7 @@ const styles = {
   errorCampo: 'text-xs font-inter mt-1',
   dropdownWrapper: 'relative',
   dropdownBtn: 'w-full border rounded-xl px-3 py-2.5 text-sm font-inter flex items-center justify-between cursor-pointer',
-  dropdownMenu: 'absolute z-20 w-full border rounded-xl mt-1 shadow-lg overflow-hidden',
+  dropdownMenu: 'fixed z-[10000] rounded-xl border shadow-lg overflow-hidden',
   dropdownItem: 'flex items-center justify-between px-3 py-2.5 text-sm font-inter cursor-pointer',
   btnRow: 'flex gap-3 mt-2 justify-center',
   errorMsg: 'text-red-600 text-sm font-inter italic text-center',
@@ -24,22 +30,25 @@ const styles = {
 const rolesOpciones = [
   { value: 3, label: 'Empleado' },
   { value: 2, label: 'Supervisor' },
-  { value: 1, label: 'Administrador' },
+  { value: 5, label: 'Aprobador' },
   { value: 4, label: 'Revisor' },
+  { value: 1, label: 'Administrador' },
 ]
 
 const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]*$/
 const soloNumerosRegex = /^[0-9]*$/
 
-function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, formData, setFormData, cargos, loading, error, erroresCampo = {}, setErroresCampo }) {
-  const [dropdownCargo, setDropdownCargo] = useState(false)
+function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, formData, setFormData, cargos, loading, error, erroresCampo = {}, setErroresCampo, usuarioSeleccionado }) {
   const [dropdownRol, setDropdownRol] = useState(false)
+  const [posicionRol, setPosicionRol] = useState(null)
+  const triggerRolRef = useRef(null)
+  const menuRolRef = useRef(null)
 
   if (!isOpen) return null
 
-  const cargoSeleccionado = cargos.find((c) => String(c.id_cargo) === String(formData.id_cargo))
   const rolSeleccionado = rolesOpciones.find((r) => r.value === formData.id_rol)
   const esNuevo = titulo === 'Nuevo Usuario'
+  const fotoPerfil = usuarioSeleccionado?.foto_perfil || null
 
   const handleChange = (key, valor, filtro, maxLen) => {
     if (filtro && !filtro.test(valor)) return
@@ -70,13 +79,69 @@ function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, 
     </div>
   )
 
+  const calcularPosicionRol = () => {
+    if (!triggerRolRef.current) return
+    const rect = triggerRolRef.current.getBoundingClientRect()
+    const espacioAbajo = window.innerHeight - rect.bottom
+    const abreArriba = espacioAbajo < 220
+    setPosicionRol({
+      left: rect.left,
+      width: rect.width,
+      top: abreArriba ? undefined : rect.bottom + 4,
+      bottom: abreArriba ? window.innerHeight - rect.top + 4 : undefined,
+    })
+  }
+
+  useEffect(() => {
+    const handleClickFuera = (e) => {
+      if (
+        triggerRolRef.current && !triggerRolRef.current.contains(e.target) &&
+        menuRolRef.current && !menuRolRef.current.contains(e.target)
+      ) {
+        setDropdownRol(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickFuera)
+    return () => document.removeEventListener('mousedown', handleClickFuera)
+  }, [])
+
+  useEffect(() => {
+    if (!dropdownRol) return
+    const handleReposicionar = () => calcularPosicionRol()
+    window.addEventListener('scroll', handleReposicionar, true)
+    window.addEventListener('resize', handleReposicionar)
+    return () => {
+      window.removeEventListener('scroll', handleReposicionar, true)
+      window.removeEventListener('resize', handleReposicionar)
+    }
+  }, [dropdownRol])
+
+  const handleToggleRol = () => {
+    const nuevoEstado = !dropdownRol
+    if (nuevoEstado) calcularPosicionRol()
+    setDropdownRol(nuevoEstado)
+  }
+
   return (
     <div className={styles.overlay}>
       <div className={styles.scrollWrapper} style={{ backgroundColor: COLORS.background }}>
         <div className={styles.card}>
-          <div className={styles.iconWrapper} style={{ backgroundColor: COLORS.backgroundHeader }}>
-            <User size={40} style={{ color: COLORS.text }} />
-          </div>
+          {!esNuevo && fotoPerfil ? (
+            <div className={styles.avatarWrapper}>
+              <img
+                src={fotoPerfil}
+                alt="foto perfil"
+                className={styles.avatar}
+                style={{ borderColor: COLORS.primary }}
+                onError={(e) => { e.target.src = AVATAR_DEFAULT }}
+              />
+            </div>
+          ) : (
+            <div className={styles.iconWrapper} style={{ backgroundColor: COLORS.backgroundHeader }}>
+              <User size={40} style={{ color: COLORS.text }} />
+            </div>
+          )}
+
           <p className={styles.titulo} style={{ color: COLORS.text }}>{titulo}</p>
 
           <div className={styles.grid}>
@@ -138,89 +203,62 @@ function FormularioUsuarioModal({ isOpen, onClose, onConfirm, titulo, btnLabel, 
           </div>
 
           <div className={styles.grid}>
-            <div>
-              <p className={styles.inputLabel} style={{ color: COLORS.labels }}>Cargo</p>
-              <div className={styles.dropdownWrapper}>
-                <button
-                  className={styles.dropdownBtn}
-                  style={{
-                    borderColor: erroresCampo.id_cargo ? '#f87171' : COLORS.dataFields,
-                    backgroundColor: COLORS.background,
-                    color: cargoSeleccionado ? COLORS.text : COLORS.labels,
-                  }}
-                  onClick={() => { setDropdownCargo(!dropdownCargo); setDropdownRol(false) }}
-                >
-                  <span>{cargoSeleccionado ? cargoSeleccionado.nombre : 'Seleccionar cargo'}</span>
-                  {dropdownCargo ? <ChevronUp size={16} style={{ color: COLORS.labels }} /> : <ChevronDown size={16} style={{ color: COLORS.labels }} />}
-                </button>
-                {erroresCampo.id_cargo && (
-                  <p className={styles.errorCampo} style={{ color: '#ef4444' }}>{erroresCampo.id_cargo}</p>
-                )}
-                {dropdownCargo && (
-                  <div className={styles.dropdownMenu} style={{ backgroundColor: COLORS.background, borderColor: COLORS.dataFields }}>
-                    <div style={{ maxHeight: `${4 * 44}px`, overflowY: 'auto' }}>
-                      {cargos.filter(c => c.activo).map((c) => {
-                        const sel = String(formData.id_cargo) === String(c.id_cargo)
-                        return (
-                          <div
-                            key={c.id_cargo}
-                            className={styles.dropdownItem}
-                            style={{
-                              backgroundColor: sel ? COLORS.backgroundHeader : 'transparent',
-                              color: sel ? COLORS.primary : COLORS.text,
-                              borderTop: `1px solid ${COLORS.dataFields}`,
-                            }}
-                            onClick={() => {
-                              setFormData((prev) => ({ ...prev, id_cargo: c.id_cargo }))
-                              setErroresCampo?.((prev) => ({ ...prev, id_cargo: undefined }))
-                              setDropdownCargo(false)
-                            }}
-                          >
-                            <span>{c.nombre}</span>
-                            {sel && <Check size={14} style={{ color: COLORS.primary }} />}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            <SelectorCargo
+              cargos={cargos}
+              idCargo={formData.id_cargo}
+              onChange={(id) => {
+                setFormData((prev) => ({ ...prev, id_cargo: id }))
+                setErroresCampo?.((prev) => ({ ...prev, id_cargo: undefined }))
+              }}
+              error={erroresCampo.id_cargo}
+            />
 
             <div>
               <p className={styles.inputLabel} style={{ color: COLORS.labels }}>Rol de Sistema</p>
-              <div className={styles.dropdownWrapper}>
-                <button
-                  className={styles.dropdownBtn}
-                  style={{ borderColor: COLORS.dataFields, backgroundColor: COLORS.background, color: COLORS.text }}
-                  onClick={() => { setDropdownRol(!dropdownRol); setDropdownCargo(false) }}
+              <button
+                ref={triggerRolRef}
+                type="button"
+                className={styles.dropdownBtn}
+                style={{ borderColor: COLORS.dataFields, backgroundColor: COLORS.background, color: COLORS.text }}
+                onClick={handleToggleRol}
+              >
+                <span>{rolSeleccionado?.label || 'Seleccionar rol'}</span>
+                {dropdownRol ? <ChevronUp size={16} style={{ color: COLORS.labels }} /> : <ChevronDown size={16} style={{ color: COLORS.labels }} />}
+              </button>
+              {dropdownRol && posicionRol && createPortal(
+                <div
+                  ref={menuRolRef}
+                  className={styles.dropdownMenu}
+                  style={{
+                    backgroundColor: COLORS.background,
+                    borderColor: COLORS.dataFields,
+                    left: posicionRol.left,
+                    width: posicionRol.width,
+                    top: posicionRol.top,
+                    bottom: posicionRol.bottom,
+                  }}
                 >
-                  <span>{rolSeleccionado?.label || 'Seleccionar rol'}</span>
-                  {dropdownRol ? <ChevronUp size={16} style={{ color: COLORS.labels }} /> : <ChevronDown size={16} style={{ color: COLORS.labels }} />}
-                </button>
-                {dropdownRol && (
-                  <div className={styles.dropdownMenu} style={{ backgroundColor: COLORS.background, borderColor: COLORS.dataFields }}>
-                    {rolesOpciones.map((r) => {
-                      const sel = formData.id_rol === r.value
-                      return (
-                        <div
-                          key={r.value}
-                          className={styles.dropdownItem}
-                          style={{
-                            backgroundColor: sel ? COLORS.backgroundHeader : 'transparent',
-                            color: sel ? COLORS.primary : COLORS.text,
-                            borderTop: `1px solid ${COLORS.dataFields}`,
-                          }}
-                          onClick={() => { setFormData((prev) => ({ ...prev, id_rol: r.value })); setDropdownRol(false) }}
-                        >
-                          <span>{r.label}</span>
-                          {sel && <Check size={14} style={{ color: COLORS.primary }} />}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
+                  {rolesOpciones.map((r) => {
+                    const sel = formData.id_rol === r.value
+                    return (
+                      <div
+                        key={r.value}
+                        className={styles.dropdownItem}
+                        style={{
+                          backgroundColor: sel ? COLORS.backgroundHeader : 'transparent',
+                          color: sel ? COLORS.primary : COLORS.text,
+                          borderTop: `1px solid ${COLORS.dataFields}`,
+                        }}
+                        onClick={() => { setFormData((prev) => ({ ...prev, id_rol: r.value })); setDropdownRol(false) }}
+                      >
+                        <span>{r.label}</span>
+                        {sel && <Check size={14} style={{ color: COLORS.primary }} />}
+                      </div>
+                    )
+                  })}
+                </div>,
+                document.body
+              )}
             </div>
           </div>
 

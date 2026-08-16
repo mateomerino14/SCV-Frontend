@@ -4,21 +4,24 @@ const MAX_PROVEEDOR = 50
 const MAX_FACTURA = 50
 const MAX_NIT = 10
 const MAX_MONTO = 99999.99
+const IVA_PORCENTAJE = 0.13
 
-function useFormularioFactura(datos, onChange) {
+function useFormularioFactura(datos, onChange, guardado = false) {
   const monto = parseFloat(datos.monto || 0)
   const iva = parseFloat(datos.iva || 0)
   const montoTotal = monto + iva
-  const porcentajeIva = monto > 0 ? ((iva / monto) * 100).toFixed(0) : 0
+  const porcentajeIva = datos.tipo_doc === 'F' ? 13 : 0
 
   useEffect(() => {
+    if (guardado) return
+    const esFactura = datos.tipo_doc === 'F'
+    const ivaCalculado = esFactura ? parseFloat((monto * IVA_PORCENTAJE).toFixed(2)) : 0
     const ivaActual = parseFloat(datos.iva || 0)
-    if (ivaActual > 0 && datos.tipo_doc !== 'F') {
-      onChange('tipo_doc', 'F')
-    } else if (ivaActual === 0 && datos.tipo_doc !== 'R') {
-      onChange('tipo_doc', 'R')
+    if (Math.abs(ivaCalculado - ivaActual) > 0.001) {
+      onChange('iva', ivaCalculado.toFixed(2), true)
+      onChange('monto_total', (monto + ivaCalculado).toFixed(2), true)
     }
-  }, [datos.iva])
+  }, [monto, datos.tipo_doc, guardado])
 
   const validarDecimal = (valor) => {
     const soloDecimalValido = valor.replace(',', '.').replace(/[^0-9.]/g, '')
@@ -29,14 +32,16 @@ function useFormularioFactura(datos, onChange) {
   }
 
   const handleCampoChange = (campo, valor) => {
-    if (campo === 'monto' || campo === 'iva') {
+    if (campo === 'monto') {
       const valorValidado = validarDecimal(valor)
       if (valorValidado === null) return
       if (valorValidado !== '' && parseFloat(valorValidado) > MAX_MONTO) return
       onChange(campo, valorValidado)
-      const nuevoMonto = campo === 'monto' ? parseFloat(valorValidado || 0) : monto
-      const nuevoIva = campo === 'iva' ? parseFloat(valorValidado || 0) : iva
-      onChange('monto_total', (nuevoMonto + nuevoIva).toFixed(2))
+      const nuevoMonto = parseFloat(valorValidado || 0)
+      const esFactura = datos.tipo_doc === 'F'
+      const nuevoIva = esFactura ? parseFloat((nuevoMonto * IVA_PORCENTAJE).toFixed(2)) : 0
+      onChange('iva', nuevoIva.toFixed(2), true)
+      onChange('monto_total', (nuevoMonto + nuevoIva).toFixed(2), true)
       return
     }
 
@@ -61,10 +66,19 @@ function useFormularioFactura(datos, onChange) {
     onChange(campo, valor)
   }
 
+  const handleTipoDocChange = (tipo) => {
+    onChange('tipo_doc', tipo)
+    const esFactura = tipo === 'F'
+    const nuevoIva = esFactura ? parseFloat((monto * IVA_PORCENTAJE).toFixed(2)) : 0
+    onChange('iva', nuevoIva.toFixed(2), true)
+    onChange('monto_total', (monto + nuevoIva).toFixed(2), true)
+  }
+
   return {
     montoTotal,
     porcentajeIva,
     handleCampoChange,
+    handleTipoDocChange,
   }
 }
 

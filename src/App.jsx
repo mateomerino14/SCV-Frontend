@@ -4,10 +4,12 @@ import LoginPage from './pages/LoginPage'
 import DashboardEmpleadoPage from './pages/DashboardEmpleadoPage'
 import CrearViajePage from './pages/CrearViajePage'
 import DetalleViajePage from './pages/DetalleViajePage'
+import EditarViajePage from './pages/EditarViajePage'
 import SubirFacturaPage from './pages/SubirFacturaPage'
 import RegistrarGastoPage from './pages/RegistrarGastoPage'
 import DetalleGastoPage from './pages/DetalleGastoPage'
 import EditarFacturaPage from './pages/EditarFacturaPage'
+import SolicitudesPlazoPage from './pages/SolicitudesPlazoPage'
 import EditarGastoPage from './pages/EditarGastoPage'
 import HistorialViajesPage from './pages/HistorialViajesPage'
 import ConfiguracionPage from './pages/ConfiguracionPage'
@@ -16,12 +18,18 @@ import DashboardAdminPage from './pages/DashboardAdminPage'
 import GestionUsuariosPage from './pages/GestionUsuariosPage'
 import GestionCargosPage from './pages/GestionCargosPage'
 import NotFoundPage from './pages/NotFoundPage'
+import RevisionesTesoreroPage from './pages/RevisionesTesoreroPage'
+import DetalleTesoreroPage from './pages/DetalleTesoreroPage'
 import RevisionesPendientesPage from './pages/RevisionesPendientesPage'
 import HistorialRevisionesPage from './pages/HistorialRevisionesPage'
 import DetalleRevisionPage from './pages/DetalleRevisionPage'
+import ViajesPendientesSupervisorPage from './pages/ViajesPendientesSupervisorPage'
+import MisViajesSupervisorPage from './pages/MisViajesSupervisorPage'
+import DetalleViajePrevioSupervisorPage from './pages/DetalleViajePrevioSupervisorPage'
 import RevisionRevisorPage from './pages/RevisionRevisorPage'
-import HistorialRevisorPage from './pages/HistorialRevisorPage'
 import DetalleRevisorPage from './pages/DetalleRevisorPage'
+import RevisionesAprobadorPage from './pages/RevisionesAprobadorPage'
+import DetalleViajePrevioAprobadorPage from './pages/DetalleViajePrevioAprobadorPage'
 
 function RutaProtegida({ children, rolesPermitidos }) {
   const token = localStorage.getItem('token')
@@ -45,6 +53,7 @@ function App() {
       <Route path="/dashboard/empleado" element={<RutaProtegida><DashboardEmpleadoPage /></RutaProtegida>} />
       <Route path="/dashboard/empleado/crear-viaje" element={<RutaProtegida><CrearViajePage /></RutaProtegida>} />
       <Route path="/dashboard/empleado/viaje/:id" element={<RutaProtegida><DetalleViajePage /></RutaProtegida>} />
+      <Route path="/dashboard/empleado/viaje/:id/editar" element={<RutaProtegida><EditarViajePage /></RutaProtegida>} />
       <Route path="/dashboard/empleado/viaje/:id/subir-factura" element={<RutaProtegida><SubirFacturaPage /></RutaProtegida>} />
       <Route path="/dashboard/empleado/viaje/:id/registrar-gasto" element={<RutaProtegida><RegistrarGastoPage /></RutaProtegida>} />
       <Route path="/dashboard/empleado/gasto/:id" element={<RutaProtegida><DetalleGastoPage /></RutaProtegida>} />
@@ -56,21 +65,29 @@ function App() {
       <Route path="/dashboard/supervisor" element={<RutaProtegida><RevisionesPendientesPage /></RutaProtegida>} />
       <Route path="/dashboard/supervisor/historial" element={<RutaProtegida><HistorialRevisionesPage /></RutaProtegida>} />
       <Route path="/dashboard/supervisor/revision/:id" element={<RutaProtegida><DetalleRevisionPage /></RutaProtegida>} />
+      <Route path="/dashboard/supervisor/viajes-pendientes" element={<RutaProtegida><ViajesPendientesSupervisorPage /></RutaProtegida>} />
+      <Route path="/dashboard/supervisor/viajes-historial" element={<RutaProtegida><MisViajesSupervisorPage /></RutaProtegida>} />
+      <Route path="/dashboard/supervisor/viaje-previo/:id" element={<RutaProtegida><DetalleViajePrevioSupervisorPage /></RutaProtegida>} />
       <Route path="/dashboard/supervisor/perfil" element={<RutaProtegida><PerfilPage /></RutaProtegida>} />
       <Route path="/dashboard/supervisor/configuracion" element={<RutaProtegida><ConfiguracionPage /></RutaProtegida>} />
       <Route path="/dashboard/supervisor/gasto/:id" element={<RutaProtegida><DetalleGastoPage /></RutaProtegida>} />
       <Route path="/dashboard/administrador" element={<RutaProtegida rolesPermitidos={[1]}><DashboardAdminPage /></RutaProtegida>} />
       <Route path="/dashboard/administrador/usuarios" element={<RutaProtegida rolesPermitidos={[1]}><GestionUsuariosPage /></RutaProtegida>} />
       <Route path="/dashboard/administrador/cargos" element={<RutaProtegida rolesPermitidos={[1]}><GestionCargosPage /></RutaProtegida>} />
-      <Route path="/dashboard/administrador/perfil" element={<RutaProtegida rolesPermitidos={[1]}><PerfilPage /></RutaProtegida>}/>
+      <Route path="/dashboard/administrador/perfil" element={<RutaProtegida rolesPermitidos={[1]}><PerfilPage /></RutaProtegida>} />
       <Route path="/dashboard/administrador/configuracion" element={<RutaProtegida rolesPermitidos={[1]}><ConfiguracionPage /></RutaProtegida>} />
       <Route path="/dashboard/revisor" element={<RutaProtegida rolesPermitidos={[4]}><RevisionRevisorPage /></RutaProtegida>} />
-      <Route path="/dashboard/revisor/historial" element={<RutaProtegida rolesPermitidos={[4]}><HistorialRevisorPage /></RutaProtegida>} />
       <Route path="/dashboard/revisor/revision/:id" element={<RutaProtegida rolesPermitidos={[4]}><DetalleRevisorPage /></RutaProtegida>} />
-      <Route path="/dashboard/revisor/historial/:id" element={<RutaProtegida rolesPermitidos={[4]}><DetalleRevisorPage /></RutaProtegida>} />
       <Route path="/dashboard/revisor/perfil" element={<RutaProtegida rolesPermitidos={[4]}><PerfilPage /></RutaProtegida>} />
       <Route path="/dashboard/revisor/configuracion" element={<RutaProtegida rolesPermitidos={[4]}><ConfiguracionPage /></RutaProtegida>} />
       <Route path="/dashboard/revisor/gasto/:id" element={<RutaProtegida rolesPermitidos={[4]}><DetalleGastoPage /></RutaProtegida>} />
+      <Route path="/dashboard/revisor/solicitudes-plazo" element={<RutaProtegida rolesPermitidos={[4]}><SolicitudesPlazoPage /></RutaProtegida>} />
+      <Route path="/dashboard/aprobador/revisiones" element={<RutaProtegida rolesPermitidos={[5]}><RevisionesAprobadorPage /></RutaProtegida>} />
+      <Route path="/dashboard/aprobador/viaje-previo/:id" element={<RutaProtegida rolesPermitidos={[5]}><DetalleViajePrevioAprobadorPage /></RutaProtegida>} />
+      <Route path="/dashboard/aprobador/perfil" element={<RutaProtegida rolesPermitidos={[5]}><PerfilPage /></RutaProtegida>} />
+      <Route path="/dashboard/aprobador/configuracion" element={<RutaProtegida rolesPermitidos={[5]}><ConfiguracionPage /></RutaProtegida>} />
+      <Route path="/dashboard/tesorero/revisiones" element={<RutaProtegida><RevisionesTesoreroPage /></RutaProtegida>} />
+      <Route path="/dashboard/tesorero/viaje/:id" element={<RutaProtegida><DetalleTesoreroPage /></RutaProtegida>} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )

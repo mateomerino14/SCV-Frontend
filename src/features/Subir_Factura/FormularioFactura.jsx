@@ -1,5 +1,6 @@
 import { COLORS } from '../../constants'
 import useFormularioFactura from '../../hooks/useFormularioFactura'
+import { QrCode } from 'lucide-react'
 
 const styles = {
   wrapper: "flex flex-col gap-4 mt-4 p-5 shadow-md rounded-lg",
@@ -14,6 +15,7 @@ const styles = {
   montoTotalBox: "rounded-xl px-4 py-3 border-2",
   montoTotalText: "text-2xl font-bold font-inter",
   alerta: "flex items-center gap-2 p-2 rounded-xl text-xs font-inter justify-center",
+  qrBadge: "flex items-center gap-2 p-2 rounded-xl text-xs font-bold font-inter justify-center",
 }
 
 const camposConfig = [
@@ -25,10 +27,18 @@ const camposConfig = [
 ]
 
 function FormularioFactura({ datos, onChange, modificadoManualmente, erroresCampo = {}, guardado = false }) {
-  const { montoTotal, porcentajeIva, handleCampoChange } = useFormularioFactura(datos, onChange)
+  const { montoTotal, porcentajeIva, handleCampoChange, handleTipoDocChange } = useFormularioFactura(datos, onChange, guardado)
 
   return (
     <div className={styles.wrapper}>
+
+      {datos.extraido_por_qr && !modificadoManualmente && (
+        <div className={styles.qrBadge} style={{ backgroundColor: '#d4edda', color: '#155724' }}>
+          <QrCode size={14} />
+          Datos extraídos del QR del SIAT
+        </div>
+      )}
+
       <div className="mt-3">
         <p className={styles.sectionTitle} style={{ color: COLORS.labels }}>Tipo de Documento</p>
         <div className={styles.toggleRow}>
@@ -43,7 +53,7 @@ function FormularioFactura({ datos, onChange, modificadoManualmente, erroresCamp
                 opacity: guardado ? 0.6 : 1,
                 cursor: guardado ? 'default' : 'pointer',
               }}
-              onClick={() => !guardado && onChange('tipo_doc', tipo)}
+              onClick={() => !guardado && handleTipoDocChange(tipo)}
               disabled={guardado}
             >
               {tipo === 'F' ? 'Factura (F)' : 'Recibo (R)'}
@@ -83,23 +93,22 @@ function FormularioFactura({ datos, onChange, modificadoManualmente, erroresCamp
 
       <div className={styles.fieldWrapper}>
         <p className={styles.label} style={{ color: COLORS.labels }}>
-          IVA (Opcional){porcentajeIva > 0 ? ` — ${porcentajeIva}%` : ''}
+          IVA {porcentajeIva > 0 ? `(${porcentajeIva}%)` : '(No aplica)'}
         </p>
         <div
           className={styles.inputBox}
           style={{
             borderColor: COLORS.dataFields,
-            opacity: guardado ? 0.6 : 1,
+            opacity: 0.6,
+            backgroundColor: COLORS.backgroundHeader,
           }}
         >
           <input
             className={styles.input}
-            style={{ color: COLORS.text }}
-            value={datos.iva || ''}
-            onChange={(e) => handleCampoChange('iva', e.target.value)}
+            style={{ color: COLORS.text, cursor: 'default' }}
+            value={datos.iva || '0.00'}
+            readOnly
             type="text"
-            inputMode="decimal"
-            disabled={guardado}
           />
         </div>
       </div>

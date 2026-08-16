@@ -7,10 +7,10 @@ const CODE_LENGTH = 7
 
 const styles = {
   icon: 'rounded-full p-5 border-4 border-white',
-  title: 'text-2xl font-bold font-inter',
-  description: 'font-inter text-sm',
+  title: 'text-2xl font-bold font-inter text-center',
+  description: 'font-inter text-sm text-center',
   label: 'font-inter font-bold',
-  digitInput: 'w-10 h-12 text-center text-white font-bold font-inter text-lg outline-none rounded-lg border-2',
+  digitInput: 'h-11 text-center text-white font-bold font-inter text-base outline-none rounded-lg border-2 min-w-0',
   resentMsg: 'text-white text-xs font-inter italic text-center',
   errorMsg: 'text-white text-xs font-inter italic text-center w-full',
 }
@@ -76,7 +76,6 @@ function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, exp
   }
 
   const handleVerify = () => onVerify(digits.join(''))
-
   const hasError = !!codeError
 
   return (
@@ -84,11 +83,11 @@ function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, exp
       <div className={styles.icon} style={{ backgroundColor: '#000000' }}>
         <ShieldCheck size={36} color="white" />
       </div>
-      <h2 className={styles.title}>Confirmacion de Correo</h2>
+      <h2 className={styles.title}>Confirmación de Correo</h2>
       <p className={styles.description}>Hemos enviado un código para verificar tu correo electrónico</p>
       <p className={styles.label}>Ingresar Código</p>
 
-      <div className="flex gap-2 justify-center">
+      <div className="grid w-full" style={{ gridTemplateColumns: `repeat(${CODE_LENGTH}, 1fr)`, gap: '6px' }}>
         {digits.map((digit, index) => (
           <input
             key={index}
@@ -103,6 +102,7 @@ function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, exp
             style={{
               backgroundColor: '#000000',
               borderColor: hasError ? '#fca5a5' : 'white',
+              width: '100%',
             }}
           />
         ))}
@@ -112,18 +112,8 @@ function ConfirmacionModal({ isOpen, onClose, onVerify, onResend, onExpired, exp
       {resentMsg && !codeError && <p className={styles.resentMsg}>{resentMsg}</p>}
 
       <div className="w-full flex flex-col gap-3">
-        <Button
-          text={verifying ? 'Verificando...' : 'Verificar'}
-          variant="primary"
-          onClick={handleVerify}
-          disabled={verifying}
-        />
-        <Button
-          text={resending ? 'Reenviando...' : 'Reenviar Codigo'}
-          variant="primary"
-          onClick={handleResend}
-          disabled={resending || verifying}
-        />
+        <Button text={verifying ? 'Verificando...' : 'Verificar'} variant="primary" onClick={handleVerify} disabled={verifying} />
+        <Button text={resending ? 'Reenviando...' : 'Reenviar Código'} variant="primary" onClick={handleResend} disabled={resending || verifying} />
         <Button text="Cancelar" variant="secondary" onClick={onClose} disabled={verifying} />
       </div>
     </ModalBase>

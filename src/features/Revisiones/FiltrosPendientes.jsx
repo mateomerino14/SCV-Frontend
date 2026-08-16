@@ -23,14 +23,21 @@ const styles = {
   tab: 'flex-1 py-1.5 px-4 rounded-full text-xs font-bold font-inter cursor-pointer border transition-colors whitespace-nowrap text-center',
 }
 
-const tabs = [
+const tabsPendientes = [
   { valor: 'TODOS', label: 'Todos' },
   { valor: 'OBSERVADO', label: 'Observados' },
   { valor: 'CONFORME', label: 'Conformes' },
 ]
 
-function FiltrosPendientes({ filtros, setFiltros, filtroEstado, setFiltroEstado, onAplicar, onLimpiar, empleados = [] }) {
+const tabsHistorial = [
+  { valor: 'TODOS', label: 'Todos' },
+  { valor: 'APROBADO_FINAL', label: 'Aprobados' },
+  { valor: 'RECHAZADO', label: 'Rechazados' },
+]
+
+function FiltrosPendientes({ filtros, setFiltros, filtroEstado, setFiltroEstado, onAplicar, onLimpiar, empleados = [], ocultarTabsEstado = false, tabsVariant = 'PENDIENTES' }) {
   const [dropdownAbierto, setDropdownAbierto] = useState(false)
+  const tabs = tabsVariant === 'HISTORIAL' ? tabsHistorial : tabsPendientes
 
   const empleadoSeleccionado = empleados.find(
     (e) => String(e.id_usuario) === String(filtros.id_empleado)
@@ -166,24 +173,26 @@ function FiltrosPendientes({ filtros, setFiltros, filtroEstado, setFiltroEstado,
           </button>
         </div>
 
-        <div className={styles.divider} style={{ borderColor: COLORS.dataFields }}>
-          <div className={styles.tabsRow}>
-            {tabs.map((tab) => (
-              <button
-                key={tab.valor}
-                className={styles.tab}
-                style={{
-                  backgroundColor: filtroEstado === tab.valor ? COLORS.backgroundHeader : 'transparent',
-                  borderColor: filtroEstado === tab.valor ? COLORS.labels : COLORS.dataFields,
-                  color: filtroEstado === tab.valor ? COLORS.text : COLORS.labels,
-                }}
-                onClick={() => setFiltroEstado(tab.valor)}
-              >
-                {tab.label}
-              </button>
-            ))}
+        {!ocultarTabsEstado && (
+          <div className={styles.divider} style={{ borderColor: COLORS.dataFields }}>
+            <div className={styles.tabsRow}>
+              {tabs.map((tabItem) => (
+                <button
+                  key={tabItem.valor}
+                  className={styles.tab}
+                  style={{
+                    backgroundColor: filtroEstado === tabItem.valor ? COLORS.backgroundHeader : 'transparent',
+                    borderColor: filtroEstado === tabItem.valor ? COLORS.labels : COLORS.dataFields,
+                    color: filtroEstado === tabItem.valor ? COLORS.text : COLORS.labels,
+                  }}
+                  onClick={() => setFiltroEstado(tabItem.valor)}
+                >
+                  {tabItem.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </div>

@@ -4,6 +4,9 @@ import { getCargos, crearCargo, actualizarCargo, suspenderCargo, activarCargo } 
 const MAX_MONTO = 99999.99
 const MAX_NOMBRE = 50
 
+const normalizarNombreCargo = (nombre) =>
+  (nombre || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ')
+
 function useGestionCargos() {
   const [cargos, setCargos] = useState([])
   const [todosLosCargos, setTodosLosCargos] = useState([])
@@ -18,7 +21,7 @@ function useGestionCargos() {
   const [showSuspender, setShowSuspender] = useState(false)
   const [showExito, setShowExito] = useState(false)
   const [mensajeExito, setMensajeExito] = useState('')
-  const [formData, setFormData] = useState({ nombre: '', monto_diario: '' })
+  const [formData, setFormData] = useState({ nombre: '', monto_diario: '', monto_diario_usd: '' })
 
   useEffect(() => { cargar() }, [])
 
@@ -45,14 +48,17 @@ function useGestionCargos() {
       )
     : []
 
-  const cargoYaExiste = (nombre, idExcluir = null) =>
-    todosLosCargos.some(
-      (c) => c.nombre.toLowerCase() === nombre.toLowerCase() &&
+  const cargoYaExiste = (nombre, idExcluir = null) => {
+    const nombreNorm = normalizarNombreCargo(nombre)
+    return todosLosCargos.some(
+      (c) => normalizarNombreCargo(c.nombre) === nombreNorm &&
         (idExcluir ? c.id_cargo !== idExcluir : true)
     )
+  }
 
   const validarCampos = (idExcluir = null) => {
     const errores = {}
+
     if (!formData.nombre.trim()) {
       errores.nombre = 'El nombre del cargo es requerido'
     } else if (formData.nombre.trim().length > MAX_NOMBRE) {
@@ -60,18 +66,28 @@ function useGestionCargos() {
     } else if (cargoYaExiste(formData.nombre.trim(), idExcluir)) {
       errores.nombre = 'Ya existe un cargo con ese nombre'
     }
+
     if (!formData.monto_diario) {
-      errores.monto_diario = 'El sueldo diario es requerido'
+      errores.monto_diario = 'La tarifa diaria en Bs es requerida'
     } else {
       const num = parseFloat(formData.monto_diario)
       if (isNaN(num) || num <= 0) errores.monto_diario = 'Debe ser mayor a 0'
-      else if (num > MAX_MONTO) errores.monto_diario = `No puede superar ${MAX_MONTO} Bs`
+      else if (num > MAX_MONTO) errores.monto_diario = `No puede superar ${MAX_MONTO}`
     }
+
+    if (!formData.monto_diario_usd) {
+      errores.monto_diario_usd = 'La tarifa diaria en USD es requerida'
+    } else {
+      const num = parseFloat(formData.monto_diario_usd)
+      if (isNaN(num) || num <= 0) errores.monto_diario_usd = 'Debe ser mayor a 0'
+      else if (num > MAX_MONTO) errores.monto_diario_usd = `No puede superar ${MAX_MONTO}`
+    }
+
     return errores
   }
 
   const abrirCrear = () => {
-    setFormData({ nombre: '', monto_diario: '' })
+    setFormData({ nombre: '', monto_diario: '', monto_diario_usd: '' })
     setError('')
     setErroresCampo({})
     setShowCrear(true)
@@ -79,7 +95,11 @@ function useGestionCargos() {
 
   const abrirEditar = (cargo) => {
     setCargoSeleccionado(cargo)
-    setFormData({ nombre: cargo.nombre, monto_diario: cargo.monto_diario })
+    setFormData({
+      nombre: cargo.nombre,
+      monto_diario: cargo.monto_diario,
+      monto_diario_usd: cargo.monto_diario_usd || '',
+    })
     setError('')
     setErroresCampo({})
     setShowEditar(true)
@@ -98,6 +118,7 @@ function useGestionCargos() {
     const data = await crearCargo({
       nombre: formData.nombre.trim(),
       monto_diario: parseFloat(parseFloat(formData.monto_diario).toFixed(2)),
+      monto_diario_usd: parseFloat(parseFloat(formData.monto_diario_usd).toFixed(2)),
       activo: true,
     })
     setLoadingAccion(false)
@@ -116,6 +137,7 @@ function useGestionCargos() {
     const data = await actualizarCargo(cargoSeleccionado.id_cargo, {
       nombre: formData.nombre.trim(),
       monto_diario: parseFloat(parseFloat(formData.monto_diario).toFixed(2)),
+      monto_diario_usd: parseFloat(parseFloat(formData.monto_diario_usd).toFixed(2)),
     })
     setLoadingAccion(false)
     if (data.error) { mostrarError(data.error); return }

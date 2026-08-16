@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Target, MapPin } from 'lucide-react'
+import { ArrowLeft, Target, MapPin, LocateFixed } from 'lucide-react'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import ResumenCorporativo from '../features/Form_Crear_Viaje/ResumenCorporativo'
 import PoliticasViaje from '../features/Form_Crear_Viaje/PoliticasViaje'
-import MapaModal from '../features/Form_Crear_Viaje/MapaModal'
 import InputField from '../components/ui/InputField'
 import useCrearViaje from '../hooks/useCrearViaje'
 import useDashboard from '../hooks/useDashboard'
@@ -29,7 +28,7 @@ const styles = {
   badgeCargo: "text-sm font-bold font-inter",
   input: "bg-transparent w-full outline-none font-inter text-sm",
   dateRow: "grid grid-cols-1 md:grid-cols-2 gap-3",
-  radioRow: "grid grid-cols-1 md:grid-cols-2 gap-4",
+  radioRow: "flex flex-col gap-4",
   radioGroup: "flex flex-col gap-2",
   radioLabel: "text-xs font-bold font-inter uppercase mb-1",
   radioBtns: "flex gap-2 flex-wrap",
@@ -38,36 +37,40 @@ const styles = {
   errorMsg: "text-xs font-inter italic text-center mt-3",
   rightCol: "flex flex-col gap-4",
   politicasWrapper: "px-5 pb-6 max-w-8xl mx-auto w-full",
+  internacionalBadge: "text-xs font-inter p-3 rounded-xl flex items-start gap-2",
 }
 
 function CrearViajePage() {
   const navigate = useNavigate()
   const { usuario } = useDashboard()
   const {
-    motivo, destino,
+    motivo, origen, destino,
     fechaInicio, fechaFin,
     tipo, setTipo,
-    entorno, setEntorno,
-    montoTotal, tarifaDiaria,
+    transporte, setTransporte,
+    dias, diasNacionales, diasInternacionales,
+    montoTotal, montoTotalUsd,
+    tarifaDiaria, tarifaDiariaUsd,
     loading, error, erroresCampo,
-    showMapa, setShowMapa,
     showConfirmacion, setShowConfirmacion,
+    cargandoUbicacion,
     handleMotivoChange,
+    handleOrigenChange,
     handleDestinoChange,
     handleFechaInicioChange,
     handleFechaFinChange,
-    handleConfirmarMapa,
-    handleConfirmar,
+    handleUsarUbicacionActual,
+    handleGuardarBorrador,
   } = useCrearViaje(usuario)
 
-  const { menuAbierto, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
+  const { menuAbierto, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose, usuario: usuarioMenu } = useMenu()
   const today = new Date().toISOString().split('T')[0]
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Registro de Viaje" onMenuClick={abrirMenu} fotoPerfil={usuario?.foto_perfil} />
-      <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuario} />
+      <Navbar text="Registro de Viaje" onMenuClick={abrirMenu} fotoPerfil={usuarioMenu?.foto_perfil} />
+      <MenuDinamico isOpen={menuAbierto} onClose={cerrarMenu} usuario={usuarioMenu} />
 
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate('/dashboard/empleado')}>
@@ -94,11 +97,7 @@ function CrearViajePage() {
         <div className={styles.grid}>
           <div className={styles.formCard} style={{ backgroundColor: COLORS.background }}>
 
-            <InputField
-              label="Motivo"
-              icon={<Target size={16} style={{ color: COLORS.labels }} />}
-              error={erroresCampo.motivo}
-            >
+            <InputField label="Motivo" icon={<Target size={16} style={{ color: COLORS.labels }} />} error={erroresCampo.motivo}>
               <input
                 type="text"
                 placeholder="Inspección técnica y de producción..."
@@ -111,12 +110,33 @@ function CrearViajePage() {
             </InputField>
 
             <InputField
-              label="Destino"
+              label="Origen"
               icon={
-                <button onClick={() => setShowMapa(true)}>
-                  <MapPin size={16} style={{ color: COLORS.secondary, cursor: 'pointer' }} />
+                <button
+                  type="button"
+                  onClick={handleUsarUbicacionActual}
+                  disabled={cargandoUbicacion}
+                  title="Usar mi ubicación actual"
+                >
+                  <LocateFixed size={16} style={{ color: cargandoUbicacion ? COLORS.labels : COLORS.primary, cursor: cargandoUbicacion ? 'default' : 'pointer' }} />
                 </button>
               }
+              error={erroresCampo.origen}
+            >
+              <input
+                type="text"
+                placeholder={cargandoUbicacion ? 'Obteniendo ubicación...' : 'Ciudad de origen...'}
+                value={origen}
+                onChange={(e) => handleOrigenChange(e.target.value)}
+                className={styles.input}
+                maxLength={200}
+                style={{ color: COLORS.text }}
+              />
+            </InputField>
+
+            <InputField
+              label="Destino"
+              icon={<MapPin size={16} style={{ color: COLORS.secondary }} />}
               error={erroresCampo.destino}
             >
               <input
@@ -125,7 +145,7 @@ function CrearViajePage() {
                 value={destino}
                 onChange={(e) => handleDestinoChange(e.target.value)}
                 className={styles.input}
-                maxLength={60}
+                maxLength={200}
                 style={{ color: COLORS.text }}
               />
             </InputField>
@@ -175,25 +195,35 @@ function CrearViajePage() {
               </div>
 
               <div className={styles.radioGroup}>
-                <p className={styles.radioLabel} style={{ color: COLORS.labels }}>Entorno de Destino</p>
+                <p className={styles.radioLabel} style={{ color: COLORS.labels }}>Medio de Transporte</p>
                 <div className={styles.radioBtns}>
-                  {['Urbano', 'Rural'].map((e) => (
+                  {['Terrestre', 'Aéreo'].map((t) => (
                     <button
-                      key={e}
+                      key={t}
                       className={styles.radioBtn}
-                      onClick={() => setEntorno(e)}
+                      onClick={() => setTransporte(t)}
                       style={{
-                        backgroundColor: entorno === e ? COLORS.primary : COLORS.dataFields,
-                        borderColor: entorno === e ? COLORS.primary : COLORS.fields,
-                        color: entorno === e ? COLORS.background : COLORS.labels,
+                        backgroundColor: transporte === t ? COLORS.primary : COLORS.dataFields,
+                        borderColor: transporte === t ? COLORS.primary : COLORS.fields,
+                        color: transporte === t ? COLORS.background : COLORS.labels,
                       }}
                     >
-                      {e}
+                      {t}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
+
+            {tipo === 'Internacional' && dias > 0 && (
+              <div className={styles.internacionalBadge} style={{ backgroundColor: COLORS.backgroundHeader }}>
+                <span style={{ color: COLORS.primary, fontSize: 17 }}>ⓘ</span>
+                <p className="text-xs font-inter mt-1" style={{ color: COLORS.labels }}>
+                  Día de salida y regreso en <strong>Bs</strong> ({diasNacionales} día{diasNacionales !== 1 ? 's' : ''}).
+                  Días intermedios en <strong>USD</strong> ({diasInternacionales} día{diasInternacionales !== 1 ? 's' : ''}).
+                </p>
+              </div>
+            )}
 
             {error && (
               <p className={styles.errorMsg} style={{ color: COLORS.secondary }}>{error}</p>
@@ -202,10 +232,10 @@ function CrearViajePage() {
             <button
               className={styles.confirmBtn}
               style={{ backgroundColor: loading ? COLORS.fields : COLORS.secondary }}
-              onClick={handleConfirmar}
+              onClick={handleGuardarBorrador}
               disabled={loading}
             >
-              {loading ? 'Enviando...' : 'Confirmar Viaje'}
+              {loading ? 'Guardando...' : 'Guardar Borrador'}
             </button>
           </div>
 
@@ -213,9 +243,13 @@ function CrearViajePage() {
             <ResumenCorporativo
               cargo={usuario?.Cargo?.nombre}
               tarifaDiaria={tarifaDiaria}
+              tarifaDiariaUsd={tarifaDiariaUsd}
               montoTotal={montoTotal}
+              montoTotalUsd={montoTotalUsd}
+              diasNacionales={diasNacionales}
+              diasInternacionales={diasInternacionales}
               tipo={tipo}
-              entorno={entorno}
+              transporte={transporte}
             />
           </div>
         </div>
@@ -225,15 +259,9 @@ function CrearViajePage() {
         <PoliticasViaje />
       </div>
 
-      <MapaModal
-        isOpen={showMapa}
-        onClose={() => setShowMapa(false)}
-        onConfirm={handleConfirmarMapa}
-      />
-
       <ConfirmacionModal
         isOpen={showConfirmacion}
-        onClose={() => setShowConfirmacion(false)}
+        onClose={() => { setShowConfirmacion(false); navigate('/dashboard/empleado') }}
       />
 
       <Footer />

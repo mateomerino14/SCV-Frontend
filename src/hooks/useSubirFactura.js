@@ -26,8 +26,10 @@ function useSubirFactura(id_viaje) {
       error: null,
       guardado: false,
       errorGuardado: null,
+      requiereAutorizacion: false,
       erroresCampo: {},
       modificadoManualmente: false,
+      manual: false,
     }))
 
     let baseIndex = 0
@@ -40,7 +42,13 @@ function useSubirFactura(id_viaje) {
       setFacturas((prev) =>
         prev.map((f, idx) =>
           idx === index
-            ? { ...f, loading: false, datos: data.error ? null : data, error: data.error || null }
+            ? {
+                ...f,
+                loading: false,
+                datos: data.error ? null : data,
+                error: data.error || null,
+                modificadoManualmente: false,
+              }
             : f
         )
       )
@@ -53,6 +61,42 @@ function useSubirFactura(id_viaje) {
         return prevExpandido
       })
     }
+  }
+
+  const handleAgregarManual = () => {
+    const nuevaFactura = {
+      file: null,
+      nombre: 'Factura Manual',
+      preview: null,
+      datos: {
+        proveedor: '',
+        numero_factura: '',
+        nit: '',
+        fecha_emision: '',
+        monto: '',
+        iva: '',
+        monto_total: 0,
+        tipo_doc: 'F',
+        detalle: [],
+      },
+      loading: false,
+      error: null,
+      guardado: false,
+      errorGuardado: null,
+      requiereAutorizacion: false,
+      erroresCampo: {},
+      modificadoManualmente: true,
+      manual: true,
+    }
+
+    setFacturas((prev) => {
+      const newIndex = prev.length
+      setTimeout(() => {
+        setIndexActual(newIndex)
+        setExpandidoIndex(newIndex)
+      }, 0)
+      return [...prev, nuevaFactura]
+    })
   }
 
   const handleSeleccionarFactura = (index) => {
@@ -80,27 +124,43 @@ function useSubirFactura(id_viaje) {
     setIndiceAEliminar(null)
   }
 
-  const handleCambioDato = (campo, valor) => {
-    if (indexActual === null) return
+  const handleCambioDato = (indice, campo, valor, silencioso = false) => {
+    if (indice === null || indice === undefined) return
     setFacturas((prev) =>
       prev.map((f, i) =>
-        i === indexActual
+        i === indice
           ? {
               ...f,
               datos: { ...f.datos, [campo]: valor },
               erroresCampo: { ...f.erroresCampo, [campo]: undefined },
-              modificadoManualmente: true,
+              modificadoManualmente: silencioso ? f.modificadoManualmente : true,
             }
           : f
       )
     )
   }
 
-  const handleCambioDetalle = (idx, campo, valor) => {
-    if (indexActual === null) return
+  const handleImagenManualChange = (file, indice) => {
+    setFacturas((prev) =>
+      prev.map((f, i) =>
+        i === indice
+          ? {
+              ...f,
+              file,
+              preview: URL.createObjectURL(file),
+              nombre: file.name,
+              erroresCampo: { ...f.erroresCampo, imagen: undefined },
+            }
+          : f
+      )
+    )
+  }
+
+  const handleCambioDetalle = (indice, idx, campo, valor) => {
+    if (indice === null || indice === undefined) return
     setFacturas((prev) =>
       prev.map((f, i) => {
-        if (i !== indexActual) return f
+        if (i !== indice) return f
         const detalle = [...f.datos.detalle]
         detalle[idx] = { ...detalle[idx], [campo]: valor }
         return { ...f, datos: { ...f.datos, detalle }, modificadoManualmente: true }
@@ -108,11 +168,11 @@ function useSubirFactura(id_viaje) {
     )
   }
 
-  const handleAgregarDetalle = (item) => {
-    if (indexActual === null) return
+  const handleAgregarDetalle = (indice, item) => {
+    if (indice === null || indice === undefined) return
     setFacturas((prev) =>
       prev.map((f, i) =>
-        i === indexActual
+        i === indice
           ? {
               ...f,
               datos: { ...f.datos, detalle: [...(f.datos.detalle || []), item] },
@@ -123,11 +183,11 @@ function useSubirFactura(id_viaje) {
     )
   }
 
-  const handleEliminarDetalle = (idx) => {
-    if (indexActual === null) return
+  const handleEliminarDetalle = (indice, idx) => {
+    if (indice === null || indice === undefined) return
     setFacturas((prev) =>
       prev.map((f, i) =>
-        i === indexActual
+        i === indice
           ? {
               ...f,
               datos: { ...f.datos, detalle: f.datos.detalle.filter((_, j) => j !== idx) },
@@ -144,6 +204,7 @@ function useSubirFactura(id_viaje) {
     if (!factura.datos.numero_factura?.trim()) errores.numero_factura = 'El número de factura es requerido'
     if (!factura.datos.fecha_emision) errores.fecha_emision = 'La fecha de emisión es requerida'
     if (!factura.datos.monto || parseFloat(factura.datos.monto) <= 0) errores.monto = 'El monto es requerido y debe ser mayor a 0'
+    if (factura.manual && !factura.file) errores.imagen = 'Debes subir una imagen o comprobante de la factura'
     return errores
   }
 
@@ -174,21 +235,28 @@ function useSubirFactura(id_viaje) {
       }
 
       const data = await guardarFactura(
-        { id_viaje, ...factura.datos, modificado_manualmente: factura.modificadoManualmente },
+        {
+          id_viaje,
+          ...factura.datos,
+          modificado_manualmente: factura.modificadoManualmente,
+        },
         factura.file
       )
 
       if (data.error) {
         totalErrores++
         setFacturas((prev) =>
-          prev.map((f, idx) => idx === i ? { ...f, errorGuardado: data.error } : f)
+          prev.map((f, idx) =>
+            idx === i
+              ? { ...f, errorGuardado: data.error, requiereAutorizacion: !!data.requiereAutorizacion }
+              : f
+          )
         )
       } else {
         totalGuardadas++
-        if (factura.preview) URL.revokeObjectURL(factura.preview)
         setFacturas((prev) =>
           prev.map((f, idx) =>
-            idx === i ? { ...f, guardado: true, errorGuardado: null, erroresCampo: {} } : f
+            idx === i ? { ...f, guardado: true, errorGuardado: null, requiereAutorizacion: false, erroresCampo: {} } : f
           )
         )
       }
@@ -200,6 +268,7 @@ function useSubirFactura(id_viaje) {
 
   const facturaActual = indexActual !== null ? facturas[indexActual] : null
   const hayFacturasConError = facturas.some((f) => f.errorGuardado)
+  const hayRequiereAutorizacion = facturas.some((f) => f.requiereAutorizacion)
   const todasGuardadas = facturas.length > 0 && facturas.every((f) => f.guardado || f.loading || f.error)
 
   return {
@@ -212,14 +281,17 @@ function useSubirFactura(id_viaje) {
     resumenGuardado,
     showEliminarModal,
     hayFacturasConError,
+    hayRequiereAutorizacion,
     todasGuardadas,
     handleAgregarArchivos,
+    handleAgregarManual,
     handleSeleccionarFactura,
     handlePedirEliminarFactura,
     handleConfirmarEliminarFactura,
     handleCancelarEliminarFactura,
     handleCambioDato,
     handleCambioDetalle,
+    handleImagenManualChange,
     handleAgregarDetalle,
     handleEliminarDetalle,
     handleGuardar,

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Globe, MapPin } from 'lucide-react'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
@@ -11,6 +12,7 @@ import SessionExpiredModal from '../features/Login/SessionExpiredModal'
 import { getEmpleados, devolverRevision } from '../services/supervisorService'
 import { COLORS } from '../constants'
 
+
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
@@ -21,6 +23,7 @@ const styles = {
   totalTexto: 'text-sm font-bold font-inter',
   emptyMsg: 'text-sm font-inter text-center py-8',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-3',
+  seccionTitulo: 'text-sm font-bold font-inter uppercase mb-3 mt-6 flex items-center gap-2',
   grid: 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3',
 }
 
@@ -44,6 +47,9 @@ function HistorialRevisionesPage() {
     recargar()
   }
 
+  const viajesNacionales = viajes.filter(v => v.tipo !== 'Internacional')
+  const viajesInternacionales = viajes.filter(v => v.tipo === 'Internacional')
+
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -58,20 +64,19 @@ function HistorialRevisionesPage() {
         </p>
 
         <FiltrosHistorial
-  filtros={filtros}
-  setFiltros={setFiltros}
-  filtroEstado={filtroEstado}
-  setFiltroEstado={setFiltroEstado}
-  onAplicar={aplicarFiltros}
-  onLimpiar={limpiarFiltros}
-  empleados={empleados}
-  tabs={[
-  { valor: 'EN_REVISION', label: 'En Proceso' },
-  { valor: 'APROBADO_SUPERVISOR', label: 'Aprobado Preliminar' },
-  { valor: 'APROBADO_FINAL', label: 'Aprobado Final' },
-  { valor: 'RECHAZADO', label: 'Rechazados' },
-]}
-/>
+          filtros={filtros}
+          setFiltros={setFiltros}
+          filtroEstado={filtroEstado}
+          setFiltroEstado={setFiltroEstado}
+          onAplicar={aplicarFiltros}
+          onLimpiar={limpiarFiltros}
+          empleados={empleados}
+          tabs={[
+            { valor: 'EN_REVISION', label: 'En Proceso' },
+            { valor: 'APROBADO_SUPERVISOR', label: 'Aprobados' },
+            { valor: 'RECHAZADO', label: 'Rechazados' },
+          ]}
+        />
 
         <div className={styles.totalBadge} style={{ backgroundColor: COLORS.backgroundHeader }}>
           <p className={styles.totalTexto} style={{ color: COLORS.labels }}>{totalViajes} Revisiones</p>
@@ -97,18 +102,44 @@ function HistorialRevisionesPage() {
           />
         )}
 
-        {!loading && viajes.length > 0 && (
-          <div className={styles.grid}>
-            {viajes.map((viaje) => (
-              <ViajeRevisionItem
-                key={viaje.id_viaje}
-                viaje={viaje}
-                rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
-                origenDetalle="/dashboard/supervisor/historial"
-                onDevolver={viaje.estado === 'EN_REVISION' ? handleDevolver : undefined}
-              />
-            ))}
-          </div>
+        {!loading && viajesNacionales.length > 0 && (
+          <>
+            <p className={styles.seccionTitulo} style={{ color: COLORS.title }}>
+              <MapPin size={15} style={{ color: COLORS.title }} />
+              Viajes Nacionales
+            </p>
+            <div className={styles.grid}>
+              {viajesNacionales.map((viaje) => (
+                <ViajeRevisionItem
+                  key={viaje.id_viaje}
+                  viaje={viaje}
+                  rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
+                  origenDetalle="/dashboard/supervisor/historial"
+                  onDevolver={viaje.estado === 'EN_REVISION' ? handleDevolver : undefined}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {!loading && viajesInternacionales.length > 0 && (
+          <>
+            <p className={styles.seccionTitulo} style={{ color: COLORS.primary }}>
+              <Globe size={15} style={{ color: COLORS.primary }} />
+              Viajes Internacionales
+            </p>
+            <div className={styles.grid}>
+              {viajesInternacionales.map((viaje) => (
+                <ViajeRevisionItem
+                  key={viaje.id_viaje}
+                  viaje={viaje}
+                  rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
+                  origenDetalle="/dashboard/supervisor/historial"
+                  onDevolver={viaje.estado === 'EN_REVISION' ? handleDevolver : undefined}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
       <Footer />

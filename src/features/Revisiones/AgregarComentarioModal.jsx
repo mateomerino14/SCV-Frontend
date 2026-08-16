@@ -11,7 +11,7 @@ const styles = {
   titulo: 'text-2xl font-bold font-inter leading-tight text-center mt-2',
   subtitulo: 'font-inter text-center text-sm',
   textareaWrapper: 'w-full flex flex-col gap-1',
-  textarea: 'w-full border rounded-xl p-3 text-sm font-inter outline-none resize-none',
+  textarea: 'w-full border rounded-xl p-3 text-sm font-inter outline-none resize-none comentario-scroll',
   errorMsg: 'text-xs font-inter italic text-center w-full mt-2',
   buttons: 'flex flex-row gap-4 mt-2 justify-center',
 }
@@ -30,6 +30,35 @@ function AgregarComentarioModal({ isOpen, onClose, onConfirm, observaciones, onE
 
   return (
     <div className={styles.overlay}>
+      <style>{`
+        textarea.comentario-scroll {
+          max-height: 140px !important;
+          overflow-y: auto !important;
+          scrollbar-width: thin !important;
+          scrollbar-color: rgba(0, 0, 0, 0.25) transparent !important;
+        }
+        textarea.comentario-scroll::-webkit-scrollbar {
+          width: 5px !important;
+          height: 5px !important;
+        }
+        textarea.comentario-scroll::-webkit-scrollbar-track {
+          background: transparent !important;
+        }
+        textarea.comentario-scroll::-webkit-scrollbar-thumb {
+          background-color: rgba(0, 0, 0, 0.25) !important;
+          border-radius: 10px !important;
+          border: none !important;
+        }
+        textarea.comentario-scroll::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(0, 0, 0, 0.4) !important;
+        }
+        textarea.comentario-scroll::-webkit-scrollbar-button {
+          display: none !important;
+          width: 0 !important;
+          height: 0 !important;
+        }
+      `}</style>
+
       <div className={styles.card} style={{ backgroundColor: COLORS.primary }}>
         <div className={styles.iconWrapper} style={{ backgroundColor: COLORS.background }}>
           <MessageSquare size={50} style={{ color: COLORS.backgroundSecondary }} />

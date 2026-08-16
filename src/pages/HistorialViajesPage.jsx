@@ -16,11 +16,16 @@ const styles = {
   title: "text-3xl font-bold font-inter mb-6",
   emptyMsg: "text-sm font-inter text-center py-8",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
+  totalTexto: "text-xs font-inter mb-3",
+  cargarMasBtn: "w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border mt-3",
 }
 
 function HistorialViajesPage() {
   const { menuAbierto, usuario, abrirMenu, cerrarMenu, sessionExpired, handleSessionExpiredClose } = useMenu()
-  const { viajesFiltrados, loading, error, filtro, setFiltro } = useHistorialViajes()
+  const {
+    viajesFiltrados, totalFiltrados, hayMasPaginas, cargarMas,
+    loading, cargandoMas, error, filtro, setFiltro,
+  } = useHistorialViajes()
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
@@ -38,6 +43,12 @@ function HistorialViajesPage() {
         {error && (
           <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
             {error}
+          </p>
+        )}
+
+        {!loading && totalFiltrados > 0 && (
+          <p className={styles.totalTexto} style={{ color: COLORS.labels }}>
+            Mostrando {viajesFiltrados.length} de {totalFiltrados} viajes
           </p>
         )}
 
@@ -61,6 +72,17 @@ function HistorialViajesPage() {
             from="/dashboard/empleado/historial"
           />
         ))}
+
+        {!loading && hayMasPaginas && (
+          <button
+            className={styles.cargarMasBtn}
+            style={{ borderColor: COLORS.primary, color: COLORS.primary, opacity: cargandoMas ? 0.6 : 1 }}
+            onClick={cargarMas}
+            disabled={cargandoMas}
+          >
+            {cargandoMas ? 'Cargando...' : 'Cargar más viajes'}
+          </button>
+        )}
       </div>
       <Footer />
     </div>

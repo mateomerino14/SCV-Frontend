@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getDetalleRevisor, aprobarViajeRevisor, rechazarViajeRevisor, agregarComentarioRevisor, editarComentarioRevisor, eliminarComentarioRevisor, devolverRevisionRevisor } from '../services/revisorService'
+import { getDetalleRevisor, aprobarViajeRevisor, rechazarViajeRevisor, agregarComentarioRevisor, editarComentarioRevisor, eliminarComentarioRevisor } from '../services/revisorService'
 
 function useDetalleRevisor(id_viaje) {
   const [datos, setDatos] = useState(null)
@@ -11,11 +11,14 @@ function useDetalleRevisor(id_viaje) {
   const [showRechazar, setShowRechazar] = useState(false)
   const [showSinObservaciones, setShowSinObservaciones] = useState(false)
   const [accionCompletada, setAccionCompletada] = useState(null)
-  const [observaciones, setObservaciones] = useState([''])
   const [comentarioAgregado, setComentarioAgregado] = useState(false)
   const [comentarioEditando, setComentarioEditando] = useState(null)
   const [comentarioEliminando, setComentarioEliminando] = useState(null)
   const [textoEdicion, setTextoEdicion] = useState('')
+
+  const [gastoActivo, setGastoActivo] = useState(null)
+  const [showObsGasto, setShowObsGasto] = useState(false)
+  const [nuevoTexto, setNuevoTexto] = useState('')
 
   useEffect(() => {
     if (!id_viaje) return
@@ -37,6 +40,8 @@ function useDetalleRevisor(id_viaje) {
 
   const mostrarError = (msg) => { setError(msg); setTimeout(() => setError(''), 3000) }
 
+  const cicloActual = () => datos?.viaje?.ciclo_revision || 1
+
   const handleAprobar = async () => {
     setLoadingAccion(true)
     const data = await aprobarViajeRevisor(id_viaje)
@@ -48,7 +53,11 @@ function useDetalleRevisor(id_viaje) {
   }
 
   const handlePedirRechazar = () => {
-    const obsGuardadas = (datos?.comentarios || []).filter((c) => c.tipo === 'OBSERVACION')
+    const obsGuardadas = (datos?.comentarios || []).filter((c) =>
+      c.tipo === 'OBSERVACION' &&
+      (c.ciclo_revision || 1) === cicloActual() &&
+      c.id_gasto != null
+    )
     if (obsGuardadas.length === 0) {
       setShowSinObservaciones(true)
     } else {
@@ -57,10 +66,8 @@ function useDetalleRevisor(id_viaje) {
   }
 
   const handleRechazar = async () => {
-    const obsGuardadas = (datos?.comentarios || []).filter((c) => c.tipo === 'OBSERVACION')
-    const textos = obsGuardadas.map((o) => o.descripcion)
     setLoadingAccion(true)
-    const data = await rechazarViajeRevisor(id_viaje, textos)
+    const data = await rechazarViajeRevisor(id_viaje)
     setLoadingAccion(false)
     if (data.error) { mostrarError(data.error); return }
     setShowRechazar(false)
@@ -68,24 +75,36 @@ function useDetalleRevisor(id_viaje) {
     setDatos((prev) => ({ ...prev, viaje: { ...prev.viaje, estado: 'RECHAZADO' } }))
   }
 
-  const handleDevolver = async () => {
-    const data = await devolverRevisionRevisor(id_viaje)
-    if (data.error) { mostrarError(data.error); return }
-    window.history.back()
+  const abrirObservacionesGasto = (id_gasto) => {
+    setGastoActivo(id_gasto)
+    setNuevoTexto('')
+    setShowObsGasto(true)
   }
 
-  const editarObservacion = (index, valor) => {
-    setObservaciones((prev) => { const n = [...prev]; n[index] = valor; return n })
+  const cerrarObservacionesGasto = () => {
+    setShowObsGasto(false)
+    setGastoActivo(null)
+    setNuevoTexto('')
+  }
+
+  const observacionesDelGastoActivo = () => {
+    if (!gastoActivo || !datos?.comentarios) return []
+    return datos.comentarios.filter((c) => c.tipo === 'OBSERVACION' && c.id_gasto === gastoActivo)
+  }
+
+  const contarObservacionesGasto = (id_gasto) => {
+    if (!datos?.comentarios) return 0
+    return datos.comentarios.filter((c) => c.tipo === 'OBSERVACION' && c.id_gasto === id_gasto).length
   }
 
   const handleAgregarComentario = async () => {
-    const texto = observaciones[0]?.trim()
+    const texto = nuevoTexto.trim()
     if (!texto) { mostrarError('Debes escribir una observación'); return }
     setLoadingAccion(true)
-    const data = await agregarComentarioRevisor(id_viaje, texto)
+    const data = await agregarComentarioRevisor(id_viaje, texto, gastoActivo)
     setLoadingAccion(false)
     if (data.error) { mostrarError(data.error); return }
-    setObservaciones([''])
+    setNuevoTexto('')
     setComentarioAgregado(true)
     const updated = await getDetalleRevisor(id_viaje)
     if (!updated.error) setDatos(updated)
@@ -126,20 +145,20 @@ function useDetalleRevisor(id_viaje) {
     showRechazar, setShowRechazar,
     showSinObservaciones, setShowSinObservaciones,
     accionCompletada,
-    observaciones,
     comentarioAgregado,
     resetComentarioAgregado: () => setComentarioAgregado(false),
     comentarioEditando, setComentarioEditando,
     comentarioEliminando, setComentarioEliminando,
     textoEdicion, setTextoEdicion,
+    gastoActivo, showObsGasto, nuevoTexto, setNuevoTexto,
+    abrirObservacionesGasto, cerrarObservacionesGasto,
+    observacionesDelGastoActivo, contarObservacionesGasto,
     handleAprobar,
     handlePedirRechazar,
     handleRechazar,
-    handleDevolver,
     handleAgregarComentario,
     handleAbrirEdicion, handleConfirmarEdicion,
     handleAbrirEliminacion, handleConfirmarEliminacion,
-    editarObservacion,
   }
 }
 

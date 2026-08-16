@@ -35,7 +35,7 @@ function useLogin() {
     const decoded = jwtDecode(token)
     const rol = decoded.id_rol
     if (rol === 1) window.location.href = '/dashboard/administrador'
-    else if (rol === 2) window.location.href = '/dashboard/supervisor'
+    else if (rol === 2) window.location.href = '/dashboard/supervisor/viajes-pendientes'
     else if (rol === 4) window.location.href = '/dashboard/revisor'
     else window.location.href = '/dashboard/empleado'
   }

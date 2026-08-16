@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { getMe } from '../services/dashboardService'
 import { logout } from '../services/authService'
 import { jwtDecode } from 'jwt-decode'
@@ -15,7 +15,7 @@ function useMenu() {
   const [menuAbierto, setMenuAbierto] = useState(false)
   const [usuario, setUsuario] = useState(null)
   const [sessionExpired, setSessionExpired] = useState(false)
-  const [rolOriginal] = useState(() => getRolFromToken())
+  const rolOriginalRef = useRef(getRolFromToken())
 
   const cargarUsuario = useCallback(async () => {
     try {
@@ -37,28 +37,37 @@ function useMenu() {
   }, [])
 
   useEffect(() => {
-    if (!rolOriginal) return
-
-    const intervalo = setInterval(async () => {
+    const verificarRol = async () => {
       const token = localStorage.getItem('token')
-      if (!token) return
-
+      if (!token || !rolOriginalRef.current) return
       try {
         const data = await getMe()
         if (data.error) return
-
-        if (data.id_rol !== rolOriginal) {
+        if (data.id_rol !== rolOriginalRef.current) {
           localStorage.removeItem('token')
           window.dispatchEvent(new CustomEvent('session-expired'))
           return
         }
-
         setUsuario(data)
       } catch {}
-    }, 30 * 1000)
+    }
 
-    return () => clearInterval(intervalo)
-  }, [rolOriginal])
+    const handleTokenRefreshed = () => {
+      const nuevoRol = getRolFromToken()
+      if (nuevoRol && rolOriginalRef.current && nuevoRol !== rolOriginalRef.current) {
+        localStorage.removeItem('token')
+        window.dispatchEvent(new CustomEvent('session-expired'))
+      }
+    }
+
+    const intervalo = setInterval(verificarRol, 30 * 1000)
+    window.addEventListener('token-refreshed', handleTokenRefreshed)
+
+    return () => {
+      clearInterval(intervalo)
+      window.removeEventListener('token-refreshed', handleTokenRefreshed)
+    }
+  }, [])
 
   const abrirMenu = () => {
     cargarUsuario()

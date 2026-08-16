@@ -25,6 +25,7 @@ const styles = {
   cargoInfo: 'flex flex-col flex-1 min-w-0',
   cargoNombre: 'text-sm font-bold font-inter',
   cargoMonto: 'text-xs font-inter',
+  cargoMontoUsd: 'text-xs font-inter',
   accionesRow: 'flex items-center gap-2 shrink-0',
   accionBtn: 'w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer',
   fab: 'fixed bottom-24 right-5 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer z-10',
@@ -90,6 +91,11 @@ function GestionCargosPage() {
               <p className={styles.cargoMonto} style={{ color: COLORS.labels }}>
                 {parseFloat(cargo.monto_diario).toFixed(2)} Bs / día
               </p>
+              {cargo.monto_diario_usd > 0 && (
+                <p className={styles.cargoMontoUsd} style={{ color: COLORS.primary }}>
+                  {parseFloat(cargo.monto_diario_usd).toFixed(2)} USD / día
+                </p>
+              )}
             </div>
             <div className={styles.accionesRow}>
               <div className={styles.accionBtn} style={{ backgroundColor: cargo.activo ? '#d4edda' : COLORS.error }}>
@@ -153,6 +159,7 @@ function GestionCargosPage() {
         formData={formData}
         setFormData={setFormData}
         loading={loadingAccion}
+        error={error}
         erroresCampo={erroresCampo}
         setErroresCampo={setErroresCampo}
         sugerencias={sugerenciasCargo}
@@ -168,6 +175,7 @@ function GestionCargosPage() {
         formData={formData}
         setFormData={setFormData}
         loading={loadingAccion}
+        error={error}
         erroresCampo={erroresCampo}
         setErroresCampo={setErroresCampo}
         sugerencias={sugerenciasCargo}

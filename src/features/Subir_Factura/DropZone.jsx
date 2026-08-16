@@ -10,7 +10,7 @@ const styles = {
   btn: "w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border transition-colors flex items-center justify-center gap-2",
 }
 
-function DropZone({ onArchivos }) {
+function DropZone({ onArchivos, onManual }) {
   const handleDrop = (e) => {
     e.preventDefault()
     onArchivos(e.dataTransfer.files)
@@ -69,6 +69,14 @@ function DropZone({ onArchivos }) {
             multiple
           />
         </label>
+
+        <button
+          className={styles.btn}
+          style={{ borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent', cursor: 'pointer' }}
+          onClick={onManual}
+        >
+          Ingresar Manualmente
+        </button>
       </div>
     </div>
   )

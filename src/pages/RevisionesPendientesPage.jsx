@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { Globe, MapPin } from 'lucide-react'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
 import FiltrosPendientes from '../features/Revisiones/FiltrosPendientes'
 import ViajeRevisionItem from '../features/Revisiones/ViajeRevisionItem'
+import ViajeYaTomadoModal from '../features/Revisiones/ViajeYaTomadoModal'
 import EmptyState from '../components/ui/EmptyState'
 import useRevisionesPendientes from '../hooks/useRevisionesPendientes'
 import useMenu from '../hooks/useMenu'
@@ -26,6 +28,8 @@ const styles = {
   totalSub: 'text-sm font-inter mt-0.5',
   emptyMsg: 'text-sm font-inter text-center py-8',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-3',
+  seccionTitulo: 'text-sm font-bold font-inter uppercase mb-3 mt-6 flex items-center gap-2',
+  grid: 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3',
 }
 
 function RevisionesPendientesPage() {
@@ -35,25 +39,26 @@ function RevisionesPendientesPage() {
   const { showModal, loading: loadingCambio, error: errorCambio, handleCambio } = useContraseniavencida()
   const [empleados, setEmpleados] = useState([])
   const [tomando, setTomando] = useState(null)
-  const [errorTomar, setErrorTomar] = useState('')
+  const [mensajeYaTomado, setMensajeYaTomado] = useState('')
 
   useEffect(() => {
     getEmpleados().then((data) => { if (!data.error) setEmpleados(data) })
   }, [])
 
   const handleTomar = async (id_viaje) => {
-  setTomando(id_viaje)
-  setErrorTomar('')
-  const data = await tomarRevision(id_viaje)
-  setTomando(null)
-  if (data.error) {
-    setErrorTomar(data.error)
-    setTimeout(() => setErrorTomar(''), 3000)
+    setTomando(id_viaje)
+    const data = await tomarRevision(id_viaje)
+    setTomando(null)
+    if (data.error) {
+      setMensajeYaTomado(data.error)
+      recargar()
+      return
+    }
     recargar()
-    return
   }
-  recargar()
-}
+
+  const viajesNacionales = viajes.filter(v => v.tipo !== 'Internacional')
+  const viajesInternacionales = viajes.filter(v => v.tipo === 'Internacional')
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
@@ -86,9 +91,9 @@ function RevisionesPendientesPage() {
         </div>
 
         {loading && <p className={styles.emptyMsg} style={{ color: COLORS.labels }}>Cargando...</p>}
-        {(error || errorTomar) && (
+        {error && (
           <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
-            {error || errorTomar}
+            {error}
           </p>
         )}
 
@@ -105,19 +110,51 @@ function RevisionesPendientesPage() {
           />
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-          {!loading && viajes.map((viaje) => (
-            <ViajeRevisionItem
-              key={viaje.id_viaje}
-              viaje={viaje}
-              rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
-              origenDetalle="/dashboard/supervisor"
-              onTomar={handleTomar}
-              tomando={tomando === viaje.id_viaje}
-            />
-          ))}
-        </div>
+        {!loading && viajesNacionales.length > 0 && (
+          <>
+            <p className={styles.seccionTitulo} style={{ color: COLORS.title }}>
+              <MapPin size={15} style={{ color: COLORS.title }} />
+              Viajes Nacionales
+            </p>
+            <div className={styles.grid}>
+              {viajesNacionales.map((viaje) => (
+                <ViajeRevisionItem
+                  key={viaje.id_viaje}
+                  viaje={viaje}
+                  rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
+                  origenDetalle="/dashboard/supervisor"
+                  onTomar={handleTomar}
+                  tomando={tomando === viaje.id_viaje}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
+        {!loading && viajesInternacionales.length > 0 && (
+          <>
+            <p className={styles.seccionTitulo} style={{ color: COLORS.primary }}>
+              <Globe size={15} style={{ color: COLORS.primary }} />
+              Viajes Internacionales
+            </p>
+            <div className={styles.grid}>
+              {viajesInternacionales.map((viaje) => (
+                <ViajeRevisionItem
+                  key={viaje.id_viaje}
+                  viaje={viaje}
+                  rutaDetalle={`/dashboard/supervisor/revision/${viaje.id_viaje}`}
+                  origenDetalle="/dashboard/supervisor"
+                  onTomar={handleTomar}
+                  tomando={tomando === viaje.id_viaje}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
+
+      <ViajeYaTomadoModal isOpen={!!mensajeYaTomado} onClose={() => setMensajeYaTomado('')} mensaje={mensajeYaTomado} />
+
       <Footer />
     </div>
   )

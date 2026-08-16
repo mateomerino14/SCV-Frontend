@@ -35,15 +35,6 @@ export const tomarRevisionRevisor = async (id_viaje) => {
   }
 }
 
-export const devolverRevisionRevisor = async (id_viaje) => {
-  try {
-    const res = await api.post(`/revisor/${id_viaje}/devolver`)
-    return res.data
-  } catch (error) {
-    return { error: error.response?.data?.error || 'Error al devolver la revisión' }
-  }
-}
-
 export const getDetalleRevisor = async (id_viaje) => {
   try {
     const res = await api.get(`/revisor/${id_viaje}`)
@@ -71,9 +62,9 @@ export const rechazarViajeRevisor = async (id_viaje, observaciones) => {
   }
 }
 
-export const agregarComentarioRevisor = async (id_viaje, descripcion) => {
+export const agregarComentarioRevisor = async (id_viaje, descripcion, id_gasto = null) => {
   try {
-    const res = await api.post(`/revisor/${id_viaje}/comentario`, { descripcion })
+    const res = await api.post(`/revisor/${id_viaje}/comentario`, { descripcion, id_gasto })
     return res.data
   } catch (error) {
     return { error: error.response?.data?.error || 'Error al agregar comentario' }

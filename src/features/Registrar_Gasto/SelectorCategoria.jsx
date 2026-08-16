@@ -4,7 +4,7 @@ import { COLORS } from '../../constants'
 
 const styles = {
   wrapper: "flex flex-col gap-1 relative",
-  label: "text-xs font-bold font-inter uppercase mb-3",
+  label: "text-xs font-bold font-inter uppercase mb-1",
   trigger: "w-full px-4 py-3 rounded-xl border flex items-center justify-between cursor-pointer",
   triggerTexto: "text-sm font-inter",
   dropdown: "absolute z-50 w-full rounded-xl border shadow-lg overflow-hidden",

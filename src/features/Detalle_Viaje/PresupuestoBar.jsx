@@ -8,16 +8,27 @@ const styles = {
   amounts: "flex justify-between text-xs font-inter mt-1",
 }
 
-function PresupuestoBar({ gastoAcumulado, montoAsignado }) {
-  const porcentaje = montoAsignado > 0 ? Math.min((gastoAcumulado / montoAsignado) * 100, 100) : 0
-  const colorBarra = porcentaje >= 100 ? COLORS.secondary : COLORS.title
+function PresupuestoBar({ gastoAcumulado, montoAsignado, esUsd = false }) {
+  const montoAsignadoNum = parseFloat(montoAsignado) || 0
+  const porcentaje = montoAsignadoNum > 0
+    ? Math.min((gastoAcumulado / montoAsignadoNum) * 100, 100)
+    : (gastoAcumulado > 0 ? 100 : 0)
+  const excede = montoAsignadoNum === 0 ? gastoAcumulado > 0 : porcentaje >= 100
+  const moneda = esUsd ? 'USD' : 'Bs'
+  const colorBarra = excede ? COLORS.secondary : COLORS.title
+  const colorMonto = excede ? COLORS.secondary : COLORS.text
+  const colorSub = excede ? COLORS.secondary : COLORS.title
+  const colorPorcentaje = COLORS.title
+
   return (
     <div className={styles.wrapper}>
-      <p className={styles.label} style={{ color: COLORS.text_enviroment_types }}>Presupuesto Gastado</p>
-      <p style={{ color: porcentaje >= 100 ? COLORS.secondary : COLORS.text, fontSize: '22px', fontWeight: '600' }}>
-        {gastoAcumulado.toFixed(2)} Bs
-        <span style={{ color: COLORS.title, fontSize: '14px', fontWeight: '500' }}>
-          {' '}/ {parseFloat(montoAsignado).toFixed(2)} Bs
+      <p className={styles.label} style={{ color: COLORS.text_enviroment_types }}>
+        {esUsd ? 'Presupuesto Internacional (USD)' : 'Presupuesto Gastado'}
+      </p>
+      <p style={{ color: colorMonto, fontSize: '22px', fontWeight: '600' }}>
+        {gastoAcumulado.toFixed(2)} {moneda}
+        <span style={{ color: colorSub, fontSize: '14px', fontWeight: '500' }}>
+          {' '}/ {parseFloat(montoAsignado).toFixed(2)} {moneda}
         </span>
       </p>
       <div className={styles.barBackground} style={{ backgroundColor: COLORS.dataFields }}>
@@ -27,7 +38,7 @@ function PresupuestoBar({ gastoAcumulado, montoAsignado }) {
         />
       </div>
       <div className={styles.amounts}>
-        <span style={{ color: COLORS.title }}>
+        <span style={{ color: colorPorcentaje }}>
           {porcentaje.toFixed(0)}% del límite alcanzado
         </span>
       </div>

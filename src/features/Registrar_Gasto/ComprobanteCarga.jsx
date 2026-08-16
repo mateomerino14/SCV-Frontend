@@ -11,9 +11,10 @@ const styles = {
   previewWrapper: "rounded-xl overflow-hidden border flex flex-col",
   previewImg: "w-full object-contain",
   eliminarBtn: "w-full py-2.5 font-bold font-nunito text-sm cursor-pointer flex items-center justify-center gap-2 border-t",
+  errorCampo: "text-xs font-inter mt-1",
 }
 
-function ComprobanteCarga({ previewImagen, onChange, onEliminar }) {
+function ComprobanteCarga({ previewImagen, onChange, onEliminar, error }) {
   const handleInput = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -26,26 +27,16 @@ function ComprobanteCarga({ previewImagen, onChange, onEliminar }) {
     return (
       <div className={styles.wrapper}>
         <p className={styles.label} style={{ color: COLORS.labels }}>Comprobante</p>
-        <div
-          className={styles.previewWrapper}
-          style={{ borderColor: COLORS.dataFields }}
-        >
+        <div className={styles.previewWrapper} style={{ borderColor: COLORS.dataFields }}>
           <img
             src={previewImagen}
             alt="comprobante"
             className={styles.previewImg}
-            style={{
-              height: '350px',
-              backgroundColor: COLORS.backgroundHeader,
-            }}
+            style={{ height: '350px', backgroundColor: COLORS.backgroundHeader }}
           />
           <button
             className={styles.eliminarBtn}
-            style={{
-              borderColor: COLORS.dataFields,
-              color: COLORS.secondary,
-              backgroundColor: COLORS.background,
-            }}
+            style={{ borderColor: COLORS.dataFields, color: COLORS.secondary, backgroundColor: COLORS.background }}
             onClick={onEliminar}
           >
             <Trash2 size={14} />
@@ -62,7 +53,8 @@ function ComprobanteCarga({ previewImagen, onChange, onEliminar }) {
       <label
         className={styles.dropZone}
         style={{
-          borderColor: COLORS.dataFields,
+          borderColor: error ? '#f87171' : COLORS.dataFields,
+          borderWidth: error ? '2px' : '2px',
           backgroundColor: COLORS.backgroundHeader,
           cursor: 'pointer',
         }}
@@ -70,19 +62,11 @@ function ComprobanteCarga({ previewImagen, onChange, onEliminar }) {
         <div className={styles.iconWrapper} style={{ backgroundColor: COLORS.dataFields }}>
           <Camera size={24} style={{ color: COLORS.primary }} />
         </div>
-        <p className={styles.dropLabel} style={{ color: COLORS.text }}>
-          Subir Foto o Archivo
-        </p>
-        <p className={styles.dropSub} style={{ color: COLORS.labels }}>
-          JPG, PNG o PDF (Máx 5MB)
-        </p>
-        <input
-          type="file"
-          accept="image/*,application/pdf"
-          className="hidden"
-          onChange={handleInput}
-        />
+        <p className={styles.dropLabel} style={{ color: COLORS.text }}>Subir Foto o Archivo</p>
+        <p className={styles.dropSub} style={{ color: COLORS.labels }}>JPG, PNG o PDF (Máx 5MB)</p>
+        <input type="file" accept="image/*,application/pdf" className="hidden" onChange={handleInput} />
       </label>
+      {error && <p className={styles.errorCampo} style={{ color: '#ef4444' }}>{error}</p>}
     </div>
   )
 }

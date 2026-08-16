@@ -37,8 +37,10 @@ const estadoConfig = {
 }
 
 const formatFecha = (f1, f2) => {
+  const [y1, m1, d1] = f1.split('-')
+  const [y2, m2, d2] = f2.split('-')
   const opts = { day: 'numeric', month: 'short' }
-  return `${new Date(f1).toLocaleDateString('es-ES', opts)} - ${new Date(f2).toLocaleDateString('es-ES', opts)}`
+  return `${new Date(y1, m1 - 1, d1).toLocaleDateString('es-ES', opts)} - ${new Date(y2, m2 - 1, d2).toLocaleDateString('es-ES', opts)}`
 }
 
 function ViajeHistorialItem({ viaje, rutaDetalle, origenDetalle }) {

@@ -45,6 +45,7 @@ const tabs = [
   { valor: 'TODOS', label: 'Todos' },
   { valor: 'EMPLEADO', label: 'Empleados' },
   { valor: 'SUPERVISOR', label: 'Supervisores' },
+  { valor: 'APROBADOR', label: 'Aprobadores' },
   { valor: 'REVISOR', label: 'Revisores' },
   { valor: 'ADMINISTRADOR', label: 'Administradores' },
 ]
@@ -52,9 +53,9 @@ const tabs = [
 const rolConfig = {
   ADMINISTRADOR: { label: 'Administrador', bg: '#d4edda', color: '#155724' },
   SUPERVISOR: { label: 'Supervisor', bg: '#85aff3ab', color: '#000a65' },
+  APROBADOR: { label: 'Aprobador', bg: '#ffd700aa', color: '#7a5900' },
   REVISOR: { label: 'Revisor', bg: '#fef3cd', color: '#856404' },
   EMPLEADO: { label: 'Empleado', bg: COLORS.text_enviroment_types, color: COLORS.background },
-  ADMINISTRADOR: { label: 'Administrador', bg: '#d4edda', color: '#155724' },
 }
 
 function GestionUsuariosPage() {
@@ -118,7 +119,12 @@ function GestionUsuariosPage() {
           const cfg = rolConfig[u.Rol?.nombre] || rolConfig['EMPLEADO']
           return (
             <div key={u.id_usuario} className={styles.usuarioCard} style={{ backgroundColor: COLORS.backgroundHeader }}>
-              <img src={u.foto_perfil || AVATAR_DEFAULT} alt="avatar" className={styles.avatar} />
+              <img
+                src={u.foto_perfil || AVATAR_DEFAULT}
+                alt="avatar"
+                className={styles.avatar}
+                onError={(e) => { e.target.src = AVATAR_DEFAULT }}
+              />
               <div className={styles.usuarioInfo}>
                 <p className={styles.usuarioNombre} style={{ color: COLORS.text }}>
                   {u.nombre} {u.apellido_paterno}
@@ -195,6 +201,7 @@ function GestionUsuariosPage() {
         error={error}
         erroresCampo={erroresCampo}
         setErroresCampo={setErroresCampo}
+        usuarioSeleccionado={null}
       />
 
       <FormularioUsuarioModal
@@ -210,6 +217,7 @@ function GestionUsuariosPage() {
         error={error}
         erroresCampo={erroresCampo}
         setErroresCampo={setErroresCampo}
+        usuarioSeleccionado={usuarioSeleccionado}
       />
 
       {showSuspender && (

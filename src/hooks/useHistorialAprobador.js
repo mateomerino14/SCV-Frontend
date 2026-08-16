@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { getMisRevisionesRevisor, getEmpleadosRevisor } from '../services/revisorService'
+import { getMisRevisionesAprobador, getEmpleadosAprobador } from '../services/aprobadorService'
 
-function useHistorialRevisor() {
+function useHistorialAprobador() {
   const [viajes, setViajes] = useState([])
   const [empleados, setEmpleados] = useState([])
   const [loading, setLoading] = useState(true)
@@ -11,12 +11,12 @@ function useHistorialRevisor() {
 
   useEffect(() => {
     cargar()
-    getEmpleadosRevisor().then((data) => { if (!data.error) setEmpleados(data) })
+    getEmpleadosAprobador().then((data) => { if (!data.error) setEmpleados(data) })
   }, [])
 
   const cargar = async (f = filtros) => {
     setLoading(true)
-    const data = await getMisRevisionesRevisor(f)
+    const data = await getMisRevisionesAprobador(f)
     setLoading(false)
     if (data.error) { setError(data.error); return }
     setViajes(data)
@@ -33,7 +33,7 @@ function useHistorialRevisor() {
 
   const viajesFiltrados = viajes.filter((v) => {
     if (filtroEstado === 'APROBADO_SUPERVISOR') return v.estado === 'APROBADO_SUPERVISOR'
-    if (filtroEstado === 'APROBADO_FINAL') return v.estado === 'APROBADO_FINAL'
+    if (filtroEstado === 'APROBADO_APROBADOR') return v.estado === 'APROBADO_APROBADOR'
     if (filtroEstado === 'RECHAZADO') return v.estado === 'RECHAZADO'
     return true
   })
@@ -51,4 +51,4 @@ function useHistorialRevisor() {
   }
 }
 
-export default useHistorialRevisor;
+export default useHistorialAprobador; 

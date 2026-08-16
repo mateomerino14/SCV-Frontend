@@ -30,12 +30,11 @@ function useHistorialRevisiones() {
   }
 
   const viajesFiltrados = viajes.filter((v) => {
-  if (filtroEstado === 'EN_REVISION') return v.estado === 'EN_REVISION'
-  if (filtroEstado === 'APROBADO_SUPERVISOR') return v.estado === 'APROBADO_SUPERVISOR'
-  if (filtroEstado === 'APROBADO_FINAL') return v.estado === 'APROBADO_FINAL'
-  if (filtroEstado === 'RECHAZADO') return v.estado === 'RECHAZADO'
-  return true
-})
+    if (filtroEstado === 'EN_REVISION') return v.estado === 'EN_REVISION'
+    if (filtroEstado === 'APROBADO_SUPERVISOR') return v.estado === 'APROBADO_SUPERVISOR' || v.estado === 'APROBADO_APROBADOR' || v.estado === 'APROBADO_FINAL'
+    if (filtroEstado === 'RECHAZADO') return v.estado === 'RECHAZADO'
+    return true
+  })
 
   return {
     viajes: viajesFiltrados,

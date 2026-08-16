@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, AlertTriangle } from 'lucide-react'
 import Navbar from '../layouts/Navbar'
 import Footer from '../layouts/Footer'
 import DropZone from '../features/Subir_Factura/DropZone'
@@ -9,11 +9,15 @@ import ConsejoLectura from '../features/Subir_Factura/ConsejoLectura'
 import SeccionImagen from '../features/Subir_Factura/SeccionImagen'
 import DetalleFacturaPanel from '../features/Subir_Factura/DetalleFacturaPanel'
 import EliminarFacturaModal from '../features/Subir_Factura/EliminarFacturaModal'
+import SolicitarAutorizacionModal from '../features/Detalle_Viaje/SolicitarAutorizacionModal'
 import MenuDinamico from '../layouts/Menu/MenuDinamico'
 import useSubirFactura from '../hooks/useSubirFactura'
+import useSolicitudPlazo from '../hooks/useSolicitudPlazo'
 import useMenu from '../hooks/useMenu'
 import { COLORS } from '../constants'
 import SessionExpiredModal from '../features/Login/SessionExpiredModal'
+
+const PLACEHOLDER_FACTURA = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRh2G9ljcdizU4yHbZjI_JCm0GWCGJBcPgt39YIhrpew&s=10"
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -26,11 +30,77 @@ const styles = {
   sectionTitle: "text-xs font-bold font-inter uppercase mb-3",
   enviarBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer mt-3",
   cancelarBtn: "w-full py-3 rounded-xl font-bold font-nunito text-base cursor-pointer mt-2 border",
+  solicitudBtn: "w-full py-3 rounded-xl font-bold font-nunito text-base cursor-pointer mt-3 flex items-center justify-center gap-2",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
   resumenCard: "rounded-2xl p-4 mt-3 text-center",
   resumenTexto: "text-sm font-bold font-inter",
   resumenSubtexto: "text-xs font-inter mt-1",
+  imagenManualWrapper: "flex flex-col gap-2 mt-2",
+  imagenManualLabel: "text-xs font-bold font-inter uppercase mb-1",
+  imagenManualBtn: "w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border flex items-center justify-center gap-2 mt-2",
+  imagenManualError: "text-xs font-inter mt-1",
+  alertaPlazo: "rounded-xl px-4 py-3 mb-4 text-center",
 }
+
+function SeccionImagenManual({ factura, onImagenChange, errorImagen }) {
+  const handleSeleccion = (e) => {
+    if (e.target.files[0]) onImagenChange(e.target.files[0])
+    e.target.value = ''
+  }
+
+  return (
+    <div className={styles.imagenManualWrapper}>
+      <p className={styles.imagenManualLabel} style={{ color: COLORS.labels }}>
+        Comprobante / Imagen <span style={{ color: COLORS.secondary }}>*</span>
+      </p>
+
+      <div
+        style={{
+          borderColor: errorImagen ? '#ef4444' : COLORS.dataFields,
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          backgroundColor: COLORS.backgroundHeader,
+        }}
+      >
+        <img
+          src={factura.preview || PLACEHOLDER_FACTURA}
+          alt="comprobante"
+          style={{
+            width: '100%',
+            objectFit: 'cover',
+            maxHeight: factura.preview ? '710px' : '200px',
+            opacity: factura.preview ? 1 : 0.5,
+          }}
+        />
+      </div>
+
+      <label
+        className={styles.imagenManualBtn}
+        style={{
+          borderColor: errorImagen ? '#ef4444' : COLORS.primary,
+          color: errorImagen ? '#ef4444' : COLORS.primary,
+          backgroundColor: 'transparent',
+          cursor: 'pointer',
+        }}
+      >
+        {factura.preview ? 'Cambiar imagen' : 'Subir comprobante'}
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          className="hidden"
+          onChange={handleSeleccion}
+        />
+      </label>
+
+      {errorImagen && (
+        <p className={styles.imagenManualError} style={{ color: '#ef4444' }}>{errorImagen}</p>
+      )}
+    </div>
+  )
+}
+
 
 function SubirFacturaPage() {
   const { id } = useParams()
@@ -40,12 +110,21 @@ function SubirFacturaPage() {
   const {
     facturas, facturaActual, indexActual, expandidoIndex,
     loadingGuardar, error, resumenGuardado, showEliminarModal,
-    hayFacturasConError, todasGuardadas,
-    handleAgregarArchivos, handleSeleccionarFactura,
+    hayFacturasConError, hayRequiereAutorizacion, todasGuardadas,
+    handleAgregarArchivos, handleAgregarManual,
+    handleSeleccionarFactura,
     handlePedirEliminarFactura, handleConfirmarEliminarFactura,
     handleCancelarEliminarFactura, handleCambioDato,
     handleAgregarDetalle, handleEliminarDetalle, handleGuardar,
+    handleImagenManualChange,
   } = useSubirFactura(id)
+
+  const {
+    tienePendiente, fueRechazada, puedeSolicitar,
+    showModal: showModalPlazo, setShowModal: setShowModalPlazo,
+    enviando: enviandoPlazo, error: errorPlazo,
+    handleSolicitar,
+  } = useSolicitudPlazo(id)
 
   return (
     <div className={styles.page} style={{ backgroundColor: COLORS.background }}>
@@ -64,7 +143,23 @@ function SubirFacturaPage() {
           Asegúrese de que todos los datos sean legibles.
         </p>
 
-        <DropZone onArchivos={handleAgregarArchivos} />
+        {tienePendiente && (
+          <div className={styles.alertaPlazo} style={{ backgroundColor: '#ffd700aa' }}>
+            <p style={{ color: '#7a5900', fontFamily: 'Inter', fontSize: 13, fontWeight: 600 }}>
+              Tienes una solicitud de autorización de plazo pendiente de revisión.
+            </p>
+          </div>
+        )}
+
+        {fueRechazada && (
+          <div className={styles.alertaPlazo} style={{ backgroundColor: '#ffa7a8aa' }}>
+            <p style={{ color: '#500203', fontFamily: 'Inter', fontSize: 13, fontWeight: 600 }}>
+              Tu solicitud de autorización de plazo anterior fue rechazada.
+            </p>
+          </div>
+        )}
+
+        <DropZone onArchivos={handleAgregarArchivos} onManual={handleAgregarManual} />
 
         <div className="mt-4">
           <ConsejoLectura />
@@ -87,39 +182,55 @@ function SubirFacturaPage() {
                 {factura.datos && (
                   <>
                     <div className="hidden md:grid md:grid-cols-3 gap-4 mt-3">
-                      <SeccionImagen factura={factura} />
+                      {factura.manual ? (
+                        <SeccionImagenManual
+                          factura={factura}
+                          onImagenChange={(file) => handleImagenManualChange(file, indice)}
+                          errorImagen={factura.erroresCampo?.imagen}
+                        />
+                      ) : (
+                        <SeccionImagen factura={factura} />
+                      )}
                       <div>
                         <FormularioFactura
-                          datos={factura.datos}
-                          onChange={handleCambioDato}
-                          modificadoManualmente={factura.modificadoManualmente}
-                          erroresCampo={factura.erroresCampo || {}}
-                          guardado={factura.guardado}
-                        />
+                        datos={factura.datos}
+                        onChange={(campo, valor, silencioso) => handleCambioDato(indice, campo, valor, silencioso)}
+                        modificadoManualmente={factura.modificadoManualmente}
+                        erroresCampo={factura.erroresCampo || {}}
+                        guardado={factura.guardado}
+                      />
                       </div>
                       <div>
                         <DetalleFacturaPanel
-                          detalle={factura.datos.detalle || []}
-                          onAgregar={handleAgregarDetalle}
-                          onEliminar={handleEliminarDetalle}
-                          guardado={factura.guardado}
-                        />
+                        detalle={factura.datos.detalle || []}
+                        onAgregar={(item) => handleAgregarDetalle(indice, item)}
+                        onEliminar={(idx) => handleEliminarDetalle(indice, idx)}
+                        guardado={factura.guardado}
+                      />
                       </div>
                     </div>
 
                     <div className="md:hidden mt-3 flex flex-col gap-4">
-                      <SeccionImagen factura={factura} />
+                      {factura.manual ? (
+                        <SeccionImagenManual
+                          factura={factura}
+                          onImagenChange={(file) => handleImagenManualChange(file, indice)}
+                          errorImagen={factura.erroresCampo?.imagen}
+                        />
+                      ) : (
+                        <SeccionImagen factura={factura} />
+                      )}
                       <FormularioFactura
                         datos={factura.datos}
-                        onChange={handleCambioDato}
+                        onChange={(campo, valor, silencioso) => handleCambioDato(indice, campo, valor, silencioso)}
                         modificadoManualmente={factura.modificadoManualmente}
                         erroresCampo={factura.erroresCampo || {}}
                         guardado={factura.guardado}
                       />
                       <DetalleFacturaPanel
                         detalle={factura.datos.detalle || []}
-                        onAgregar={handleAgregarDetalle}
-                        onEliminar={handleEliminarDetalle}
+                        onAgregar={(item) => handleAgregarDetalle(indice, item)}
+                        onEliminar={(idx) => handleEliminarDetalle(indice, idx)}
                         guardado={factura.guardado}
                       />
                     </div>
@@ -147,6 +258,17 @@ function SubirFacturaPage() {
           <p className={styles.errorMsg} style={{ color: COLORS.secondary, backgroundColor: COLORS.error }}>
             {error}
           </p>
+        )}
+
+        {hayRequiereAutorizacion && puedeSolicitar && !tienePendiente && (
+          <button
+            className={styles.solicitudBtn}
+            style={{ backgroundColor: COLORS.secondary, color: COLORS.background }}
+            onClick={() => setShowModalPlazo(true)}
+          >
+            <AlertTriangle size={16} />
+            Solicitar Autorización al Revisor
+          </button>
         )}
 
         {facturas.some((f) => f.datos && !f.loading && !f.guardado) && (
@@ -184,6 +306,14 @@ function SubirFacturaPage() {
         isOpen={showEliminarModal}
         onClose={handleCancelarEliminarFactura}
         onConfirm={handleConfirmarEliminarFactura}
+      />
+
+      <SolicitarAutorizacionModal
+        isOpen={showModalPlazo}
+        onClose={() => setShowModalPlazo(false)}
+        onConfirm={handleSolicitar}
+        loading={enviandoPlazo}
+        error={errorPlazo}
       />
 
       <Footer />
