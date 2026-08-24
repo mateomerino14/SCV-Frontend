@@ -1,27 +1,29 @@
-import { COLORS } from '../../constants/index';
+import {COLORS} from '../../constants';
 
 const styles = {
-  primary: "bg-red-600 text-white hover:bg-red-700 font-bold font-nunito text-md px-5 py-2.5 rounded-lg transition-colors",
-  secondary: "bg-white text-red-600 hover:bg-red-50 border font-bold font-nunito text-md px-5 py-2.5 rounded-lg transition-colors",
-}
+  base: 'py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer transition-colors flex-1',
+};
 
-function Button({ text, variant = 'primary', onClick, disabled = false }) {
-  const baseStyles = variant === 'primary' ? styles.primary : styles.secondary;
-  
+function Button({text, variant = 'primary', onClick, disabled}) {
+  let backgroundColor = COLORS.primary;
+  let color = COLORS.background;
+  let border = 'none';
+
+  if (variant === 'secondary') {
+    backgroundColor = 'transparent';
+    color = COLORS.background;
+    border = `2px solid ${COLORS.background}`;
+  }
+
+  if (disabled) {
+    backgroundColor = COLORS.fields;
+  }
+
   return (
-    <button
-      className={baseStyles}
-      style={{ 
-        borderColor: variant === 'secondary' ? COLORS.primary : undefined,
-        opacity: disabled ? 0.5 : 1,
-        cursor: disabled ? 'not-allowed' : 'pointer'
-      }}
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-    >
+    <button className={styles.base} style={{backgroundColor, color, border, opacity: disabled ? 0.7 : 1}} onClick={onClick} disabled={disabled}>
       {text}
     </button>
-  )
+  );
 }
 
 export default Button;
