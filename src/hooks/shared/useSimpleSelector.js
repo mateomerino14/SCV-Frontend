@@ -1,10 +1,10 @@
 import {useState, useRef, useEffect} from 'react';
 
-function useDropdownPosition(threshold = 260) {
+function useSimpleSelector(threshold = 220) {
   const [open, setOpen] = useState(false);
   const [opensUpward, setOpensUpward] = useState(false);
-  const triggerRef = useRef(null);
   const wrapperRef = useRef(null);
+  const triggerRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -25,7 +25,9 @@ function useDropdownPosition(threshold = 260) {
     setOpen(!open);
   };
 
-  return {open, opensUpward, triggerRef, wrapperRef, toggle};
+  const close = () => setOpen(false);
+
+  return {open, opensUpward, wrapperRef, triggerRef, toggle, close};
 }
 
-export default useDropdownPosition;
+export default useSimpleSelector;

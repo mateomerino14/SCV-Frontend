@@ -1,6 +1,6 @@
 import InlineDropdown from '../../../components/ui/InlineDropdown';
 import useTripHistoryFilter from '../hooks/useTripHistoryFilter';
-import useDropdownPosition from '../hooks/useDropdownPosition';
+import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
 
 const styles = {
   wrapper: "flex flex-col gap-2 mb-4",
@@ -9,8 +9,9 @@ const styles = {
 
 function TripHistoryFilter({activeFilter, onChange}) {
   const {categories, currentCategory, selectedCategory, handleCategoryChange, handleStateChange} = useTripHistoryFilter(activeFilter, onChange);
-  const categoryDropdown = useDropdownPosition();
-  const stateDropdown = useDropdownPosition();
+  const categoryDropdown = useSimpleSelector();
+  const stateDropdown = useSimpleSelector();
+
   const selectedCategoryOption = categories.find((category) => category.value === selectedCategory);
 
   return (
@@ -19,13 +20,14 @@ function TripHistoryFilter({activeFilter, onChange}) {
         <InlineDropdown wrapperRef={categoryDropdown.wrapperRef} triggerRef={categoryDropdown.triggerRef} open={categoryDropdown.open}
           opensUpward={categoryDropdown.opensUpward} onToggle={categoryDropdown.toggle}
           label={selectedCategoryOption?.label || 'Seleccionar'} options={categories} selectedValue={selectedCategory}
-          onSelect={(value) => {handleCategoryChange(value); categoryDropdown.toggle();}} />
+          onSelect={(value) => {handleCategoryChange(value); categoryDropdown.close();}} />
+
         {currentCategory.states && (
           <InlineDropdown wrapperRef={stateDropdown.wrapperRef} triggerRef={stateDropdown.triggerRef} open={stateDropdown.open}
             opensUpward={stateDropdown.opensUpward} onToggle={stateDropdown.toggle}
             label={currentCategory.states.find((state) => state.value === activeFilter)?.label || 'Seleccionar'}
             options={currentCategory.states} selectedValue={activeFilter}
-            onSelect={(value) => {handleStateChange(value); stateDropdown.toggle();}} />
+            onSelect={(value) => {handleStateChange(value); stateDropdown.close();}} />
         )}
       </div>
     </div>
