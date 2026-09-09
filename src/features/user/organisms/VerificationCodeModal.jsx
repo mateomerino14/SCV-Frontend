@@ -16,7 +16,6 @@ const styles = {
 function VerificationCodeModal({isOpen, onClose, onVerify, onResend, onExpired, expiresAt, codeError, verifying}) {
   const {digits, resentMessage, resending, inputRefs, codeLength, handleChange, handleKeyDown, handleResend} =
     useVerificationCodeInput(isOpen, expiresAt, onExpired);
-
   const hasError = !!codeError;
 
   return (

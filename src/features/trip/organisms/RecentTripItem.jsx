@@ -1,3 +1,4 @@
+import {motion} from 'framer-motion';
 import {useNavigate} from 'react-router-dom';
 import {COLORS} from '../../../constants';
 import {routes, tripPath} from '../../../constants/routes';
@@ -63,7 +64,8 @@ function RecentTripItem({trip, from}) {
   const isInternational = trip.tipo === 'Internacional';
 
   return (
-    <div className={styles.container} style={{borderColor: COLORS.dataFields}}>
+    <motion.div className={styles.container} style={{borderColor: COLORS.dataFields}}
+      whileHover={{y: -2, boxShadow: '0 8px 18px rgba(0,0,0,0.08)'}} transition={{duration: 0.15}}>
       <div className={styles.left}>
         <div className={styles.imageWrapper} style={{backgroundColor: COLORS.fields}}>
           <img
@@ -93,7 +95,7 @@ function RecentTripItem({trip, from}) {
         </span>
         <p className={styles.detailsLink} style={{color: COLORS.title}} onClick={() => navigate(tripPath(trip.id_viaje), {state: {from: originRoute}})}>DETALLES →</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

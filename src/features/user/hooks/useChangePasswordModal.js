@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {changePassword} from '../../../services/user/userService';
 
 const maxLength = 255;
@@ -11,6 +11,24 @@ function useChangePasswordModal(onClose) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    const next = {};
+    if (newPassword && newPassword.length < minLength) {
+      next.newPassword = `La nueva contraseña debe tener al menos ${minLength} caracteres`;
+    }
+    else if (newPassword && newPassword.trim() !== newPassword) {
+      next.newPassword = 'La contraseña no puede tener espacios al inicio o al final';
+    }
+    else if (newPassword && currentPassword && newPassword === currentPassword) {
+      next.newPassword = 'La nueva contraseña debe ser diferente a la actual';
+    }
+    if (confirmPassword && confirmPassword !== newPassword) {
+      next.confirmPassword = 'Las contraseñas no coinciden';
+    }
+    setFieldErrors(next);
+  }, [currentPassword, newPassword, confirmPassword]);
 
   const showError = (message) => {
     setError(message);
@@ -22,6 +40,7 @@ function useChangePasswordModal(onClose) {
     setNewPassword('');
     setConfirmPassword('');
     setError('');
+    setFieldErrors({});
     setSuccess(false);
   };
 
@@ -30,49 +49,25 @@ function useChangePasswordModal(onClose) {
       showError('Todos los campos son requeridos');
       return;
     }
-
-    if (newPassword.trim() !== newPassword) {
-      showError('La contraseña no puede tener espacios al inicio o al final');
+    if (fieldErrors.newPassword || fieldErrors.confirmPassword) {
       return;
     }
-
-    if (newPassword.length < minLength) {
-      showError(`La nueva contraseña debe tener al menos ${minLength} caracteres`);
-      return;
-    }
-
-    if (newPassword.length > maxLength) {
-      showError(`La nueva contraseña no puede tener más de ${maxLength} caracteres`);
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      showError('Las contraseñas nuevas no coinciden');
-      return;
-    }
-
-    if (newPassword === currentPassword) {
-      showError('La nueva contraseña debe ser diferente a la actual');
-      return;
-    }
-
     setLoading(true);
     const data = await changePassword(currentPassword, newPassword);
     setLoading(false);
-
     if (data.error) {
       showError(data.error);
       return;
     }
-
     setSuccess(true);
-    setTimeout(() => {
-      reset();
-      onClose();
-    }, 2000);
   };
 
   const handleCancel = () => {
+    reset();
+    onClose();
+  };
+
+  const closeSuccess = () => {
     reset();
     onClose();
   };
@@ -81,8 +76,8 @@ function useChangePasswordModal(onClose) {
     currentPassword, setCurrentPassword,
     newPassword, setNewPassword,
     confirmPassword, setConfirmPassword,
-    loading, error, success, maxLength,
-    handleSave, handleCancel,
+    loading, error, success, maxLength, fieldErrors,
+    handleSave, handleCancel, closeSuccess,
   };
 }
 

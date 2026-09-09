@@ -1,3 +1,4 @@
+import {motion, AnimatePresence} from 'framer-motion';
 import DropdownTrigger from './DropdownTrigger';
 import DropdownListItem from './DropdownListItem';
 import {COLORS} from '../../constants';
@@ -8,21 +9,38 @@ const styles = {
   list: 'max-h-56 overflow-y-auto',
 };
 
+const dropdownVariants = {
+  hidden: {opacity: 0, y: -4, scaleY: 0.97},
+  visible: {opacity: 1, y: 0, scaleY: 1},
+};
+
 function InlineDropdown({wrapperRef, triggerRef, open, opensUpward, onToggle, label, options, selectedValue, onSelect}) {
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
       <DropdownTrigger triggerRef={triggerRef} open={open} onClick={onToggle} hasValue label={label} />
-      {open && (
-        <div className={styles.dropdown} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background,
-          bottom: opensUpward ? '100%' : 'auto', top: opensUpward ? 'auto' : '100%', marginBottom: opensUpward ? '4px' : '0', marginTop: opensUpward ? '0' : '4px'}}>
-          <div className={styles.list}>
-            {options.map((option) => (
-              <DropdownListItem key={option.value} label={option.label} selected={selectedValue === option.value}
-                onClick={() => onSelect(option.value)} />
-            ))}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div className={styles.dropdown}
+            style={{
+              borderColor: COLORS.dataFields,
+              backgroundColor: COLORS.background,
+              transformOrigin: opensUpward ? 'bottom' : 'top',
+              bottom: opensUpward ? '100%' : 'auto',
+              top: opensUpward ? 'auto' : '100%',
+              marginBottom: opensUpward ? '2px' : '0',
+              marginTop: opensUpward ? '0' : '2px',
+            }}
+            variants={dropdownVariants} initial="hidden" animate="visible" exit="hidden"
+            transition={{duration: 0.16, ease: [0.22, 1, 0.36, 1]}}>
+            <div className={styles.list}>
+              {options.map((option) => (
+                <DropdownListItem key={option.value} label={option.label} selected={selectedValue === option.value}
+                  onClick={() => onSelect(option.value)} />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

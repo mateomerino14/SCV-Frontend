@@ -10,7 +10,6 @@ function useFileDropZone(onFiles) {
     onFiles(event.target.files);
     event.target.value = '';
   };
-
   return {handleDrop, handleDragOver, handleSelect};
 }
 

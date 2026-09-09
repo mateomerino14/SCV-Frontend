@@ -8,6 +8,7 @@ function useReviewerReviews() {
   const [history, setHistory] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
   const [statusFilter, setStatusFilter] = useState('TODOS');
@@ -58,7 +59,11 @@ function useReviewerReviews() {
     setStatusFilter('TODOS');
   }, [tab]);
 
-  const applyFilters = () => load(filters, true);
+  const applyFilters = async () => {
+    setApplyingFilters(true);
+    await load(filters, false);
+    setApplyingFilters(false);
+  };
 
   const clearFilters = () => {
     const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
@@ -97,6 +102,7 @@ function useReviewerReviews() {
     totalPending: pending.length,
     employees,
     loading,
+    applyingFilters,
     error,
     filters,
     setFilters,

@@ -17,7 +17,6 @@ function useExpenseReceipt(expenseId) {
   };
 
   const closeModal = () => setModal({show: false, success: false, message: ''});
-
   return {sending, modal, handleSend, closeModal};
 }
 

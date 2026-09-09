@@ -122,7 +122,7 @@ function useRegisterExpense(tripId) {
   };
 
   const finalAmountOf = (item) => {
-    if (!isInternationalExpense && item.usesSubitems) {
+    if (item.usesSubitems) {
       const valid = validSubitemsOf(item);
       if (valid.length > 0) {
         return parseFloat(valid.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2));
@@ -159,7 +159,7 @@ function useRegisterExpense(tripId) {
       type: original.type,
       date: original.date,
       supplier: original.supplier,
-      description: original.description,
+      description: original.usesSubitems ? '' : original.description,
       categoryId: original.categoryId,
     };
     setItems((prev) => {
@@ -459,7 +459,7 @@ function useRegisterExpense(tripId) {
     if (!item.date) {
       errors.date = 'La fecha del gasto es requerida';
     }
-    const isAmountAutomatic = !isInternationalExpense && item.usesSubitems;
+    const isAmountAutomatic = item.usesSubitems;
     if (!isAmountAutomatic && (!item.amount || parseFloat(item.amount) <= 0)) {
       errors.amount = 'El monto es requerido y debe ser mayor a 0';
     }

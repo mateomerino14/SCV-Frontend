@@ -34,7 +34,6 @@ function CommentCard({date, text, backgroundColor, borderColor, compact, onEdit,
       </div>
     );
   }
-
   return (
     <div className={styles.item} style={{backgroundColor, borderLeftColor: borderColor}}>
       <p className={styles.date} style={{color: COLORS.environmentTypesText}}>{date}</p>

@@ -50,7 +50,6 @@ function useTripHistoryFilter(activeFilter, onChange) {
   }, [activeFilter]);
 
   const currentCategory = categories.find((category) => category.value === selectedCategory) || categories[0];
-
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
     const category = categories.find((item) => item.value === value);

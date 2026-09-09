@@ -14,7 +14,7 @@ function ReadingTip() {
       <div>
         <p className={styles.title} style={{color: COLORS.text}}>Consejo para una mejor lectura</p>
         <p className={styles.text} style={{color: COLORS.labels}}>
-          Para facturas físicas, procure una iluminación central y evite sombras sobre el texto del RUT y el monto total.
+          Para facturas físicas, procure una iluminación central y evite sombras sobre el texto del NIT y el monto total.
         </p>
       </div>
     </div>

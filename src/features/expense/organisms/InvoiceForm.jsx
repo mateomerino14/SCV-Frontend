@@ -32,13 +32,13 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
 
   return (
     <div className={styles.wrapper}>
+      <p className="text-sm font-bold font-inter uppercase mb-3" style={{color: COLORS.labels}}>Formulario de Registro</p>
       {data.extraido_por_qr && !manuallyModified && (
         <div className={styles.qrBadge} style={{backgroundColor: '#d4edda', color: '#155724'}}>
           <QrCode size={14} />
           Datos extraídos del QR del SIAT
         </div>
       )}
-
       <div className="mt-3">
         <p className={styles.sectionTitle} style={{color: COLORS.labels}}>Tipo de Documento</p>
         <div className={styles.toggleRow}>
@@ -52,7 +52,6 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
           ))}
         </div>
       </div>
-
       {fieldsConfig.map(({key, label, type, required}) => (
         <ExpenseField key={key} label={`${label}${!required ? ' (Opcional)' : ''}`} error={fieldErrors[key]}>
           <input value={data[key] || ''} type={type} inputMode={key === 'monto' ? 'decimal' : 'text'} disabled={saved}
@@ -60,18 +59,15 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
             onChange={(event) => handleFieldChange(key, event.target.value)} />
         </ExpenseField>
       ))}
-
       <ExpenseField label={`IVA ${vatPercentage > 0 ? `(${vatPercentage}%)` : '(No aplica)'}`}>
         <input value={data.iva || '0.00'} readOnly type="text" className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, cursor: 'default'}} />
       </ExpenseField>
-
       <div className={styles.fieldWrapper}>
         <p className={styles.label} style={{color: COLORS.labels}}>Monto Total</p>
         <div className={styles.totalAmountBox} style={{borderColor: COLORS.secondary}}>
           <p className={styles.totalAmountText} style={{color: COLORS.secondary}}>{totalAmount.toFixed(2)} Bs</p>
         </div>
       </div>
-
       {manuallyModified && (
         <div className={styles.alert} style={{backgroundColor: '#fef3cd', color: '#856404'}}>Se han detectado cambios manuales en los datos extraídos</div>
       )}

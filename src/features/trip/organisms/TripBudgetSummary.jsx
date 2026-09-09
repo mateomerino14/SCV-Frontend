@@ -42,12 +42,9 @@ function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, tota
           <>
             <TripBudgetRow label="Días nacionales (Bs)" value={`${nationalDays} día${nationalDays !== 1 ? 's' : ''}`} borderColor={borderColor} />
             <TripBudgetRow label="Días internacionales (USD)" value={`${internationalDays} día${internationalDays !== 1 ? 's' : ''}`} borderColor={borderColor} />
-
             <p className={styles.amountLabel}>Presupuesto Nacional</p>
             <p className={styles.amount}>{totalAmount.toFixed(2)} <span className={styles.amountSub}>Bs</span></p>
-
             <div className={styles.amountDivider} />
-
             <p className={styles.amountUsdLabel}>Presupuesto Internacional</p>
             <p className={styles.amountUsd}>{(totalAmountUsd || 0).toFixed(2)} <span className={styles.amountSub}>USD</span></p>
           </>

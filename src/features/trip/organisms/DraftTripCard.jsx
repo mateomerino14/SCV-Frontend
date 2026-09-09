@@ -1,15 +1,16 @@
+import {motion} from 'framer-motion';
 import {useNavigate} from 'react-router-dom';
 import {Pencil, Send, Calendar, Wallet, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {routes, editTripPath} from '../../../constants/routes';
 import {formatDateRange} from '../../../utils/dateFormatter';
 import TripRoute from '../atoms/TripRoute';
+import TripTypeBadge from '../atoms/TripTypeBadge';
 
 const styles = {
   card: 'rounded-2xl p-4 shadow-md flex flex-col gap-3 h-full',
   headerRow: 'flex items-center justify-end',
-  badge: 'text-xs font-bold font-inter px-2 py-1 rounded-full uppercase',
-  reason: 'text-base font-bold font-inter leading-tight',
+  reason: 'text-base font-bold font-inter leading-tight break-words line-clamp-2',
   infoRow: 'flex items-center gap-1.5 text-xs font-inter',
   amountsRow: 'flex flex-col gap-1 mt-1 p-2.5 rounded-xl',
   amountLine: 'flex items-center justify-between text-xs font-inter',
@@ -23,12 +24,13 @@ function DraftTripCard({trip, onSubmit, submitting}) {
   const isInternational = trip.tipo === 'Internacional';
 
   return (
-    <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`}}>
+    <motion.div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`}}
+      whileHover={{y: -3, boxShadow: '0 10px 24px rgba(0,0,0,0.10)'}} transition={{duration: 0.18}}>
       <div className={styles.headerRow}>
-        <span className={styles.badge} style={{backgroundColor: COLORS.dataFields, color: COLORS.text}}>{trip.tipo?.toUpperCase()}</span>
+        <TripTypeBadge isInternational={isInternational} />
       </div>
-      <p className={styles.reason} style={{color: COLORS.text}}>{trip.motivo || 'Sin motivo'}</p>
-      <TripRoute origin={trip.origen} destination={trip.destino || 'Sin destino'} size={13} maxWidth={9999} />
+      <p className={styles.reason} style={{color: COLORS.text}} title={trip.motivo}>{trip.motivo || 'Sin motivo'}</p>
+      <TripRoute origin={trip.origen} destination={trip.destino || 'Sin destino'} size={13} maxWidth={130} />
       <div className={styles.infoRow} style={{color: COLORS.labels}}>
         <Calendar size={13} style={{color: COLORS.labels}} />
         {formatDateRange(trip.fecha_inicio, trip.fecha_fin)}
@@ -63,7 +65,7 @@ function DraftTripCard({trip, onSubmit, submitting}) {
           {submitting ? 'Enviando...' : 'Enviar a Revisión'}
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

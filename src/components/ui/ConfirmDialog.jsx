@@ -1,3 +1,4 @@
+import {motion, AnimatePresence} from 'framer-motion';
 import ModalIconHeader from './ModalIconHeader';
 import Button from './Button';
 import {COLORS} from '../../constants';
@@ -14,29 +15,41 @@ const styles = {
   buttons: 'flex flex-row gap-4 mt-2',
 };
 
-function ConfirmDialog({isOpen, icon, iconColor, iconBackgroundColor, cardColor = COLORS.primary, title, message, warning, confirmText = 'Confirmar', cancelText = 'Cancelar', onConfirm, onCancel, loading, hideCancel, compact}) {
-  if (!isOpen) {
-    return null;
-  }
+const backdropVariants = {
+  hidden: {opacity: 0},
+  visible: {opacity: 1},
+};
 
+const cardVariants = {
+  hidden: {opacity: 0, scale: 0.94, y: 8},
+  visible: {opacity: 1, scale: 1, y: 0},
+};
+
+function ConfirmDialog({isOpen, icon, iconColor, iconBackgroundColor, cardColor = COLORS.primary, title, message, warning, confirmText = 'Confirmar', cancelText = 'Cancelar', onConfirm, onCancel, loading, hideCancel, compact}) {
   let confirmLabel = confirmText;
   if (loading) {
     confirmLabel = `${confirmText}...`;
   }
-
   return (
-    <div className={compact ? styles.overlayCompact : styles.overlay}>
-      <div className={compact ? styles.cardCompact : styles.card} style={{backgroundColor: cardColor}}>
-        <ModalIconHeader icon={icon} size={compact ? 40 : 50} backgroundColor={iconBackgroundColor} color={iconColor} />
-        <h2 className={compact ? styles.titleCompact : styles.title} style={{color: COLORS.background}}>{title}</h2>
-        <p className={styles.message} style={{color: COLORS.background}}>{message}</p>
-        {warning && <p className={styles.warning} style={{color: COLORS.backgroundHeader}}>{warning}</p>}
-        <div className={styles.buttons}>
-          {!hideCancel && <Button text={cancelText} variant="secondary" onClick={onCancel} disabled={loading} />}
-          <Button text={confirmLabel} variant="primary" onClick={onConfirm} disabled={loading} />
-        </div>
-      </div>
-    </div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div className={compact ? styles.overlayCompact : styles.overlay}
+          variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
+          <motion.div className={compact ? styles.cardCompact : styles.card} style={{backgroundColor: cardColor}}
+            variants={cardVariants} initial="hidden" animate="visible" exit="hidden"
+            transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
+            <ModalIconHeader icon={icon} size={compact ? 40 : 50} backgroundColor={iconBackgroundColor} color={iconColor} />
+            <h2 className={compact ? styles.titleCompact : styles.title} style={{color: COLORS.background}}>{title}</h2>
+            <p className={styles.message} style={{color: COLORS.background}}>{message}</p>
+            {warning && <p className={styles.warning} style={{color: COLORS.backgroundHeader}}>{warning}</p>}
+            <div className={styles.buttons}>
+              {!hideCancel && <Button text={cancelText} variant="secondary" onClick={onCancel} disabled={loading} />}
+              <Button text={confirmLabel} variant="primary" onClick={onConfirm} disabled={loading} />
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

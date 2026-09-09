@@ -6,7 +6,6 @@ function useBudgetProgress(trip) {
   const internationalExpense = trip.gastoAcumuladoUsd || 0;
   const assignedAmount = parseFloat(trip.monto_asignado) || 0;
   const assignedAmountUsd = parseFloat(trip.monto_asignado_usd) || 0;
-
   const national = useBudgetPercentage(nationalExpense, assignedAmount);
   const international = useBudgetPercentage(internationalExpense, assignedAmountUsd);
 

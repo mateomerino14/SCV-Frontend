@@ -30,7 +30,7 @@ function usePositionSelector(positions, positionId, onChange) {
       bottom: opensUpward ? window.innerHeight - rect.top + 4 : undefined,
     });
   };
-
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (

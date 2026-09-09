@@ -7,6 +7,7 @@ import {
   editTripReviewComment,
   deleteTripReviewComment,
 } from '../../services/approval/reviewService';
+import getCurrentUserId from '../../utils/getCurrentUserId';
 
 function useSupervisorPendingTripDetail(tripId) {
   const [data, setData] = useState(null);
@@ -72,7 +73,13 @@ function useSupervisorPendingTripDetail(tripId) {
   };
 
   const handleRequestReject = () => {
-    const savedObservations = (data?.comentarios || []).filter((comment) => comment.tipo === 'OBSERVACION');
+    const currentUserId = getCurrentUserId();
+    const currentCycle = data?.viaje?.ciclo_revision || 1;
+    const savedObservations = (data?.comentarios || []).filter((comment) =>
+      comment.tipo === 'OBSERVACION' &&
+      comment.id_usuario === currentUserId &&
+      (comment.ciclo_revision || 1) === currentCycle
+    );
     if (savedObservations.length === 0) {
       setShowNoObservations(true);
       return;
@@ -86,7 +93,7 @@ function useSupervisorPendingTripDetail(tripId) {
     const result = await rejectTripReview(tripId);
     setSavingAction(false);
     if (result.error) {
-      showError(result.error);
+      setShowNoObservations(true);
       return;
     }
     setActionCompleted('RECHAZADO');

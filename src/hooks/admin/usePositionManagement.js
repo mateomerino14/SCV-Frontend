@@ -70,7 +70,6 @@ function usePositionManagement() {
 
   const validateFields = (excludeId = null) => {
     const errors = {};
-
     if (!formData.nombre.trim()) {
       errors.nombre = 'El nombre del cargo es requerido';
     }
@@ -80,7 +79,6 @@ function usePositionManagement() {
     else if (positionAlreadyExists(formData.nombre.trim(), excludeId)) {
       errors.nombre = 'Ya existe un cargo con ese nombre';
     }
-
     if (!formData.monto_diario) {
       errors.monto_diario = 'La tarifa diaria en Bs es requerida';
     }
@@ -93,7 +91,6 @@ function usePositionManagement() {
         errors.monto_diario = `No puede superar ${maxAmount}`;
       }
     }
-
     if (!formData.monto_diario_usd) {
       errors.monto_diario_usd = 'La tarifa diaria en USD es requerida';
     }
@@ -106,7 +103,6 @@ function usePositionManagement() {
         errors.monto_diario_usd = `No puede superar ${maxAmount}`;
       }
     }
-
     return errors;
   };
 

@@ -17,11 +17,9 @@ const styles = {
 
 function InvoicePreviewItem({invoice, index, expanded, onSelect, onRemove, children}) {
   const {getStatusColor, getStatusText, getBorderColor} = useInvoicePreviewStatus(invoice);
-
   const amount = parseFloat(invoice.data?.monto || 0);
   const vat = parseFloat(invoice.data?.iva || 0);
   const totalAmount = (amount + vat).toFixed(2);
-
   let displayName = invoice.name;
   if (invoice.data) {
     displayName = `${invoice.data.proveedor || 'Sin proveedor'} — ${totalAmount} Bs`;
@@ -46,7 +44,6 @@ function InvoicePreviewItem({invoice, index, expanded, onSelect, onRemove, child
           <Trash2 size={18} style={{color: COLORS.secondary, cursor: 'pointer'}} onClick={(event) => {event.stopPropagation(); onRemove(index);}} />
         </div>
       </div>
-
       {expanded && children && (
         <div className={styles.expanded} style={{backgroundColor: COLORS.background}}>{children}</div>
       )}

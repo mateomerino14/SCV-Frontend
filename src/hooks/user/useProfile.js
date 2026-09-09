@@ -33,7 +33,10 @@ function useProfile() {
 
   const showSuccess = (message) => {
     setSuccess(message);
-    setTimeout(() => setSuccess(''), 3000);
+  };
+
+  const closeSuccess = () => {
+    setSuccess('');
   };
 
   const showError = (message) => {
@@ -142,7 +145,7 @@ function useProfile() {
     user,
     loading,
     error,
-    success,
+    success, closeSuccess,
     saving,
     phone, setPhone,
     email, setEmail,

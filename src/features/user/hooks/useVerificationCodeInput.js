@@ -33,7 +33,6 @@ function useVerificationCodeInput(isOpen, expiresAt, onExpired) {
         onExpired();
       }
     }, 1000);
-
     return () => clearInterval(timer);
   }, [isOpen, expiresAt]);
 
@@ -75,7 +74,6 @@ function useVerificationCodeInput(isOpen, expiresAt, onExpired) {
     setResentMessage('Se ha reenviado el código correctamente');
     setTimeout(() => setResentMessage(''), 5000);
   };
-
   return {digits, resentMessage, resending, inputRefs, codeLength, handleChange, handleKeyDown, handleResend};
 }
 

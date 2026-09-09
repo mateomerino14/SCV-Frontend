@@ -6,21 +6,17 @@ function useDeadlineRequestModal(isOpen, onConfirm) {
   const [reason, setReason] = useState('');
 
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
       setReason('');
     }
   }, [isOpen]);
-
+  
   const exceedsLimit = reason.length > maxLength;
-
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!reason.trim() || exceedsLimit) {
       return;
     }
-    const success = await onConfirm(reason);
-    if (success) {
-      setReason('');
-    }
+    onConfirm(reason.trim());
   };
   return {reason, setReason, maxLength, exceedsLimit, handleConfirm};
 }

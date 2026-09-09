@@ -39,6 +39,14 @@ function calculateWithholdings(amount, type, isInternational) {
   return {base: amountNum, rcIva: 0, iue: 0, it: 0, cost: amountNum};
 }
 
+function formatDateToDMY(dateStr) {
+  if (!dateStr) {
+    return '';
+  }
+  const [year, month, day] = dateStr.split('-');
+  return `${day}/${month}/${year}`;
+}
+
 let installmentCounter = 0;
 let subitemCounter = 0;
 
@@ -53,7 +61,6 @@ function newSubitem(description = '', amount = '') {
 function useEditExpense(expenseId) {
   const [searchParams] = useSearchParams();
   const isInternationalExpense = searchParams.get('internacional') === 'true';
-
   const [type, setType] = useState('C');
   const [date, setDate] = useState('');
   const [supplier, setSupplier] = useState('');
@@ -70,6 +77,7 @@ function useEditExpense(expenseId) {
   const [fieldErrors, setFieldErrors] = useState({});
   const [saved, setSaved] = useState(false);
   const [tripId, setTripId] = useState(null);
+  const [tripDateRange, setTripDateRange] = useState({start: null, end: null});
   const [usesOtherCurrency, setUsesOtherCurrency] = useState(false);
   const [installments, setInstallments] = useState([newInstallment()]);
   const [installmentErrors, setInstallmentErrors] = useState({});
@@ -94,8 +102,8 @@ function useEditExpense(expenseId) {
       setDescription(expenseData.descripcion || '');
       setCategoryId(expenseData.id_categoria || null);
       setTripId(expenseData.id_viaje || null);
+      setTripDateRange({start: expenseData.Viaje?.fecha_inicio || null, end: expenseData.Viaje?.fecha_fin || null});
       setAmount(parseFloat(expenseData.monto_total || 0).toString());
-
       const savedInstallments = expenseData.Gasto_Tramo_Moneda || [];
       if (savedInstallments.length > 0) {
         setUsesOtherCurrency(true);
@@ -105,7 +113,6 @@ function useEditExpense(expenseId) {
           parseFloat(installment.tipo_cambio).toString(),
         )));
       }
-
       const savedSubitems = expenseData.Gasto_Subitem || [];
       if (savedSubitems.length > 0) {
         setUsesSubitems(true);
@@ -114,7 +121,6 @@ function useEditExpense(expenseId) {
           parseFloat(subitem.monto).toString(),
         )));
       }
-
       if (expenseData.Imagen?.url_archivo) {
         setExistingImage(expenseData.Imagen.url_archivo);
         setImagePreview(expenseData.Imagen.url_archivo);
@@ -336,6 +342,9 @@ function useEditExpense(expenseId) {
     if (!date) {
       errors.date = 'La fecha del gasto es requerida';
     }
+    else if (tripDateRange.start && tripDateRange.end && (date < tripDateRange.start || date > tripDateRange.end)) {
+      errors.date = `La fecha debe estar dentro del período del viaje (${formatDateToDMY(tripDateRange.start)} - ${formatDateToDMY(tripDateRange.end)})`;
+    }
     const isAmountAutomatic = !isInternationalExpense && usesSubitems;
     if (!isAmountAutomatic && (!amount || parseFloat(amount) <= 0)) {
       errors.amount = 'El monto es requerido y debe ser mayor a 0';
@@ -394,7 +403,6 @@ function useEditExpense(expenseId) {
     setInstallmentErrors({});
     setSubitemErrors({});
     setLoading(true);
-
     const payload = {
       tipo: type,
       fecha_gasto: date,
@@ -405,7 +413,6 @@ function useEditExpense(expenseId) {
       mantener_imagen: !!existingImage,
       es_gasto_internacional: isInternationalExpense,
     };
-
     if (usesOtherCurrency && validInstallments.length > 0) {
       payload.tramos = validInstallments.map((installment) => ({
         moneda: installment.currency,
@@ -421,14 +428,12 @@ function useEditExpense(expenseId) {
       payload.tipo_cambio = 1;
       payload.monto_moneda_origen = finalAmount;
     }
-
     if (usesSubitems && validSubitems.length > 0) {
       payload.subitems = validSubitems.map((subitem) => ({
         descripcion: subitem.description.trim(),
         monto: parseFloat(subitem.amount),
       }));
     }
-
     const data = await updateExpense(expenseId, payload, image);
     setLoading(false);
     if (data.error) {

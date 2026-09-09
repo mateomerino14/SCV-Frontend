@@ -16,7 +16,6 @@ const styles = {
 
 function TripRefundBanner({accumulatedExpense, assignedAmount}) {
   const {difference, hasSurplus} = useTripBalance(accumulatedExpense, assignedAmount);
-
   if (!hasSurplus) {
     return null;
   }

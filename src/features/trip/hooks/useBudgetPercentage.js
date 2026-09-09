@@ -6,12 +6,10 @@ function useBudgetPercentage(expense, assignedAmount) {
   else if (expense > 0) {
     percentage = 100;
   }
-
   let exceeds = percentage >= 100;
   if (assignedAmount === 0) {
     exceeds = expense > 0;
   }
-
   return {percentage, exceeds};
 }
 

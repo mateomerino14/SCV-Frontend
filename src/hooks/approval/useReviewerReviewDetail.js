@@ -13,6 +13,7 @@ function useReviewerReviewDetail(tripId) {
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
+  const [warning, setWarning] = useState('');
   const [blocked, setBlocked] = useState(false);
   const [showApprove, setShowApprove] = useState(false);
   const [showReject, setShowReject] = useState(false);
@@ -22,7 +23,6 @@ function useReviewerReviewDetail(tripId) {
   const [editingComment, setEditingComment] = useState(null);
   const [deletingComment, setDeletingComment] = useState(null);
   const [editText, setEditText] = useState('');
-
   const [activeExpense, setActiveExpense] = useState(null);
   const [showExpenseObservations, setShowExpenseObservations] = useState(false);
   const [newText, setNewText] = useState('');
@@ -31,7 +31,6 @@ function useReviewerReviewDetail(tripId) {
     if (!tripId) {
       return;
     }
-
     const load = async () => {
       setLoading(true);
       const result = await getReviewDetail(tripId);
@@ -43,7 +42,6 @@ function useReviewerReviewDetail(tripId) {
       }
       setData(result);
     };
-
     load();
   }, [tripId]);
 
@@ -64,6 +62,9 @@ function useReviewerReviewDetail(tripId) {
     }
     setShowApprove(false);
     setActionCompleted('APROBADO_FINAL');
+    if (result.advertencia) {
+      setWarning(result.advertencia);
+    }
     setData((prev) => ({...prev, viaje: {...prev.viaje, estado: 'APROBADO_FINAL'}}));
   };
 
@@ -186,7 +187,7 @@ function useReviewerReviewDetail(tripId) {
   const resetCommentAdded = () => setCommentAdded(false);
 
   return {
-    data, loading, savingAction, error, blocked,
+    data, loading, savingAction, error, warning, blocked,
     showApprove, setShowApprove,
     showReject, setShowReject,
     showNoObservations, setShowNoObservations,

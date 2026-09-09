@@ -8,6 +8,7 @@ import {
   editTripComment,
   deleteTripComment,
 } from '../../services/approval/treasurerService';
+import getCurrentUserId from '../../utils/getCurrentUserId';
 
 const maxAmount = 999999.99;
 
@@ -16,6 +17,7 @@ function useTreasurerReviewDetail(tripId) {
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
+  const [modalError, setModalError] = useState('');
   const [blocked, setBlocked] = useState(false);
   const [showApprove, setShowApprove] = useState(false);
   const [showReject, setShowReject] = useState(false);
@@ -26,7 +28,6 @@ function useTreasurerReviewDetail(tripId) {
   const [editingComment, setEditingComment] = useState(null);
   const [deletingComment, setDeletingComment] = useState(null);
   const [editText, setEditText] = useState('');
-
   const [assignedAmount, setAssignedAmount] = useState('');
   const [assignedAmountUsd, setAssignedAmountUsd] = useState('');
   const [editingAmounts, setEditingAmounts] = useState(false);
@@ -36,7 +37,6 @@ function useTreasurerReviewDetail(tripId) {
     if (!tripId) {
       return;
     }
-
     const load = async () => {
       setLoading(true);
       const result = await getTripDetail(tripId);
@@ -50,13 +50,17 @@ function useTreasurerReviewDetail(tripId) {
       setAssignedAmount(String(result.viaje.monto_asignado));
       setAssignedAmountUsd(String(result.viaje.monto_asignado_usd || 0));
     };
-
     load();
   }, [tripId]);
 
   const showError = (message) => {
     setError(message);
     setTimeout(() => setError(''), 3000);
+  };
+
+  const showModalError = (message) => {
+    setModalError(message);
+    setTimeout(() => setModalError(''), 3000);
   };
 
   const reload = async () => {
@@ -131,7 +135,13 @@ function useTreasurerReviewDetail(tripId) {
   };
 
   const handleRequestReject = () => {
-    const savedObservations = (data?.comentarios || []).filter((comment) => comment.tipo === 'OBSERVACION');
+    const currentUserId = getCurrentUserId();
+    const currentCycle = data?.viaje?.ciclo_revision || 1;
+    const savedObservations = (data?.comentarios || []).filter((comment) =>
+      comment.tipo === 'OBSERVACION' &&
+      comment.id_usuario === currentUserId &&
+      (comment.ciclo_revision || 1) === currentCycle
+    );
     if (savedObservations.length === 0) {
       setShowNoObservations(true);
     }
@@ -145,7 +155,7 @@ function useTreasurerReviewDetail(tripId) {
     const result = await rejectTrip(tripId);
     setSavingAction(false);
     if (result.error) {
-      showError(result.error);
+      setShowNoObservations(true);
       return;
     }
     setShowReject(false);
@@ -168,7 +178,7 @@ function useTreasurerReviewDetail(tripId) {
     const result = await addTripComment(tripId, text);
     setSavingAction(false);
     if (result.error) {
-      showError(result.error);
+      showModalError(result.error);
       return;
     }
     setObservations(['']);
@@ -190,7 +200,7 @@ function useTreasurerReviewDetail(tripId) {
     const result = await editTripComment(tripId, editingComment, editText);
     setSavingAction(false);
     if (result.error) {
-      showError(result.error);
+      showModalError(result.error);
       return;
     }
     setEditingComment(null);
@@ -224,7 +234,7 @@ function useTreasurerReviewDetail(tripId) {
   };
 
   return {
-    data, loading, savingAction, error, blocked,
+    data, loading, savingAction, error, modalError, blocked,
     showApprove, setShowApprove,
     showReject, setShowReject,
     showNoObservations, setShowNoObservations,

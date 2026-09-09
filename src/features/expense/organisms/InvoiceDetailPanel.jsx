@@ -26,11 +26,19 @@ const fields = [
 function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false}) {
   const hasManyItems = detail.length > 9;
   const {item, selectedIndex, fieldErrors, handleSelectRow, handleFieldChange, handleAdd, handleModify} = useInvoiceDetailPanel(detail, onAdd, onRemove);
+  const handleInputChange = (key, value) => {
+    if (key === 'precio' && value !== '' && !/^\d{0,8}(\.\d{0,2})?$/.test(value)) {
+      return;
+    }
+    if (key === 'cantidad' && value !== '' && !/^\d{0,4}$/.test(value)) {
+      return;
+    }
+    handleFieldChange(key, value);
+  };
 
   return (
     <div className={styles.wrapper}>
       <p className={styles.sectionTitle} style={{color: COLORS.labels}}>Detalle de Productos / Servicios</p>
-
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <div className={styles.tableHeader} style={{color: COLORS.background, backgroundColor: COLORS.backgroundSecondary, ...gridColumns, paddingRight: hasManyItems ? '17px' : '0px'}}>
           <span>Descripción</span>
@@ -52,7 +60,6 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false}) {
           ))}
         </div>
       </div>
-
       {!saved && (
         <>
           <div className="flex flex-col gap-3" style={{marginTop: hasManyItems ? '0.5rem' : '1.3rem'}}>
@@ -60,11 +67,10 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false}) {
               <ExpenseField key={key} label={label} error={fieldErrors[key]}>
                 <input type={type === 'number' ? 'text' : type} inputMode={key === 'precio' ? 'decimal' : key === 'cantidad' ? 'numeric' : 'text'}
                   className="w-full bg-transparent outline-none font-inter text-xs" style={{color: COLORS.text}}
-                  value={item[key]} maxLength={key === 'nombre_producto' ? 50 : undefined} onChange={(event) => handleFieldChange(key, event.target.value)} />
+                  value={item[key]} maxLength={key === 'nombre_producto' ? 50 : undefined} onChange={(event) => handleInputChange(key, event.target.value)} />
               </ExpenseField>
             ))}
           </div>
-
           <div className={styles.btnsRow}>
             <button className={styles.addBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={handleAdd}>Agregar</button>
             <button className={styles.addBtn} disabled={selectedIndex === null} onClick={handleModify}

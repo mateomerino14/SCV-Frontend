@@ -1,10 +1,9 @@
-import {COLORS} from '../../constants';
-
 function FVIcon() {
   return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <circle cx="16" cy="16" r="16" fill={COLORS.primary} />
-      <path d="M10 16L14 20L22 12" stroke={COLORS.background} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="36" rx="8" fill="#8B0000" />
+      <rect x="8" y="8" width="20" height="20" rx="4" fill="none" stroke="white" strokeWidth="2" />
+      <circle cx="18" cy="18" r="4" fill="white" />
     </svg>
   );
 }

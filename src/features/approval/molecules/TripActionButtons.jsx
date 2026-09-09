@@ -8,7 +8,6 @@ const styles = {
 
 function TripActionButtons({detailRoute, originRoute, onTake, taking, onReturn, canReturn, detailLabel = 'Ver Detalle'}) {
   const navigate = useNavigate();
-
   if (onTake) {
     return (
       <div className={styles.row}>
@@ -19,7 +18,6 @@ function TripActionButtons({detailRoute, originRoute, onTake, taking, onReturn, 
       </div>
     );
   }
-
   if (canReturn) {
     return (
       <div className={styles.row}>
@@ -30,7 +28,6 @@ function TripActionButtons({detailRoute, originRoute, onTake, taking, onReturn, 
       </div>
     );
   }
-
   return (
     <div className={styles.row}>
       <button className={styles.btn} style={{backgroundColor: COLORS.title, color: COLORS.background}}

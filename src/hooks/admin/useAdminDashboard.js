@@ -20,12 +20,10 @@ function useAdminDashboard() {
         setData(result);
       }
     };
-
     load(true);
     const polling = setInterval(() => load(false), pollingInterval);
     return () => clearInterval(polling);
   }, []);
-
   return {data, loading};
 }
 

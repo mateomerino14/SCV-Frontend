@@ -1,8 +1,9 @@
+import {motion} from 'framer-motion';
 import {useNavigate} from 'react-router-dom';
+import {Navigation, MapPin} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {tripPath} from '../../../constants/routes';
 import {formatDateRange} from '../../../utils/dateFormatter';
-import TripRoute from '../atoms/TripRoute';
 import BudgetProgressBlock from '../molecules/BudgetProgressBlock';
 import useBudgetProgress from '../hooks/useBudgetProgress';
 
@@ -11,11 +12,12 @@ const styles = {
   emptyContainer: "rounded-xl p-8 text-white text-center flex flex-col items-center justify-center gap-2 h-full min-h-[280px]",
   topSection: "p-5 shrink-0",
   reason: "text-lg font-bold font-inter uppercase leading-tight mb-1 text-white line-clamp-2",
-  date: "text-xs font-inter opacity-70 text-white mt-1",
-  route: "text-xs font-inter opacity-80 text-white mt-1",
+  date: "text-xs font-inter text-white mt-1",
+  routeRow: "flex items-center gap-1 flex-wrap mt-1",
+  routeText: "text-xs font-inter truncate",
   bottomSection: "p-4 flex flex-col flex-1",
   destinationRow: "flex flex-col gap-1 mb-2",
-  destination: "font-inter font-semibold text-xs line-clamp-1",
+  destination: "font-inter font-semibold text-xs break-words",
   badgesRow: "flex gap-1 flex-wrap mb-1",
   badge: "text-xs font-bold font-nunito px-2 py-0.5 rounded-xl whitespace-nowrap",
   divider: "border-t mb-2 mt-1",
@@ -24,7 +26,6 @@ const styles = {
 
 function InProgressTripCard({trip}) {
   const navigate = useNavigate();
-
   if (!trip) {
     return (
       <div className={styles.emptyContainer} style={{background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.title})`}}>
@@ -37,21 +38,24 @@ function InProgressTripCard({trip}) {
       </div>
     );
   }
-
-  const {isInternational, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,internationalExpense, 
-  assignedAmountUsd, internationalPercentage, exceedsInternational,
+  const {
+    isInternational, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,
+    internationalExpense, assignedAmountUsd, internationalPercentage, exceedsInternational,
   } = useBudgetProgress(trip);
-
   const nationalLabel = isInternational ? 'Nacional (Bs)' : 'Gasto Acumulado';
 
   return (
-    <div className={styles.container}>
+    <motion.div className={styles.container} whileHover={{y: -3, boxShadow: '0 12px 28px rgba(0,0,0,0.14)'}} transition={{duration: 0.18}}>
       <div className={styles.topSection} style={{backgroundColor: COLORS.backgroundSecondary}}>
         <p className={styles.reason}>{trip.motivo?.toUpperCase()}</p>
-        <p className={styles.date}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
+        <p className={styles.date} style={{opacity: 0.7}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
         {trip.origen && (
-          <div className={styles.route}>
-            <TripRoute origin={trip.origen} destination={trip.destino} size={10} maxWidth={100} />
+          <div className={styles.routeRow}>
+            <Navigation size={10} style={{color: COLORS.background, opacity: 0.8, flexShrink: 0}} />
+            <span className={styles.routeText} style={{color: COLORS.background, opacity: 0.85, maxWidth: 100}}>{trip.origen}</span>
+            <span style={{color: COLORS.background, opacity: 0.5, flexShrink: 0}}>→</span>
+            <MapPin size={10} style={{color: COLORS.background, opacity: 0.8, flexShrink: 0}} />
+            <span className={styles.routeText} style={{color: COLORS.background, opacity: 0.85, maxWidth: 100}}>{trip.destino}</span>
           </div>
         )}
       </div>
@@ -76,7 +80,7 @@ function InProgressTripCard({trip}) {
         )}
         <p className={styles.detailsLink} style={{color: COLORS.title}} onClick={() => navigate(tripPath(trip.id_viaje))}>DETALLES →</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

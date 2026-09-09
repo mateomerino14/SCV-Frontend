@@ -7,6 +7,7 @@ import {
   editExpenseReviewComment,
   deleteExpenseReviewComment,
   returnExpenseReview,
+  takeExpenseReview,
 } from '../../services/approval/reviewService';
 
 function useSupervisorExpenseReviewDetail(tripId) {
@@ -14,6 +15,7 @@ function useSupervisorExpenseReviewDetail(tripId) {
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
+  const [modalError, setModalError] = useState('');
   const [blocked, setBlocked] = useState(false);
   const [showApprove, setShowApprove] = useState(false);
   const [showReject, setShowReject] = useState(false);
@@ -23,16 +25,16 @@ function useSupervisorExpenseReviewDetail(tripId) {
   const [editingComment, setEditingComment] = useState(null);
   const [deletingComment, setDeletingComment] = useState(null);
   const [editText, setEditText] = useState('');
-
   const [activeExpense, setActiveExpense] = useState(null);
   const [showExpenseObservations, setShowExpenseObservations] = useState(false);
   const [newText, setNewText] = useState('');
+  const [taking, setTaking] = useState(false);
+  const [alreadyTaken, setAlreadyTaken] = useState(false);
 
   useEffect(() => {
     if (!tripId) {
       return;
     }
-
     const load = async () => {
       setLoading(true);
       const result = await getExpenseReviewDetail(tripId);
@@ -44,7 +46,6 @@ function useSupervisorExpenseReviewDetail(tripId) {
       }
       setData(result);
     };
-
     load();
   }, [tripId]);
 
@@ -53,12 +54,36 @@ function useSupervisorExpenseReviewDetail(tripId) {
     setTimeout(() => setError(''), 3000);
   };
 
+  const showModalError = (message) => {
+    setModalError(message);
+    setTimeout(() => setModalError(''), 3000);
+  };
+
   const reload = async () => {
     const updated = await getExpenseReviewDetail(tripId);
     if (!updated.error) {
       setData(updated);
     }
   };
+
+  const handleTake = async () => {
+    setTaking(true);
+    const result = await takeExpenseReview(tripId);
+    setTaking(false);
+    if (result.error) {
+      if (result.error.includes('ya fue tomado') || result.error.includes('siendo revisado')) {
+        setAlreadyTaken(true);
+      }
+      else {
+        showError(result.error);
+      }
+      await reload();
+      return;
+    }
+    await reload();
+  };
+
+  const closeAlreadyTakenModal = () => setAlreadyTaken(false);
 
   const handleApprove = async () => {
     setSavingAction(true);
@@ -72,7 +97,7 @@ function useSupervisorExpenseReviewDetail(tripId) {
     setActionCompleted('APROBADO');
     setData((prev) => ({...prev, viaje: {...prev.viaje, estado: 'APROBADO_SUPERVISOR'}}));
   };
-
+  
   const currentCycle = () => data?.viaje?.ciclo_revision || 1;
 
   const handleRequestReject = () => {
@@ -140,14 +165,14 @@ function useSupervisorExpenseReviewDetail(tripId) {
   const handleAddComment = async () => {
     const text = newText.trim();
     if (!text) {
-      showError('Debes escribir una observación');
+      showModalError('Debes escribir una observación');
       return;
     }
     setSavingAction(true);
     const result = await addExpenseReviewComment(tripId, text, activeExpense);
     setSavingAction(false);
     if (result.error) {
-      showError(result.error);
+      showModalError(result.error);
       return;
     }
     setNewText('');
@@ -162,14 +187,14 @@ function useSupervisorExpenseReviewDetail(tripId) {
 
   const handleConfirmEdit = async () => {
     if (!editText.trim()) {
-      showError('El comentario no puede estar vacío');
+      showModalError('El comentario no puede estar vacío');
       return;
     }
     setSavingAction(true);
     const result = await editExpenseReviewComment(tripId, editingComment, editText);
     setSavingAction(false);
     if (result.error) {
-      showError(result.error);
+      showModalError(result.error);
       return;
     }
     setEditingComment(null);
@@ -184,7 +209,7 @@ function useSupervisorExpenseReviewDetail(tripId) {
     const result = await deleteExpenseReviewComment(tripId, deletingComment);
     setSavingAction(false);
     if (result.error) {
-      showError(result.error);
+      showModalError(result.error);
       return;
     }
     setDeletingComment(null);
@@ -194,7 +219,7 @@ function useSupervisorExpenseReviewDetail(tripId) {
   const resetCommentAdded = () => setCommentAdded(false);
 
   return {
-    data, loading, savingAction, error, blocked,
+    data, loading, savingAction, error, modalError, blocked,
     showApprove, setShowApprove,
     showReject, setShowReject,
     showNoObservations, setShowNoObservations,
@@ -206,6 +231,7 @@ function useSupervisorExpenseReviewDetail(tripId) {
     activeExpense, showExpenseObservations, newText, setNewText,
     openExpenseObservations, closeExpenseObservations,
     activeExpenseObservations, countExpenseObservations,
+    taking, handleTake, alreadyTaken, closeAlreadyTakenModal,
     handleApprove,
     handleRequestReject,
     handleReject,

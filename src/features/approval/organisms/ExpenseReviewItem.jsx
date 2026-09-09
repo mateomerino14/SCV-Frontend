@@ -1,8 +1,9 @@
+import {motion} from 'framer-motion';
 import {AlertTriangle, CheckCircle, Globe, MapPin} from 'lucide-react';
 import {useNavigate} from 'react-router-dom';
 import {COLORS} from '../../../constants';
 import {formatDateRange} from '../../../utils/dateFormatter';
-import {alertConfig, reviewStatusConfig} from '../hooks/useTripStatusConfig';
+import {alertConfig, tripStatusConfig} from '../hooks/useTripStatusConfig';
 import TripRoute from '../../trip/atoms/TripRoute';
 import TransportIcon from '../atoms/TransportIcon';
 import TripActionButtons from '../molecules/TripActionButtons';
@@ -20,7 +21,7 @@ const styles = {
   employeeDates: 'text-xs font-inter mt-0.5',
   conformityBadge: 'text-xs font-semibold font-inter px-2 py-1 rounded-full uppercase shrink-0 flex items-center gap-1 max-w-[110px] truncate',
   reasonLabel: 'text-xs font-semibold font-inter uppercase mb-0.5',
-  reason: 'text-sm font-semibold font-inter mb-3 leading-snug line-clamp-2',
+  reason: 'text-sm font-semibold font-inter mb-3 leading-snug line-clamp-2 break-words',
   placeLabel: 'text-xs font-semibold font-inter uppercase mb-0.5',
   badgesRow: 'flex gap-1.5 flex-wrap mb-3',
   internationalBadge: 'inline-flex items-center gap-1 text-xs font-bold font-inter px-2 py-0.5 rounded-lg w-fit',
@@ -44,10 +45,11 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
   const navigate = useNavigate();
   const isObserved = trip.estadoRevision === 'OBSERVADO';
   const isInternational = trip.tipo === 'Internacional';
-  const statusConfig = reviewStatusConfig[trip.estado];
+  const statusConfig = tripStatusConfig[trip.estado];
 
   return (
-    <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`}}>
+    <motion.div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`}}
+      whileHover={{y: -3, boxShadow: '0 10px 24px rgba(0,0,0,0.10)'}} transition={{duration: 0.18}}>
       <div className={styles.cardContent}>
         <div className={styles.headerRow}>
           <img src={trip.Usuario?.foto_perfil || avatarDefault} alt="empleado" className={styles.avatar} />
@@ -61,13 +63,10 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             <span className="truncate">{isObserved ? 'Observado' : 'Conforme'}</span>
           </span>
         </div>
-
         <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo</p>
         <p className={styles.reason} style={{color: COLORS.text}}>{trip.motivo}</p>
-
         <p className={styles.placeLabel} style={{color: COLORS.secondary}}>{trip.origen ? 'Ruta' : 'Lugar'}</p>
-        <TripRoute origin={trip.origen} destination={trip.destino} size={10} maxWidth={80} />
-
+        <TripRoute origin={trip.origen} destination={trip.destino} size={10} maxWidth={180} />
         {(isInternational || trip.transporte) && (
           <div className={styles.badgesRow}>
             {isInternational && (
@@ -84,10 +83,8 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             )}
           </div>
         )}
-
         <div className={styles.spacer} />
         <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />
-
         <div className={styles.infoRow}>
           <div className={styles.infoItem}>
             <p className={styles.infoLabel} style={{color: COLORS.title}}><MapPin size={11} style={{color: COLORS.title}} />Monto Nacional</p>
@@ -104,7 +101,6 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             </div>
           </div>
         </div>
-
         {isInternational && (
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
@@ -116,7 +112,6 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             </div>
           </div>
         )}
-
         {trip.alertas?.length > 0 && (
           <div className={styles.alertsRow}>
             {trip.alertas.map((alert) => {
@@ -132,11 +127,10 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             })}
           </div>
         )}
-
         <TripActionButtons detailRoute={detailRoute} originRoute={originRoute} onTake={onTake ? () => onTake(trip.id_viaje) : null}
           taking={taking} onReturn={onReturn ? () => onReturn(trip.id_viaje) : null} canReturn={!!onReturn && !onTake} detailLabel="Revisar Detalles" />
       </div>
-    </div>
+    </motion.div>
   );
 }
 

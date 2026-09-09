@@ -15,18 +15,20 @@ const styles = {
   divider: 'border-t mt-3 pt-3',
 };
 
-function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], tabs, hideStatusTabs = false}) {
+function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], tabs, hideStatusTabs = false, applyingFilters}) {
   const employeeDropdown = useSimpleSelector();
+  let applyLabel = 'Aplicar Filtros';
+  if (applyingFilters) {
+    applyLabel = 'Filtrando...';
+  }
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>
         <p className={styles.cardTitle} style={{color: COLORS.labels}}>Filtros de Búsqueda</p>
-
         <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
           onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
           onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
-
         {employees.length > 0 && (
           <div className={styles.employeeSection}>
             <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Empleado</p>
@@ -35,12 +37,13 @@ function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onAp
               onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
           </div>
         )}
-
         <div className={styles.btnRow}>
-          <button className={styles.btn} style={{backgroundColor: COLORS.primary, borderColor: COLORS.primary, color: COLORS.background}} onClick={onApply}>Aplicar Filtros</button>
+          <button className={styles.btn} style={{backgroundColor: applyingFilters ? COLORS.fields : COLORS.primary, borderColor: applyingFilters ? COLORS.fields : COLORS.primary, color: COLORS.background}}
+            onClick={onApply} disabled={applyingFilters}>
+            {applyLabel}
+          </button>
           <button className={styles.btn} style={{backgroundColor: 'transparent', borderColor: COLORS.dataFields, color: COLORS.labels}} onClick={onClear}>Limpiar</button>
         </div>
-
         {!hideStatusTabs && tabs && (
           <div className={styles.divider} style={{borderColor: COLORS.dataFields}}>
             <StatusTabs tabs={tabs} activeTab={statusFilter} onChange={setStatusFilter} />

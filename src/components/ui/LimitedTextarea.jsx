@@ -9,11 +9,11 @@ function LimitedTextarea({value, onChange, rows = 4, placeholder, exceedsLimit, 
   return (
     <div className="w-full flex flex-col gap-1">
       <style>{`
-        textarea.comment-scroll { max-height: 140px !important; overflow-y: auto !important; scrollbar-width: thin !important; scrollbar-color: rgba(0, 0, 0, 0.25) transparent !important; }
-        textarea.comment-scroll::-webkit-scrollbar { width: 5px !important; height: 5px !important; }
-        textarea.comment-scroll::-webkit-scrollbar-track { background: transparent !important; }
-        textarea.comment-scroll::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.25) !important; border-radius: 10px !important; border: none !important; }
-        textarea.comment-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 0, 0, 0.4) !important; }
+        textarea.comment-scroll {max-height: 140px !important; overflow-y: auto !important; scrollbar-width: thin !important; scrollbar-color: rgba(0, 0, 0, 0.25) transparent !important;}
+        textarea.comment-scroll::-webkit-scrollbar { width: 5px !important; height: 5px !important;}
+        textarea.comment-scroll::-webkit-scrollbar-track { background: transparent !important;}
+        textarea.comment-scroll::-webkit-scrollbar-thumb { background-color: rgba(0, 0, 0, 0.25) !important; border-radius: 10px !important; border: none !important;}
+        textarea.comment-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 0, 0, 0.4) !important;}
       `}</style>
       <textarea className={styles.textarea} rows={rows} maxLength={maxLength} value={value} placeholder={placeholder} onChange={onChange}
         style={{borderColor: exceedsLimit ? COLORS.secondary : borderColorOk, color: COLORS.text, backgroundColor: COLORS.background}} />

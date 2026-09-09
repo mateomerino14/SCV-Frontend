@@ -1,12 +1,15 @@
 import {useState, useEffect, useRef} from 'react';
 import {getPendingTrips, getMyTrips} from '../../services/approval/treasurerService';
+import {getEmployees} from '../../services/user/userService';
 
 const pollingInterval = 30 * 1000;
 
 function useTreasurerReviews() {
   const [pending, setPending] = useState([]);
   const [myTrips, setMyTrips] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('PENDIENTES');
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
@@ -40,12 +43,24 @@ function useTreasurerReviews() {
   };
 
   useEffect(() => {
-    load(filtersRef.current, true);
+    const start = async () => {
+      await load(filtersRef.current, true);
+      const employeeData = await getEmployees();
+      if (!employeeData.error) {
+        setEmployees(employeeData);
+      }
+    };
+    start();
     const polling = setInterval(() => load(filtersRef.current, false), pollingInterval);
     return () => clearInterval(polling);
   }, []);
 
-  const applyFilters = () => load(filters, true);
+  const applyFilters = async () => {
+    setApplyingFilters(true);
+    await load(filters, false);
+    setApplyingFilters(false);
+  };
+
   const clearFilters = () => {
     const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
     setFilters(emptyFilters);
@@ -68,7 +83,8 @@ function useTreasurerReviews() {
     totalPending: pending.length,
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,
-    loading, error,
+    employees,
+    loading, applyingFilters, error,
     tab, setTab,
     filters, setFilters,
     applyFilters, clearFilters,

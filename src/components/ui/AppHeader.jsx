@@ -4,7 +4,7 @@ function AppHeader() {
   return (
     <div className="flex items-center gap-2 mb-6">
       <FVIcon />
-      <span className="font-bold font-inter text-lg">SCV</span>
+      <span className="font-bold font-inter text-xl">Sistema de Control de Viáticos</span>
     </div>
   );
 }

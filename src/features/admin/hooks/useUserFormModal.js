@@ -16,7 +16,6 @@ function useUserFormModal(formData, setFormData, setFieldErrors) {
   const [roleMenuPosition, setRoleMenuPosition] = useState(null);
   const roleTriggerRef = useRef(null);
   const roleMenuRef = useRef(null);
-
   const selectedRole = roleOptions.find((role) => role.value === formData.id_rol);
 
   const handleChange = (key, value, filter, maxLength) => {

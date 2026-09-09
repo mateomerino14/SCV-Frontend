@@ -60,7 +60,6 @@ function useUserManagement() {
 
   const validateFields = (isNew, excludeId = null) => {
     const errors = {};
-
     if (!formData.nombre.trim()) {
       errors.nombre = 'El nombre es requerido';
     }
@@ -70,7 +69,6 @@ function useUserManagement() {
     else if (formData.nombre.trim().length > 30) {
       errors.nombre = 'Máximo 30 caracteres';
     }
-
     if (!formData.apellido_paterno.trim()) {
       errors.apellido_paterno = 'El apellido paterno es requerido';
     }
@@ -80,7 +78,6 @@ function useUserManagement() {
     else if (formData.apellido_paterno.trim().length > 30) {
       errors.apellido_paterno = 'Máximo 30 caracteres';
     }
-
     if (formData.apellido_materno.trim()) {
       if (!onlyLetters.test(formData.apellido_materno.trim())) {
         errors.apellido_materno = 'Solo puede contener letras';
@@ -89,7 +86,6 @@ function useUserManagement() {
         errors.apellido_materno = 'Máximo 30 caracteres';
       }
     }
-
     if (!formData.email_corporativo.trim()) {
       errors.email_corporativo = 'El correo es requerido';
     }
@@ -102,7 +98,6 @@ function useUserManagement() {
     else if (emailAlreadyExists(formData.email_corporativo, excludeId)) {
       errors.email_corporativo = 'Ya existe un usuario con ese correo';
     }
-
     if (formData.telefono.trim()) {
       if (!onlyNumbers.test(formData.telefono.trim())) {
         errors.telefono = 'Solo puede contener números';
@@ -114,25 +109,21 @@ function useUserManagement() {
         errors.telefono = 'Máximo 8 dígitos';
       }
     }
-
     if (!formData.numero_dependencia.trim()) {
       errors.numero_dependencia = 'El número de dependencia es requerido';
     }
     else if (formData.numero_dependencia.trim().length > 50) {
       errors.numero_dependencia = 'Máximo 50 caracteres';
     }
-
     if (!formData.numero_seccion.trim()) {
       errors.numero_seccion = 'El número de sección es requerido';
     }
     else if (formData.numero_seccion.trim().length > 50) {
       errors.numero_seccion = 'Máximo 50 caracteres';
     }
-
     if (!formData.id_cargo) {
       errors.id_cargo = 'Selecciona un cargo';
     }
-
     if (isNew) {
       if (!formData.contrasenia) {
         errors.contrasenia = 'La contraseña es requerida';
@@ -141,7 +132,6 @@ function useUserManagement() {
         errors.contrasenia = 'Mínimo 6 caracteres';
       }
     }
-
     return errors;
   };
 

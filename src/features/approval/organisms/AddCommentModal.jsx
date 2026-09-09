@@ -1,3 +1,4 @@
+import {motion, AnimatePresence} from 'framer-motion';
 import {MessageSquare} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
 import ModalActions from '../../../components/ui/ModalActions';
@@ -12,11 +13,10 @@ const styles = {
   subtitle: 'font-inter text-center text-sm',
 };
 
-function AddCommentModal({isOpen, onClose, onConfirm, observations, onEdit, loading, error}) {
-  if (!isOpen) {
-    return null;
-  }
+const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
+const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
+function AddCommentModal({isOpen, onClose, onConfirm, observations, onEdit, loading, error}) {
   const text = observations[0] || '';
   const {maxLength, exceedsLimit} = useCommentTextarea(text);
 
@@ -28,18 +28,21 @@ function AddCommentModal({isOpen, onClose, onConfirm, observations, onEdit, load
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.card} style={{backgroundColor: COLORS.primary}}>
-        <ModalIconHeader icon={MessageSquare} backgroundColor={COLORS.background} color={COLORS.backgroundSecondary} />
-        <h2 className={styles.title} style={{color: COLORS.background}}>Agregar Comentario</h2>
-        <p className={styles.subtitle} style={{color: COLORS.backgroundHeader}}>Se observó el gasto indebido del presupuesto del empleado.</p>
-
-        <LimitedTextarea value={text} maxLength={maxLength} exceedsLimit={exceedsLimit} error={error}
-          placeholder="Escribe tu observación..." onChange={(event) => onEdit(0, event.target.value)} />
-
-        <ModalActions onCancel={onClose} onConfirm={handleConfirm} confirmLabel={loading ? 'Agregando...' : 'Agregar'} loading={loading || !text.trim() || exceedsLimit} />
-      </div>
-    </div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div className={styles.overlay} variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
+          <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
+            variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
+            <ModalIconHeader icon={MessageSquare} backgroundColor={COLORS.background} color={COLORS.backgroundSecondary} />
+            <h2 className={styles.title} style={{color: COLORS.background}}>Agregar Comentario</h2>
+            <p className={styles.subtitle} style={{color: COLORS.backgroundHeader}}>Describe el motivo de tu observación.</p>
+            <LimitedTextarea value={text} maxLength={maxLength} exceedsLimit={exceedsLimit} error={error}
+              placeholder="Escribe tu observación..." onChange={(event) => onEdit(0, event.target.value)} />
+            <ModalActions onCancel={onClose} onConfirm={handleConfirm} confirmLabel={loading ? 'Agregando...' : 'Agregar'} loading={loading} confirmDisabled={!text.trim() || exceedsLimit} />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

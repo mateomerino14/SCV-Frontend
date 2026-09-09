@@ -51,3 +51,13 @@ export const changePassword = async (currentPassword, newPassword) => {
     return {error: error.response?.data?.error || 'Error al cambiar la contraseña'};
   }
 };
+
+export const getEmployees = async () => {
+  try {
+    const response = await apiClient.get('/user/employees');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener empleados'};
+  }
+};

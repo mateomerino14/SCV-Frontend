@@ -1,8 +1,7 @@
 export const historyTabsDefault = [
-  {valor: 'TODOS', label: 'Todos'},
-  {valor: 'APROBADO_SUPERVISOR', label: 'Apr. Preliminar'},
-  {valor: 'APROBADO_FINAL', label: 'Aprobado'},
-  {valor: 'RECHAZADO', label: 'Rechazado'},
+  {valor: 'EN_REVISION', label: 'Pendientes'},
+  {valor: 'APROBADO_SUPERVISOR', label: 'Aprobados'},
+  {valor: 'RECHAZADO', label: 'Rechazados'},
 ];
 
 export const pendingTabsDefault = [
