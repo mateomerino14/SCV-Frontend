@@ -22,7 +22,19 @@ const thinBorder = {
   right: {style: 'thin', color: {argb: thinBorderColor}},
 };
 
-const oracleAccountsFallback = ['Alimentación', 'Alojamiento', 'Transporte', 'Combustible', 'Peajes', 'Estacionamiento', 'Materiales de Oficina', 'Otros', 'Movilidad'];
+const oracleAccounts = [
+  '626000 BILLETES (VIAJE)',
+  '626010 TAXIS (VIAJE)',
+  '626020 COCHE PROPIO-KMS (VIAJE)',
+  '626030 HOTELES (VIAJE)',
+  '626040 MANUTENCION (VIAJE)',
+  '626050 VEHICULOS DE ALQUILER (VIAJE)',
+  '626060 PEAJE AUTOPISTAS (VIAJE)',
+  '626070 APARCAMIENTO Y OTROS GASTOS (VIAJE)',
+  '626100 REUN.SINDIC.MANUTENCION/AT.TERCEROS (VIAJE)',
+  'OTROS',
+];
+
 
 const symbologyRows = [
   ['F', 'Compra Bien/Servicio c/factura'],
@@ -76,15 +88,12 @@ function buildTramosText(expense) {
 }
 
 function buildOracleAccountOptions(expenses) {
-  const names = new Set();
+  const names = new Set(oracleAccounts);
   expenses.forEach((expense) => {
     if (expense.Categoria_Gasto?.nombre) {
       names.add(expense.Categoria_Gasto.nombre);
     }
   });
-  if (names.size === 0) {
-    return oracleAccountsFallback;
-  }
   return Array.from(names).sort();
 }
 
@@ -268,7 +277,11 @@ function useTripExcelExport() {
     });
     headerRow.height = 32;
     const oracleOptions = buildOracleAccountOptions(expenses);
-    const oracleFormula = `"${oracleOptions.join(',')}"`;
+    const listSheet = workbook.addWorksheet('Listas', {state: 'veryHidden'});
+    oracleOptions.forEach((option, i) => {
+      listSheet.getCell(i + 1, 1).value = option;
+    });
+    const oracleFormula = `Listas!$A$1:$A$${oracleOptions.length}`;
     let currentRow = 8;
     let totalImporteFactura = 0;
     let totalImporteBs = 0;
