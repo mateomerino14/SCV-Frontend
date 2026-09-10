@@ -1,16 +1,177 @@
-# React + Vite
+# Sistema de Control de Viáticos — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Cliente web del sistema de gestión de viajes corporativos y rendición de gastos de MAXAM.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js 18 o superior
+- Una instancia del backend en ejecución
 
-## React Compiler
+## Instalación
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+```
 
-## Expanding the ESLint configuration
+Crear un archivo `.env` en la raíz del proyecto:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+VITE_API_URL=http://localhost:5000
+```
+
+## Ejecución
+
+```bash
+npm run dev      # servidor de desarrollo
+npm run build    # compilación para producción
+npm run preview  # previsualización de la compilación
+```
+
+## Stack
+
+| Tecnología | Propósito |
+|---|---|
+| React | Interfaz mediante componentes funcionales y hooks |
+| Vite | Compilación y servidor de desarrollo |
+| Tailwind CSS | Utilidades de maquetado |
+| React Router DOM | Enrutamiento y protección por rol |
+| Framer Motion | Animaciones de páginas y modales |
+| Axios | Cliente HTTP con interceptores |
+| Recharts | Gráficos del panel administrativo |
+| ExcelJS + FileSaver | Generación y descarga de la planilla |
+| Lucide React | Iconografía |
+| jwt-decode | Lectura del rol desde el token |
+
+## Arquitectura
+
+El proyecto combina una organización por dominios con una jerarquía de componentes basada en Atomic Design. La lógica de negocio vive en hooks; los componentes solo presentan.
+
+```
+Página (pages/)
+   │  invoca el hook y distribuye sus valores
+   ▼
+Hook de negocio (hooks/<dominio>/)
+   │  mantiene estado, valida y llama al servicio
+   ▼
+Servicio (services/<dominio>/)
+   │  encapsula el endpoint y normaliza la respuesta
+   ▼
+apiClient (axios + interceptores JWT)
+   ▼
+API Backend
+```
+
+Ningún componente de presentación importa directamente un servicio.
+
+## Estructura
+
+```
+src/
+├── components/ui/       Componentes genéricos transversales
+├── features/            Dominios funcionales
+│   ├── admin/
+│   ├── approval/
+│   ├── expense/
+│   ├── trip/
+│   └── user/
+│       ├── atoms/       Elementos indivisibles
+│       ├── molecules/   Composiciones funcionales
+│       ├── organisms/   Bloques autónomos
+│       ├── hooks/       Lógica presentacional
+│       └── constants/   Catálogos de configuración visual
+├── hooks/               Hooks de negocio por dominio
+│   ├── admin/  approval/  expense/  trip/  user/  shared/
+├── pages/               Páginas asociadas a rutas
+│   ├── admin/  approval/  expense/  trip/  user/
+│   └── hooks/           Hooks específicos de página
+├── services/            Capa de acceso a la API
+│   ├── admin/  approval/  expense/  trip/  user/
+│   └── shared/apiClient.js
+├── layouts/             Navbar, Footer y menús por rol
+│   └── menu/
+├── utils/               Funciones auxiliares puras
+├── constants/           Paleta de colores y rutas
+├── App.jsx              Rutas y guardas de acceso
+└── main.jsx             Punto de entrada
+```
+
+### Responsabilidad de cada capa
+
+| Capa | Recibe | Entrega | Restricción |
+|---|---|---|---|
+| Servicio | Parámetros primitivos | Datos o `{error}` | No mantiene estado |
+| Hook | Identificadores de ruta | Estado y manejadores | No renderiza JSX |
+| Página | Parámetros de ruta | Árbol de componentes | No llama servicios |
+| Organismo | Props | Fragmento de interfaz | No conoce hooks de negocio |
+
+### Atomic Design
+
+| Nivel | Definición | Ejemplos |
+|---|---|---|
+| Átomo | Elemento indivisible sin lógica de negocio | `TripRoute`, `ExpenseObsButton`, `TripStatusBadge` |
+| Molécula | Composición que resuelve una unidad funcional | `ExpenseBudgetBar`, `ExpenseSettlementCard`, `CategorySelector` |
+| Organismo | Bloque autónomo y complejo | `ExpenseInvoicedTable`, `ExpenseTripInfoCard`, `UserFormModal` |
+
+## Roles y rutas
+
+Las rutas se declaran en `App.jsx`. El componente `ProtectedRoute` verifica el token y contrasta el rol decodificado contra los roles autorizados.
+
+| Rol | id | Ruta base |
+|---|---|---|
+| Administrador | 1 | `/dashboard/administrador` |
+| Supervisor | 2 | `/dashboard/supervisor` |
+| Empleado | 3 | `/dashboard/empleado` |
+| Revisor | 4 | `/dashboard/revisor` |
+| Aprobador | 5 | `/dashboard/aprobador` |
+| Tesorero | — | `/dashboard/tesorero` (por cargo, no por rol) |
+
+Las rutas con parámetros se construyen mediante funciones de `constants/routes.js` (`tripPath`, `supervisorTripReviewPath`, `reviewerExpenseDetailPath`, entre otras) en lugar de literales dispersos.
+
+## Gestión del estado
+
+No se emplea una biblioteca de estado global. El estado es local a cada pantalla y se gestiona con hooks nativos dentro de los hooks de negocio.
+
+- **Servidor**: se obtiene en `useEffect` al montar y se refresca tras cada escritura.
+- **Sesión**: el token se persiste en `localStorage`.
+- **Formularios**: se mantienen en el hook, junto con sus errores por campo.
+- **Sondeo**: las bandejas de los roles aprobadores se refrescan cada 30 segundos. Solo la carga inicial activa el indicador esquelético, para que la pantalla no parpadee.
+
+## Sistema de diseño
+
+La paleta se centraliza en `constants/index.js`. Ningún componente define colores literales.
+
+| Token | Valor | Uso |
+|---|---|---|
+| `primary` | `#870002` | Acciones principales |
+| `secondary` | `#D20F12` | Acciones destructivas y errores |
+| `title` | `#500203` | Títulos |
+| `text` | `#2e2827` | Cuerpo de texto |
+| `labels` | `#475569` | Etiquetas y texto secundario |
+| `background` | `#FFFFFF` | Fondo general |
+| `backgroundSecondary` | `#000000` | Cabeceras de alto contraste |
+| `backgroundHeader` | `#F3F6FF` | Tarjetas y encabezados de tabla |
+| `dataFields` | `#DEE2F0` | Bordes y separadores |
+| `fields` | `#C2C6D4` | Controles deshabilitados |
+| `error` | `#fde9e9` | Fondo de mensajes de error |
+
+Tipografías: **Inter** para contenido general, **Nunito** para botones.
+
+## Funcionalidades destacadas
+
+### Planilla de rendición
+
+`useTripExcelExport` construye la planilla oficial con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda y cinco bloques de firma.
+
+Los importes de retención se leen de los valores almacenados por el backend; no se recalculan al exportar.
+
+### Digitalización de comprobantes
+
+La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada.
+
+### Control de plazos
+
+`useDeadlineAuthorization` determina si el plazo de carga venció, considerando la tolerancia de cuatro días y las extensiones aprobadas vigentes. Cuando expiró sin autorización, los controles se deshabilitan y se ofrece solicitar una extensión al revisor.
+
+## Convenciones
+
+Ver `reglas.md` en la raíz del repositorio.

@@ -72,7 +72,43 @@
 
 [X] Al editar un gasto de factura no me dejar editar el iva o bueno puedo editarlo pero al darle a guardar no guarda en ninguno sea factura o recibo, ni en registrar ni en editar
 
-[?] Revisar el tema del refresh, actualiza los roles pero el menu por rol de buguea cuando cambio de roles
+[?] Añadir memorandum o correo de autorizacion al solicitar revision o al inciar el viaje, no le comprendi muy bien.
+
+[?] Ajustar el presupuesto porque puede variar del viaje , seri talvez mejor que el empleado escriba, osea los empleados tiene presupuesto por categorizacion actualmente, pero puede varias porque pueden presentar carta para solicitar mas.
+
+[?] Revisar el tema de las retenciones:
+
+1. Del 8 % con bienes, 5% , 3% del ite compras de bienes
+
+2. Servicio 13%,3%
+
+3. Sin retenciones (por motivo de proveedor, algo asi)
+
+(Revisar del excel, que calcule automaticamente, ya que son procentajes fijos del total)
+
+[?] Numero de telefono al registrar un usuario por alguna razon de convirtio en algo obligatorio, cuando es opcional en la interfaz.
+
+[?] Revisar el tema de degradar o subir el cargo, porque no actualiza con el usemenu que se modifico, no vota como en teoria deberia al mosidicar el cargo.
+
+[?] De la nada en algunos roles al poco tiempo me sale session expirada y me vota.
+
+[?] Registrar facturas con fechas que esten en el rango de tiempo del viaje (En teoria los empleados tienen 48 horas habiles despues del viaje para normalizer el proceso de un viaje en el Sistema actual manual).
+
+[?] Revisar el tema del refresh, actualiza los roles pero el menu por rol se buguea, cuando cambio de roles, no vota de inmediato, se buegua a ratos.
+
+[?] No sale un viaje rechazado de un empleado, es decir cuando un viaje es rechazado por un supervisor, en su historial de revisiones en rechazado no sale, revisar para revisor mas por si acaso.
+
+[?] Ajustar el ticket de pendiente de las cards de revisiones pendientes o que estan siendo revisadas, porque se quedan en todos los estados en pendientes.
+
+[?] Mejorar la responsividad, por ejemplo cuando registro un usuario con un nombre largo, se sale de la pantalla, o por ejemplo mateoEmpleado que es nombre y veo un viaje con el estado de APR.PRELIMINAR, chocan.
+
+[?] Mejorar la responsividad porque en el campo de codigo de verificacion, los campos o cuadros donde van los numeros en mobile se salen del pop up, casi de la pantalla.
+
+[?] Verificar el codigo de seguridad que expira, dado cierto tiempo que son los 5 min si no estoy mal.
+
+[?] Ver el tema de mejorar de modelo, porque actualmente si reconoce el texto de la imagen, pero la imagen debe ser un pdf muy nitido, con fotos del celular falla.
+
+[?] Verificar seguridad para evitar hackeos y demas, comprobar el nivel actual de seguridad.
 
 [?] Refactorizacion
 
