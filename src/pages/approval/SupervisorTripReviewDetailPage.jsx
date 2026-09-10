@@ -46,7 +46,6 @@ function SupervisorTripReviewDetailPage() {
   const originRoute = location.state?.from || '/dashboard/supervisor';
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const [showAddComment, setShowAddComment] = useState(false);
-
   const {
     data, loading, savingAction, error, modalError, blocked,
     showApprove, setShowApprove, showReject, setShowReject, showNoObservations, setShowNoObservations,
@@ -55,14 +54,12 @@ function SupervisorTripReviewDetailPage() {
     handleApprove, handleRequestReject, handleReject, handleAddComment, editObservation,
     handleOpenEdit, handleConfirmEdit, handleOpenDelete, handleConfirmDelete,
   } = useSupervisorPendingTripDetail(id);
-
   const {taking, error: takeError, handleTake} = useTakeTripReview();
 
   if (commentAdded) {
     resetCommentAdded();
     setShowAddComment(false);
   }
-
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -73,7 +70,6 @@ function SupervisorTripReviewDetailPage() {
       </div>
     );
   }
-
   if (blocked) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -92,11 +88,9 @@ function SupervisorTripReviewDetailPage() {
       </div>
     );
   }
-
   if (!data) {
     return null;
   }
-
   const trip = data.viaje;
   const observationComments = (data.comentarios || []).filter((comment) => comment.tipo === 'OBSERVACION');
   const currentUserId = getCurrentUserId();
@@ -104,7 +98,6 @@ function SupervisorTripReviewDetailPage() {
   const unassigned = !trip.id_supervisor_asignado;
   const isPending = trip.estado === 'EN_REVISION_VIAJE';
   const canAct = isPending && isMine;
-
   let successMessage = 'Viaje rechazado correctamente';
   let successBg = '#ffa7a8aa';
   let successColor = '#500203';
@@ -119,25 +112,19 @@ function SupervisorTripReviewDetailPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Revisión de Viaje" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-
         <TripReviewDetailCard trip={trip} />
-
         <SelectableObservationsList observations={observationComments} canManage={canAct}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}
           editingComment={editingComment} deletingComment={deletingComment} />
-
         {takeError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{takeError}</p>}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {actionCompleted && (
           <p className={styles.successBadge} style={{backgroundColor: successBg, color: successColor}}>{successMessage}</p>
         )}
-
         {isPending && unassigned && !actionCompleted && (
           <div className={styles.assignWrapper}>
             <p className={styles.assignText} style={{color: COLORS.labels}}>Este viaje no está asignado. Asígnate para poder aprobarlo o rechazarlo.</p>
@@ -147,7 +134,6 @@ function SupervisorTripReviewDetailPage() {
             </button>
           </div>
         )}
-
         {canAct && !actionCompleted && (
           <div className={styles.actionsRow}>
             <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar Viaje</button>
@@ -155,14 +141,12 @@ function SupervisorTripReviewDetailPage() {
           </div>
         )}
       </div>
-
       <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction} />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <AddCommentModal isOpen={showAddComment} onClose={() => {setShowAddComment(false); editObservation(0, '');}} onConfirm={handleAddComment} observations={observations} onEdit={editObservation} loading={savingAction} error={modalError} />
       <EditCommentModal isOpen={!!editingComment} onClose={() => setEditingComment(null)} onConfirm={handleConfirmEdit} text={editText} setText={setEditText} loading={savingAction} error={modalError} />
       <DeleteCommentConfirmModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)} onConfirm={handleConfirmDelete} loading={savingAction} />
-
       <Footer />
     </div>
   );

@@ -38,7 +38,6 @@ function useUploadInvoice(tripId) {
       return [...prev, ...newInvoices];
     });
     await new Promise((resolve) => setTimeout(resolve, 0));
-
     for (let i = 0; i < newInvoices.length; i++) {
       const index = baseIndex + i;
       const data = await extractInvoice(newInvoices[i].file);
@@ -249,18 +248,15 @@ function useUploadInvoice(tripId) {
       showError('No hay facturas listas para guardar');
       return;
     }
-
     setSavingAll(true);
     setSaveSummary(null);
     let totalSaved = 0;
     let totalFailed = 0;
-
     for (let i = 0; i < invoices.length; i++) {
       const invoice = invoices[i];
       if (!invoice.data || invoice.loading || invoice.saved) {
         continue;
       }
-
       const errors = validateInvoice(invoice);
       if (Object.keys(errors).length > 0) {
         setInvoices((prev) =>
@@ -274,7 +270,6 @@ function useUploadInvoice(tripId) {
         totalFailed++;
         continue;
       }
-
       const data = await saveInvoice(
         {
           id_viaje: tripId,
@@ -283,7 +278,6 @@ function useUploadInvoice(tripId) {
         },
         invoice.file
       );
-
       if (data.error) {
         totalFailed++;
         setInvoices((prev) =>
@@ -307,7 +301,6 @@ function useUploadInvoice(tripId) {
         );
       }
     }
-
     setSavingAll(false);
     setSaveSummary({saved: totalSaved, failed: totalFailed});
   };

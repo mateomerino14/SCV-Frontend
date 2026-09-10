@@ -64,7 +64,6 @@ function EmployeeDashboardPage() {
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <Navbar text="Gestor de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <div className={styles.headerRow}>
           <div>
@@ -76,11 +75,8 @@ function EmployeeDashboardPage() {
             Crear Nuevo Viaje
           </button>
         </div>
-
         {submitError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{submitError}</p>}
-
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes sin Enviar</p>
-
         {draftTrips.length > 0 ? (
           <div className="relative mb-2">
             <div className={`${styles.scrollRow} scroll-trips`}>
@@ -101,9 +97,7 @@ function EmployeeDashboardPage() {
             <p className="font-inter text-xs text-white opacity-70">Todos tus viajes ya fueron enviados a revisión</p>
           </div>
         )}
-
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes en Curso</p>
-
         <div className="relative">
           <div className={`${styles.scrollRow} scroll-trips`}>
             {inProgressTrips.length > 0 ? (
@@ -117,14 +111,12 @@ function EmployeeDashboardPage() {
             )}
           </div>
         </div>
-
         <div className={styles.tripsHeader}>
           <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes Recientes</p>
           {recentTrips.length > 0 && (
             <span className={styles.viewAll} style={{color: COLORS.secondary}} onClick={() => navigate(routes.employeeHistory)}>VER TODO →</span>
           )}
         </div>
-
         <div className={styles.recentWrapper} style={{backgroundColor: COLORS.background}}>
           {displayedTrips.length > 0 ? (
             <div className={styles.recentInner}>
@@ -142,9 +134,7 @@ function EmployeeDashboardPage() {
           )}
         </div>
       </div>
-
       <SubmitTripConfirmModal isOpen={!!tripToConfirm} onClose={handleCancelSubmitReview} onConfirm={handleConfirmSubmitReview} loading={!!submittingReview} />
-
       <Footer />
     </div>
   );

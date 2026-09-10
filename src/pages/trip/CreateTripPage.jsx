@@ -51,7 +51,6 @@ function CreateTripPage() {
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleUseCurrentLocation, handleSaveDraft,
   } = useCreateTrip(user);
-
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const today = new Date().toISOString().split('T')[0];
 
@@ -60,15 +59,12 @@ function CreateTripPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Registro de Viaje" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
-
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(routes.employeeDashboard)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-
         <p className={styles.planLabel} style={{color: COLORS.title}}>Planificación de Itinerario</p>
         <h1 className={styles.title} style={{color: COLORS.backgroundSecondary}}>Nuevo Registro de Viaje</h1>
-
         <div className={styles.badgeWrapper} style={{backgroundColor: COLORS.backgroundHeader}}>
           <div className={styles.badgeIcon} style={{backgroundColor: COLORS.primary}}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -80,15 +76,12 @@ function CreateTripPage() {
             <span className={styles.badgePosition} style={{color: COLORS.primary}}>{user?.Cargo?.nombre?.toUpperCase() || '—'}</span>
           </div>
         </div>
-
         <div className={styles.grid}>
           <div className={styles.formCard} style={{backgroundColor: COLORS.background}}>
-
             <InputField label="Motivo" icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
               <input type="text" placeholder="Inspección técnica y de producción..." maxLength={100} className={styles.input} style={{color: COLORS.text}}
                 value={reason} onChange={(event) => handleReasonChange(event.target.value)} />
             </InputField>
-
             <InputField label="Origen" error={fieldErrors.origin}
               icon={
                 <button type="button" onClick={handleUseCurrentLocation} disabled={loadingLocation} title="Usar mi ubicación actual">
@@ -98,12 +91,10 @@ function CreateTripPage() {
               <input type="text" placeholder={loadingLocation ? 'Obteniendo ubicación...' : 'Ciudad de origen...'} maxLength={200}
                 className={styles.input} style={{color: COLORS.text}} value={origin} onChange={(event) => handleOriginChange(event.target.value)} />
             </InputField>
-
             <InputField label="Destino" icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
               <input type="text" placeholder="¿A dónde se dirige?" maxLength={200} className={styles.input} style={{color: COLORS.text}}
                 value={destination} onChange={(event) => handleDestinationChange(event.target.value)} />
             </InputField>
-
             <div className={styles.dateRow}>
               <InputField label="Fecha Inicio" error={fieldErrors.startDate}>
                 <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={startDate} onChange={(event) => handleStartDateChange(event.target.value)} />
@@ -112,7 +103,6 @@ function CreateTripPage() {
                 <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={endDate} onChange={(event) => handleEndDateChange(event.target.value)} />
               </InputField>
             </div>
-
             <div className={styles.radioRow}>
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Tipo de Viaje</p>
@@ -125,7 +115,6 @@ function CreateTripPage() {
                   ))}
                 </div>
               </div>
-
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Medio de Transporte</p>
                 <div className={styles.radioBtns}>
@@ -138,7 +127,6 @@ function CreateTripPage() {
                 </div>
               </div>
             </div>
-
             {type === 'Internacional' && days > 0 && (
               <div className={styles.internationalBadge} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <span style={{color: COLORS.primary, fontSize: 17}}>ⓘ</span>
@@ -148,27 +136,21 @@ function CreateTripPage() {
                 </p>
               </div>
             )}
-
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
-
             <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}} onClick={handleSaveDraft} disabled={loading}>
               {loading ? 'Guardando...' : 'Guardar Borrador'}
             </button>
           </div>
-
           <div className={styles.rightCol}>
             <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
               totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport} />
           </div>
         </div>
       </div>
-
       <div className={styles.policiesWrapper}>
         <TripPolicies />
       </div>
-
       <TripCreatedModal isOpen={showConfirmation} onClose={() => {setShowConfirmation(false); navigate(routes.employeeDashboard);}} />
-
       <Footer />
     </div>
   );

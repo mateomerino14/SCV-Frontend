@@ -61,23 +61,19 @@ function useLogin() {
   const handleLogin = async () => {
     const errors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     if (!email) {
       errors.email = 'El correo electrónico es requerido';
     }
     else if (!emailRegex.test(email)) {
       errors.email = 'Ingresa un correo electrónico válido';
     }
-
     if (!password) {
       errors.password = 'La contraseña es requerida';
     }
-
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
     }
-
     setFieldErrors({});
     setLogging(true);
     const data = await login(email, password);
@@ -129,12 +125,10 @@ function useLogin() {
       setCodeError('Ingresa el código completo de 7 dígitos');
       return;
     }
-
     setCodeError('');
     setVerifying(true);
     const data = await verifyCode(forgotEmail, codeValue);
     setVerifying(false);
-
     if (data.message === 'Código verificado correctamente') {
       closeAllModals();
       localStorage.setItem('token', data.token);

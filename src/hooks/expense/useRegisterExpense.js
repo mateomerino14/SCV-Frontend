@@ -79,7 +79,6 @@ function newItem() {
 function useRegisterExpense(tripId) {
   const [searchParams] = useSearchParams();
   const isInternationalExpense = searchParams.get('internacional') === 'true';
-
   const [items, setItems] = useState([newItem()]);
   const [expandedId, setExpandedId] = useState(items[0].id);
   const [categories, setCategories] = useState([]);
@@ -194,7 +193,6 @@ function useRegisterExpense(tripId) {
   };
 
   const handleTypeChange = (itemId, type) => updateItem(itemId, {type});
-
   const handleDateChange = (itemId, value) => {
     setItems((prev) => prev.map((item) => {
       if (item.id === itemId) {
@@ -510,12 +508,10 @@ function useRegisterExpense(tripId) {
     setSaveSummary(null);
     let saved = 0;
     let failed = 0;
-
     for (const item of items) {
       if (item.saved) {
         continue;
       }
-
       const {errors, installmentErrors, subitemErrors} = validateItem(item);
       if (Object.keys(errors).length > 0 || Object.keys(installmentErrors).length > 0 || Object.keys(subitemErrors).length > 0) {
         setItems((prev) => prev.map((current) => {
@@ -527,11 +523,9 @@ function useRegisterExpense(tripId) {
         failed++;
         continue;
       }
-
       const finalAmount = finalAmountOf(item);
       const validInstallments = validInstallmentsOf(item);
       const validSubitems = validSubitemsOf(item);
-
       const payload = {
         id_viaje: tripId,
         tipo: item.type,
@@ -542,7 +536,6 @@ function useRegisterExpense(tripId) {
         id_categoria_gasto: item.categoryId,
         es_gasto_internacional: isInternationalExpense,
       };
-
       if (item.usesOtherCurrency && validInstallments.length > 0) {
         payload.tramos = validInstallments.map((installment) => ({
           moneda: installment.currency,
@@ -558,16 +551,13 @@ function useRegisterExpense(tripId) {
         payload.tipo_cambio = 1;
         payload.monto_moneda_origen = finalAmount;
       }
-
       if (item.usesSubitems && validSubitems.length > 0) {
         payload.subitems = validSubitems.map((subitem) => ({
           descripcion: subitem.description.trim(),
           monto: parseFloat(subitem.amount),
         }));
       }
-
       const data = await registerExpense(payload, item.image);
-
       if (data.error) {
         failed++;
         setItems((prev) => prev.map((current) => {
@@ -587,7 +577,6 @@ function useRegisterExpense(tripId) {
         }));
       }
     }
-
     setSavingAll(false);
     setSaveSummary({saved, failed});
   };

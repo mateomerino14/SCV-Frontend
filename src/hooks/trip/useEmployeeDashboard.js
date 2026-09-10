@@ -34,7 +34,6 @@ function useEmployeeDashboard() {
   }, []);
 
   const displayedTrips = recentTrips.slice(0, 3);
-
   const handleRequestSubmitReview = (tripId) => setTripToConfirm(tripId);
   const handleCancelSubmitReview = () => setTripToConfirm(null);
 

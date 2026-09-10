@@ -10,7 +10,6 @@ function normalize(text) {
 function useIsTreasurer() {
   const [isTreasurer, setIsTreasurer] = useState(false);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const verify = async () => {
       const data = await getMyPosition();
@@ -21,7 +20,6 @@ function useIsTreasurer() {
     };
     verify();
   }, []);
-
   return {isTreasurer, loading};
 }
 

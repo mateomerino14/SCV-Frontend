@@ -17,17 +17,14 @@ function useProfile() {
       setLoading(true);
       const data = await getMe();
       setLoading(false);
-
       if (data.error) {
         setError(data.error);
         return;
       }
-
       setUser(data);
       setPhone(data.telefono || '');
       setEmail(data.email_corporativo || '');
     };
-
     load();
   }, []);
 
@@ -46,21 +43,17 @@ function useProfile() {
 
   const handleSavePhone = async () => {
     const cleanPhone = phone.trim();
-
     if (cleanPhone && !/^[0-9]{7,8}$/.test(cleanPhone)) {
       showError('El teléfono debe tener 7 u 8 dígitos numéricos');
       return;
     }
-
     setSaving(true);
     const data = await updateProfile({telefono: cleanPhone || null});
     setSaving(false);
-
     if (data.error) {
       showError(data.error);
       return;
     }
-
     setUser((prev) => ({...prev, telefono: data.telefono}));
     setPhone(data.telefono || '');
     setEditingPhone(false);
@@ -72,27 +65,22 @@ function useProfile() {
       showError('El correo no puede estar vacío');
       return;
     }
-
     if (email.length > 100) {
       showError('El correo no puede tener más de 100 caracteres');
       return;
     }
-
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!isValidEmail) {
       showError('El correo no tiene un formato válido');
       return;
     }
-
     setSaving(true);
     const data = await updateProfile({email_corporativo: email.trim()});
     setSaving(false);
-
     if (data.error) {
       showError(data.error);
       return;
     }
-
     setUser((prev) => ({...prev, email_corporativo: data.email_corporativo}));
     setEmail(data.email_corporativo || '');
     setEditingEmail(false);
@@ -113,16 +101,13 @@ function useProfile() {
     if (!file) {
       return;
     }
-
     setSaving(true);
     const data = await updateProfilePhoto(file);
     setSaving(false);
-
     if (data.error) {
       showError(data.error);
       return;
     }
-
     setUser((prev) => ({...prev, foto_perfil: data.foto_perfil}));
     showSuccess('Foto de perfil actualizada correctamente');
   };
@@ -131,12 +116,10 @@ function useProfile() {
     setSaving(true);
     const data = await updateProfile({foto_perfil: null});
     setSaving(false);
-
     if (data.error) {
       showError(data.error);
       return;
     }
-
     setUser((prev) => ({...prev, foto_perfil: null}));
     showSuccess('Foto de perfil eliminada');
   };

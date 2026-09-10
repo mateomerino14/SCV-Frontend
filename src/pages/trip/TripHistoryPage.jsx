@@ -34,17 +34,12 @@ function TripHistoryPage() {
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Historial Corporativo</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Mis Viajes</h1>
-
         <TripHistoryFilter activeFilter={filter} onChange={setFilter} />
-
         {loading && <SkeletonList count={4} />}
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && total > 0 && (
           <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {trips.length} de {total} viajes</p>
         )}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes registrados" subtitle="Aún no tienes viajes en esta categoría"
             icon={
@@ -54,9 +49,7 @@ function TripHistoryPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.map((trip) => <RecentTripItem key={trip.id_viaje} trip={trip} from={routes.employeeHistory} />)}
-
         {!loading && hasMorePages && (
           <button className={styles.loadMoreBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, opacity: loadingMore ? 0.6 : 1}}
             onClick={loadMore} disabled={loadingMore}>

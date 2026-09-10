@@ -16,7 +16,6 @@ function useCurrentUser() {
     };
     load();
   }, []);
-
   return {user, loading};
 }
 

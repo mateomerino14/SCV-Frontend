@@ -39,20 +39,14 @@ function SupervisorPendingTripsPage() {
       <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
       <Navbar text="Revisión de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Viajes por revisar</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Viajes Pendientes</h1>
-
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
           employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''} pendiente{trips.length !== 1 ? 's' : ''}</p>}
-
         {loading && <SkeletonList count={3} />}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes pendientes" subtitle="No hay viajes esperando revisión"
             icon={
@@ -61,7 +55,6 @@ function SupervisorPendingTripsPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {trips.map((trip) => (

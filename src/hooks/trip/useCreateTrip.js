@@ -14,7 +14,6 @@ function useCreateTrip(user) {
   const [fieldErrors, setFieldErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
-
   const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
   const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
 
@@ -87,7 +86,6 @@ function useCreateTrip(user) {
       showError('Tu navegador no permite obtener la ubicación actual');
       return;
     }
-
     setLoadingLocation(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {

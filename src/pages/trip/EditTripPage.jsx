@@ -46,7 +46,6 @@ function EditTripPage() {
   const originRoute = location.state?.from || routes.employeeDashboard;
   const {user} = useCurrentUser();
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
-
   const {
     reason, origin, destination, startDate, endDate, type, setType, transport, setTransport,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
@@ -54,7 +53,6 @@ function EditTripPage() {
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleUseCurrentLocation, handleSave,
   } = useEditTrip(id, user);
-
   const today = new Date().toISOString().split('T')[0];
   const isDraft = originalStatus === 'BORRADOR';
 
@@ -75,15 +73,12 @@ function EditTripPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Editar Viaje" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
-
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-
         <p className={styles.planLabel} style={{color: COLORS.title}}>{isDraft ? 'Continuar Planificación' : 'Corrección de Viaje'}</p>
         <h1 className={styles.title} style={{color: COLORS.backgroundSecondary}}>{isDraft ? 'Editar Borrador' : 'Editar Viaje Rechazado'}</h1>
-
         <div className={styles.badgeWrapper} style={{backgroundColor: COLORS.backgroundHeader}}>
           <div className={styles.badgeIcon} style={{backgroundColor: COLORS.primary}}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -95,15 +90,12 @@ function EditTripPage() {
             <span className={styles.badgePosition} style={{color: COLORS.primary}}>{user?.Cargo?.nombre?.toUpperCase() || '—'}</span>
           </div>
         </div>
-
         <div className={styles.grid}>
           <div className={styles.formCard} style={{backgroundColor: COLORS.background}}>
-
             <InputField label="Motivo" icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
               <input type="text" placeholder="Inspección técnica y de producción..." maxLength={100} className={styles.input} style={{color: COLORS.text}}
                 value={reason} onChange={(event) => handleReasonChange(event.target.value)} />
             </InputField>
-
             <InputField label="Origen" error={fieldErrors.origin}
               icon={
                 <button type="button" onClick={handleUseCurrentLocation} disabled={loadingLocation} title="Usar mi ubicación actual">
@@ -113,12 +105,10 @@ function EditTripPage() {
               <input type="text" placeholder={loadingLocation ? 'Obteniendo ubicación...' : 'Ciudad de origen...'} maxLength={200}
                 className={styles.input} style={{color: COLORS.text}} value={origin} onChange={(event) => handleOriginChange(event.target.value)} />
             </InputField>
-
             <InputField label="Destino" icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
               <input type="text" placeholder="¿A dónde se dirige?" maxLength={200} className={styles.input} style={{color: COLORS.text}}
                 value={destination} onChange={(event) => handleDestinationChange(event.target.value)} />
             </InputField>
-
             <div className={styles.dateRow}>
               <InputField label="Fecha Inicio" error={fieldErrors.startDate}>
                 <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={startDate} onChange={(event) => handleStartDateChange(event.target.value)} />
@@ -127,7 +117,6 @@ function EditTripPage() {
                 <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={endDate} onChange={(event) => handleEndDateChange(event.target.value)} />
               </InputField>
             </div>
-
             <div className={styles.radioRow}>
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Tipo de Viaje</p>
@@ -140,7 +129,6 @@ function EditTripPage() {
                   ))}
                 </div>
               </div>
-
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Medio de Transporte</p>
                 <div className={styles.radioBtns}>
@@ -153,28 +141,23 @@ function EditTripPage() {
                 </div>
               </div>
             </div>
-
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
-
             <div style={{marginTop: 'auto'}}>
               <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}}
                 onClick={() => handleSave(() => navigate(originRoute))} disabled={loading}>
                 {loading ? 'Guardando...' : (isDraft ? 'Guardar Cambios' : 'Guardar y Reenviar a Revisión')}
               </button>
-
               <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}} onClick={() => navigate(originRoute)}>
                 Cancelar
               </button>
             </div>
           </div>
-
           <div className={styles.rightCol}>
             <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
               totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport} />
           </div>
         </div>
       </div>
-
       <Footer />
     </div>
   );

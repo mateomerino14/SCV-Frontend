@@ -32,7 +32,6 @@ function TripDetailPage() {
   const originRoute = location.state?.from || '/dashboard/empleado';
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {exportToExcel} = useTripExcelExport();
-
   const tripDetail = useTripDetail(id);
   const {trip, loading, error} = tripDetail;
   const tripInProgress = trip?.estado === 'EN_CURSO' || (trip?.estado === 'RECHAZADO' && !!trip?.fue_iniciado);
@@ -48,7 +47,6 @@ function TripDetailPage() {
       </div>
     );
   }
-
   if (!trip) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -65,7 +63,6 @@ function TripDetailPage() {
   const isPreviousReview = ['EN_REVISION_VIAJE', 'APROBADO_VIAJE', 'EN_REVISION_TESORERO'].includes(trip.estado);
   const isRejectedPrevious = trip.estado === 'RECHAZADO' && !trip.fue_iniciado;
   const isFinalApproved = trip.estado === 'APROBADO_FINAL';
-
   let content;
   if (isDraft) {
     content = <TripDraftView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate} />;
@@ -93,15 +90,12 @@ function TripDetailPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Detalles de Viaje" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>{content}</div>
-
       <DeleteExpenseConfirmModal isOpen={tripDetail.showDeleteModal} onClose={tripDetail.handleCancelDelete} onConfirm={tripDetail.handleConfirmDelete} loading={tripDetail.deletingExpense} />
       <SubmitReviewConfirmModal isOpen={tripDetail.showSubmitReviewModal} onClose={tripDetail.handleCancelSubmitReview} onConfirm={tripDetail.handleConfirmSubmitReview} />
       <DeadlineExpiredNoticeModal isOpen={deadline.showExpiredNotice} onClose={deadline.closeExpiredNotice} />
       <DeadlineRequestModal isOpen={deadline.showModal} onClose={() => deadline.setShowModal(false)} onConfirm={deadline.handleRequest} loading={deadline.submitting} error={deadline.modalError} />
       <DeadlineExpiredModal isOpen={deadline.isApprovedExpired && tripDetail.submitted} onClose={() => {}} message="Tu autorización de plazo ha vencido." />
-
       <Footer />
     </div>
   );

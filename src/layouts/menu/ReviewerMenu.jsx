@@ -47,7 +47,6 @@ const accountSection = [
 function ReviewerMenu({isOpen, onClose, user}) {
   const {isTreasurer} = useIsTreasurer();
   const {isActive, handleNavigate, handleLogout} = useMenuNavigation(onClose, [routes.reviewerReviews, routes.employeeDashboard]);
-
   const renderOptions = (options) => options.map(({path, label, icon}) => (
     <MenuOption key={path} label={label} icon={icon} active={isActive(path)} onClick={() => handleNavigate(path)} />
   ));
@@ -63,33 +62,28 @@ function ReviewerMenu({isOpen, onClose, user}) {
           <p className={styles.headerPosition} style={{color: COLORS.labels}}>{user?.Cargo?.nombre || ''}</p>
         </div>
       </div>
-
       <div className={styles.navScroll}>
         <motion.div className={styles.nav} variants={listVariants} initial="hidden" animate="visible">
           <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Revisión Final</p>
             {renderOptions(finalReviewSection)}
           </div>
-
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
               <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}
-
           <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Mis Viajes</p>
             {renderOptions(personalSection)}
           </div>
-
           <div className={styles.lastSection}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cuenta</p>
             {renderOptions(accountSection)}
           </div>
         </motion.div>
       </div>
-
       <div className={styles.finalDivider} style={{borderColor: COLORS.dataFields}} />
       <div className={styles.logoutBtn} onClick={handleLogout}>
         <LogOut size={20} style={{color: COLORS.secondary}} />

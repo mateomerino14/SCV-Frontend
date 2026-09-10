@@ -37,11 +37,9 @@ function SupervisorTripHistoryPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Historial de viajes revisados</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Mis Viajes</h1>
-
         <div className={styles.tabsRow}>
           {tabs.map((tab) => (
             <button key={tab.valor} className={styles.tab} onClick={() => setStatusFilter(tab.valor)}
@@ -50,13 +48,9 @@ function SupervisorTripHistoryPage() {
             </button>
           ))}
         </div>
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
-
         {loading && <SkeletonList count={3} />}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
@@ -65,7 +59,6 @@ function SupervisorTripHistoryPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {trips.map((trip) => (

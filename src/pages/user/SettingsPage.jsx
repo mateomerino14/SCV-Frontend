@@ -30,7 +30,6 @@ function SettingsPage() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate(routes.login);
@@ -41,13 +40,11 @@ function SettingsPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Configuración" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <div className={styles.titleWrapper}>
           <h1 className={styles.title} style={{color: COLORS.text}}>Ajustes de Cuenta</h1>
           <p className={styles.subtitle} style={{color: COLORS.labels}}>Gestiona tu contraseña y revisa los términos del sistema.</p>
         </div>
-
         <div className={styles.grid}>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cuenta</p>
@@ -55,7 +52,6 @@ function SettingsPage() {
               <ConfigOption icon={KeyRound} label="Cambiar contraseña" onClick={() => setShowChangePassword(true)} />
             </div>
           </div>
-
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Soporte</p>
             <div className={styles.sectionWrapper}>
@@ -63,16 +59,13 @@ function SettingsPage() {
             </div>
           </div>
         </div>
-
         <button className={styles.logoutBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={handleLogout}>
           <LogOut size={18} />
           Cerrar Sesión
         </button>
       </div>
-
       <ChangePasswordModal isOpen={showChangePassword} onClose={() => setShowChangePassword(false)} />
       <TermsModal isOpen={showTerms} onClose={() => setShowTerms(false)} />
-
       <Footer />
     </div>
   );

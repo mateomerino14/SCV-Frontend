@@ -33,19 +33,13 @@ function ApproverPendingTripsPage() {
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <Navbar text="Aprobación de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Viajes por aprobar</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Viajes Pendientes</h1>
-
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters} hideStatusTabs />
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''} pendiente{total !== 1 ? 's' : ''}</p>}
-
         {loading && <SkeletonList count={3} />}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes pendientes" subtitle="No hay viajes esperando tu aprobación"
             icon={
@@ -54,7 +48,6 @@ function ApproverPendingTripsPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.map((trip) => (
           <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={approverPendingTripPath(trip.id_viaje)} originRoute={routes.approverPendingTrips}
             assignedField="id_aprobador_asignado" detailLabel="Ver Detalle" />

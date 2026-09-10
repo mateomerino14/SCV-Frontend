@@ -48,7 +48,6 @@ function LoginPage() {
       <div className="hidden md:block">
         <AppHeader />
       </div>
-
       <div>
         <label className={styles.label}>Correo Corporativo</label>
         <div className={styles.inputWrapper} style={{borderColor: fieldErrors.email ? '#dc2626' : '#e5e7eb'}}>
@@ -58,7 +57,6 @@ function LoginPage() {
         </div>
         {fieldErrors.email && <p className={styles.fieldError}>{fieldErrors.email}</p>}
       </div>
-
       <div>
         <div className="flex justify-between items-center">
           <label className={styles.label}>Contraseña</label>
@@ -74,7 +72,6 @@ function LoginPage() {
         </div>
         {fieldErrors.password && <p className={styles.fieldError}>{fieldErrors.password}</p>}
       </div>
-
       <Button text={logging ? 'Iniciando...' : 'Iniciar Sesión'} variant="primary" type="submit" disabled={logging} />
       <AppLogo />
     </form>
@@ -93,14 +90,12 @@ function LoginPage() {
         </div>
         <div className={styles.mobileForm}>{formSection}</div>
       </div>
-
       <div className={styles.desktopContainer}>
         <div className="w-1/2">
           <img src={LOGIN_IMAGE} alt="login" className={styles.desktopImage} />
         </div>
         <div className={styles.desktopForm}>{formSection}</div>
       </div>
-
       <EmailModal isOpen={showEmailModal} onClose={closeAllModals} onSend={handleSendEmail} />
       <VerificationCodeModal isOpen={showConfirmModal} onClose={closeAllModals} onVerify={handleVerifyCode} onResend={handleResendCode}
         onExpired={handleExpired} expiresAt={codeExpiresAt} codeError={codeError} verifying={verifying} />

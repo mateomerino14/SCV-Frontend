@@ -7,7 +7,6 @@ function useUserRole() {
     role = jwtDecode(token)?.id_rol;
   }
   catch {
-
   }
   return {role};
 }

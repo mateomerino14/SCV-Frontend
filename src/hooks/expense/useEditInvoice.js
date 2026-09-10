@@ -25,14 +25,12 @@ function useEditInvoice(expenseId) {
       }
       setTripId(expenseData.id_viaje || null);
       setManuallyModified(expenseData.modificado || false);
-
       const invoice = expenseData.Factura;
       const amount = parseFloat(invoice?.monto_parcial || 0);
       const tax = invoice?.Factura_Impuestos?.[0]?.Impuesto;
       const percentage = tax?.porcentaje || 0;
       const vat = parseFloat(((amount * percentage) / 100).toFixed(2));
       const totalAmount = parseFloat(expenseData.monto_total || 0);
-
       let amountText = '';
       if (amount > 0) {
         amountText = amount.toString();
@@ -45,7 +43,6 @@ function useEditInvoice(expenseId) {
       if (totalAmount > 0) {
         totalAmountText = totalAmount.toString();
       }
-
       setData({
         proveedor: expenseData.Proveedor?.nombre || '',
         numero_factura: invoice?.numero_factura || '',
@@ -57,7 +54,6 @@ function useEditInvoice(expenseId) {
         tipo_doc: expenseData.tipo || 'F',
         detalle: invoice?.Detalle_Factura || [],
       });
-
       if (expenseData.Imagen?.url_archivo) {
         setExistingImage(expenseData.Imagen.url_archivo);
         setImagePreview(expenseData.Imagen.url_archivo);
@@ -130,11 +126,9 @@ function useEditInvoice(expenseId) {
     }
     setFieldErrors({});
     setLoading(true);
-
     const amount = parseFloat(data.monto || 0);
     const vat = parseFloat(data.iva || 0);
     const totalAmount = parseFloat((amount + vat).toFixed(2));
-
     const payload = {
       ...data,
       monto: amount,
@@ -144,7 +138,6 @@ function useEditInvoice(expenseId) {
       mantener_imagen: !!existingImage,
       modificado_manualmente: manuallyModified,
     };
-
     const result = await updateInvoice(expenseId, payload, image);
     setLoading(false);
     if (result.error) {

@@ -52,7 +52,6 @@ function DashboardAdminPage() {
   const {menuOpen, user, openMenu, closeMenu} = useMenu();
   const {data, loading} = useAdminDashboard();
   const {showModal, loading: loadingChange, error: errorChange, handleChange} = usePasswordExpiredCheck();
-
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
 
@@ -61,12 +60,10 @@ function DashboardAdminPage() {
       <PasswordExpiredModal isOpen={showModal} onConfirm={handleChange} loading={loadingChange} error={errorChange} />
       <Navbar text="Dashboard" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Panel de Control</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Dashboard</h1>
         <p className={styles.subtitle} style={{color: COLORS.labels}}>Resumen general del sistema.</p>
-
         {loading ? (
           <SkeletonCard lines={6} />
         ) : (
@@ -85,7 +82,6 @@ function DashboardAdminPage() {
                 <p className={styles.statSub} style={{color: COLORS.labels}}>{data?.cargosActivos || 0} activos</p>
               </div>
             </div>
-
             <div className={styles.phaseTotalsGrid}>
               <PhaseTotalCard icon={approvalPhaseTotal.icon} title="Aprobación de Viaje" subtitle="Viajes en la etapa previa, sin gastos"
                 total={approvalTotal} color={approvalPhaseTotal.color} bg={approvalPhaseTotal.bg} />
@@ -94,7 +90,6 @@ function DashboardAdminPage() {
               <PhaseTotalCard icon={rejectedStat.icon} title="Rechazados" subtitle="Total de viajes rechazados"
                 total={data?.[rejectedStat.key] || 0} color={rejectedStat.color} bg={rejectedStat.bg} />
             </div>
-
             {data?.usuariosPorRol?.length > 0 && (
               <div className={styles.chartCard} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <p className={styles.chartTitle} style={{color: COLORS.text}}>Usuarios por Rol</p>
@@ -111,11 +106,8 @@ function DashboardAdminPage() {
                 </ResponsiveContainer>
               </div>
             )}
-
             <div className={styles.sectionDivider} style={{borderColor: COLORS.dataFields}} />
-
             <TripPhaseSection title="Fase 1 · Aprobación del Viaje" stats={approvalPhaseStats} data={data} showChart />
-
             <TripPhaseSection title="Fase 2 · Rendición de Gastos" stats={expensePhaseStats} data={data} showChart />
           </>
         )}
