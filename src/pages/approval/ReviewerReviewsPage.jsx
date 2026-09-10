@@ -44,7 +44,6 @@ function ReviewerReviewsPage() {
     statusFilter, setStatusFilter, tab, setTab, applyFilters, clearFilters,
   } = useReviewerReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
-
   const isPendingTab = tab === 'PENDIENTES';
 
   return (
@@ -53,11 +52,9 @@ function ReviewerReviewsPage() {
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Panel de revisor</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Revisión Final</h1>
-
         <div className={styles.tabsRow}>
           {mainTabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
@@ -66,16 +63,11 @@ function ReviewerReviewsPage() {
             </button>
           ))}
         </div>
-
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} tabs={isPendingTab ? pendingTabsDefault : historyStatusTabs} applyingFilters={applyingFilters} />
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''}</p>}
-
         {loading && <SkeletonList count={3} />}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
@@ -84,7 +76,6 @@ function ReviewerReviewsPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {trips.map((trip) => (

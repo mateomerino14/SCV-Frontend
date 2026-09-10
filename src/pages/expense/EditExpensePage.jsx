@@ -28,7 +28,6 @@ function EditExpensePage() {
   const {id} = useParams();
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-
   const {
     type, setType, date, supplier, amount, description, categoryId, categories, imagePreview, loading, loadingData,
     error, fieldErrors, saved, tripId, isInternationalExpense, usesOtherCurrency, setUsesOtherCurrency,
@@ -56,15 +55,12 @@ function EditExpensePage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Editar Gasto" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-
         <p className={styles.planLabel} style={{color: COLORS.title}}>Modificar registro existente</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Editar Gasto</h1>
-
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseEditForm type={type} date={date} supplier={supplier} amount={amount} description={description} categoryId={categoryId}
             categories={categories} imagePreview={imagePreview} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}
@@ -78,21 +74,16 @@ function EditExpensePage() {
             handleInstallmentCurrencyChange={handleInstallmentCurrencyChange} handleInstallmentAmountChange={handleInstallmentAmountChange} handleInstallmentExchangeRateChange={handleInstallmentExchangeRateChange}
             handleToggleSubitems={handleToggleSubitems} handleAddSubitem={handleAddSubitem} handleRemoveSubitem={handleRemoveSubitem}
             handleSubitemDescriptionChange={handleSubitemDescriptionChange} handleSubitemAmountChange={handleSubitemAmountChange} />
-
           {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
           <button className={styles.guardarBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.primary}} onClick={handleSave} disabled={loading}>
             {loading ? 'Guardando...' : 'Guardar Cambios'}
           </button>
-
           <button className={styles.cancelarBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}} onClick={() => navigate(tripPath(tripId))}>
             Cancelar
           </button>
         </div>
       </div>
-
       <SuccessModal isOpen={saved} title="Gasto Actualizado" message="Los cambios se guardaron correctamente" onAccept={() => navigate(expenseDetailPath(id))} />
-
       <Footer />
     </div>
   );

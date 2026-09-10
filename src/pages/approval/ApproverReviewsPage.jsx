@@ -38,7 +38,6 @@ function ApproverReviewsPage() {
     filters, setFilters, applyFilters, clearFilters,
   } = useApproverReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
-
   let total = totalPending;
   if (tab === 'APROBADOS') {
     total = totalApproved;
@@ -53,11 +52,9 @@ function ApproverReviewsPage() {
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <Navbar text="Aprobación de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Panel de revisiones</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Mis Revisiones</h1>
-
         <div className={styles.tabsRow}>
           {mainTabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
@@ -66,18 +63,13 @@ function ApproverReviewsPage() {
             </button>
           ))}
         </div>
-
         {tab === 'PENDIENTES' && (
           <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
             employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
         )}
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
-
         {loading && <SkeletonList count={3} />}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
@@ -86,7 +78,6 @@ function ApproverReviewsPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {trips.map((trip) => (

@@ -42,7 +42,6 @@ function ExpenseDetailPage() {
   const location = useLocation();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {expense, loading, error, sending, receiptModal, handleSendReceipt, closeReceiptModal} = useExpenseDetail(id);
-
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -53,7 +52,6 @@ function ExpenseDetailPage() {
       </div>
     );
   }
-
   if (error || !expense) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -75,14 +73,10 @@ function ExpenseDetailPage() {
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;
   const backRoute = location.state?.from || (expense.id_viaje ? tripPath(expense.id_viaje) : '/dashboard/empleado');
-
   const originPath = location.state?.from || '';
   const isReviewContext = originPath.includes('/supervisor/') || originPath.includes('/revisor/');
   const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && !isReviewContext;
-
-  const hasWithholdings = !isInternational && (expense.tipo === 'C' || expense.tipo === 'S') &&
-    (parseFloat(expense.retencion_rc_iva || 0) > 0 || parseFloat(expense.retencion_iue || 0) > 0 || parseFloat(expense.retencion_it || 0) > 0);
-
+  const hasWithholdings = !isInternational && (expense.tipo === 'C' || expense.tipo === 'S') && (parseFloat(expense.retencion_rc_iva || 0) > 0 || parseFloat(expense.retencion_iue || 0) > 0 || parseFloat(expense.retencion_it || 0) > 0);
   let vat = null;
   if (hasInvoice) {
     const taxRecords = expense.Factura.Factura_Impuestos || [];
@@ -111,17 +105,14 @@ function ExpenseDetailPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Detalle de Gasto" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(backRoute)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-
         <ExpenseHeaderCard expense={expense} typeLabel={typeInfo.label} isInternational={isInternational} currency={currency}
           hasInstallments={hasInstallments} installmentsCount={installments.length}
           hasSubitems={hasSubitems} subitemsCount={subitems.length}
           canGenerateReceipt={canGenerateReceipt} sending={sending} onSendReceipt={handleSendReceipt} />
-
         <ExpenseSectionCard icon={Calendar} title="Información General">
           <ExpenseFieldRow icon={Calendar} label="Fecha del Gasto" value={formatLongDate(expense.fecha_gasto)} />
           {expense.Categoria_Gasto && <ExpenseFieldRow icon={Tag} label="Categoría" value={expense.Categoria_Gasto.nombre} />}
@@ -132,7 +123,6 @@ function ExpenseDetailPage() {
             <ExpenseFieldRow icon={FileText} label="Comprobante" value="Sin Comprobante" last iconBg={COLORS.error} iconColor={COLORS.secondary} valueColor={COLORS.secondary} />
           )}
         </ExpenseSectionCard>
-
         {hasSubitems && (
           <ExpenseSectionCard icon={List} title="Detalle de Subgastos">
             <ExpenseDataTable columns={['Descripción', 'Monto']} gridTemplate="2fr 1fr" headerBg={COLORS.title}
@@ -145,7 +135,6 @@ function ExpenseDetailPage() {
               )} />
           </ExpenseSectionCard>
         )}
-
         {hasInstallments && (
           <ExpenseSectionCard icon={Globe} title="Tramos de Cambio de Moneda">
             <ExpenseDataTable columns={['Monto Origen', 'Tipo de Cambio', 'Equivalente USD']} gridTemplate="1fr 1fr 1fr" headerBg={COLORS.primary}
@@ -159,7 +148,6 @@ function ExpenseDetailPage() {
               )} />
           </ExpenseSectionCard>
         )}
-
         {hasInvoice && (
           <ExpenseSectionCard icon={Receipt} title="Datos de la Factura">
             <ExpenseFieldRow icon={FileText} label="Número de Factura" value={expense.Factura.numero_factura} />
@@ -167,7 +155,6 @@ function ExpenseDetailPage() {
             <ExpenseFieldRow icon={DollarSign} label="Monto sin impuestos" value={`${parseFloat(expense.Factura.monto_parcial).toFixed(2)} ${currency}`}
               last={!vat && !(expense.Factura.Detalle_Factura?.length > 0)} />
             {vat && <ExpenseFieldRow icon={DollarSign} label="IVA" value={`${vat.toFixed(2)} ${currency}`} last={!(expense.Factura.Detalle_Factura?.length > 0)} />}
-
             {expense.Factura.Detalle_Factura?.length > 0 && (
               <div className="mt-4">
                 <p className="text-xs font-bold font-inter uppercase mb-2" style={{color: COLORS.labels}}>Detalle de Productos</p>
@@ -184,9 +171,7 @@ function ExpenseDetailPage() {
             )}
           </ExpenseSectionCard>
         )}
-
         {hasWithholdings && <ExpenseWithholdingsCard expense={expense} />}
-
         {hasImage && (
           <ExpenseSectionCard icon={FileText} title="Comprobante">
             <div className={styles.imageWrapper} style={{borderColor: COLORS.dataFields}}>
@@ -195,9 +180,7 @@ function ExpenseDetailPage() {
           </ExpenseSectionCard>
         )}
       </div>
-
       <ReceiptSentModal isOpen={receiptModal.show} onClose={closeReceiptModal} success={receiptModal.success} message={receiptModal.message} />
-
       <Footer />
     </div>
   );

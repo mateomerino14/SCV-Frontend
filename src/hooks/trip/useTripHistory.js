@@ -19,17 +19,13 @@ function useTripHistory() {
     else {
       setLoadingMore(true);
     }
-
     const data = await getTripHistory(currentPage, pageSize, currentFilter);
-
     setLoading(false);
     setLoadingMore(false);
-
     if (data.error) {
       setError(data.error);
       return;
     }
-
     setTotal(data.total || 0);
     if (replace) {
       setTrips(data.viajes || []);

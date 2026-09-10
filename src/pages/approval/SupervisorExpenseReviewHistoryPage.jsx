@@ -34,20 +34,14 @@ function SupervisorExpenseReviewHistoryPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Mis Revisiones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Historial de gastos revisados</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Mis Revisiones</h1>
-
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
-
         {loading && <SkeletonList count={3} />}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin revisiones en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
@@ -56,7 +50,6 @@ function SupervisorExpenseReviewHistoryPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {trips.map((trip) => (

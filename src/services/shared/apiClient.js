@@ -36,28 +36,23 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
     const status = error.response?.status;
     const message = error.response?.data?.error || '';
-
     const isLoginRoute = originalRequest.url?.includes('/auth') &&
       !originalRequest.url?.includes('/auth/refresh') &&
       !originalRequest.url?.includes('/auth/send-code') &&
       !originalRequest.url?.includes('/auth/verify-code');
-
     if (isLoginRoute) {
       return Promise.reject(error);
     }
-
     const isTokenExpired = status === 401 && message === 'Token expirado';
     const isTokenInvalid = status === 401 && message.includes('Token inválido');
     const isSuspended = status === 401 && (message.includes('suspendida') || message.includes('Usuario no válido'));
     const isNoToken = status === 401 && message.includes('token no proporcionado');
     const isRefreshRoute = originalRequest.url?.includes('/auth/refresh');
-
     if (isRefreshRoute || isSuspended || isNoToken || isTokenInvalid) {
       localStorage.removeItem('token');
       window.dispatchEvent(new CustomEvent('session-expired'));
       return Promise.reject(error);
     }
-
     if (isTokenExpired && !originalRequest._retried) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -67,10 +62,8 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         }).catch((queueError) => Promise.reject(queueError));
       }
-
       originalRequest._retried = true;
       isRefreshing = true;
-
       try {
         const response = await axios.post(`${baseUrl}/auth/refresh`, {}, {withCredentials: true});
         const newToken = response.data.token;
@@ -91,7 +84,6 @@ apiClient.interceptors.response.use(
         isRefreshing = false;
       }
     }
-
     return Promise.reject(error);
   }
 );

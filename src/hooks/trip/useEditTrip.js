@@ -109,7 +109,6 @@ function useEditTrip(tripId, user) {
       showError('Tu navegador no permite obtener la ubicación actual');
       return;
     }
-
     setLoadingLocation(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {

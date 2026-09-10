@@ -57,12 +57,10 @@ function useTripDetail(tripId) {
     exceedsBudget = accumulatedExpense > parseFloat(trip.monto_asignado);
     exceedsBudgetUsd = accumulatedExpenseUsd > parseFloat(trip.monto_asignado_usd || 0);
   }
-
   let tripInProgress = false;
   if (trip) {
     tripInProgress = trip.estado === 'EN_CURSO' || (trip.estado === 'RECHAZADO' && !!trip.fue_iniciado);
   }
-
   let displayedNationalExpenses = nationalExpenses.slice(0, 3);
   if (showAllNational) {
     displayedNationalExpenses = nationalExpenses;

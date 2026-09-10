@@ -7,7 +7,6 @@ import useUserRole from '../../hooks/shared/useUserRole';
 
 function DynamicMenu({isOpen, onClose, user}) {
   const {role} = useUserRole();
-
   if (role === 1) {
     return <AdminMenu isOpen={isOpen} onClose={onClose} user={user} />;
   }

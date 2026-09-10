@@ -35,17 +35,14 @@ const styles = {
 function ProfilePage() {
   const navigate = useNavigate();
   const {menuOpen, user: menuUser, openMenu, closeMenu, loadUser, sessionExpired, handleSessionExpiredClose} = useMenu();
-
   const {
     user, loading, error, success, closeSuccess, saving,
     phone, setPhone, email, setEmail,
     editingPhone, setEditingPhone, editingEmail, setEditingEmail,
     handleSavePhone, handleSaveEmail, handleRemovePhoto, handleCancelPhone, handleCancelEmail, handleChangePhoto,
   } = useProfile();
-
   const {showModal: showPhotoModal, open: openPhotoModal, close: closePhotoModal, handleNewPhoto, handleRemovePhoto: handleRemovePhotoModal} =
     usePhotoModal(handleChangePhoto, handleRemovePhoto, loadUser);
-
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate(routes.login);
@@ -62,7 +59,6 @@ function ProfilePage() {
       </div>
     );
   }
-
   const hasCodes = user?.numero_dependencia || user?.numero_seccion;
 
   return (
@@ -70,45 +66,35 @@ function ProfilePage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Perfil Corporativo" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <PhotoModal isOpen={showPhotoModal} onClose={closePhotoModal} onNewPhoto={handleNewPhoto} onRemove={handleRemovePhotoModal} saving={saving} />
       <SuccessModal isOpen={!!success} title="Actualizado" message={success} onAccept={closeSuccess} />
-
       <div className={styles.content}>
         <div className={styles.titleWrapper}>
           <h1 className={styles.title} style={{color: COLORS.text}}>Mi Cuenta</h1>
           <p className={styles.subtitle} style={{color: COLORS.labels}}>Consulta y edita tu información personal.</p>
         </div>
-
         <div className={styles.grid}>
           <div className={styles.leftCol}>
             <ProfileSummaryCard user={user} onEditPhoto={openPhotoModal} saving={saving} />
           </div>
-
           <div className={styles.rightCol}>
             <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
               <ProfileSectionTitle>Información Personal</ProfileSectionTitle>
-
               <div className={styles.fieldsGrid}>
                 <ProfileField icon={Mail} label="Correo Corporativo" value={user?.email_corporativo} editing={editingEmail} editValue={email}
                   onEditValueChange={(event) => setEmail(event.target.value)} onStartEdit={() => setEditingEmail(true)}
                   onSave={handleSaveEmail} onCancel={handleCancelEmail} saving={saving} inputType="email" inputMode="email" maxLength={100} />
-
                 <ProfileField icon={Phone} label="Teléfono" value={user?.telefono} editing={editingPhone} editValue={phone}
                   onEditValueChange={(event) => setPhone(event.target.value.replace(/[^0-9]/g, ''))} onStartEdit={() => setEditingPhone(true)}
                   onSave={handleSavePhone} onCancel={handleCancelPhone} saving={saving} inputType="tel" inputMode="numeric" maxLength={8} />
-
                 <ReadOnlyField icon={Briefcase} label="Cargo" value={user?.Cargo?.nombre} />
-
                 {user?.numero_dependencia && <ReadOnlyField icon={Hash} label="N° Dependencia" value={user.numero_dependencia} />}
                 {user?.numero_seccion && <ReadOnlyField icon={Layers} label="N° Sección" value={user.numero_seccion} />}
               </div>
             </div>
-
             {error && <InlineAlert type="error">{error}</InlineAlert>}
           </div>
         </div>
-
         <button className={styles.logoutBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={handleLogout}>
           <LogOut size={18} />
           Cerrar Sesión

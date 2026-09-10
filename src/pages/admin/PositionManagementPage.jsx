@@ -45,25 +45,19 @@ function PositionManagementPage() {
     showSuccess, setShowSuccess, successMessage, formData, setFormData, suggestions,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
   } = usePositionManagement();
-
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <Navbar text="Gestión de Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <h1 className={styles.title} style={{color: COLORS.text}}>Gestión de Cargos</h1>
         <p className={styles.subtitle} style={{color: COLORS.labels}}>Administra los cargos y salarios del sistema.</p>
-
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
-
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Puesto y Salario Diario</p>
-
         {loading && <SkeletonList count={4} />}
-
         {!loading && positions.map((position) => (
           <div key={position.id_cargo} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
             <img src={positionImage} alt="cargo" className={styles.cardImage} />
@@ -87,7 +81,6 @@ function PositionManagementPage() {
             </div>
           </div>
         ))}
-
         {!loading && positions.length === 0 && (
           <EmptyState title="Sin cargos registrados" subtitle="No se encontraron cargos con los filtros aplicados"
             icon={
@@ -98,7 +91,6 @@ function PositionManagementPage() {
               </svg>
             } />
         )}
-
         <div className={styles.noticeCard} style={{backgroundColor: COLORS.error}}>
           <Ban size={22} style={{color: COLORS.secondary}} />
           <div className={styles.noticeText}>
@@ -107,29 +99,23 @@ function PositionManagementPage() {
           </div>
         </div>
       </div>
-
       <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
         <Plus size={26} style={{color: COLORS.background}} />
       </div>
-
       <PositionFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
         title="Agregar Nuevo Cargo" subtitle="Defina las especificaciones del nuevo rol dentro de la estructura organizacional."
         btnLabel="Registrar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
-
       <PositionFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
         title="Editar Cargo" subtitle="Actualice la información estructural y financiera para la posición seleccionada."
         btnLabel="Actualizar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
-
       <ConfirmDialog isOpen={showSuspend} icon={selectedPosition?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}
         title={selectedPosition?.activo ? 'Bloquear Cargo' : 'Activar Cargo'}
         message={selectedPosition?.activo ? '¿Estás seguro de que deseas bloquear este cargo?' : '¿Estás seguro de que deseas activar este cargo?'}
         confirmText={selectedPosition?.activo ? 'Bloquear' : 'Activar'} loading={savingAction}
         onConfirm={handleToggleActive} onCancel={() => setShowSuspend(false)} />
-
       <SuccessModal isOpen={showSuccess} title="Éxito" message={successMessage} onAccept={() => setShowSuccess(false)} />
-
       <Footer />
     </div>
   );

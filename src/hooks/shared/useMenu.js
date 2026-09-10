@@ -21,7 +21,6 @@ function useMenu() {
   const [user, setUser] = useState(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const originalRoleRef = useRef(getRoleFromToken());
-
   const loadUser = useCallback(async () => {
     try {
       const data = await getMe();
@@ -88,7 +87,6 @@ function useMenu() {
   };
 
   const closeMenu = () => setMenuOpen(false);
-
   const handleSessionExpiredClose = async () => {
     await logout();
     setSessionExpired(false);

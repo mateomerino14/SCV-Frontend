@@ -68,16 +68,13 @@ function UserManagementPage() {
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <Navbar text="Gestión de Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
-
       <div className={styles.content}>
         <h1 className={styles.title} style={{color: COLORS.text}}>Usuarios</h1>
         <p className={styles.subtitle} style={{color: COLORS.labels}}>Administra los usuarios del sistema.</p>
-
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar usuarios..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
-
         <div className={styles.tabsRow}>
           {tabs.map((tab) => (
             <button key={tab.valor} className={styles.tab} onClick={() => setRoleFilter(tab.valor)}
@@ -86,9 +83,7 @@ function UserManagementPage() {
             </button>
           ))}
         </div>
-
         {loading && <SkeletonList count={4} />}
-
         {!loading && users.map((currentUser) => {
           const config = roleConfig[currentUser.Rol?.nombre] || roleConfig['EMPLEADO'];
           return (
@@ -114,7 +109,6 @@ function UserManagementPage() {
             </div>
           );
         })}
-
         {!loading && users.length === 0 && (
           <EmptyState title="Sin usuarios registrados" subtitle="No se encontraron usuarios con los filtros aplicados"
             icon={
@@ -124,7 +118,6 @@ function UserManagementPage() {
               </svg>
             } />
         )}
-
         <div className={styles.noticeCard} style={{backgroundColor: COLORS.error}}>
           <Ban size={22} style={{color: COLORS.secondary}} />
           <div className={styles.noticeText}>
@@ -133,27 +126,21 @@ function UserManagementPage() {
           </div>
         </div>
       </div>
-
       <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
         <Plus size={26} style={{color: COLORS.background}} />
       </div>
-
       <UserFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
         title="Nuevo Usuario" btnLabel="Registrar" formData={formData} setFormData={setFormData} positions={positions}
         loading={savingAction} error={error} fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} selectedUser={null} />
-
       <UserFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
         title="Editar Usuario" btnLabel="Actualizar" formData={formData} setFormData={setFormData} positions={positions}
         loading={savingAction} error={error} fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} selectedUser={selectedUser} />
-
       <ConfirmDialog isOpen={showSuspend} icon={selectedUser?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}
         title={selectedUser?.activo ? 'Suspender Usuario' : 'Activar Usuario'}
         message={selectedUser?.activo ? '¿Estás seguro de que deseas suspender este usuario?' : '¿Estás seguro de que deseas activar este usuario?'}
         confirmText={selectedUser?.activo ? 'Suspender' : 'Activar'} loading={savingAction}
         onConfirm={handleToggleActive} onCancel={() => setShowSuspend(false)} />
-
       <SuccessModal isOpen={showSuccess} title="Éxito" message={successMessage} onAccept={() => setShowSuccess(false)} />
-
       <Footer />
     </div>
   );

@@ -34,7 +34,6 @@ function EditInvoicePage() {
   const {id} = useParams();
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-
   const {
     data, imagePreview, existingImage, loading, loadingData, error, fieldErrors, saved, manuallyModified, tripId,
     handleFieldChange, handleAddDetail, handleRemoveDetail, handleImageChange, handleRemoveImage, handleSave,
@@ -63,15 +62,12 @@ function EditInvoicePage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Editar Factura" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-
         <p className={styles.planLabel} style={{color: COLORS.title}}>Modificar comprobante fiscal</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Editar Factura</h1>
-
         <div className={styles.desktopGrid}>
           {imageSection}
           <div className={styles.colWrapper}>
@@ -81,26 +77,20 @@ function EditInvoicePage() {
             <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
           </div>
         </div>
-
         <div className={styles.mobileStack}>
           {imageSection}
           <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} />
           <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
         </div>
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         <button className={styles.guardarBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.primary}} onClick={handleSave} disabled={loading}>
           {loading ? 'Guardando...' : 'Guardar Cambios'}
         </button>
-
         <button className={styles.cancelarBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}} onClick={() => navigate(tripPath(tripId))}>
           Cancelar
         </button>
       </div>
-
       <SuccessModal isOpen={saved} title="Factura Actualizada" message="Los cambios se guardaron correctamente" onAccept={() => navigate(expenseDetailPath(id))} />
-
       <Footer />
     </div>
   );

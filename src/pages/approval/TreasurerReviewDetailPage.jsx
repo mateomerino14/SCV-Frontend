@@ -48,7 +48,6 @@ function TreasurerReviewDetailPage() {
   const originRoute = location.state?.from || '/dashboard/tesorero/revisiones';
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const [showAddComment, setShowAddComment] = useState(false);
-
   const {
     data, loading, savingAction, error, modalError, blocked,
     showApprove, setShowApprove, showReject, setShowReject, showNoObservations, setShowNoObservations,
@@ -65,7 +64,6 @@ function TreasurerReviewDetailPage() {
     resetCommentAdded();
     setShowAddComment(false);
   }
-
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -76,7 +74,6 @@ function TreasurerReviewDetailPage() {
       </div>
     );
   }
-
   if (blocked) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -95,7 +92,6 @@ function TreasurerReviewDetailPage() {
       </div>
     );
   }
-
   if (!data) {
     return null;
   }
@@ -105,7 +101,6 @@ function TreasurerReviewDetailPage() {
   const observationComments = (data.comentarios || []).filter((comment) => comment.tipo === 'OBSERVACION');
   const isPending = trip.estado === 'EN_REVISION_TESORERO';
   const canAct = isPending;
-
   let successMessage = 'Viaje rechazado correctamente';
   let successBg = '#ffa7a8aa';
   let successColor = '#500203';
@@ -120,30 +115,23 @@ function TreasurerReviewDetailPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Aprobación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-
         <TripReviewDetailCard trip={trip} statusConfig={treasurerStatusConfig} />
-
         <TreasurerAmountsCard trip={trip} isInternational={isInternational} canEdit={canAct}
           editingAmounts={editingAmounts} setEditingAmounts={setEditingAmounts}
           assignedAmount={assignedAmount} assignedAmountUsd={assignedAmountUsd}
           handleAssignedAmountChange={handleAssignedAmountChange} handleAssignedAmountUsdChange={handleAssignedAmountUsdChange}
           savingAmounts={savingAmounts} handleSaveAmounts={handleSaveAmounts} />
-
         <SelectableObservationsList observations={observationComments} canManage={canAct}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}
           editingComment={editingComment} deletingComment={deletingComment} />
-
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {actionCompleted && (
           <p className={styles.successBadge} style={{backgroundColor: successBg, color: successColor}}>{successMessage}</p>
         )}
-
         {canAct && !actionCompleted && (
           <div className={styles.actionsRow}>
             <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar Fondos</button>
@@ -151,14 +139,12 @@ function TreasurerReviewDetailPage() {
           </div>
         )}
       </div>
-
       <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction} />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <AddCommentModal isOpen={showAddComment} onClose={() => {setShowAddComment(false); editObservation(0, '');}} onConfirm={handleAddComment} observations={observations} onEdit={editObservation} loading={savingAction} error={modalError} />
       <EditCommentModal isOpen={!!editingComment} onClose={() => setEditingComment(null)} onConfirm={handleConfirmEdit} text={editText} setText={setEditText} loading={savingAction} error={modalError} />
       <DeleteCommentConfirmModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)} onConfirm={handleConfirmDelete} loading={savingAction} />
-
       <Footer />
     </div>
   );

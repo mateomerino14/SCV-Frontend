@@ -14,7 +14,6 @@ function useInvoiceForm(data, onChange, saved = false) {
   if (data.tipo_doc === 'F') {
     vatPercentageDisplay = 13;
   }
-
   useEffect(() => {
     if (saved) {
       return;
@@ -83,7 +82,6 @@ function useInvoiceForm(data, onChange, saved = false) {
       onChange(field, value);
       return;
     }
-
     onChange(field, value);
   };
 

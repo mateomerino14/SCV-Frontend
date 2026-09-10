@@ -23,7 +23,6 @@ function useNotFoundAnimation() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
   return {eyes, blinking};
 }
 

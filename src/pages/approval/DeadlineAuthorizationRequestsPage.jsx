@@ -34,11 +34,9 @@ function DeadlineAuthorizationRequestsPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Solicitudes de Plazo" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-
       <div className={styles.content}>
         <p className={styles.planLabel} style={{color: COLORS.title}}>Autorizaciones de plazo extendido</p>
         <h1 className={styles.title} style={{color: COLORS.text}}>Solicitudes de Plazo</h1>
-
         <div className={styles.tabsRow}>
           {tabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
@@ -47,13 +45,9 @@ function DeadlineAuthorizationRequestsPage() {
             </button>
           ))}
         </div>
-
         {error && <p className="text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4" style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} solicitud{trips.length !== 1 ? 'es' : ''}</p>}
-
         {loading && <SkeletonList count={3} />}
-
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin solicitudes" subtitle={tab === 'PENDIENTES' ? 'No hay solicitudes pendientes de plazo' : 'Aún no hay historial de solicitudes'}
             icon={
@@ -63,7 +57,6 @@ function DeadlineAuthorizationRequestsPage() {
               </svg>
             } />
         )}
-
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {trips.map((request) => (

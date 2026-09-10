@@ -23,7 +23,7 @@ function usePasswordExpiredCheck() {
   const [showModal, setShowModal] = useState(readPasswordExpired);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
+  
   useEffect(() => {
     const handleTokenRefreshed = () => {
       if (readPasswordExpired()) {
@@ -53,13 +53,11 @@ function usePasswordExpiredCheck() {
     setError('');
     setLoading(true);
     const data = await changePassword(currentPassword, newPassword);
-
     if (data.error) {
       setLoading(false);
       setError(data.error);
       return;
     }
-
     await refreshToken();
     setLoading(false);
     setShowModal(false);

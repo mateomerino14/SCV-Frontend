@@ -24,9 +24,7 @@ function useSimpleSelector(threshold = 220) {
     }
     setOpen(!open);
   };
-
   const close = () => setOpen(false);
-
   return {open, opensUpward, wrapperRef, triggerRef, toggle, close};
 }
 
