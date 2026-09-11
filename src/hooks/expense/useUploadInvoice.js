@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {extractInvoice, saveInvoice} from '../../services/expense/invoiceService';
+import {compressImage} from '../../utils/imageCompressor';
 
 function useUploadInvoice(tripId) {
   const [invoices, setInvoices] = useState([]);
@@ -17,7 +18,8 @@ function useUploadInvoice(tripId) {
   };
 
   const handleAddFiles = async (files) => {
-    const newInvoices = Array.from(files).map((file) => ({
+    const compressedFiles = await Promise.all(Array.from(files).map((file) => compressImage(file)));
+    const newInvoices = compressedFiles.map((file) => ({
       file,
       name: file.name,
       preview: URL.createObjectURL(file),
@@ -169,17 +171,24 @@ function useUploadInvoice(tripId) {
     );
   };
 
-  const handleManualImageChange = (file, index) => {
+  const handleManualImageChange = async (file, index) => {
+    if (!file) {
+      return;
+    }
+    const compressed = await compressImage(file);
     setInvoices((prev) =>
       prev.map((invoice, i) => {
         if (i !== index) {
           return invoice;
         }
+        if (invoice.preview) {
+          URL.revokeObjectURL(invoice.preview);
+        }
         return {
           ...invoice,
-          file,
-          preview: URL.createObjectURL(file),
-          name: file.name,
+          file: compressed,
+          preview: URL.createObjectURL(compressed),
+          name: compressed.name,
           fieldErrors: {...invoice.fieldErrors, image: undefined},
         };
       })

@@ -14,9 +14,6 @@ function useInvoicePreviewStatus(invoice) {
     if (invoice.error) {
       return COLORS.secondary;
     }
-    if (invoice.data?.extraido_por_qr) {
-      return '#155724';
-    }
     return COLORS.primary;
   };
 
@@ -36,9 +33,6 @@ function useInvoicePreviewStatus(invoice) {
     if (invoice.manual) {
       return 'Ingreso manual';
     }
-    if (invoice.data?.extraido_por_qr) {
-      return 'QR SIAT detectado';
-    }
     return 'Listo';
   };
 
@@ -48,9 +42,6 @@ function useInvoicePreviewStatus(invoice) {
     }
     if (invoice.saveError) {
       return COLORS.secondary;
-    }
-    if (invoice.data?.extraido_por_qr && expanded) {
-      return '#155724';
     }
     if (expanded) {
       return COLORS.primary;
