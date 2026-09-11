@@ -1,6 +1,7 @@
 import {useState, useEffect, useMemo} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {getCategories, getExpenseDetail, updateExpense} from '../../services/expense/expenseService';
+import {compressImage} from '../../utils/imageCompressor';
 
 const maxAmount = 99999.99;
 const maxDescription = 1000;
@@ -16,8 +17,6 @@ const currencies = [
   {codigo: 'COP', nombre: 'Peso colombiano'},
   {codigo: 'MXN', nombre: 'Peso mexicano'},
 ];
-
-const subitemCategories = ['Alimentación', 'Alojamiento', 'Transporte', 'Combustible', 'Peajes', 'Estacionamiento', 'Materiales de Oficina', 'Otros', 'Movilidad'];
 
 function calculateWithholdings(amount, type, isInternational) {
   const amountNum = parseFloat(amount) || 0;
@@ -141,11 +140,11 @@ function useEditExpense(expenseId) {
   }, [subitems]);
 
   const finalAmount = useMemo(() => {
-    if (!isInternationalExpense && usesSubitems && validSubitems.length > 0) {
+    if (usesSubitems && validSubitems.length > 0) {
       return parseFloat(validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2));
     }
     return parseFloat(amount) || 0;
-  }, [amount, isInternationalExpense, usesSubitems, validSubitems]);
+  }, [amount, usesSubitems, validSubitems]);
 
   const withholdings = useMemo(() => {
     return calculateWithholdings(finalAmount, type, isInternationalExpense);
@@ -158,12 +157,16 @@ function useEditExpense(expenseId) {
     setTimeout(() => setError(''), 4000);
   };
 
-  const handleImageChange = (file) => {
+  const handleImageChange = async (file) => {
     if (!file) {
       return;
     }
-    setImage(file);
-    setImagePreview(URL.createObjectURL(file));
+    const compressed = await compressImage(file);
+    if (imagePreview && !existingImage) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImage(compressed);
+    setImagePreview(URL.createObjectURL(compressed));
     setExistingImage(null);
     setFieldErrors((prev) => ({...prev, image: undefined}));
   };
@@ -345,7 +348,7 @@ function useEditExpense(expenseId) {
     else if (tripDateRange.start && tripDateRange.end && (date < tripDateRange.start || date > tripDateRange.end)) {
       errors.date = `La fecha debe estar dentro del período del viaje (${formatDateToDMY(tripDateRange.start)} - ${formatDateToDMY(tripDateRange.end)})`;
     }
-    const isAmountAutomatic = !isInternationalExpense && usesSubitems;
+    const isAmountAutomatic = usesSubitems;
     if (!isAmountAutomatic && (!amount || parseFloat(amount) <= 0)) {
       errors.amount = 'El monto es requerido y debe ser mayor a 0';
     }
@@ -454,7 +457,7 @@ function useEditExpense(expenseId) {
     installments, validInstallments, finalAmount,
     installmentErrors,
     usesSubitems, subitems, validSubitems, subitemErrors,
-    currencies, subitemCategories,
+    currencies,
     withholdings, hasWithholdings,
     handleImageChange, handleRemoveImage,
     handleAmountChange,

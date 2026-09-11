@@ -17,7 +17,7 @@ const styles = {
   badges: 'flex gap-2 mb-4 flex-wrap',
   date: 'text-xs font-nunito font-bold mb-1',
   route: 'text-xs font-nunito font-bold mb-4 flex items-start gap-1 flex-wrap',
-  routeText: 'truncate',
+  routeText: 'truncate max-w-[100px] sm:max-w-[200px] lg:max-w-[320px]',
   destination: 'text-xs font-nunito font-bold mb-4 break-words',
   card: 'rounded-2xl p-5 shadow-md mb-4 border',
   sectionTitle: 'text-xs font-bold font-inter uppercase mb-3',
@@ -102,16 +102,14 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <span className="text-xs font-semibold font-inter px-3 py-1 rounded-full uppercase" style={{backgroundColor: COLORS.dataFields, color: COLORS.text}}>{trip.transporte}</span>
         )}
       </div>
-
       <p className={styles.date} style={{color: COLORS.labels}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
-
       {trip.origen ? (
         <p className={styles.route} style={{color: COLORS.labels}}>
           <Navigation size={11} style={{color: COLORS.labels, marginTop: 2, flexShrink: 0}} />
-          <span className={styles.routeText} style={{maxWidth: 100}}>{trip.origen}</span>
+          <span className={styles.routeText}>{trip.origen}</span>
           <span style={{color: COLORS.dataFields, margin: '0 4px', flexShrink: 0}}>→</span>
           <MapPin size={11} style={{color: COLORS.secondary, marginTop: 2, flexShrink: 0}} />
-          <span className={styles.routeText} style={{maxWidth: 100}}>{trip.destino}</span>
+          <span className={styles.routeText}>{trip.destino}</span>
         </p>
       ) : (
         <p className={styles.destination} style={{color: COLORS.labels}}>{trip.destino}</p>
