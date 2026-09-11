@@ -1,4 +1,4 @@
-import {Trash2, ChevronDown, ChevronUp, QrCode} from 'lucide-react';
+import {Trash2, ChevronDown, ChevronUp} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import useInvoicePreviewStatus from '../hooks/useInvoicePreviewStatus';
 
@@ -32,10 +32,7 @@ function InvoicePreviewItem({invoice, index, expanded, onSelect, onRemove, child
           <img src={invoice.preview || placeholderInvoice} alt="factura" className={styles.preview} style={{opacity: invoice.preview ? 1 : 0.5}} />
           <div>
             <p className={styles.name} style={{color: COLORS.text}}>{displayName}</p>
-            <p className={styles.status} style={{color: getStatusColor()}}>
-              {invoice.data?.extraido_por_qr && !invoice.saved && <QrCode size={11} />}
-              {getStatusText()}
-            </p>
+            <p className={styles.status} style={{color: getStatusColor()}}>{getStatusText()}</p>
             {invoice.saveError && <p className={styles.saveError} style={{color: COLORS.secondary}}>{invoice.saveError}</p>}
           </div>
         </div>

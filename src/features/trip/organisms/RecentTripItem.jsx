@@ -17,8 +17,8 @@ const styles = {
   amountRow: "flex flex-col gap-0.5 ml-1 mb-1",
   amount: "text-xs font-inter",
   badgeWrapper: "ml-1",
-  right: "flex flex-col items-end gap-1 shrink-0",
-  status: "text-xs font-bold font-nunito mb-4 p-1 rounded-xl text-center whitespace-nowrap",
+  right: "flex flex-col items-end gap-1 shrink-0 max-w-[110px] sm:max-w-none",
+  status: "text-[10px] sm:text-xs font-bold font-nunito mb-4 px-2 py-1 rounded-xl text-center whitespace-nowrap",
   detailsLink: "text-xs font-bold font-nunito mt-11 cursor-pointer whitespace-nowrap",
 };
 
@@ -47,7 +47,7 @@ const statusBackgrounds = {
 };
 
 const statusLabels = {
-  EN_REVISION_VIAJE: 'EN REVISIÓN PREVIA',
+  EN_REVISION_VIAJE: 'REVISIÓN PREVIA',
   APROBADO_VIAJE: 'APR. SUPERVISOR',
   EN_REVISION_TESORERO: 'ESPERANDO FONDOS',
   EN_CURSO: 'EN CURSO',

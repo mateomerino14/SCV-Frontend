@@ -1,4 +1,3 @@
-import {QrCode} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseField from '../atoms/ExpenseField';
 import useInvoiceForm from '../../../hooks/expense/useInvoiceForm';
@@ -16,7 +15,6 @@ const styles = {
   totalAmountBox: "rounded-xl px-4 py-3 border-2",
   totalAmountText: "text-2xl font-bold font-inter",
   alert: "flex items-center gap-2 p-2 rounded-xl text-xs font-inter justify-center",
-  qrBadge: "flex items-center gap-2 p-2 rounded-xl text-xs font-bold font-inter justify-center",
 };
 
 const fieldsConfig = [
@@ -33,12 +31,6 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
   return (
     <div className={styles.wrapper}>
       <p className="text-sm font-bold font-inter uppercase mb-3" style={{color: COLORS.labels}}>Formulario de Registro</p>
-      {data.extraido_por_qr && !manuallyModified && (
-        <div className={styles.qrBadge} style={{backgroundColor: '#d4edda', color: '#155724'}}>
-          <QrCode size={14} />
-          Datos extraídos del QR del SIAT
-        </div>
-      )}
       <div className="mt-3">
         <p className={styles.sectionTitle} style={{color: COLORS.labels}}>Tipo de Documento</p>
         <div className={styles.toggleRow}>

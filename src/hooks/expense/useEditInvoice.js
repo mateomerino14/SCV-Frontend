@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import {getExpenseDetail} from '../../services/expense/expenseService';
 import {updateInvoice} from '../../services/expense/invoiceService';
+import {compressImage} from '../../utils/imageCompressor';
 
 function useEditInvoice(expenseId) {
   const [data, setData] = useState(null);
@@ -83,12 +84,16 @@ function useEditInvoice(expenseId) {
     setManuallyModified(true);
   };
 
-  const handleImageChange = (file) => {
+  const handleImageChange = async (file) => {
     if (!file) {
       return;
     }
-    setImage(file);
-    setImagePreview(URL.createObjectURL(file));
+    const compressed = await compressImage(file);
+    if (imagePreview && !existingImage) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImage(compressed);
+    setImagePreview(URL.createObjectURL(compressed));
     setExistingImage(null);
   };
 

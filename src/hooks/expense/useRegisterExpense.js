@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {getCategories, registerExpense} from '../../services/expense/expenseService';
 import {getTripDetail} from '../../services/trip/tripService';
+import {compressImage} from '../../utils/imageCompressor';
 
 const maxAmount = 99999.99;
 const maxDescription = 1000;
@@ -17,8 +18,6 @@ const currencies = [
   {codigo: 'COP', nombre: 'Peso colombiano'},
   {codigo: 'MXN', nombre: 'Peso mexicano'},
 ];
-
-const subitemCategories = ['Alimentación', 'Alojamiento', 'Transporte', 'Combustible', 'Peajes', 'Estacionamiento', 'Materiales de Oficina', 'Otros', 'Movilidad'];
 
 function calculateWithholdings(amount, type, isInternational) {
   const amountNum = parseFloat(amount) || 0;
@@ -193,6 +192,7 @@ function useRegisterExpense(tripId) {
   };
 
   const handleTypeChange = (itemId, type) => updateItem(itemId, {type});
+
   const handleDateChange = (itemId, value) => {
     setItems((prev) => prev.map((item) => {
       if (item.id === itemId) {
@@ -254,10 +254,11 @@ function useRegisterExpense(tripId) {
     }));
   };
 
-  const handleImageChange = (itemId, file) => {
+  const handleImageChange = async (itemId, file) => {
     if (!file) {
       return;
     }
+    const compressed = await compressImage(file);
     setItems((prev) => prev.map((item) => {
       if (item.id !== itemId) {
         return item;
@@ -265,7 +266,7 @@ function useRegisterExpense(tripId) {
       if (item.imagePreview) {
         URL.revokeObjectURL(item.imagePreview);
       }
-      return {...item, image: file, imagePreview: URL.createObjectURL(file), fieldErrors: {...item.fieldErrors, image: undefined}};
+      return {...item, image: compressed, imagePreview: URL.createObjectURL(compressed), fieldErrors: {...item.fieldErrors, image: undefined}};
     }));
   };
 
@@ -598,7 +599,6 @@ function useRegisterExpense(tripId) {
     allSaved,
     pendingToSave,
     currencies,
-    subitemCategories,
     validInstallmentsOf, validSubitemsOf, finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
     handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange,
