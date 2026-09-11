@@ -35,7 +35,8 @@ const styles = {
   blockedSubtitle: 'text-sm font-inter text-center',
   blockedBtn: 'mt-4 py-2.5 px-8 rounded-xl font-bold font-nunito text-sm',
   errorMsg: 'text-xs font-inter italic text-center py-3 px-3 rounded-xl mb-3',
-  warningMsg: 'text-xs font-inter text-center mt-2',
+  successBadge: 'text-sm font-bold font-inter text-center py-3 px-4 rounded-xl mb-4',
+  warningMsg: 'text-xs font-inter text-center mb-4',
   card: 'rounded-2xl p-5 mb-4 shadow-md',
   exportBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer flex items-center justify-center gap-2 mb-4',
   actionsRow: 'flex gap-3 mb-4',
@@ -51,6 +52,7 @@ function ReviewerReviewDetailPage() {
   const originRoute = location.state?.from || '/dashboard/revisor';
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {exportToExcel} = useTripExcelExport();
+
   const {
     data, loading, savingAction, error, warning, blocked,
     showApprove, setShowApprove, showReject, setShowReject, showNoObservations, setShowNoObservations,
@@ -61,9 +63,11 @@ function ReviewerReviewDetailPage() {
     handleApprove, handleRequestReject, handleReject,
     handleAddComment, handleOpenEdit, handleConfirmEdit, handleOpenDelete, handleConfirmDelete,
   } = useReviewerReviewDetail(id);
+
   if (commentAdded) {
     resetCommentAdded();
   }
+
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -74,6 +78,7 @@ function ReviewerReviewDetailPage() {
       </div>
     );
   }
+
   if (blocked || !data) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -96,95 +101,105 @@ function ReviewerReviewDetailPage() {
   const trip = data.viaje;
   const expenses = data.gastos || [];
   const isInternational = trip.tipo === 'Internacional';
+
   const nationalExpenses = expenses.filter((expense) => !expense.es_gasto_internacional);
   const internationalExpenses = expenses.filter((expense) => !!expense.es_gasto_internacional);
   const invoicedExpenses = nationalExpenses.filter((expense) => !!expense.Factura);
   const uninvoicedExpenses = nationalExpenses.filter((expense) => !expense.Factura);
+
   const totalVat = invoicedExpenses.reduce((sum, expense) => {
     return sum + Math.max(0, parseFloat(expense.monto_total || 0) - parseFloat(expense.Factura?.monto_parcial || 0));
   }, 0);
+
   const isPending = trip.estado === 'APROBADO_SUPERVISOR';
-  const canAct = isPending;
+  const canAct = isPending && !actionCompleted;
   const justification = (data.comentarios || []).find((comment) => comment.tipo === 'JUSTIFICACION');
+
+  let successMessage = 'Rendición rechazada correctamente';
+  let successBg = '#ffa7a8aa';
+  let successColor = '#500203';
+  if (actionCompleted === 'APROBADO_FINAL') {
+    successMessage = 'Rendición aprobada definitivamente';
+    successBg = '#d4edda';
+    successColor = '#155724';
+  }
+
   const goToExpenseDetail = (expenseId) => {
     navigate(reviewerExpenseDetailPath(expenseId), {state: {from: reviewerReviewPath(id), origenViaje: originRoute}});
   };
-  if (actionCompleted) {
-    let successMessage = 'Rendición rechazada correctamente';
-    let successBg = '#ffa7a8aa';
-    let successColor = '#500203';
-    if (actionCompleted === 'APROBADO_FINAL') {
-      successMessage = 'Rendición Aprobada Definitivamente';
-      successBg = '#d4edda';
-      successColor = '#155724';
-    }
-    return (
-      <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-        <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
-        <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-        <div className={styles.content}>
-          <div className="rounded-2xl p-8 text-center" style={{backgroundColor: successBg}}>
-            <p className="text-lg font-bold font-inter" style={{color: successColor}}>{successMessage}</p>
-            {warning && <p className={styles.warningMsg} style={{color: '#856404'}}>{warning}</p>}
-            <button className="mt-4 py-2.5 px-6 rounded-xl font-bold font-nunito text-sm" style={{backgroundColor: COLORS.primary, color: COLORS.background}}
-              onClick={() => navigate(originRoute)}>Volver</button>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
+
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
+
         <ExpenseTripInfoCard trip={trip} />
+
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseBudgetBar accumulated={data.gastoAcumulado} assignedAmount={parseFloat(trip.monto_asignado)} isUsd={false} />
         </div>
+
         {isInternational && (
           <div className={styles.card} style={{backgroundColor: COLORS.background}}>
             <ExpenseBudgetBar accumulated={data.gastoAcumuladoUsd} assignedAmount={parseFloat(trip.monto_asignado_usd || 0)} isUsd />
           </div>
         )}
+
         <ExpenseSettlementCard
           amount={data.excedePresupuesto ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
           exceeds={data.excedePresupuesto} isInternational={isInternational}
           amountUsd={data.excedePresupuestoUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
           exceedsUsd={data.excedePresupuestoUsd} justification={justification} />
+
         <ExpenseAlertsRow alerts={data.alertas} />
+
         <ExpenseInvoicedTable expenses={invoicedExpenses} onViewExpense={goToExpenseDetail}
           countObservations={countExpenseObservations} onOpenObservations={openExpenseObservations} />
+
         <ExpenseUninvoicedTable expenses={uninvoicedExpenses} onViewExpense={goToExpenseDetail}
           countObservations={countExpenseObservations} onOpenObservations={openExpenseObservations} />
+
         {isInternational && (
           <ExpenseInternationalTable expenses={internationalExpenses} onViewExpense={goToExpenseDetail}
             countObservations={countExpenseObservations} onOpenObservations={openExpenseObservations} />
         )}
+
         <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
+
         {expenses.length > 0 && (
           <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses)}>
             <Download size={16} />
             Exportar Excel
           </button>
         )}
+
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
+
+        {actionCompleted && (
+          <p className={styles.successBadge} style={{backgroundColor: successBg, color: successColor}}>{successMessage}</p>
+        )}
+
+        {actionCompleted && warning && (
+          <p className={styles.warningMsg} style={{color: '#856404'}}>{warning}</p>
+        )}
+
         {canAct && (
           <>
             <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>
             <div className={styles.actionsRow}>
-                <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar Definitivamente</button>            
-                <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>
+              <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar Definitivamente</button>
+              <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>
             </div>
           </>
         )}
       </div>
+
       <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction} />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
@@ -194,6 +209,7 @@ function ReviewerReviewDetailPage() {
         onAdd={handleAddComment} onEdit={handleOpenEdit} onDelete={handleOpenDelete} loading={savingAction} error={error} />
       <EditCommentModal isOpen={!!editingComment} onClose={() => setEditingComment(null)} onConfirm={handleConfirmEdit} text={editText} setText={setEditText} loading={savingAction} error={error} />
       <DeleteCommentConfirmModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)} onConfirm={handleConfirmDelete} loading={savingAction} />
+
       <Footer />
     </div>
   );
