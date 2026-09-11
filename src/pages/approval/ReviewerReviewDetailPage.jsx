@@ -179,8 +179,8 @@ function ReviewerReviewDetailPage() {
           <>
             <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>
             <div className={styles.actionsRow}>
-              <button className={styles.approveBtn} style={{backgroundColor: '#d4edda', color: '#155724'}} onClick={() => setShowApprove(true)}>Aprobar Definitivamente</button>
-              <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>
+                <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar Definitivamente</button>            
+                <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>
             </div>
           </>
         )}
