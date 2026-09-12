@@ -20,7 +20,7 @@ function useUserManagement() {
     nombre: '', apellido_paterno: '', apellido_materno: '',
     email_corporativo: '', telefono: '', contrasenia: '',
     id_cargo: '', id_rol: 3,
-    numero_dependencia: '', numero_seccion: '',
+    numero_dependencia: '', numero_seccion: '', carnet_identidad: '',
   });
 
   useEffect(() => {
@@ -148,7 +148,7 @@ function useUserManagement() {
       nombre: '', apellido_paterno: '', apellido_materno: '',
       email_corporativo: '', telefono: '', contrasenia: '',
       id_cargo: firstActivePosition?.id_cargo || '', id_rol: 3,
-      numero_dependencia: '', numero_seccion: '',
+      numero_dependencia: '', numero_seccion: '', carnet_identidad: '',
     });
     setError('');
     setFieldErrors({});
@@ -168,6 +168,7 @@ function useUserManagement() {
       id_rol: user.id_rol,
       numero_dependencia: user.numero_dependencia || '',
       numero_seccion: user.numero_seccion || '',
+      carnet_identidad: user.carnet_identidad || '',
     });
     setError('');
     setFieldErrors({});
@@ -216,6 +217,7 @@ function useUserManagement() {
       id_rol: formData.id_rol,
       numero_dependencia: formData.numero_dependencia,
       numero_seccion: formData.numero_seccion,
+      carnet_identidad: formData.carnet_identidad?.trim() || null,
     };
     setSavingAction(true);
     const data = await updateUser(selectedUser.id_usuario, payload);

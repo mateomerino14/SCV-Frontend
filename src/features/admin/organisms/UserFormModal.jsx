@@ -70,6 +70,8 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   onChange={(event) => handleChange('numero_dependencia', event.target.value, null, 50)} />
                 <FormField label="N° Sección" placeholder="Ej: SEC-01" maxLength={50} value={formData.numero_seccion} error={fieldErrors.numero_seccion}
                   onChange={(event) => handleChange('numero_seccion', event.target.value, null, 50)} />
+                <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={20} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
+                  onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 20)} />
                 {isNew && (
                   <FormField label="Contraseña" type="password" placeholder="Mínimo 6 caracteres" value={formData.contrasenia} error={fieldErrors.contrasenia}
                     onChange={(event) => handleChange('contrasenia', event.target.value)} />
