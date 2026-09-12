@@ -202,7 +202,8 @@ function ExpenseEditForm({
         </div>
       )}
       <CategorySelector categories={categories} categoryId={categoryId} onChange={handleCategoryChange} error={fieldErrors.category} />
-      <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image} />
+      <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image}
+        required={categories.find((category) => category.id_categoria === categoryId)?.requiere_comprobante !== false} />
     </>
   );
 }

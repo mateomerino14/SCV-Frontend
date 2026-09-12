@@ -14,7 +14,8 @@ const styles = {
   fieldError: "text-xs font-inter mt-1",
 };
 
-function ReceiptUpload({previewImage, onChange, onRemove, error, disabled}) {
+function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, required = true}) {
+  const label = `Comprobante${required ? '' : ' (Opcional)'}`;
   const handleInput = (event) => {
     if (disabled) {
       return;
@@ -28,7 +29,7 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled}) {
   if (previewImage) {
     return (
       <div className={styles.wrapper}>
-        <p className={styles.label} style={{color: COLORS.labels}}>Comprobante</p>
+        <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>
         <div className={styles.previewWrapper} style={{borderColor: COLORS.dataFields}}>
           <img src={previewImage} alt="comprobante" className={styles.previewImg} style={{height: '350px', backgroundColor: COLORS.backgroundHeader}} />
           {!disabled && (
@@ -44,7 +45,7 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled}) {
 
   return (
     <div className={styles.wrapper}>
-      <p className={styles.label} style={{color: COLORS.labels}}>Comprobante</p>
+      <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>
       <label className={styles.dropZone} style={{
         borderColor: error ? '#f87171' : COLORS.dataFields,
         backgroundColor: disabled ? COLORS.backgroundHeader : COLORS.backgroundHeader,

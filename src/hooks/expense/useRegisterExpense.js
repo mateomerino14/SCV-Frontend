@@ -468,6 +468,12 @@ function useRegisterExpense(tripId) {
     if (!item.categoryId) {
       errors.category = 'La categoría es requerida';
     }
+    else {
+      const category = categories.find((current) => current.id_categoria === item.categoryId);
+      if (category?.requiere_comprobante !== false && !item.imagePreview) {
+        errors.image = 'El comprobante es requerido para esta categoría';
+      }
+    }
 
     const installmentErrors = {};
     if (item.usesOtherCurrency) {

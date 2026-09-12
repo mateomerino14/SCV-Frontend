@@ -358,6 +358,12 @@ function useEditExpense(expenseId) {
     if (!categoryId) {
       errors.category = 'La categoría es requerida';
     }
+    else {
+      const category = categories.find((current) => current.id_categoria === categoryId);
+      if (category?.requiere_comprobante !== false && !imagePreview) {
+        errors.image = 'El comprobante es requerido para esta categoría';
+      }
+    }
 
     const currentInstallmentErrors = {};
     if (usesOtherCurrency) {
