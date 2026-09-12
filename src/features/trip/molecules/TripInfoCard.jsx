@@ -27,7 +27,9 @@ function TripInfoCard({trip, isInternational}) {
       <div className={styles.badgesRow}>
         <TripTypeBadge isInternational={isInternational} />
         {trip.transporte && (
-          <span className="text-xs font-semibold font-inter px-3 py-1 rounded-full uppercase" style={{backgroundColor: COLORS.dataFields, color: COLORS.text}}>{trip.transporte}</span>
+          <span className="text-xs font-semibold font-inter px-3 py-1 rounded-full uppercase" style={{backgroundColor: COLORS.dataFields, color: COLORS.text}}>
+            {trip.transporte}{trip.placa_vehiculo ? ` — ${trip.placa_vehiculo}` : ''}
+          </span>
         )}
       </div>
       <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />

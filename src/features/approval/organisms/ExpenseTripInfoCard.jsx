@@ -66,7 +66,9 @@ function ExpenseTripInfoCard({trip}) {
         {trip.transporte && (
           <div>
             <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Transporte</p>
-            <p className={styles.infoValue} style={{color: COLORS.text}}>{trip.transporte}</p>
+            <p className={styles.infoValue} style={{color: COLORS.text}}>
+              {trip.transporte}{trip.placa_vehiculo ? ` — ${trip.placa_vehiculo}` : ''}
+            </p>
           </div>
         )}
         <div>
