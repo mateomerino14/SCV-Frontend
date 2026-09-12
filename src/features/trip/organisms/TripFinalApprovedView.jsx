@@ -29,7 +29,7 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
           <p className={styles.sectionTitle} style={{color: COLORS.text_enviroment_types}}>Gastos Nacionales</p>
           {nationalExpenses.map((expense) => (
-            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
+            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} isFinalApproved onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
           ))}
         </div>
       )}
@@ -40,7 +40,7 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
             Gastos Internacionales
           </p>
           {internationalExpenses.map((expense) => (
-            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
+            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} isFinalApproved onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
           ))}
         </div>
       )}

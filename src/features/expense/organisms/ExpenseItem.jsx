@@ -24,14 +24,14 @@ function getDocLabel(supplier) {
   return `Doc: ${supplier.numero_doc_fiscal}`;
 }
 
-function ExpenseItem({expense, tripInProgress, onDelete, tripId, originTrip, observations = []}) {
+function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId, originTrip, observations = []}) {
   const {sending, modal, handleSend, closeModal} = useExpenseReceipt(expense.id_gasto);
   const {showModal, open, close} = useExpenseObservations();
   const {goToEdit, goToDetail} = useExpenseNavigation(tripId, originTrip);
   const docLabel = getDocLabel(expense.Proveedor);
   const displayName = expense.Proveedor?.nombre || expense.Categoria_Gasto?.nombre || 'Sin proveedor';
   const isInternational = !!expense.es_gasto_internacional;
-  const canGenerateReceipt = expense.tipo === 'C' || expense.tipo === 'S';
+  const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && isFinalApproved;
   const accentColor = isInternational ? COLORS.primary : COLORS.title;
   const expenseDate = expense.Factura?.fecha_emision || expense.fecha_gasto;
   const subitems = expense.Gasto_Subitem || [];
