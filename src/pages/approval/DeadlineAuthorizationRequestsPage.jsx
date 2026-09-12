@@ -1,6 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import DeadlineRequestCard from '../../features/approval/molecules/DeadlineRequestCard';
 import EmptyState from '../../components/ui/EmptyState';
 import SkeletonList from '../../components/ui/SkeletonList';
@@ -12,8 +13,6 @@ import {COLORS} from '../../constants';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   tabsRow: "flex gap-2 mb-4 flex-wrap",
   tab: "py-1.5 px-3 rounded-full text-xs font-bold font-inter cursor-pointer border text-center transition-colors",
   totalText: "text-xs font-inter mb-3",
@@ -35,8 +34,7 @@ function DeadlineAuthorizationRequestsPage() {
       <Navbar text="Solicitudes de Plazo" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Autorizaciones de plazo extendido</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Solicitudes de Plazo</h1>
+        <PageHeader title="Solicitudes de Plazo" subtitle="Solicitudes de tus empleados para registrar gastos fuera del plazo." />
         <div className={styles.tabsRow}>
           {tabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}

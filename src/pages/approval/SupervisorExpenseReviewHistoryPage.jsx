@@ -1,6 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
 import ExpenseReviewItem from '../../features/approval/organisms/ExpenseReviewItem';
 import EmptyState from '../../components/ui/EmptyState';
@@ -15,8 +16,6 @@ import {supervisorTripReviewPath, routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
   totalText: "text-xs font-inter mb-3",
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
@@ -35,8 +34,7 @@ function SupervisorExpenseReviewHistoryPage() {
       <Navbar text="Mis Revisiones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Historial de gastos revisados</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Mis Revisiones</h1>
+        <PageHeader title="Historial de Revisiones" subtitle="Rendiciones de gastos que ya revisaste, con su resultado." />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

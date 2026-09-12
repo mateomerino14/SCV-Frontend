@@ -3,6 +3,7 @@ import Footer from '../../layouts/Footer';
 import TripHistoryFilter from '../../features/trip/organisms/TripHistoryFilter';
 import RecentTripItem from '../../features/trip/organisms/RecentTripItem';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import EmptyState from '../../components/ui/EmptyState';
 import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
@@ -14,8 +15,6 @@ import {routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   emptyMsg: "text-sm font-inter text-center py-8",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
   totalText: "text-xs font-inter mb-3",
@@ -32,8 +31,7 @@ function TripHistoryPage() {
       <Navbar text="Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Historial Corporativo</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Mis Viajes</h1>
+        <PageHeader title="Historial de Viajes" subtitle="Consulta y filtra todos tus viajes registrados." />
         <TripHistoryFilter activeFilter={filter} onChange={setFilter} />
         {loading && <SkeletonList count={4} />}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

@@ -3,6 +3,7 @@ import {Mail, Phone, Briefcase, LogOut, Hash, Layers} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import PhotoModal from '../../features/user/organisms/PhotoModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SuccessModal from '../../components/ui/SuccessModal';
@@ -21,9 +22,6 @@ import {routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  titleWrapper: "mb-6",
-  title: "text-3xl font-bold font-inter mb-1",
-  subtitle: "text-sm font-inter",
   grid: "grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6",
   leftCol: "lg:col-span-3 min-w-[220px]",
   rightCol: "lg:col-span-9",
@@ -69,10 +67,7 @@ function ProfilePage() {
       <PhotoModal isOpen={showPhotoModal} onClose={closePhotoModal} onNewPhoto={handleNewPhoto} onRemove={handleRemovePhotoModal} saving={saving} />
       <SuccessModal isOpen={!!success} title="Actualizado" message={success} onAccept={closeSuccess} />
       <div className={styles.content}>
-        <div className={styles.titleWrapper}>
-          <h1 className={styles.title} style={{color: COLORS.text}}>Mi Cuenta</h1>
-          <p className={styles.subtitle} style={{color: COLORS.labels}}>Consulta y edita tu información personal.</p>
-        </div>
+        <PageHeader title="Mi Cuenta" subtitle="Consulta y edita tu información personal." />
         <div className={styles.grid}>
           <div className={styles.leftCol}>
             <ProfileSummaryCard user={user} onEditPhoto={openPhotoModal} saving={saving} />

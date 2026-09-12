@@ -1,6 +1,7 @@
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
 import UserFormModal from '../../features/admin/organisms/UserFormModal';
 import EmptyState from '../../components/ui/EmptyState';
@@ -16,7 +17,6 @@ const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-de
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
-  title: 'text-3xl font-bold font-inter mb-1',
   subtitle: 'text-sm font-inter mb-5',
   searchWrapper: 'flex items-center border rounded-xl px-3 py-2 gap-2 mb-4',
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
@@ -69,8 +69,7 @@ function UserManagementPage() {
       <Navbar text="Gestión de Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
       <div className={styles.content}>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Usuarios</h1>
-        <p className={styles.subtitle} style={{color: COLORS.labels}}>Administra los usuarios del sistema.</p>
+        <PageHeader title="Usuarios" subtitle="Administra los usuarios del sistema." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar usuarios..." value={search} onChange={(event) => setSearch(event.target.value)} />

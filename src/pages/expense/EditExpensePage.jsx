@@ -3,6 +3,7 @@ import {ArrowLeft} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import ExpenseEditForm from '../../features/expense/organisms/ExpenseEditForm';
 import SuccessModal from '../../components/ui/SuccessModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
@@ -16,8 +17,7 @@ const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
+
   card: "rounded-2xl shadow-md p-5 flex flex-col gap-5",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
   guardarBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer mt-3",
@@ -59,8 +59,7 @@ function EditExpensePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Modificar registro existente</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Editar Gasto</h1>
+        <PageHeader title="Editar Gasto" subtitle="Corrige los datos de este gasto antes de volver a enviarlo." />
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseEditForm type={type} date={date} supplier={supplier} amount={amount} description={description} categoryId={categoryId}
             categories={categories} imagePreview={imagePreview} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}

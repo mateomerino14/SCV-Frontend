@@ -4,6 +4,7 @@ import {KeyRound, FileText, LogOut} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import ConfigOption from '../../features/user/atoms/ConfigOption';
 import ChangePasswordModal from '../../features/user/organisms/ChangePasswordModal';
 import TermsModal from '../../features/user/organisms/TermsModal';
@@ -15,9 +16,6 @@ import {routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  titleWrapper: "mb-6",
-  title: "text-3xl font-bold font-inter mb-1",
-  subtitle: "text-sm font-inter",
   grid: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-6",
   sectionCard: "rounded-2xl p-6 shadow-sm border",
   sectionLabel: "text-sm font-bold font-inter uppercase mb-4",
@@ -41,10 +39,7 @@ function SettingsPage() {
       <Navbar text="Configuración" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <div className={styles.titleWrapper}>
-          <h1 className={styles.title} style={{color: COLORS.text}}>Ajustes de Cuenta</h1>
-          <p className={styles.subtitle} style={{color: COLORS.labels}}>Gestiona tu contraseña y revisa los términos del sistema.</p>
-        </div>
+        <PageHeader title="Ajustes de Cuenta" subtitle="Gestiona tu contraseña y revisa los términos del sistema." />
         <div className={styles.grid}>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cuenta</p>

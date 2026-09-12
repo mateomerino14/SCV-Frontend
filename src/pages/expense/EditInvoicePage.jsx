@@ -3,6 +3,7 @@ import {ArrowLeft} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import InvoiceForm from '../../features/expense/organisms/InvoiceForm';
 import InvoiceDetailPanel from '../../features/expense/organisms/InvoiceDetailPanel';
 import ReceiptUpload from '../../features/expense/organisms/ReceiptUpload';
@@ -18,8 +19,7 @@ const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
+
   desktopGrid: "hidden md:grid md:grid-cols-3 gap-4 items-stretch",
   mobileStack: "md:hidden flex flex-col gap-4",
   colWrapper: "flex flex-col h-full",
@@ -66,8 +66,7 @@ function EditInvoicePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Modificar comprobante fiscal</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Editar Factura</h1>
+        <PageHeader title="Editar Factura" subtitle="Corrige los datos del comprobante fiscal registrado." />
         <div className={styles.desktopGrid}>
           {imageSection}
           <div className={styles.colWrapper}>

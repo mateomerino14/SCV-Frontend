@@ -1,6 +1,7 @@
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
 import PositionFormModal from '../../features/admin/organisms/PositionFormModal';
 import EmptyState from '../../components/ui/EmptyState';
@@ -16,7 +17,6 @@ const positionImage = "https://i.pinimg.com/474x/92/59/28/9259282c3e36ed39f345a9
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
-  title: 'text-3xl font-bold font-inter mb-1',
   subtitle: 'text-sm font-inter mb-5',
   searchWrapper: 'flex items-center border rounded-xl px-3 py-2 gap-2 mb-4',
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
@@ -50,8 +50,7 @@ function PositionManagementPage() {
       <Navbar text="Gestión de Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Gestión de Cargos</h1>
-        <p className={styles.subtitle} style={{color: COLORS.labels}}>Administra los cargos y salarios del sistema.</p>
+        <PageHeader title="Gestión de Cargos" subtitle="Administra los cargos y salarios del sistema." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />

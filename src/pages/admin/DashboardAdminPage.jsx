@@ -2,6 +2,7 @@ import {Users, Briefcase} from 'lucide-react';
 import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend} from 'recharts';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
 import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
@@ -16,8 +17,6 @@ import {COLORS} from '../../constants';
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 max-w-8xl mx-auto w-full',
-  planLabel: 'text-xs font-semibold font-inter uppercase mb-2 tracking-wide',
-  title: 'text-3xl font-bold font-inter mb-1',
   subtitle: 'text-sm font-inter mb-6',
   grid2: 'grid grid-cols-2 gap-3 mb-6',
   statCard: 'rounded-2xl p-4 shadow-sm flex flex-col gap-1',
@@ -61,9 +60,7 @@ function DashboardAdminPage() {
       <Navbar text="Dashboard" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Panel de Control</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Dashboard</h1>
-        <p className={styles.subtitle} style={{color: COLORS.labels}}>Resumen general del sistema.</p>
+        <PageHeader title="Dashboard" subtitle="Resumen general del sistema." />
         {loading ? (
           <SkeletonCard lines={6} />
         ) : (

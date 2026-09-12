@@ -3,6 +3,7 @@ import {ArrowLeft, Plus, AlertTriangle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import ExpenseFormCard from '../../features/expense/organisms/ExpenseFormCard';
 import DeadlineRequestModal from '../../features/approval/organisms/DeadlineRequestModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
@@ -16,8 +17,6 @@ const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   addItemBtn: "w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border flex items-center justify-center gap-2 mb-4",
   guardarBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer mt-3",
   cancelarBtn: "w-full py-3 rounded-xl font-bold font-nunito text-base cursor-pointer mt-2 border",
@@ -53,8 +52,10 @@ function RegisterExpensePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(id))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>{isInternationalExpense ? 'Gastos fuera de Bolivia' : 'Ingresa los datos de tus gastos'}</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>{isInternationalExpense ? 'Gastos Internacionales' : 'Registro de Gastos'}</h1>
+        <PageHeader
+          title={isInternationalExpense ? 'Gastos Internacionales' : 'Registro de Gastos'}
+          subtitle={isInternationalExpense ? 'Registra los gastos realizados fuera de Bolivia.' : 'Ingresa los datos de los gastos de tu viaje.'}
+        />
         {isPending && (
           <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2" style={{backgroundColor: '#ffd700aa', color: '#7a5900'}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.

@@ -3,6 +3,7 @@ import {ArrowLeft, Target, MapPin, LocateFixed} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
 import TripPolicies from '../../features/trip/molecules/TripPolicies';
 import TripCreatedModal from '../../features/trip/organisms/TripCreatedModal';
@@ -18,8 +19,6 @@ const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-md font-semibold font-inter uppercase mb-3 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   grid: "grid grid-cols-1 md:grid-cols-2 gap-8",
   formCard: "rounded-2xl p-6 flex flex-col gap-5 shadow-lg",
   badgeWrapper: "flex items-center gap-3 mb-2 w-fit p-3 rounded-lg",
@@ -63,8 +62,7 @@ function CreateTripPage() {
         <button className={styles.backBtn} onClick={() => navigate(routes.employeeDashboard)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Planificación de Itinerario</p>
-        <h1 className={styles.title} style={{color: COLORS.backgroundSecondary}}>Nuevo Registro de Viaje</h1>
+        <PageHeader title="Nuevo Viaje" subtitle="Completa los datos para planificar tu próximo viaje." />
         <div className={styles.badgeWrapper} style={{backgroundColor: COLORS.backgroundHeader}}>
           <div className={styles.badgeIcon} style={{backgroundColor: COLORS.primary}}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

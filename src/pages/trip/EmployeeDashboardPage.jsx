@@ -2,6 +2,7 @@ import {useNavigate} from 'react-router-dom';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import DraftTripCard from '../../features/trip/organisms/DraftTripCard';
 import InProgressTripCard from '../../features/trip/organisms/InProgressTripCard';
 import RecentTripItem from '../../features/trip/organisms/RecentTripItem';
@@ -18,8 +19,6 @@ import {routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  greeting: "text-3xl font-bold font-inter mb-1",
-  subtitle: "text-md font-inter mb-6",
   sectionLabel: "text-sm font-bold font-inter uppercase mb-8",
   newTripBtn: "flex items-center gap-2 text-white font-bold font-nunito text-md py-2 px-5 rounded-lg cursor-pointer transition-colors w-58 md:w-60",
   headerRow: "flex flex-col md:flex-row md:items-center md:justify-between mb-5",
@@ -66,10 +65,7 @@ function EmployeeDashboardPage() {
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <div className={styles.headerRow}>
-          <div>
-            <h1 className={styles.greeting} style={{color: COLORS.backgroundSecondary}}>Hola, {user?.nombre}</h1>
-            <p className={styles.subtitle} style={{color: COLORS.title}}>Gestiona tus viajes y gastos corporativos aquí.</p>
-          </div>
+          <PageHeader title="Mis Viajes" subtitle="Gestiona tus viajes y rinde tus gastos." />
           <button className={styles.newTripBtn} style={{backgroundColor: COLORS.primary}} onClick={() => navigate(routes.employeeCreateTrip)}>
             <span className="w-8 h-8 text-sm bg-white rounded-full inline-flex items-center justify-center" style={{color: COLORS.primary}}>+</span>
             Crear Nuevo Viaje

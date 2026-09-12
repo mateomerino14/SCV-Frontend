@@ -1,6 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import PendingTripItem from '../../features/approval/organisms/PendingTripItem';
 import EmptyState from '../../components/ui/EmptyState';
 import SkeletonList from '../../components/ui/SkeletonList';
@@ -13,8 +14,6 @@ import {approverPendingTripPath, routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full max-w-3xl mx-auto",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   tabsRow: "flex gap-2 mb-4 flex-wrap",
   tab: "py-1.5 px-3 rounded-full text-xs font-bold font-inter cursor-pointer border text-center transition-colors",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
@@ -37,8 +36,7 @@ function ApproverTripHistoryPage() {
       <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Historial de viajes revisados</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Mis Viajes</h1>
+        <PageHeader title="Historial de Viajes" subtitle="Viajes que ya aprobaste o rechazaste anteriormente." />
         <div className={styles.tabsRow}>
           {tabs.map((tab) => (
             <button key={tab.valor} className={styles.tab} onClick={() => setStatusFilter(tab.valor)}

@@ -3,6 +3,7 @@ import {ArrowLeft, AlertTriangle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import InvoiceDropZone from '../../features/expense/organisms/InvoiceDropZone';
 import InvoicePreviewItem from '../../features/expense/organisms/InvoicePreviewItem';
 import InvoiceExpandedContent from '../../features/expense/organisms/InvoiceExpandedContent';
@@ -20,8 +21,6 @@ const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   card: "rounded-2xl shadow-md p-5 mb-4",
   sectionTitle: "text-xs font-bold font-inter uppercase mb-3",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
@@ -54,8 +53,7 @@ function UploadInvoicePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(id))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Registro de comprobantes fiscales</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Subir Factura</h1>
+        <PageHeader title="Subir Factura" subtitle="Registra un gasto a partir de una factura escaneada." />
         {isPending && (
           <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2 mb-4" style={{backgroundColor: '#ffd700aa', color: '#7a5900'}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.

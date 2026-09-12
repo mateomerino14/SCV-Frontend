@@ -1,6 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
 import PendingTripItem from '../../features/approval/organisms/PendingTripItem';
 import EmptyState from '../../components/ui/EmptyState';
@@ -16,8 +17,6 @@ import {approverPendingTripPath, routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full max-w-3xl mx-auto",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
   totalText: "text-xs font-inter mb-3",
 };
@@ -34,8 +33,7 @@ function ApproverPendingTripsPage() {
       <Navbar text="Aprobación de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Viajes por aprobar</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Viajes Pendientes</h1>
+        <PageHeader title="Viajes Pendientes" subtitle="Viajes aprobados por el supervisor, a la espera de tu aprobación previa a tesorería." />
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters} hideStatusTabs />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''} pendiente{total !== 1 ? 's' : ''}</p>}
