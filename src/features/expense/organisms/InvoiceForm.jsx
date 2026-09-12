@@ -44,13 +44,16 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
           ))}
         </div>
       </div>
-      {fieldsConfig.map(({key, label, type, required}) => (
-        <ExpenseField key={key} label={`${label}${!required ? ' (Opcional)' : ''}`} error={fieldErrors[key]}>
-          <input value={data[key] || ''} type={type} inputMode={key === 'monto' ? 'decimal' : 'text'} disabled={saved}
-            className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, opacity: saved ? 0.6 : 1}}
-            onChange={(event) => handleFieldChange(key, event.target.value)} />
-        </ExpenseField>
-      ))}
+      {fieldsConfig.map(({key, label, type, required}) => {
+        const isLockedDate = key === 'fecha_emision' && data.fecha_emision_valida;
+        return (
+          <ExpenseField key={key} label={`${label}${!required ? ' (Opcional)' : ''}`} error={fieldErrors[key]}>
+            <input value={data[key] || ''} type={type} inputMode={key === 'monto' ? 'decimal' : 'text'} disabled={saved || isLockedDate}
+              className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, opacity: (saved || isLockedDate) ? 0.6 : 1}}
+              onChange={(event) => handleFieldChange(key, event.target.value)} />
+          </ExpenseField>
+        );
+      })}
       <ExpenseField label={`IVA ${vatPercentage > 0 ? `(${vatPercentage}%)` : '(No aplica)'}`}>
         <input value={data.iva || '0.00'} readOnly type="text" className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, cursor: 'default'}} />
       </ExpenseField>
