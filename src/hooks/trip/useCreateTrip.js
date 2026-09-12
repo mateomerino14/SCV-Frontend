@@ -9,6 +9,7 @@ function useCreateTrip(user) {
   const [endDate, setEndDate] = useState('');
   const [type, setType] = useState('Nacional');
   const [transport, setTransport] = useState('Terrestre');
+  const [vehiclePlate, setVehiclePlate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -81,6 +82,14 @@ function useCreateTrip(user) {
     setFieldErrors((prev) => ({...prev, endDate: undefined}));
   };
 
+  const handleVehiclePlateChange = (value) => {
+    if (value.length > 20) {
+      return;
+    }
+    setVehiclePlate(value);
+    setFieldErrors((prev) => ({...prev, vehiclePlate: undefined}));
+  };
+
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
       showError('Tu navegador no permite obtener la ubicación actual');
@@ -138,6 +147,9 @@ function useCreateTrip(user) {
     if (startDate && endDate && calculateDays() <= 0) {
       errors.endDate = 'La fecha fin debe ser posterior a la fecha de inicio';
     }
+    if (transport === 'Vehículo de Empresa' && !vehiclePlate.trim()) {
+      errors.vehiclePlate = 'La placa del vehículo es requerida';
+    }
     return errors;
   };
 
@@ -157,6 +169,7 @@ function useCreateTrip(user) {
       fecha_fin: endDate,
       tipo: type,
       transporte: transport,
+      placa_vehiculo: transport === 'Vehículo de Empresa' ? vehiclePlate.trim() : null,
       monto_asignado: totalAmount,
       monto_asignado_usd: totalAmountUsd,
     });
@@ -173,6 +186,7 @@ function useCreateTrip(user) {
     setEndDate('');
     setType('Nacional');
     setTransport('Terrestre');
+    setVehiclePlate('');
   };
 
   return {
@@ -180,6 +194,7 @@ function useCreateTrip(user) {
     startDate, endDate,
     type, setType,
     transport, setTransport,
+    vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,

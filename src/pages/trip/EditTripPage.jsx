@@ -48,6 +48,7 @@ function EditTripPage() {
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const {
     reason, origin, destination, startDate, endDate, type, setType, transport, setTransport,
+    vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
     loading, loadingData, error, fieldErrors, loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
@@ -132,7 +133,7 @@ function EditTripPage() {
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Medio de Transporte</p>
                 <div className={styles.radioBtns}>
-                  {['Terrestre', 'Aéreo'].map((option) => (
+                  {['Terrestre', 'Aéreo', 'Vehículo de Empresa'].map((option) => (
                     <button key={option} className={styles.radioBtn} onClick={() => setTransport(option)}
                       style={{backgroundColor: transport === option ? COLORS.primary : COLORS.dataFields, borderColor: transport === option ? COLORS.primary : COLORS.fields, color: transport === option ? COLORS.background : COLORS.labels}}>
                       {option}
@@ -141,6 +142,12 @@ function EditTripPage() {
                 </div>
               </div>
             </div>
+            {transport === 'Vehículo de Empresa' && (
+              <InputField label="Placa del Vehículo" error={fieldErrors.vehiclePlate}>
+                <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
+                  value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
+              </InputField>
+            )}
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
             <div style={{marginTop: 'auto'}}>
               <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}}

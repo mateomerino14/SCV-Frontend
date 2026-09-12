@@ -46,6 +46,7 @@ function CreateTripPage() {
   const {user} = useCurrentUser();
   const {
     reason, origin, destination, startDate, endDate, type, setType, transport, setTransport,
+    vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd,
     loading, error, fieldErrors, showConfirmation, setShowConfirmation, loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
@@ -118,7 +119,7 @@ function CreateTripPage() {
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Medio de Transporte</p>
                 <div className={styles.radioBtns}>
-                  {['Terrestre', 'Aéreo'].map((option) => (
+                  {['Terrestre', 'Aéreo', 'Vehículo de Empresa'].map((option) => (
                     <button key={option} className={styles.radioBtn} onClick={() => setTransport(option)}
                       style={{backgroundColor: transport === option ? COLORS.primary : COLORS.dataFields, borderColor: transport === option ? COLORS.primary : COLORS.fields, color: transport === option ? COLORS.background : COLORS.labels}}>
                       {option}
@@ -127,6 +128,12 @@ function CreateTripPage() {
                 </div>
               </div>
             </div>
+            {transport === 'Vehículo de Empresa' && (
+              <InputField label="Placa del Vehículo" error={fieldErrors.vehiclePlate}>
+                <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
+                  value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
+              </InputField>
+            )}
             {type === 'Internacional' && days > 0 && (
               <div className={styles.internationalBadge} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <span style={{color: COLORS.primary, fontSize: 17}}>ⓘ</span>

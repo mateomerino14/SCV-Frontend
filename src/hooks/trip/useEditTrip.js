@@ -9,6 +9,7 @@ function useEditTrip(tripId, user) {
   const [endDate, setEndDate] = useState('');
   const [type, setType] = useState('Nacional');
   const [transport, setTransport] = useState('Terrestre');
+  const [vehiclePlate, setVehiclePlate] = useState('');
   const [originalStatus, setOriginalStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -32,6 +33,7 @@ function useEditTrip(tripId, user) {
       setEndDate(trip.fecha_fin || '');
       setType(trip.tipo || 'Nacional');
       setTransport(trip.transporte || 'Terrestre');
+      setVehiclePlate(trip.placa_vehiculo || '');
       setOriginalStatus(trip.estado || null);
     };
     load();
@@ -104,6 +106,14 @@ function useEditTrip(tripId, user) {
     setFieldErrors((prev) => ({...prev, endDate: undefined}));
   };
 
+  const handleVehiclePlateChange = (value) => {
+    if (value.length > 20) {
+      return;
+    }
+    setVehiclePlate(value);
+    setFieldErrors((prev) => ({...prev, vehiclePlate: undefined}));
+  };
+
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
       showError('Tu navegador no permite obtener la ubicación actual');
@@ -161,6 +171,9 @@ function useEditTrip(tripId, user) {
     if (startDate && endDate && calculateDays() <= 0) {
       errors.endDate = 'La fecha fin debe ser posterior a la fecha de inicio';
     }
+    if (transport === 'Vehículo de Empresa' && !vehiclePlate.trim()) {
+      errors.vehiclePlate = 'La placa del vehículo es requerida';
+    }
     return errors;
   };
 
@@ -180,6 +193,7 @@ function useEditTrip(tripId, user) {
       fecha_fin: endDate,
       tipo: type,
       transporte: transport,
+      placa_vehiculo: transport === 'Vehículo de Empresa' ? vehiclePlate.trim() : null,
       monto_asignado: totalAmount,
       monto_asignado_usd: totalAmountUsd,
     });
@@ -198,6 +212,7 @@ function useEditTrip(tripId, user) {
     startDate, endDate,
     type, setType,
     transport, setTransport,
+    vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,
