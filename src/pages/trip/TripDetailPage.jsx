@@ -16,7 +16,6 @@ import SkeletonCard from '../../components/ui/SkeletonCard';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useTripDetail from '../../hooks/trip/useTripDetail';
 import useDeadlineAuthorization from '../../hooks/approval/useDeadlineAuthorization';
-import useTripExcelExport from '../hooks/useTripExcelExport';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 
@@ -31,7 +30,6 @@ function TripDetailPage() {
   const location = useLocation();
   const originRoute = location.state?.from || '/dashboard/empleado';
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const {exportToExcel} = useTripExcelExport();
   const tripDetail = useTripDetail(id);
   const {trip, loading, error} = tripDetail;
   const tripInProgress = trip?.estado === 'EN_CURSO' || (trip?.estado === 'RECHAZADO' && !!trip?.fue_iniciado);
@@ -75,10 +73,10 @@ function TripDetailPage() {
   }
   else if (isFinalApproved) {
     content = <TripFinalApprovedView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate}
-      expenses={tripDetail.expenses} nationalExpenses={tripDetail.nationalExpenses} internationalExpenses={tripDetail.internationalExpenses}
+      nationalExpenses={tripDetail.nationalExpenses} internationalExpenses={tripDetail.internationalExpenses}
       accumulatedExpense={tripDetail.accumulatedExpense} accumulatedExpenseUsd={tripDetail.accumulatedExpenseUsd}
       exceedsBudget={tripDetail.exceedsBudget} exceedsBudgetUsd={tripDetail.exceedsBudgetUsd}
-      justification={tripDetail.justification} observations={tripDetail.observations} exportToExcel={exportToExcel} />;
+      justification={tripDetail.justification} observations={tripDetail.observations} />;
   }
   else {
     content = <TripActiveExpenseView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate}

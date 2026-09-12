@@ -30,6 +30,28 @@ export const getTripDetail = async (tripId) => {
   }
 };
 
+export const downloadStatementPdf = async (tripId) => {
+  try {
+    const response = await apiClient.get(`/trip/${tripId}/rendicion-pdf`, {responseType: 'blob'});
+    const disposition = response.headers['content-disposition'] || '';
+    const fileNameMatch = disposition.match(/filename="?([^"]+)"?/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Rendicion_${tripId}.pdf`;
+    return {blob: response.data, fileName};
+  }
+  catch (error) {
+    if (error.response?.data instanceof Blob) {
+      const text = await error.response.data.text();
+      try {
+        return {error: JSON.parse(text).error || 'Error al generar la planilla en PDF'};
+      }
+      catch {
+        return {error: 'Error al generar la planilla en PDF'};
+      }
+    }
+    return {error: error.response?.data?.error || 'Error al generar la planilla en PDF'};
+  }
+};
+
 export const confirmCompletion = async (tripId, justification) => {
   try {
     const response = await apiClient.put(`/trip/${tripId}/confirm-completion`, {justificacion: justification});

@@ -4,6 +4,7 @@ import {tripStatusConfig, tripStatusMessages} from '../hooks/useTripStatusConfig
 import TripInfoCard from '../molecules/TripInfoCard';
 import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
+import useStatementPdfDownload from '../../../hooks/trip/useStatementPdfDownload';
 
 const styles = {
   backBtn: 'flex items-center gap-1 cursor-pointer mb-4 w-fit',
@@ -13,11 +14,13 @@ const styles = {
   justificationLabel: 'text-xs font-bold font-inter uppercase mb-2',
   textarea: 'w-full rounded-xl p-3 text-sm font-inter outline-none border resize-none',
   exportBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer flex items-center justify-center gap-2 mb-4',
+  downloadError: 'text-xs font-inter italic text-center -mt-2 mb-4',
   statusBadge: 'text-xs font-semibold font-inter px-3 py-2 rounded-xl text-center mb-4',
 };
 
-function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navigate, expenses, nationalExpenses, internationalExpenses, accumulatedExpense, accumulatedExpenseUsd, exceedsBudget, exceedsBudgetUsd, justification, observations, exportToExcel}) {
+function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navigate, nationalExpenses, internationalExpenses, accumulatedExpense, accumulatedExpenseUsd, exceedsBudget, exceedsBudgetUsd, justification, observations}) {
   const config = tripStatusConfig[trip.estado];
+  const {downloading, error: downloadError, handleDownload} = useStatementPdfDownload(tripId);
 
   return (
     <>
@@ -53,10 +56,11 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
             style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
         </div>
       )}
-      <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses)}>
+      <button className={styles.exportBtn} style={{backgroundColor: downloading ? COLORS.fields : COLORS.primary, color: COLORS.background}} onClick={handleDownload} disabled={downloading}>
         <Download size={16} />
-        Exportar Planilla Excel
+        {downloading ? 'Generando PDF...' : 'Descargar Planilla PDF'}
       </button>
+      {downloadError && <p className={styles.downloadError} style={{color: COLORS.secondary}}>{downloadError}</p>}
       <p className={styles.statusBadge} style={{backgroundColor: config?.bg, color: config?.color}}>{tripStatusMessages[trip.estado]}</p>
     </>
   );

@@ -165,7 +165,7 @@ function SupervisorExpenseReviewDetailPage() {
         )}
         <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
         {expenses.length > 0 && (
-          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses)}>
+          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, justification?.descripcion)}>
             <Download size={16} />
             Exportar Planilla Excel
           </button>

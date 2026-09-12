@@ -167,7 +167,7 @@ function styleInfoValue(cell, value) {
 }
 
 function useTripExcelExport() {
-  const exportToExcel = async (trip, expenses) => {
+  const exportToExcel = async (trip, expenses, justificationText) => {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('RENDICION');
     const totalCols = 15;
@@ -451,6 +451,17 @@ function useTripExcelExport() {
     currentRow += 1;
     sheet.getCell(currentRow, 1).value = 'OBSERVACIONES:';
     sheet.getCell(currentRow, 1).font = {bold: true};
+    currentRow += 1;
+    if (justificationText) {
+      sheet.mergeCells(currentRow, 1, currentRow, totalCols);
+      const observationsCell = sheet.getCell(currentRow, 1);
+      observationsCell.value = justificationText;
+      observationsCell.font = {size: 9};
+      observationsCell.alignment = {horizontal: 'left', vertical: 'top', wrapText: true};
+      observationsCell.border = thinBorder;
+      sheet.getRow(currentRow).height = estimateRowHeight([[justificationText, totalCols * 10]]);
+      currentRow += 1;
+    }
     const signatureBlocks = [
       {startCol: 1, endCol: 3, label: 'Preparado por', role: 'Responsable'},
       {startCol: 4, endCol: 6, label: 'Vo/ Bo', role: 'Jefe de Area'},
