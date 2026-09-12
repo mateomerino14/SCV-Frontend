@@ -26,6 +26,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
   const totalIue = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_iue || 0), 0);
   const totalIt = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_it || 0), 0);
   const totalCost = expenses.reduce((sum, expense) => sum + parseFloat(expense.importe_costo || expense.monto_total || 0), 0);
+  const hasAlcohol = expenses.some((expense) => expense.tiene_alcohol);
 
   return (
     <div className={styles.section}>
@@ -34,6 +35,9 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
         Gastos sin Factura (Bs)
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos varios sin respaldo de factura oficial</p>
+      {hasAlcohol && (
+        <p className={styles.subtitle} style={{color: '#856404'}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+      )}
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <table className={styles.table}>
           <thead>
@@ -50,7 +54,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
               const iue = parseFloat(expense.retencion_iue || 0);
               const itTax = parseFloat(expense.retencion_it || 0);
               const cost = parseFloat(expense.importe_costo || amount);
-              const bg = index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader;
+              const bg = expense.tiene_alcohol ? '#fef3cd' : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
               const subitems = expense.Gasto_Subitem || [];
               let description = expense.descripcion || '—';
               let descriptionColor = COLORS.labels;
