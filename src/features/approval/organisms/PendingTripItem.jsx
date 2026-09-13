@@ -7,8 +7,8 @@ import TripRoute from '../../trip/atoms/TripRoute';
 import TripTypeBadge from '../../trip/atoms/TripTypeBadge';
 import TransportIcon from '../atoms/TransportIcon';
 import TripActionButtons from '../molecules/TripActionButtons';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const statusPendingByField = {
   id_supervisor_asignado: 'EN_REVISION_VIAJE',

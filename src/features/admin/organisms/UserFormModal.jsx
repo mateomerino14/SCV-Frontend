@@ -7,8 +7,8 @@ import PositionSelector from '../molecules/PositionSelector';
 import RoleSelector from '../molecules/RoleSelector';
 import {COLORS} from '../../../constants';
 import useUserFormModal from '../hooks/useUserFormModal';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',

@@ -1,7 +1,7 @@
 import {COLORS} from '../../../constants';
 import StatusBadge from '../atoms/StatusBadge';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   headerRow: "flex items-center gap-3 mb-3",

@@ -1,6 +1,7 @@
 import {motion} from 'framer-motion';
 import {useNavigate} from 'react-router-dom';
 import {COLORS} from '../../../constants';
+import {tripIcon} from '../../../constants/defaultImages';
 import {routes, tripPath} from '../../../constants/routes';
 import {formatDateRange} from '../../../utils/dateFormatter';
 import TripTypeBadge from '../atoms/TripTypeBadge';
@@ -72,7 +73,7 @@ function RecentTripItem({trip, from}) {
       <div className={styles.left}>
         <div className={styles.imageWrapper} style={{backgroundColor: COLORS.fields}}>
           <img
-            src="https://thumbs.dreamstime.com/b/icono-de-glifo-negro-para-viajes-negocios-reuni%C3%B3n-trabajo-fly-work-viaje-internacional-corporativo-un-pa%C3%ADs-extranjero-222264681.jpg"
+            src={tripIcon}
             alt="Imagen por Defecto" className="h-20 rounded-lg" />
         </div>
         <div className={styles.info}>

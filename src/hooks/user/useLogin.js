@@ -86,6 +86,9 @@ function useLogin() {
       if (data.error?.includes('suspendida')) {
         setFieldErrors({password: 'Tu cuenta está suspendida, contacta al administrador.'});
       }
+      else if (data.error?.includes('Demasiados intentos')) {
+        setFieldErrors({password: data.error});
+      }
       else {
         setFieldErrors({password: 'El correo o la contraseña son incorrectos'});
       }

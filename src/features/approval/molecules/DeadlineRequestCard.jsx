@@ -3,8 +3,8 @@ import {Calendar} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateTime, formatDateRange} from '../../../utils/dateFormatter';
 import TripRoute from '../../trip/atoms/TripRoute';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   card: "rounded-2xl p-4 shadow-sm flex flex-col h-full",

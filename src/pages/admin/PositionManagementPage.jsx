@@ -3,6 +3,7 @@ import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
+import {positionImage} from '../../constants/defaultImages';
 import PositionFormModal from '../../features/admin/organisms/PositionFormModal';
 import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -12,7 +13,6 @@ import usePositionManagement from '../../hooks/admin/usePositionManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 
-const positionImage = "https://i.pinimg.com/474x/92/59/28/9259282c3e36ed39f345a91a1a182041.jpg";
 
 const styles = {
   page: 'min-h-screen flex flex-col',

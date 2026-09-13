@@ -1,8 +1,8 @@
 import {Pencil} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ProfileRoleBadge from '../molecules/ProfileRoleBadge';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   card: 'rounded-2xl p-6 shadow-sm border flex flex-col items-center h-fit',

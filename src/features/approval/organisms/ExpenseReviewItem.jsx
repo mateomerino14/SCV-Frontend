@@ -7,8 +7,8 @@ import {alertConfig, tripStatusConfig} from '../hooks/useTripStatusConfig';
 import TripRoute from '../../trip/atoms/TripRoute';
 import TransportIcon from '../atoms/TransportIcon';
 import TripActionButtons from '../molecules/TripActionButtons';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   card: 'rounded-2xl shadow-sm overflow-hidden flex flex-col',

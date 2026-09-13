@@ -11,8 +11,8 @@ import SkeletonList from '../../components/ui/SkeletonList';
 import useUserManagement from '../../hooks/admin/useUserManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import {avatarDefault} from '../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   page: 'min-h-screen flex flex-col',
