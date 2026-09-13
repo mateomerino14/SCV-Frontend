@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {ClipboardCheck, Briefcase, Plane, User, Settings, LogOut, Wallet} from 'lucide-react';
+import {ClipboardCheck, Briefcase, Plane, User, Settings, LogOut, Wallet, Wine} from 'lucide-react';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import useIsTreasurer from '../../hooks/user/useIsTreasurer';
@@ -27,6 +27,7 @@ const styles = {
 
 const approvalSection = [
   {path: routes.approverReviews, label: 'Revisiones Pendientes', icon: ClipboardCheck},
+  {path: routes.approverAlcoholReviews, label: 'Revisión por Alcohol', icon: Wine},
 ];
 
 const treasurySection = [

@@ -74,7 +74,7 @@ function ExpenseDetailPage() {
   const hasSubitems = subitems.length > 0;
   const backRoute = location.state?.from || (expense.id_viaje ? tripPath(expense.id_viaje) : '/dashboard/empleado');
   const originPath = location.state?.from || '';
-  const isReviewContext = originPath.includes('/supervisor/') || originPath.includes('/revisor/');
+  const isReviewContext = originPath.includes('/supervisor/') || originPath.includes('/revisor/') || originPath.includes('/aprobador/');
   const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && !isReviewContext && expense.Viaje?.estado === 'APROBADO_FINAL';
   const hasWithholdings = !isInternational && (expense.tipo === 'C' || expense.tipo === 'S') && (parseFloat(expense.retencion_rc_iva || 0) > 0 || parseFloat(expense.retencion_iue || 0) > 0 || parseFloat(expense.retencion_it || 0) > 0);
   let vat = null;

@@ -17,6 +17,7 @@ export const routes = {
   supervisorProfile: '/dashboard/supervisor/perfil',
   supervisorSettings: '/dashboard/supervisor/configuracion',
   approverReviews: '/dashboard/aprobador/revisiones',
+  approverAlcoholReviews: '/dashboard/aprobador/revision-alcohol',
   approverPendingTrips: '/dashboard/aprobador/viajes-pendientes',
   approverTripHistory: '/dashboard/aprobador/viajes-historial',
   approverProfile: '/dashboard/aprobador/perfil',
@@ -70,6 +71,14 @@ export function supervisorExpenseDetailPath(expenseId) {
 
 export function approverPendingTripPath(tripId) {
   return `/dashboard/aprobador/viaje-previo/${tripId}`;
+}
+
+export function approverAlcoholReviewPath(tripId) {
+  return `/dashboard/aprobador/revision-alcohol/${tripId}`;
+}
+
+export function approverExpenseDetailPath(expenseId) {
+  return `/dashboard/aprobador/gasto/${expenseId}`;
 }
 
 export function reviewerReviewPath(tripId) {

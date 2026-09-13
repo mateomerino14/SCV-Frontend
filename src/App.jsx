@@ -27,6 +27,8 @@ import SupervisorExpenseReviewDetailPage from './pages/approval/SupervisorExpens
 import ApproverPendingTripsPage from './pages/approval/ApproverPendingTripsPage';
 import ApproverTripHistoryPage from './pages/approval/ApproverTripHistoryPage';
 import ApproverReviewsPage from './pages/approval/ApproverReviewsPage';
+import ApproverAlcoholReviewsPage from './pages/approval/ApproverAlcoholReviewsPage';
+import ApproverAlcoholReviewDetailPage from './pages/approval/ApproverAlcoholReviewDetailPage';
 import ApproverTripReviewDetailPage from './pages/approval/ApproverTripReviewDetailPage';
 import ReviewerReviewsPage from './pages/approval/ReviewerReviewsPage';
 import ReviewerReviewDetailPage from './pages/approval/ReviewerReviewDetailPage';
@@ -107,6 +109,9 @@ function App() {
         <Route path="/dashboard/supervisor/perfil" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/supervisor/configuracion" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/revisiones" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverReviewsPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/aprobador/revision-alcohol" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverAlcoholReviewsPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/aprobador/revision-alcohol/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverAlcoholReviewDetailPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/aprobador/gasto/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ExpenseDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/viajes-pendientes" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverPendingTripsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/viajes-historial" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverTripHistoryPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/viaje-previo/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverTripReviewDetailPage /></PageTransition></ProtectedRoute>} />
