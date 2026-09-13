@@ -21,6 +21,7 @@ const categories = [
       {value: 'GASTOS', label: 'Todos los de esta categoría'},
       {value: 'EN_CURSO', label: 'En Curso'},
       {value: 'EN_REVISION', label: 'En Revisión'},
+      {value: 'EN_REVISION_APROBADOR', label: 'Revisión por Alcohol'},
       {value: 'APROBADO_SUPERVISOR', label: 'Apr. Supervisor'},
       {value: 'APROBADO_FINAL', label: 'Aprobado'},
       {value: 'RECHAZADO_GASTOS', label: 'Rechazado'},

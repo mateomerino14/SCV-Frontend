@@ -27,6 +27,7 @@ const styles = {
 
 const statusConfig = {
   EN_REVISION: {label: 'En Revisión', bg: COLORS.error, color: COLORS.secondary},
+  EN_REVISION_APROBADOR: {label: 'Revisión por Alcohol', bg: '#f8d7da', color: '#721c24'},
   APROBADO_SUPERVISOR: {label: 'Apr. Preliminar', bg: '#85aff3ab', color: '#000a65'},
   APROBADO_APROBADOR: {label: 'Apr. Aprobador', bg: '#85aff3ab', color: '#000a65'},
   APROBADO_FINAL: {label: 'Aprobado', bg: '#d4edda', color: '#155724'},
