@@ -6,19 +6,23 @@ import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
 import useStatementPdfDownload from '../../../hooks/trip/useStatementPdfDownload';
 
+import {formatDateShort} from '../../../utils/dateFormatter';
+
 const styles = {
   backBtn: 'flex items-center gap-1 cursor-pointer mb-4 w-fit',
   card: 'rounded-2xl p-5 shadow-md mb-4 border',
   sectionTitle: 'text-xs font-bold font-inter uppercase mb-3',
   sectionTitleInter: 'text-xs font-bold font-inter uppercase mb-3 flex items-center gap-2',
   justificationLabel: 'text-xs font-bold font-inter uppercase mb-2',
+  justificationItem: 'mb-3',
+  itemLabel: 'text-sm font-semibold font-inter mb-2',
   textarea: 'w-full rounded-xl p-3 text-sm font-inter outline-none border resize-none',
   exportBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer flex items-center justify-center gap-2 mb-4',
   downloadError: 'text-xs font-inter italic text-center -mt-2 mb-4',
   statusBadge: 'text-xs font-semibold font-inter px-3 py-2 rounded-xl text-center mb-4',
 };
 
-function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navigate, nationalExpenses, internationalExpenses, accumulatedExpense, accumulatedExpenseUsd, exceedsBudget, exceedsBudgetUsd, justification, observations}) {
+function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navigate, nationalExpenses, internationalExpenses, accumulatedExpense, accumulatedExpenseUsd, totalExceeds, totalExceedsUsd, exceededDays = [], exceedsHotels, dayJustifications = {}, observations}) {
   const config = tripStatusConfig[trip.estado];
   const {downloading, error: downloadError, handleDownload} = useStatementPdfDownload(tripId);
 
@@ -48,12 +52,24 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
         </div>
       )}
       <TripBalanceSummary trip={trip} accumulatedExpense={accumulatedExpense} accumulatedExpenseUsd={accumulatedExpenseUsd}
-        exceedsBudget={exceedsBudget} exceedsBudgetUsd={exceedsBudgetUsd} isInternational={isInternational} />
-      {(exceedsBudget || exceedsBudgetUsd) && justification && (
+        exceedsBudget={totalExceeds} exceedsBudgetUsd={totalExceedsUsd} isInternational={isInternational} />
+      {(exceededDays.length > 0 || exceedsHotels) && (
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
-          <p className={styles.justificationLabel} style={{color: COLORS.text_enviroment_types}}>Justificación de Reembolso</p>
-          <textarea className={styles.textarea} rows={4} value={justification} readOnly
-            style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+          <p className={styles.justificationLabel} style={{color: COLORS.text_enviroment_types}}>Justificación de Excesos</p>
+          {exceededDays.map((day) => dayJustifications[day.fecha] && (
+            <div key={day.fecha} className={styles.justificationItem}>
+              <p className={styles.itemLabel} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)}</p>
+              <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
+                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+            </div>
+          ))}
+          {exceedsHotels && dayJustifications.HOTEL && (
+            <div className={styles.justificationItem}>
+              <p className={styles.itemLabel} style={{color: COLORS.secondary}}>Hoteles</p>
+              <textarea className={styles.textarea} rows={3} value={dayJustifications.HOTEL} readOnly
+                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+            </div>
+          )}
         </div>
       )}
       <button className={styles.exportBtn} style={{backgroundColor: downloading ? COLORS.fields : COLORS.primary, color: COLORS.background}} onClick={handleDownload} disabled={downloading}>

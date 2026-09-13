@@ -52,9 +52,9 @@ export const downloadStatementPdf = async (tripId) => {
   }
 };
 
-export const confirmCompletion = async (tripId, justification) => {
+export const confirmCompletion = async (tripId, justifications) => {
   try {
-    const response = await apiClient.put(`/trip/${tripId}/confirm-completion`, {justificacion: justification});
+    const response = await apiClient.put(`/trip/${tripId}/confirm-completion`, {justificaciones: justifications});
     return response.data;
   }
   catch (error) {

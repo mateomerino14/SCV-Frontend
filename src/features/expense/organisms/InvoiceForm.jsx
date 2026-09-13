@@ -1,5 +1,6 @@
 import {COLORS} from '../../../constants';
 import ExpenseField from '../atoms/ExpenseField';
+import CategorySelector from '../molecules/CategorySelector';
 import useInvoiceForm from '../../../hooks/expense/useInvoiceForm';
 
 const styles = {
@@ -25,7 +26,7 @@ const fieldsConfig = [
   {key: 'monto', label: 'Monto', type: 'text', required: true},
 ];
 
-function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved = false}) {
+function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved = false, categories = []}) {
   const {totalAmount, vatPercentage, handleFieldChange, handleDocTypeChange} = useInvoiceForm(data, onChange, saved);
 
   return (
@@ -44,6 +45,8 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
           ))}
         </div>
       </div>
+      <CategorySelector categories={categories} categoryId={data.id_categoria_gasto} onChange={(id) => handleFieldChange('id_categoria_gasto', id)}
+        error={fieldErrors.id_categoria_gasto} disabled={saved} />
       {fieldsConfig.map(({key, label, type, required}) => {
         const isLockedDate = key === 'fecha_emision' && data.fecha_emision_valida;
         return (

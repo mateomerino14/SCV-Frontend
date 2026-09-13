@@ -1,7 +1,7 @@
 import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {registerExpensePath, uploadInvoicePath} from '../../../constants/routes';
-import {formatDateRange} from '../../../utils/dateFormatter';
+import {formatDateRange, formatDateShort} from '../../../utils/dateFormatter';
 import {tripStatusConfig, tripStatusMessages} from '../hooks/useTripStatusConfig';
 import TripStatusBadge from '../atoms/TripStatusBadge';
 import TripTypeBadge from '../atoms/TripTypeBadge';
@@ -28,6 +28,7 @@ const styles = {
   expensesHeader: 'flex items-center justify-between mb-3',
   showAll: 'text-xs font-bold font-inter cursor-pointer',
   justificationLabel: 'text-xs font-bold font-inter uppercase mb-2',
+  justificationItem: 'mb-3',
   excessAmount: 'text-sm font-semibold font-inter mb-2',
   textarea: 'w-full rounded-xl p-3 text-sm font-inter outline-none border resize-none',
   submitBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-white text-base mt-3',
@@ -40,8 +41,8 @@ const styles = {
 function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navigate, tripDetail, deadline}) {
   const {
     expenses, nationalExpenses, internationalExpenses, displayedNationalExpenses, displayedInternationalExpenses,
-    accumulatedExpense, accumulatedExpenseUsd, exceedsBudget, exceedsBudgetUsd, tripInProgress,
-    submittingReview, error, justification, setJustification, observations,
+    accumulatedExpense, accumulatedExpenseUsd, totalExceeds, totalExceedsUsd, tripInProgress,
+    submittingReview, error, exceededDays, exceedsHotels, dayJustifications, setDayJustification, observations,
     showAllNational, setShowAllNational, showAllInternational, setShowAllInternational,
     handleRequestSubmitReview, handleRequestDelete,
   } = tripDetail;
@@ -56,15 +57,6 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
   const generalObservations = observations.filter((observation) => !observation.id_gasto);
   const showObservations = trip.estado === 'RECHAZADO' && generalObservations.length > 0;
   const actionsDisabled = deadlineExpired && !hasActiveExtension;
-
-  const excessParts = [];
-  if (exceedsBudget) {
-    excessParts.push(`${Math.abs(parseFloat(trip.monto_asignado) - accumulatedExpense).toFixed(2)} Bs excedidos`);
-  }
-  if (isInternational && exceedsBudgetUsd) {
-    excessParts.push(`${Math.abs(parseFloat(trip.monto_asignado_usd || 0) - accumulatedExpenseUsd).toFixed(2)} USD excedidos`);
-  }
-  const excessText = excessParts.join(' · ');
 
   const navigateToRegister = () => navigate(registerExpensePath(tripId), {state: {fechaFin: trip.fecha_fin}});
   const navigateToUpload = () => navigate(uploadInvoicePath(tripId), {state: {fechaFin: trip.fecha_fin}});
@@ -215,23 +207,49 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       )}
 
       <TripBalanceSummary trip={trip} accumulatedExpense={accumulatedExpense} accumulatedExpenseUsd={accumulatedExpenseUsd}
-        exceedsBudget={exceedsBudget} exceedsBudgetUsd={exceedsBudgetUsd} isInternational={isInternational} />
+        exceedsBudget={totalExceeds} exceedsBudgetUsd={totalExceedsUsd} isInternational={isInternational} />
 
-      {tripInProgress && (exceedsBudget || (isInternational && exceedsBudgetUsd)) && (
+      {tripInProgress && (exceededDays.length > 0 || exceedsHotels) && (
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
-          <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Reembolso</p>
-          <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{excessText}</p>
-          <textarea className={styles.textarea} rows={3} placeholder="Detalle el motivo del exceso de presupuesto..."
-            value={justification} onChange={(event) => setJustification(event.target.value)} disabled={actionsDisabled}
-            style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text, opacity: actionsDisabled ? 0.6 : 1}} />
+          <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Excesos</p>
+          {exceededDays.map((day) => (
+            <div key={day.fecha} className={styles.justificationItem}>
+              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>
+                {formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)
+              </p>
+              <textarea className={styles.textarea} rows={2} placeholder="Detalle el motivo del exceso de este día..."
+                value={dayJustifications[day.fecha] || ''} onChange={(event) => setDayJustification(day.fecha, event.target.value)} disabled={actionsDisabled}
+                style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text, opacity: actionsDisabled ? 0.6 : 1}} />
+            </div>
+          ))}
+          {exceedsHotels && (
+            <div className={styles.justificationItem}>
+              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>Exceso en Hoteles</p>
+              <textarea className={styles.textarea} rows={2} placeholder="Detalle el motivo del exceso en hoteles..."
+                value={dayJustifications.HOTEL || ''} onChange={(event) => setDayJustification('HOTEL', event.target.value)} disabled={actionsDisabled}
+                style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text, opacity: actionsDisabled ? 0.6 : 1}} />
+            </div>
+          )}
         </div>
       )}
 
-      {!tripInProgress && (exceedsBudget || exceedsBudgetUsd) && justification && (
+      {!tripInProgress && (exceededDays.length > 0 || exceedsHotels) && (
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
-          <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Reembolso</p>
-          <textarea className={styles.textarea} rows={4} value={justification} readOnly
-            style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+          <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Excesos</p>
+          {exceededDays.map((day) => dayJustifications[day.fecha] && (
+            <div key={day.fecha} className={styles.justificationItem}>
+              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)}</p>
+              <textarea className={styles.textarea} rows={2} value={dayJustifications[day.fecha]} readOnly
+                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+            </div>
+          ))}
+          {exceedsHotels && dayJustifications.HOTEL && (
+            <div className={styles.justificationItem}>
+              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>Hoteles</p>
+              <textarea className={styles.textarea} rows={2} value={dayJustifications.HOTEL} readOnly
+                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+            </div>
+          )}
         </div>
       )}
 

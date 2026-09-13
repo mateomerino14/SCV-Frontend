@@ -36,7 +36,7 @@ function UploadInvoicePage() {
   const fechaFin = location.state?.fechaFin;
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    invoices, expandedIndex, savingAll, error, saveSummary, showDeleteModal,
+    invoices, categories, expandedIndex, savingAll, error, saveSummary, showDeleteModal,
     hasRequiresAuthorization, allSaved,
     handleAddFiles, handleAddManual, handleSelectInvoice, handleRequestDelete, handleConfirmDelete, handleCancelDelete,
     handleFieldChange, handleManualImageChange, handleAddDetail, handleRemoveDetail, handleSave,
@@ -70,7 +70,7 @@ function UploadInvoicePage() {
                 {invoice.loading && <p className="text-xs font-inter text-center py-4" style={{color: COLORS.labels}}>Extrayendo datos de la factura...</p>}
                 {invoice.error && <p className="text-xs font-inter italic text-center py-2" style={{color: COLORS.secondary}}>{invoice.error}</p>}
                 {invoice.data && (
-                  <InvoiceExpandedContent invoice={invoice} index={index}
+                  <InvoiceExpandedContent invoice={invoice} index={index} categories={categories}
                     onFieldChange={handleFieldChange} onImageChange={handleManualImageChange}
                     onAddDetail={handleAddDetail} onRemoveDetail={handleRemoveDetail} />
                 )}

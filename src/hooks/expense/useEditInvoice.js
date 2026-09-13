@@ -1,10 +1,11 @@
 import {useState, useEffect} from 'react';
-import {getExpenseDetail} from '../../services/expense/expenseService';
+import {getExpenseDetail, getCategories} from '../../services/expense/expenseService';
 import {updateInvoice} from '../../services/expense/invoiceService';
 import {compressImage} from '../../utils/imageCompressor';
 
 function useEditInvoice(expenseId) {
   const [data, setData] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
@@ -15,6 +16,16 @@ function useEditInvoice(expenseId) {
   const [saved, setSaved] = useState(false);
   const [tripId, setTripId] = useState(null);
   const [manuallyModified, setManuallyModified] = useState(false);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const categoriesData = await getCategories();
+      if (!categoriesData.error) {
+        setCategories(categoriesData);
+      }
+    };
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -54,6 +65,7 @@ function useEditInvoice(expenseId) {
         monto_total: totalAmountText,
         tipo_doc: expenseData.tipo || 'F',
         detalle: invoice?.Detalle_Factura || [],
+        id_categoria_gasto: expenseData.id_categoria || null,
       });
       if (expenseData.Imagen?.url_archivo) {
         setExistingImage(expenseData.Imagen.url_archivo);
@@ -120,6 +132,9 @@ function useEditInvoice(expenseId) {
     if (!data?.monto || parseFloat(data.monto) <= 0) {
       errors.monto = 'El monto es requerido y debe ser mayor a 0';
     }
+    if (!data?.id_categoria_gasto) {
+      errors.id_categoria_gasto = 'La categoría es requerida';
+    }
     return errors;
   };
 
@@ -154,6 +169,7 @@ function useEditInvoice(expenseId) {
 
   return {
     data,
+    categories,
     imagePreview,
     existingImage,
     loading,

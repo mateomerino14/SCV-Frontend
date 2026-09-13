@@ -75,8 +75,9 @@ function TripDetailPage() {
     content = <TripFinalApprovedView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate}
       nationalExpenses={tripDetail.nationalExpenses} internationalExpenses={tripDetail.internationalExpenses}
       accumulatedExpense={tripDetail.accumulatedExpense} accumulatedExpenseUsd={tripDetail.accumulatedExpenseUsd}
-      exceedsBudget={tripDetail.exceedsBudget} exceedsBudgetUsd={tripDetail.exceedsBudgetUsd}
-      justification={tripDetail.justification} observations={tripDetail.observations} />;
+      totalExceeds={tripDetail.totalExceeds} totalExceedsUsd={tripDetail.totalExceedsUsd}
+      exceededDays={tripDetail.exceededDays} exceedsHotels={tripDetail.exceedsHotels} dayJustifications={tripDetail.dayJustifications}
+      observations={tripDetail.observations} />;
   }
   else {
     content = <TripActiveExpenseView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate}

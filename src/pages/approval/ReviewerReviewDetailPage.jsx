@@ -22,6 +22,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useReviewerReviewDetail from '../../hooks/approval/useReviewerReviewDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import useTripExcelExport from '../hooks/useTripExcelExport';
+import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {reviewerExpenseDetailPath, reviewerReviewPath} from '../../constants/routes';
 
@@ -113,7 +114,7 @@ function ReviewerReviewDetailPage() {
 
   const isPending = trip.estado === 'APROBADO_SUPERVISOR';
   const canAct = isPending && !actionCompleted;
-  const justification = (data.comentarios || []).find((comment) => comment.tipo === 'JUSTIFICACION');
+  const {map: dayJustifications, list: dayJustificationsList} = buildDayJustifications(data.comentarios);
 
   let successMessage = 'Rendición rechazada correctamente';
   let successBg = '#ffa7a8aa';
@@ -152,10 +153,10 @@ function ReviewerReviewDetailPage() {
         )}
 
         <ExpenseSettlementCard
-          amount={data.excedePresupuesto ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
-          exceeds={data.excedePresupuesto} isInternational={isInternational}
-          amountUsd={data.excedePresupuestoUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
-          exceedsUsd={data.excedePresupuestoUsd} justification={justification} />
+          amount={data.excedeTotal ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
+          exceeds={data.excedeTotal} isInternational={isInternational}
+          amountUsd={data.excedeTotalUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
+          exceedsUsd={data.excedeTotalUsd} exceededDays={data.diasExcedidos} exceedsHotels={data.excedeHoteles} dayJustifications={dayJustifications} />
 
         <ExpenseAlertsRow alerts={data.alertas} />
 
@@ -173,7 +174,7 @@ function ReviewerReviewDetailPage() {
         <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
 
         {expenses.length > 0 && (
-          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, justification?.descripcion)}>
+          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, dayJustificationsList)}>
             <Download size={16} />
             Exportar Excel
           </button>

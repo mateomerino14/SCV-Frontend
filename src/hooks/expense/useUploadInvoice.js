@@ -1,9 +1,11 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {extractInvoice, saveInvoice} from '../../services/expense/invoiceService';
+import {getCategories} from '../../services/expense/expenseService';
 import {compressImage} from '../../utils/imageCompressor';
 
 function useUploadInvoice(tripId) {
   const [invoices, setInvoices] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(null);
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [savingAll, setSavingAll] = useState(false);
@@ -11,6 +13,16 @@ function useUploadInvoice(tripId) {
   const [saveSummary, setSaveSummary] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [indexToDelete, setIndexToDelete] = useState(null);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const data = await getCategories();
+      if (!data.error) {
+        setCategories(data);
+      }
+    };
+    loadCategories();
+  }, []);
 
   const showError = (message) => {
     setError(message);
@@ -50,7 +62,7 @@ function useUploadInvoice(tripId) {
           }
           let invoiceData = null;
           if (!data.error) {
-            invoiceData = data;
+            invoiceData = {...data, id_categoria_gasto: null};
           }
           return {
             ...invoice,
@@ -91,6 +103,7 @@ function useUploadInvoice(tripId) {
         monto_total: 0,
         tipo_doc: 'F',
         detalle: [],
+        id_categoria_gasto: null,
       },
       loading: false,
       error: null,
@@ -245,6 +258,9 @@ function useUploadInvoice(tripId) {
     if (!invoice.data.monto || parseFloat(invoice.data.monto) <= 0) {
       errors.monto = 'El monto es requerido y debe ser mayor a 0';
     }
+    if (!invoice.data.id_categoria_gasto) {
+      errors.id_categoria_gasto = 'La categoría es requerida';
+    }
     if (invoice.manual && !invoice.file) {
       errors.imagen = 'Debes subir una imagen o comprobante de la factura';
     }
@@ -321,6 +337,7 @@ function useUploadInvoice(tripId) {
 
   return {
     invoices,
+    categories,
     currentInvoice,
     currentIndex,
     expandedIndex,

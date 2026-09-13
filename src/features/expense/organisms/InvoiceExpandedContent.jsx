@@ -46,7 +46,7 @@ function AutoImageSection({invoice}) {
   );
 }
 
-function InvoiceExpandedContent({invoice, index, onFieldChange, onImageChange, onAddDetail, onRemoveDetail}) {
+function InvoiceExpandedContent({invoice, index, onFieldChange, onImageChange, onAddDetail, onRemoveDetail, categories}) {
   const imageSection = invoice.manual
     ? <ManualImageSection invoice={invoice} index={index} onImageChange={onImageChange} error={invoice.fieldErrors?.image} />
     : <AutoImageSection invoice={invoice} />;
@@ -56,7 +56,7 @@ function InvoiceExpandedContent({invoice, index, onFieldChange, onImageChange, o
         {imageSection}
         <div className={styles.colWrapper}>
           <InvoiceForm data={invoice.data} onChange={(field, value, silent) => onFieldChange(index, field, value, silent)}
-            manuallyModified={invoice.manuallyModified} fieldErrors={invoice.fieldErrors} saved={invoice.saved} />
+            manuallyModified={invoice.manuallyModified} fieldErrors={invoice.fieldErrors} saved={invoice.saved} categories={categories} />
         </div>
         <div className={styles.colWrapper}>
           <InvoiceDetailPanel detail={invoice.data.detalle || []} onAdd={(item) => onAddDetail(index, item)}
@@ -66,7 +66,7 @@ function InvoiceExpandedContent({invoice, index, onFieldChange, onImageChange, o
       <div className={styles.mobileStack}>
         {imageSection}
         <InvoiceForm data={invoice.data} onChange={(field, value, silent) => onFieldChange(index, field, value, silent)}
-          manuallyModified={invoice.manuallyModified} fieldErrors={invoice.fieldErrors} saved={invoice.saved} />
+          manuallyModified={invoice.manuallyModified} fieldErrors={invoice.fieldErrors} saved={invoice.saved} categories={categories} />
         <InvoiceDetailPanel detail={invoice.data.detalle || []} onAdd={(item) => onAddDetail(index, item)}
           onRemove={(detailIndex) => onRemoveDetail(index, detailIndex)} saved={invoice.saved} />
       </div>

@@ -24,6 +24,7 @@ import useApproverAlcoholReviewDetail from '../../hooks/approval/useApproverAlco
 import useMenu from '../../hooks/shared/useMenu';
 import useTripExcelExport from '../hooks/useTripExcelExport';
 import getCurrentUserId from '../../utils/getCurrentUserId';
+import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {approverExpenseDetailPath, approverAlcoholReviewPath, routes} from '../../constants/routes';
 
@@ -117,7 +118,7 @@ function ApproverAlcoholReviewDetailPage() {
   const unassigned = !trip.id_aprobador_asignado;
   const isPending = trip.estado === 'EN_REVISION_APROBADOR';
   const canAct = isPending && isMine;
-  const justification = (data.comentarios || []).find((comment) => comment.tipo === 'JUSTIFICACION');
+  const {map: dayJustifications, list: dayJustificationsList} = buildDayJustifications(data.comentarios);
   const goToExpenseDetail = (expenseId) => {
     navigate(approverExpenseDetailPath(expenseId), {state: {from: approverAlcoholReviewPath(id), origenViaje: originRoute}});
   };
@@ -150,10 +151,10 @@ function ApproverAlcoholReviewDetailPage() {
           </div>
         )}
         <ExpenseSettlementCard
-          amount={data.excedePresupuesto ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
-          exceeds={data.excedePresupuesto} isInternational={isInternational}
-          amountUsd={data.excedePresupuestoUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
-          exceedsUsd={data.excedePresupuestoUsd} justification={justification} />
+          amount={data.excedeTotal ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
+          exceeds={data.excedeTotal} isInternational={isInternational}
+          amountUsd={data.excedeTotalUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
+          exceedsUsd={data.excedeTotalUsd} exceededDays={data.diasExcedidos} exceedsHotels={data.excedeHoteles} dayJustifications={dayJustifications} />
         <ExpenseAlertsRow alerts={data.alertas} />
         <ExpenseInvoicedTable expenses={invoicedExpenses} onViewExpense={goToExpenseDetail}
           countObservations={countExpenseObservations} onOpenObservations={openExpenseObservations} />
@@ -165,7 +166,7 @@ function ApproverAlcoholReviewDetailPage() {
         )}
         <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
         {expenses.length > 0 && (
-          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, justification?.descripcion)}>
+          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, dayJustificationsList)}>
             <Download size={16} />
             Exportar Planilla Excel
           </button>
