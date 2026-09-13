@@ -23,6 +23,7 @@ export const routes = {
   approverProfile: '/dashboard/aprobador/perfil',
   approverSettings: '/dashboard/aprobador/configuracion',
   reviewerReviews: '/dashboard/revisor',
+  substitutionRequests: '/dashboard/revisor/reemplazos',
   reviewerDeadlineRequests: '/dashboard/revisor/solicitudes-plazo',
   reviewerProfile: '/dashboard/revisor/perfil',
   reviewerSettings: '/dashboard/revisor/configuracion',

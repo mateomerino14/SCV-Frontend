@@ -47,6 +47,11 @@ function InProgressTripCard({trip}) {
   return (
     <motion.div className={styles.container} whileHover={{y: -3, boxShadow: '0 12px 28px rgba(0,0,0,0.14)'}} transition={{duration: 0.18}}>
       <div className={styles.topSection} style={{backgroundColor: COLORS.backgroundSecondary}}>
+        {trip.esSustitucion && (
+          <span className={styles.badge} style={{backgroundColor: 'rgba(255,255,255,0.25)', color: COLORS.background, marginBottom: 6, display: 'inline-block'}}>
+            RENDICIÓN DE {trip.nombreTitular?.toUpperCase()}
+          </span>
+        )}
         <p className={styles.reason}>{trip.motivo?.toUpperCase()}</p>
         <p className={styles.date} style={{opacity: 0.7}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
         {trip.origen && (

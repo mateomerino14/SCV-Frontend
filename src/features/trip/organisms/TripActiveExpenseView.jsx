@@ -1,4 +1,4 @@
-import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle} from 'lucide-react';
+import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle, Users} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {registerExpensePath, uploadInvoicePath} from '../../../constants/routes';
 import {formatDateRange, formatDateShort} from '../../../utils/dateFormatter';
@@ -38,11 +38,11 @@ const styles = {
   requestBtn: 'w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mt-3 flex items-center justify-center gap-2',
 };
 
-function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navigate, tripDetail, deadline}) {
+function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navigate, tripDetail, deadline, substitution}) {
   const {
     expenses, nationalExpenses, internationalExpenses, displayedNationalExpenses, displayedInternationalExpenses,
     accumulatedExpense, accumulatedExpenseUsd, totalExceeds, totalExceedsUsd, tripInProgress,
-    submittingReview, error, exceededDays, exceedsHotels, dayJustifications, setDayJustification, observations,
+    submittingReview, error, exceededDays, exceedsHotels, isSubstitution, dayJustifications, setDayJustification, observations,
     showAllNational, setShowAllNational, showAllInternational, setShowAllInternational,
     handleRequestSubmitReview, handleRequestDelete,
   } = tripDetail;
@@ -308,6 +308,38 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <AlertTriangle size={15} />
           Solicitar Autorización al Revisor
         </button>
+      )}
+
+      {tripInProgress && !isSubstitution && substitution?.canRequest && (
+        <button className={styles.requestBtn} style={{backgroundColor: COLORS.title, color: COLORS.background}}
+          onClick={substitution.openModal}>
+          <Users size={15} />
+          Solicitar que Otra Persona Rinda por Mí
+        </button>
+      )}
+
+      {tripInProgress && !isSubstitution && substitution?.isPending && (
+        <div className={styles.alertBox} style={{backgroundColor: '#ffd700aa'}}>
+          <p style={{color: '#7a5900', fontFamily: 'Inter', fontSize: 13, fontWeight: 600}}>
+            Tienes una solicitud de reemplazo pendiente de revisión.
+          </p>
+        </div>
+      )}
+
+      {tripInProgress && !isSubstitution && substitution?.isApproved && (
+        <div className={styles.alertBox} style={{backgroundColor: '#d4edda'}}>
+          <p style={{color: '#155724', fontFamily: 'Inter', fontSize: 13, fontWeight: 600}}>
+            Tu solicitud de reemplazo fue aprobada.
+          </p>
+        </div>
+      )}
+
+      {isSubstitution && (
+        <div className={styles.alertBox} style={{backgroundColor: '#e0e7ff'}}>
+          <p style={{color: '#3730a3', fontFamily: 'Inter', fontSize: 13, fontWeight: 600}}>
+            Estás rindiendo este viaje en nombre de {trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}.
+          </p>
+        </div>
       )}
 
       {!tripInProgress && (

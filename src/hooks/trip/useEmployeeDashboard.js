@@ -8,6 +8,7 @@ function useEmployeeDashboard() {
   const [user, setUser] = useState(null);
   const [draftTrips, setDraftTrips] = useState([]);
   const [inProgressTrips, setInProgressTrips] = useState([]);
+  const [substitutionTrips, setSubstitutionTrips] = useState([]);
   const [recentTrips, setRecentTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submittingReview, setSubmittingReview] = useState(null);
@@ -18,6 +19,7 @@ function useEmployeeDashboard() {
     const data = await getDashboard();
     setDraftTrips(data.viajesBorrador || []);
     setInProgressTrips(data.viajesEnCurso || []);
+    setSubstitutionTrips(data.viajesSustitucion || []);
     setRecentTrips(data.viajesRecientes || []);
   };
 
@@ -57,6 +59,7 @@ function useEmployeeDashboard() {
     user,
     draftTrips,
     inProgressTrips,
+    substitutionTrips,
     displayedTrips,
     recentTrips,
     loading,

@@ -5,6 +5,7 @@ import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import DeleteExpenseConfirmModal from '../../features/expense/organisms/DeleteExpenseConfirmModal';
 import SubmitReviewConfirmModal from '../../features/trip/organisms/SubmitReviewConfirmModal';
 import DeadlineRequestModal from '../../features/approval/organisms/DeadlineRequestModal';
+import SubstitutionRequestModal from '../../features/trip/organisms/SubstitutionRequestModal';
 import DeadlineExpiredModal from '../../features/approval/organisms/DeadlineExpiredModal';
 import DeadlineExpiredNoticeModal from '../../features/approval/organisms/DeadlineExpiredNoticeModal';
 import TripDraftView from '../../features/trip/organisms/TripDraftView';
@@ -16,6 +17,7 @@ import SkeletonCard from '../../components/ui/SkeletonCard';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useTripDetail from '../../hooks/trip/useTripDetail';
 import useDeadlineAuthorization from '../../hooks/approval/useDeadlineAuthorization';
+import useSubstitutionRequest from '../../hooks/approval/useSubstitutionRequest';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 
@@ -34,6 +36,7 @@ function TripDetailPage() {
   const {trip, loading, error} = tripDetail;
   const tripInProgress = trip?.estado === 'EN_CURSO' || (trip?.estado === 'RECHAZADO' && !!trip?.fue_iniciado);
   const deadline = useDeadlineAuthorization(id, trip?.fecha_fin, tripInProgress);
+  const substitution = useSubstitutionRequest(id);
 
   if (loading) {
     return (
@@ -81,7 +84,7 @@ function TripDetailPage() {
   }
   else {
     content = <TripActiveExpenseView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate}
-      tripDetail={tripDetail} deadline={deadline} />;
+      tripDetail={tripDetail} deadline={deadline} substitution={substitution} />;
   }
 
   return (
@@ -95,6 +98,8 @@ function TripDetailPage() {
       <DeadlineExpiredNoticeModal isOpen={deadline.showExpiredNotice} onClose={deadline.closeExpiredNotice} />
       <DeadlineRequestModal isOpen={deadline.showModal} onClose={() => deadline.setShowModal(false)} onConfirm={deadline.handleRequest} loading={deadline.submitting} error={deadline.modalError} />
       <DeadlineExpiredModal isOpen={deadline.isApprovedExpired && tripDetail.submitted} onClose={() => {}} message="Tu autorización de plazo ha vencido." />
+      <SubstitutionRequestModal isOpen={substitution.showModal} onClose={substitution.closeModal} onConfirm={substitution.handleRequest}
+        employees={substitution.employees} loading={substitution.submitting} error={substitution.modalError} />
       <Footer />
     </div>
   );

@@ -35,7 +35,7 @@ function EmployeeDashboardPage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    draftTrips, inProgressTrips, displayedTrips, recentTrips, loading,
+    draftTrips, inProgressTrips, substitutionTrips, displayedTrips, recentTrips, loading,
     submittingReview, submitError, tripToConfirm,
     handleRequestSubmitReview, handleCancelSubmitReview, handleConfirmSubmitReview,
   } = useEmployeeDashboard();
@@ -96,8 +96,8 @@ function EmployeeDashboardPage() {
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes en Curso</p>
         <div className="relative">
           <div className={`${styles.scrollRow} scroll-trips`}>
-            {inProgressTrips.length > 0 ? (
-              inProgressTrips.map((trip) => (
+            {inProgressTrips.length > 0 || substitutionTrips.length > 0 ? (
+              [...inProgressTrips, ...substitutionTrips].map((trip) => (
                 <div key={trip.id_viaje} className="snap-start shrink-0 w-full md:w-[450px] flex flex-col">
                   <InProgressTripCard trip={trip} />
                 </div>

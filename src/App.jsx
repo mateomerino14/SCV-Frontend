@@ -33,6 +33,7 @@ import ApproverTripReviewDetailPage from './pages/approval/ApproverTripReviewDet
 import ReviewerReviewsPage from './pages/approval/ReviewerReviewsPage';
 import ReviewerReviewDetailPage from './pages/approval/ReviewerReviewDetailPage';
 import DeadlineAuthorizationRequestsPage from './pages/approval/DeadlineAuthorizationRequestsPage';
+import SubstitutionRequestsPage from './pages/approval/SubstitutionRequestsPage';
 import TreasurerReviewsPage from './pages/approval/TreasurerReviewsPage';
 import TreasurerReviewDetailPage from './pages/approval/TreasurerReviewDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -121,6 +122,7 @@ function App() {
         <Route path="/dashboard/revisor/revision/:id" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><ReviewerReviewDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/gasto/:id" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><ExpenseDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/solicitudes-plazo" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><DeadlineAuthorizationRequestsPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/revisor/reemplazos" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><SubstitutionRequestsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/perfil" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/configuracion" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/tesorero/revisiones" element={<ProtectedRoute><PageTransition><TreasurerReviewsPage /></PageTransition></ProtectedRoute>} />

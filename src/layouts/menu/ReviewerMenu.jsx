@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {ClipboardList, Briefcase, Plane, User, Settings, LogOut, Wallet, AlertTriangle} from 'lucide-react';
+import {ClipboardList, Briefcase, Plane, User, Settings, LogOut, Wallet, AlertTriangle, Users} from 'lucide-react';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import useIsTreasurer from '../../hooks/user/useIsTreasurer';
@@ -28,6 +28,7 @@ const styles = {
 const finalReviewSection = [
   {path: routes.reviewerReviews, label: 'Revisión Final', icon: ClipboardList},
   {path: routes.reviewerDeadlineRequests, label: 'Solicitudes de Plazo', icon: AlertTriangle},
+  {path: routes.substitutionRequests, label: 'Solicitudes de Reemplazo', icon: Users},
 ];
 
 const treasurySection = [
