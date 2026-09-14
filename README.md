@@ -66,6 +66,8 @@ API Backend
 
 Ningún componente de presentación importa directamente un servicio.
 
+Todas las páginas en `App.jsx` (salvo `LoginPage`) se cargan con `React.lazy`, de modo que cada ruta genera su propio fragmento de JavaScript y las librerías pesadas usadas solo por algunas pantallas (ExcelJS, Recharts) no forman parte del paquete inicial.
+
 ## Estructura
 
 ```
@@ -135,7 +137,7 @@ Las rutas con parámetros se construyen mediante funciones de `constants/routes.
 No se emplea una biblioteca de estado global. El estado es local a cada pantalla y se gestiona con hooks nativos dentro de los hooks de negocio.
 
 - **Servidor**: se obtiene en `useEffect` al montar y se refresca tras cada escritura.
-- **Sesión**: el token se persiste en `localStorage`.
+- **Sesión**: el token de acceso vive solo en memoria (`services/shared/tokenStore.js`), nunca en `localStorage`. Al cargar la app, si no hay token en memoria se intenta un refresco silencioso contra `/auth/refresh` usando la cookie `httpOnly` del refresh token, antes de renderizar las rutas protegidas.
 - **Formularios**: se mantienen en el hook, junto con sus errores por campo.
 - **Sondeo**: las bandejas de los roles aprobadores se refrescan cada 30 segundos. Solo la carga inicial activa el indicador esquelético, para que la pantalla no parpadee.
 
