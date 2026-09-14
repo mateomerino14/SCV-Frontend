@@ -22,9 +22,11 @@ VITE_API_URL=http://localhost:5000
 ## Ejecución
 
 ```bash
-npm run dev      # servidor de desarrollo
-npm run build    # compilación para producción
-npm run preview  # previsualización de la compilación
+npm run dev               # servidor de desarrollo
+npm run build              # compilación para producción
+npm run preview             # previsualización de la compilación
+npm run storybook           # documentación interactiva de los componentes de ui/
+npm run build-storybook     # sitio estático de Storybook
 ```
 
 ## Stack
@@ -38,9 +40,10 @@ npm run preview  # previsualización de la compilación
 | Framer Motion | Animaciones de páginas y modales |
 | Axios | Cliente HTTP con interceptores |
 | Recharts | Gráficos del panel administrativo |
-| ExcelJS + FileSaver | Generación y descarga de la planilla |
+| ExcelJS + FileSaver | Generación y descarga de la planilla en Excel |
 | Lucide React | Iconografía |
 | jwt-decode | Lectura del rol desde el token |
+| Storybook | Documentación interactiva de `components/ui/` |
 
 ## Arquitectura
 
@@ -160,17 +163,37 @@ Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
 ### Planilla de rendición
 
-`useTripExcelExport` construye la planilla oficial con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda y cinco bloques de firma.
+`useTripExcelExport` construye la planilla oficial en Excel con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda, la justificación de cada día que excedió la cuota diaria, y cinco bloques de firma.
 
-Los importes de retención se leen de los valores almacenados por el backend; no se recalculan al exportar.
+El empleado descarga en cambio la planilla en **PDF** (no editable) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos se generan a partir de los mismos valores de retención calculados y persistidos por el backend; no se recalculan al exportar.
+
+### Control de gasto diario
+
+El presupuesto se controla día por día contra el `monto_diario` del cargo, no contra el total del viaje. Los gastos de hotel quedan fuera de ese control y se comparan en cambio contra el total asignado. Cuando un día (o el total de hoteles) excede la cuota, `useTripDetail` exige una justificación de texto propia por cada exceso antes de permitir el envío a revisión.
+
+### Revisión adicional por alcohol
+
+Cuando una rendición contiene bebidas alcohólicas, tras la aprobación del supervisor pasa por una revisión adicional del aprobador (`ApproverAlcoholReviewsPage`) antes de llegar al revisor final. Las filas de gasto con alcohol se resaltan en las tablas de revisión.
+
+### Rendición por terceros
+
+Un empleado puede solicitar desde su viaje que otra persona rinda los gastos en su nombre (`useSubstitutionRequest`). El revisor aprueba o rechaza la solicitud (`SubstitutionRequestsPage`); el viaje aparece en el dashboard del sustituto con la etiqueta "Rendición de [nombre]", sin afectar los documentos oficiales, que siempre llevan el nombre del titular original.
 
 ### Digitalización de comprobantes
 
-La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada.
+La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. El campo de fecha de emisión queda bloqueado si la IA la extrajo con formato válido, y editable si vino vacía o mal formada.
 
 ### Control de plazos
 
 `useDeadlineAuthorization` determina si el plazo de carga venció, considerando la tolerancia de cuatro días y las extensiones aprobadas vigentes. Cuando expiró sin autorización, los controles se deshabilitan y se ofrece solicitar una extensión al revisor.
+
+## Documentación de componentes
+
+Los componentes de `components/ui/` (elementos genéricos y transversales, no los de `features/`) están documentados con Storybook. Cada historia describe el propósito del componente y sus variantes principales; los componentes con estado interno (dropdowns, diálogos) incluyen un wrapper interactivo para probarlos en vivo.
+
+```bash
+npm run storybook
+```
 
 ## Convenciones
 
