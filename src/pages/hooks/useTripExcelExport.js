@@ -8,6 +8,11 @@ const vatRate = 0.13;
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
 const infoFill = 'FFEAF3FB';
+
+// Blanquea el placeholder que usa la IA cuando no logra extraer un dato
+function cleanValue(value) {
+  return value === 'No Especificado' ? '' : (value || '');
+}
 const infoLabelColor = 'FF1A5276';
 const nationalRowFill = 'FFF4F9FD';
 const internationalRowFill = 'FFFDEEEE';
@@ -71,9 +76,9 @@ function getExpenseDescription(expense) {
   const hasInvoice = !!expense.Factura;
   if (hasInvoice) {
     const products = (expense.Factura?.Detalle_Factura || [])
-      .map((detail) => `${detail.nombre_producto}${detail.cantidad ? ` x${detail.cantidad}` : ''}`)
+      .map((detail) => `${cleanValue(detail.nombre_producto)}${detail.cantidad ? ` x${detail.cantidad}` : ''}`)
       .join(', ');
-    return (products || expense.descripcion || `Factura N° ${expense.Factura?.numero_factura || ''}`).toUpperCase();
+    return (products || expense.descripcion || `Factura N° ${cleanValue(expense.Factura?.numero_factura)}`).toUpperCase();
   }
   const subitems = expense.Gasto_Subitem || [];
   if (subitems.length > 0) {
@@ -316,8 +321,8 @@ function useTripExcelExport() {
       row.getCell(4).value = detailText;
       row.getCell(4).alignment = {wrapText: true, vertical: 'middle', horizontal: 'left'};
       row.getCell(5).value = oracleType;
-      row.getCell(6).value = expense.Factura?.numero_factura || '';
-      row.getCell(7).value = expense.Proveedor?.numero_doc_fiscal || '';
+      row.getCell(6).value = cleanValue(expense.Factura?.numero_factura);
+      row.getCell(7).value = cleanValue(expense.Proveedor?.numero_doc_fiscal);
       if (hasInvoice) {
         row.getCell(8).value = amount;
         row.getCell(8).numFmt = '#,##0.00';
