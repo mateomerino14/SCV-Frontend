@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import {Mail, Phone, Briefcase, LogOut, Hash, Layers} from 'lucide-react';
+import {Mail, Phone, Briefcase, LogOut, Layers} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -58,7 +58,6 @@ function ProfilePage() {
       </div>
     );
   }
-  const hasCodes = user?.numero_dependencia || user?.numero_seccion;
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -84,7 +83,6 @@ function ProfilePage() {
                   onEditValueChange={(event) => setPhone(event.target.value.replace(/[^0-9]/g, ''))} onStartEdit={() => setEditingPhone(true)}
                   onSave={handleSavePhone} onCancel={handleCancelPhone} saving={saving} inputType="tel" inputMode="numeric" maxLength={8} />
                 <ReadOnlyField icon={Briefcase} label="Cargo" value={user?.Cargo?.nombre} />
-                {user?.numero_dependencia && <ReadOnlyField icon={Hash} label="N° Dependencia" value={user.numero_dependencia} />}
                 {user?.numero_seccion && <ReadOnlyField icon={Layers} label="N° Sección" value={user.numero_seccion} />}
               </div>
             </div>

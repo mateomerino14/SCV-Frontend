@@ -1,10 +1,10 @@
 import {motion, AnimatePresence} from 'framer-motion';
 import {User} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
-import ModalActions from '../../../components/ui/ModalActions';
 import FormField from '../../../components/ui/FormField';
 import PositionSelector from '../molecules/PositionSelector';
 import RoleSelector from '../molecules/RoleSelector';
+import BossSelector from '../molecules/BossSelector';
 import {COLORS} from '../../../constants';
 import useUserFormModal from '../hooks/useUserFormModal';
 import {avatarDefault} from '../../../constants/defaultImages';
@@ -26,7 +26,7 @@ const styles = {
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
-function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, setFormData, positions, loading, error, fieldErrors = {}, setFieldErrors, selectedUser}) {
+function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, setFormData, positions, allUsers = [], loading, error, fieldErrors = {}, setFieldErrors, selectedUser}) {
   const {
     roleOptions, selectedRole, roleMenuOpen, roleMenuPosition, roleTriggerRef, roleMenuRef,
     handleChange, handleToggleRoleMenu, handleSelectRole, onlyLettersRegex, onlyNumbersRegex,
@@ -66,14 +66,14 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   onChange={(event) => handleChange('email_corporativo', event.target.value, null, 100)} />
                 <FormField label="Teléfono (opcional)" placeholder="71234567" maxLength={8} value={formData.telefono} error={fieldErrors.telefono}
                   onChange={(event) => handleChange('telefono', event.target.value, onlyNumbersRegex, 8)} />
-                <FormField label="N° Dependencia" placeholder="Ej: DEP-001" maxLength={50} value={formData.numero_dependencia} error={fieldErrors.numero_dependencia}
-                  onChange={(event) => handleChange('numero_dependencia', event.target.value, null, 50)} />
+                <BossSelector users={allUsers.filter((user) => user.id_usuario !== selectedUser?.id_usuario)} bossId={formData.id_jefe_directo}
+                  error={fieldErrors.id_jefe_directo} onChange={(id) => handleChange('id_jefe_directo', id)} />
                 <FormField label="N° Sección" placeholder="Ej: SEC-01" maxLength={50} value={formData.numero_seccion} error={fieldErrors.numero_seccion}
                   onChange={(event) => handleChange('numero_seccion', event.target.value, null, 50)} />
                 <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={20} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
                   onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 20)} />
                 {isNew && (
-                  <FormField label="Contraseña" type="password" placeholder="Mínimo 6 caracteres" value={formData.contrasenia} error={fieldErrors.contrasenia}
+                  <FormField label="Contraseña" type="password" placeholder="Mínimo 8 caracteres" value={formData.contrasenia} error={fieldErrors.contrasenia}
                     onChange={(event) => handleChange('contrasenia', event.target.value)} />
                 )}
               </div>

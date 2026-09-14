@@ -20,12 +20,8 @@ function useUserManagement() {
     nombre: '', apellido_paterno: '', apellido_materno: '',
     email_corporativo: '', telefono: '', contrasenia: '',
     id_cargo: '', id_rol: 3,
-    numero_dependencia: '', numero_seccion: '', carnet_identidad: '',
+    id_jefe_directo: '', numero_seccion: '', carnet_identidad: '',
   });
-
-  useEffect(() => {
-    load();
-  }, []);
 
   const load = async () => {
     setLoading(true);
@@ -38,6 +34,10 @@ function useUserManagement() {
       setPositions(positionsData);
     }
   };
+
+  useEffect(() => {
+    load();
+  }, []);
 
   const showError = (message) => {
     setError(message);
@@ -109,12 +109,6 @@ function useUserManagement() {
         errors.telefono = 'Máximo 8 dígitos';
       }
     }
-    if (!formData.numero_dependencia.trim()) {
-      errors.numero_dependencia = 'El número de dependencia es requerido';
-    }
-    else if (formData.numero_dependencia.trim().length > 50) {
-      errors.numero_dependencia = 'Máximo 50 caracteres';
-    }
     if (!formData.numero_seccion.trim()) {
       errors.numero_seccion = 'El número de sección es requerido';
     }
@@ -128,8 +122,8 @@ function useUserManagement() {
       if (!formData.contrasenia) {
         errors.contrasenia = 'La contraseña es requerida';
       }
-      else if (formData.contrasenia.length < 6) {
-        errors.contrasenia = 'Mínimo 6 caracteres';
+      else if (formData.contrasenia.length < 8) {
+        errors.contrasenia = 'Mínimo 8 caracteres';
       }
     }
     return errors;
@@ -148,7 +142,7 @@ function useUserManagement() {
       nombre: '', apellido_paterno: '', apellido_materno: '',
       email_corporativo: '', telefono: '', contrasenia: '',
       id_cargo: firstActivePosition?.id_cargo || '', id_rol: 3,
-      numero_dependencia: '', numero_seccion: '', carnet_identidad: '',
+      id_jefe_directo: '', numero_seccion: '', carnet_identidad: '',
     });
     setError('');
     setFieldErrors({});
@@ -166,7 +160,7 @@ function useUserManagement() {
       contrasenia: '',
       id_cargo: user.Cargo?.id_cargo || '',
       id_rol: user.id_rol,
-      numero_dependencia: user.numero_dependencia || '',
+      id_jefe_directo: user.id_jefe_directo || '',
       numero_seccion: user.numero_seccion || '',
       carnet_identidad: user.carnet_identidad || '',
     });
@@ -188,7 +182,7 @@ function useUserManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await createUser({...formData, activo: true});
+    const data = await createUser({...formData, activo: true, id_jefe_directo: formData.id_jefe_directo || null});
     setSavingAction(false);
     if (data.error) {
       showError(data.error);
@@ -215,7 +209,7 @@ function useUserManagement() {
       telefono: formData.telefono?.trim() || null,
       id_cargo: formData.id_cargo,
       id_rol: formData.id_rol,
-      numero_dependencia: formData.numero_dependencia,
+      id_jefe_directo: formData.id_jefe_directo || null,
       numero_seccion: formData.numero_seccion,
       carnet_identidad: formData.carnet_identidad?.trim() || null,
     };
@@ -259,6 +253,7 @@ function useUserManagement() {
 
   return {
     users: filteredUsers,
+    allUsers: users,
     positions, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, roleFilter, setRoleFilter,
     selectedUser,
