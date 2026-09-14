@@ -42,6 +42,14 @@ function useEditTrip(tripId, user) {
   const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
   const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
 
+  const handleTypeChange = (newType) => {
+    setType(newType);
+    if (newType === 'Internacional' && transport === 'Vehículo de Empresa') {
+      setTransport('Terrestre');
+      setVehiclePlate('');
+    }
+  };
+
   const calculateDays = () => {
     if (!startDate || !endDate) {
       return 0;
@@ -210,7 +218,7 @@ function useEditTrip(tripId, user) {
   return {
     reason, origin, destination,
     startDate, endDate,
-    type, setType,
+    type, setType, handleTypeChange,
     transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays,

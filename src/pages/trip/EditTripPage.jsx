@@ -46,7 +46,7 @@ function EditTripPage() {
   const {user} = useCurrentUser();
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const {
-    reason, origin, destination, startDate, endDate, type, setType, transport, setTransport,
+    reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
     loading, loadingData, error, fieldErrors, loadingLocation,
@@ -124,7 +124,7 @@ function EditTripPage() {
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Tipo de Viaje</p>
                 <div className={styles.radioBtns}>
                   {['Nacional', 'Internacional'].map((option) => (
-                    <button key={option} className={styles.radioBtn} onClick={() => setType(option)}
+                    <button key={option} className={styles.radioBtn} onClick={() => handleTypeChange(option)}
                       style={{backgroundColor: type === option ? COLORS.primary : COLORS.dataFields, borderColor: type === option ? COLORS.primary : COLORS.fields, color: type === option ? COLORS.background : COLORS.labels}}>
                       {option}
                     </button>
@@ -134,7 +134,7 @@ function EditTripPage() {
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Medio de Transporte</p>
                 <div className={styles.radioBtns}>
-                  {['Terrestre', 'Aéreo', 'Vehículo de Empresa'].map((option) => (
+                  {(type === 'Internacional' ? ['Terrestre', 'Aéreo'] : ['Terrestre', 'Aéreo', 'Vehículo de Empresa']).map((option) => (
                     <button key={option} className={styles.radioBtn} onClick={() => setTransport(option)}
                       style={{backgroundColor: transport === option ? COLORS.primary : COLORS.dataFields, borderColor: transport === option ? COLORS.primary : COLORS.fields, color: transport === option ? COLORS.background : COLORS.labels}}>
                       {option}
