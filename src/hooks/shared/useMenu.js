@@ -2,10 +2,11 @@ import {useState, useEffect, useCallback, useRef} from 'react';
 import {jwtDecode} from 'jwt-decode';
 import {getMe} from '../../services/user/userService';
 import {logout} from '../../services/user/authService';
+import {getToken, clearToken} from '../../services/shared/tokenStore';
 
 function getRoleFromToken() {
   try {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (!token) {
       return null;
     }
@@ -45,7 +46,7 @@ function useMenu() {
 
   useEffect(() => {
     const verifyRole = async () => {
-      const token = localStorage.getItem('token');
+      const token = getToken();
       if (!token || !originalRoleRef.current) {
         return;
       }
@@ -55,7 +56,7 @@ function useMenu() {
           return;
         }
         if (data.id_rol !== originalRoleRef.current) {
-          localStorage.removeItem('token');
+          clearToken();
           window.dispatchEvent(new CustomEvent('session-expired'));
           return;
         }
@@ -67,7 +68,7 @@ function useMenu() {
     const handleTokenRefreshed = () => {
       const newRole = getRoleFromToken();
       if (newRole && originalRoleRef.current && newRole !== originalRoleRef.current) {
-        localStorage.removeItem('token');
+        clearToken();
         window.dispatchEvent(new CustomEvent('session-expired'));
       }
     };

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {getToken, setToken, clearToken} from './tokenStore';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -8,7 +9,7 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -49,7 +50,7 @@ apiClient.interceptors.response.use(
     const isNoToken = status === 401 && message.includes('token no proporcionado');
     const isRefreshRoute = originalRequest.url?.includes('/auth/refresh');
     if (isRefreshRoute || isSuspended || isNoToken || isTokenInvalid) {
-      localStorage.removeItem('token');
+      clearToken();
       window.dispatchEvent(new CustomEvent('session-expired'));
       return Promise.reject(error);
     }
@@ -67,7 +68,7 @@ apiClient.interceptors.response.use(
       try {
         const response = await axios.post(`${baseUrl}/auth/refresh`, {}, {withCredentials: true});
         const newToken = response.data.token;
-        localStorage.setItem('token', newToken);
+        setToken(newToken);
         apiClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
         processQueue(null, newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
@@ -76,7 +77,7 @@ apiClient.interceptors.response.use(
       }
       catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem('token');
+        clearToken();
         window.dispatchEvent(new CustomEvent('session-expired'));
         return Promise.reject(refreshError);
       }

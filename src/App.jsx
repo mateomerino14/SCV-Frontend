@@ -1,6 +1,10 @@
+import {useState, useEffect} from 'react';
 import {Routes, Route, Navigate, useLocation} from 'react-router-dom';
 import {AnimatePresence, motion} from 'framer-motion';
 import {jwtDecode} from 'jwt-decode';
+import axios from 'axios';
+import {getToken, setToken} from './services/shared/tokenStore';
+import {COLORS} from './constants';
 
 import LoginPage from './pages/user/LoginPage';
 import SettingsPage from './pages/user/SettingsPage';
@@ -39,7 +43,7 @@ import TreasurerReviewDetailPage from './pages/approval/TreasurerReviewDetailPag
 import NotFoundPage from './pages/NotFoundPage';
 
 function getRoleFromToken() {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   if (!token) {
     return null;
   }
@@ -52,7 +56,7 @@ function getRoleFromToken() {
 }
 
 function ProtectedRoute({allowedRoles, children}) {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   if (!token) {
     return <Navigate to="/" replace />;
   }
@@ -79,6 +83,33 @@ function PageTransition({children}) {
 
 function App() {
   const location = useLocation();
+  const [authReady, setAuthReady] = useState(false);
+
+  useEffect(() => {
+    const bootstrapSession = async () => {
+      if (!getToken()) {
+        try {
+          const baseUrl = import.meta.env.VITE_API_URL;
+          const response = await axios.post(`${baseUrl}/auth/refresh`, {}, {withCredentials: true});
+          setToken(response.data.token);
+        }
+        catch {
+          setToken(null);
+        }
+      }
+      setAuthReady(true);
+    };
+    bootstrapSession();
+  }, []);
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{backgroundColor: COLORS.background}}>
+        <div className="w-10 h-10 rounded-full border-4 animate-spin" style={{borderColor: COLORS.dataFields, borderTopColor: COLORS.primary}} />
+      </div>
+    );
+  }
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>

@@ -2,11 +2,12 @@ import {useState, useEffect} from 'react';
 import {jwtDecode} from 'jwt-decode';
 import axios from 'axios';
 import {changePassword} from '../../services/user/userService';
+import {getToken, setToken} from '../../services/shared/tokenStore';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 function readPasswordExpired() {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   if (!token) {
     return false;
   }
@@ -41,7 +42,7 @@ function usePasswordExpiredCheck() {
     try {
       const response = await axios.post(`${baseUrl}/auth/refresh`, {}, {withCredentials: true});
       const newToken = response.data.token;
-      localStorage.setItem('token', newToken);
+      setToken(newToken);
       window.dispatchEvent(new CustomEvent('token-refreshed'));
     }
     catch {

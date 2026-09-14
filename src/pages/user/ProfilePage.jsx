@@ -18,6 +18,7 @@ import useMenu from '../../hooks/shared/useMenu';
 import usePhotoModal from '../hooks/usePhotoModal';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import {clearToken} from '../../services/shared/tokenStore';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -42,7 +43,7 @@ function ProfilePage() {
   const {showModal: showPhotoModal, open: openPhotoModal, close: closePhotoModal, handleNewPhoto, handleRemovePhoto: handleRemovePhotoModal} =
     usePhotoModal(handleChangePhoto, handleRemovePhoto, loadUser);
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    clearToken();
     navigate(routes.login);
   };
 

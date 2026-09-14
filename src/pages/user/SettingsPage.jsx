@@ -12,6 +12,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import {clearToken} from '../../services/shared/tokenStore';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -29,7 +30,7 @@ function SettingsPage() {
   const [showTerms, setShowTerms] = useState(false);
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    clearToken();
     navigate(routes.login);
   };
 

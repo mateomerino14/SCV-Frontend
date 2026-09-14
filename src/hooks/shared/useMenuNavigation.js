@@ -1,5 +1,6 @@
 import {useNavigate, useLocation} from 'react-router-dom';
 import {routes} from '../../constants/routes';
+import {clearToken} from '../../services/shared/tokenStore';
 
 function useMenuNavigation(onClose, exactMatchPaths = []) {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function useMenuNavigation(onClose, exactMatchPaths = []) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    clearToken();
     navigate(routes.login);
   };
 

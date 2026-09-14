@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {login, checkEmail, sendCode, verifyCode} from '../../services/user/authService';
+import {setToken} from '../../services/shared/tokenStore';
 import {jwtDecode} from 'jwt-decode';
 
 function useLogin() {
@@ -79,7 +80,7 @@ function useLogin() {
     const data = await login(email, password);
     setLogging(false);
     if (data.token) {
-      localStorage.setItem('token', data.token);
+      setToken(data.token);
       redirectByRole(data.token);
     }
     else {
@@ -134,7 +135,7 @@ function useLogin() {
     setVerifying(false);
     if (data.message === 'Código verificado correctamente') {
       closeAllModals();
-      localStorage.setItem('token', data.token);
+      setToken(data.token);
       redirectByRole(data.token);
     }
     else if (data.error === 'Código expirado') {

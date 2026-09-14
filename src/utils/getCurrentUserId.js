@@ -1,7 +1,8 @@
 import {jwtDecode} from 'jwt-decode';
+import {getToken} from '../services/shared/tokenStore';
 
 function getCurrentUserId() {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   if (!token) {
     return null;
   }
