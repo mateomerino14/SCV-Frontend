@@ -12,7 +12,7 @@ function useSupervisorPendingExpenseReviews() {
   const [taking, setTaking] = useState(null);
   const [error, setError] = useState('');
   const [alreadyTaken, setAlreadyTaken] = useState(false);
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('TODOS');
 
   const load = async (currentFilters = filters) => {
@@ -48,7 +48,7 @@ function useSupervisorPendingExpenseReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
     setFilters(emptyFilters);
     setStatusFilter('TODOS');
     load(emptyFilters);

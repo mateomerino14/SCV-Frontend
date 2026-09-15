@@ -10,6 +10,7 @@ function useUserManagement() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('TODOS');
+  const [sectionFilter, setSectionFilter] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -133,7 +134,8 @@ function useUserManagement() {
     const fullName = `${user.nombre} ${user.apellido_paterno}`.toLowerCase();
     const matchesSearch = fullName.includes(search.toLowerCase());
     const matchesRole = roleFilter === 'TODOS' || user.Rol?.nombre === roleFilter;
-    return matchesSearch && matchesRole;
+    const matchesSection = !sectionFilter || (user.numero_seccion || '').toLowerCase().includes(sectionFilter.toLowerCase());
+    return matchesSearch && matchesRole && matchesSection;
   });
 
   const openCreate = () => {
@@ -255,7 +257,7 @@ function useUserManagement() {
     users: filteredUsers,
     allUsers: users,
     positions, loading, savingAction, error, fieldErrors, setFieldErrors,
-    search, setSearch, roleFilter, setRoleFilter,
+    search, setSearch, roleFilter, setRoleFilter, sectionFilter, setSectionFilter,
     selectedUser,
     showCreate, setShowCreate, showEdit, setShowEdit,
     showSuspend, setShowSuspend, showSuccess, setShowSuccess,

@@ -15,7 +15,7 @@ const styles = {
   divider: 'border-t mt-3 pt-3',
 };
 
-function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], tabs, hideStatusTabs = false, applyingFilters}) {
+function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], tabs, hideStatusTabs = false, hideSectionFilter = false, applyingFilters}) {
   const employeeDropdown = useSimpleSelector();
   let applyLabel = 'Aplicar Filtros';
   if (applyingFilters) {
@@ -35,6 +35,15 @@ function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onAp
             <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
               onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_empleado}
               onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
+          </div>
+        )}
+        {!hideSectionFilter && (
+          <div className={styles.employeeSection}>
+            <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Sección</p>
+            <input type="text" value={filters.numero_seccion || ''} placeholder="Ej: Ventas"
+              onChange={(event) => setFilters((prev) => ({...prev, numero_seccion: event.target.value}))}
+              className="w-full p-2.5 rounded-xl text-sm font-inter outline-none border"
+              style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text}} />
           </div>
         )}
         <div className={styles.btnRow}>

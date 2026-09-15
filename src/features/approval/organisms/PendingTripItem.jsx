@@ -47,7 +47,10 @@ function PendingTripItem({trip, detailRoute, originRoute, onTake, onReturn, taki
           <div className="flex items-center gap-2.5 min-w-0">
             <img src={trip.Usuario.foto_perfil || avatarDefault} alt="empleado" className="w-11 h-11 rounded-full object-cover border shrink-0"
               style={{borderColor: COLORS.dataFields}} onError={(event) => {event.target.onerror = null; event.target.src = avatarDefault;}} />
-            <p className="text-sm font-bold font-inter truncate" style={{color: COLORS.text}}>{trip.Usuario.nombre} {trip.Usuario.apellido_paterno}</p>
+            <div className="min-w-0">
+              <p className="text-sm font-bold font-inter truncate" style={{color: COLORS.text}}>{trip.Usuario.nombre} {trip.Usuario.apellido_paterno}</p>
+              {trip.Usuario.numero_seccion && <p className="text-xs font-inter truncate" style={{color: COLORS.labels}}>{trip.Usuario.numero_seccion}</p>}
+            </div>
           </div>
         ) : <div />}
         <div className={styles.statusCol}>
