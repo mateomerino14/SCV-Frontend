@@ -90,8 +90,12 @@ function useApproverAlcoholReviews() {
 
   const approvedTrips = myTrips.filter((trip) => ['APROBADO_SUPERVISOR', 'APROBADO_FINAL'].includes(trip.estado));
   const rejectedTrips = myTrips.filter((trip) => trip.estado === 'RECHAZADO');
+  const myPendingTrips = myTrips.filter((trip) => trip.estado === 'EN_REVISION_APROBADOR');
   let displayedTrips = pending;
-  if (tab === 'APROBADOS') {
+  if (tab === 'MIS_PENDIENTES') {
+    displayedTrips = myPendingTrips;
+  }
+  else if (tab === 'APROBADOS') {
     displayedTrips = approvedTrips;
   }
   else if (tab === 'RECHAZADOS') {
@@ -101,6 +105,7 @@ function useApproverAlcoholReviews() {
   return {
     trips: displayedTrips,
     totalPending: pending.length,
+    totalMyPending: myPendingTrips.length,
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,
     employees,

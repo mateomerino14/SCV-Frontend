@@ -69,8 +69,12 @@ function useApproverReviews() {
 
   const approvedTrips = myTrips.filter((trip) => ['EN_REVISION_TESORERO', 'EN_CURSO'].includes(trip.estado));
   const rejectedTrips = myTrips.filter((trip) => trip.estado === 'RECHAZADO');
+  const myPendingTrips = myTrips.filter((trip) => trip.estado === 'APROBADO_VIAJE');
   let displayedTrips = pending;
-  if (tab === 'APROBADOS') {
+  if (tab === 'MIS_PENDIENTES') {
+    displayedTrips = myPendingTrips;
+  }
+  else if (tab === 'APROBADOS') {
     displayedTrips = approvedTrips;
   }
   else if (tab === 'RECHAZADOS') {
@@ -80,6 +84,7 @@ function useApproverReviews() {
   return {
     trips: displayedTrips,
     totalPending: pending.length,
+    totalMyPending: myPendingTrips.length,
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,
     employees,

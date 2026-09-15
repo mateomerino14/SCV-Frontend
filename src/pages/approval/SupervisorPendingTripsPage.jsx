@@ -39,7 +39,7 @@ function SupervisorPendingTripsPage() {
       <Navbar text="Revisión de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Viajes Pendientes" subtitle="Viajes nuevos de tus empleados a la espera de tu revisión." />
+        <PageHeader title="Viajes Sin Asignar" subtitle="Viajes que todavía no tienen un jefe directo definido en la jerarquía, o cuya sección no tiene un supervisor cargado. Se muestran a todos para que alguien los tome." />
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
           employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

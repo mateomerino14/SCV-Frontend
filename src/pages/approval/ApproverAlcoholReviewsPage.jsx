@@ -26,7 +26,8 @@ const styles = {
 };
 
 const mainTabs = [
-  {valor: 'PENDIENTES', label: 'Pendientes'},
+  {valor: 'MIS_PENDIENTES', label: 'Mis Pendientes'},
+  {valor: 'PENDIENTES', label: 'Sin Asignar'},
   {valor: 'APROBADOS', label: 'Aprobados'},
   {valor: 'RECHAZADOS', label: 'Rechazados'},
 ];
@@ -34,16 +35,23 @@ const mainTabs = [
 function ApproverAlcoholReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalApproved, totalRejected, employees, loading, applyingFilters, taking, error,
+    trips, totalPending, totalMyPending, totalApproved, totalRejected, employees, loading, applyingFilters, taking, error,
     alreadyTaken, closeAlreadyTakenModal, tab, setTab, filters, setFilters, applyFilters, clearFilters, handleTake,
   } = useApproverAlcoholReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
-  let total = totalPending;
-  if (tab === 'APROBADOS') {
+  let total = totalMyPending;
+  let subtitle = 'Rendiciones con alcohol asignadas directamente a vos, pendientes de tu decisión.';
+  if (tab === 'PENDIENTES') {
+    total = totalPending;
+    subtitle = 'Rendiciones sin jefe directo asignado en la jerarquía, o cuya sección no tiene un aprobador cargado. Se muestran a todos para que alguien las tome.';
+  }
+  else if (tab === 'APROBADOS') {
     total = totalApproved;
+    subtitle = 'Rendiciones con alcohol que ya aprobaste.';
   }
   else if (tab === 'RECHAZADOS') {
     total = totalRejected;
+    subtitle = 'Rendiciones con alcohol que ya rechazaste.';
   }
 
   return (
@@ -54,7 +62,7 @@ function ApproverAlcoholReviewsPage() {
       <Navbar text="Revisión por Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Revisión por Alcohol" subtitle="Rendiciones con bebidas alcohólicas que requieren tu revisión adicional." />
+        <PageHeader title="Revisión por Alcohol" subtitle={subtitle} />
         <div className={styles.tabsRow}>
           {mainTabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}

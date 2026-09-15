@@ -26,12 +26,12 @@ const styles = {
 };
 
 const tripApprovalSection = [
-  {path: routes.supervisorPendingTrips, label: 'Viajes Pendientes', icon: ListChecks},
+  {path: routes.supervisorPendingTrips, label: 'Viajes Sin Asignar', icon: ListChecks},
   {path: routes.supervisorTripHistory, label: 'Mis Viajes Revisados', icon: FileCheck},
 ];
 
 const expenseReviewSection = [
-  {path: routes.supervisorPendingExpenseReviews, label: 'Solicitudes Pendientes', icon: ClipboardList},
+  {path: routes.supervisorPendingExpenseReviews, label: 'Rendiciones Sin Asignar', icon: ClipboardList},
   {path: routes.supervisorExpenseReviewHistory, label: 'Mis Revisiones', icon: BookOpen},
 ];
 
