@@ -33,7 +33,7 @@ function ApproverPendingTripsPage() {
       <Navbar text="Aprobación de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Viajes Pendientes" subtitle="Viajes aprobados por el supervisor, a la espera de tu aprobación previa a tesorería." />
+        <PageHeader title="Viajes Sin Asignar" subtitle="Viajes sin jefe directo asignado en la jerarquía, o cuya sección no tiene un aprobador cargado. Se muestran a todos para que alguien los tome." />
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters} hideStatusTabs />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''} pendiente{total !== 1 ? 's' : ''}</p>}

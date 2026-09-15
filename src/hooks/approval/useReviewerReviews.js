@@ -5,6 +5,7 @@ const pollingInterval = 30 * 1000;
 
 function useReviewerReviews() {
   const [pending, setPending] = useState([]);
+  const [myPending, setMyPending] = useState([]);
   const [history, setHistory] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +40,7 @@ function useReviewerReviews() {
       return;
     }
     setPending(pendingData);
+    setMyPending((historyData || []).filter((trip) => trip.estado === 'APROBADO_SUPERVISOR'));
     setHistory((historyData || []).filter((trip) => trip.estado === 'APROBADO_FINAL' || trip.estado === 'RECHAZADO'));
   }, [filters]);
 
@@ -93,13 +95,17 @@ function useReviewerReviews() {
   });
 
   let trips = filteredPending;
-  if (tab !== 'PENDIENTES') {
+  if (tab === 'MIS_PENDIENTES') {
+    trips = myPending;
+  }
+  else if (tab === 'HISTORIAL') {
     trips = filteredHistory;
   }
 
   return {
     trips,
     totalPending: pending.length,
+    totalMyPending: myPending.length,
     employees,
     loading,
     applyingFilters,

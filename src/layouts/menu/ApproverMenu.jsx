@@ -26,7 +26,7 @@ const styles = {
 };
 
 const approvalSection = [
-  {path: routes.approverReviews, label: 'Revisiones Pendientes', icon: ClipboardCheck},
+  {path: routes.approverReviews, label: 'Mis Revisiones', icon: ClipboardCheck},
   {path: routes.approverAlcoholReviews, label: 'Revisión por Alcohol', icon: Wine},
 ];
 

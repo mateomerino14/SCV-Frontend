@@ -25,7 +25,8 @@ const styles = {
 };
 
 const mainTabs = [
-  {valor: 'PENDIENTES', label: 'Pendientes'},
+  {valor: 'MIS_PENDIENTES', label: 'Mis Pendientes'},
+  {valor: 'PENDIENTES', label: 'Sin Asignar'},
   {valor: 'APROBADOS', label: 'Aprobados'},
   {valor: 'RECHAZADOS', label: 'Rechazados'},
 ];
@@ -33,16 +34,23 @@ const mainTabs = [
 function ApproverReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalApproved, totalRejected, employees, loading, applyingFilters, error, tab, setTab,
+    trips, totalPending, totalMyPending, totalApproved, totalRejected, employees, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
   } = useApproverReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
-  let total = totalPending;
-  if (tab === 'APROBADOS') {
+  let total = totalMyPending;
+  let subtitle = 'Viajes asignados directamente a vos, pendientes de tu aprobación.';
+  if (tab === 'PENDIENTES') {
+    total = totalPending;
+    subtitle = 'Viajes sin jefe directo asignado en la jerarquía, o cuya sección no tiene un aprobador cargado. Se muestran a todos para que alguien los tome.';
+  }
+  else if (tab === 'APROBADOS') {
     total = totalApproved;
+    subtitle = 'Viajes que ya aprobaste.';
   }
   else if (tab === 'RECHAZADOS') {
     total = totalRejected;
+    subtitle = 'Viajes que ya rechazaste.';
   }
 
   return (
@@ -52,7 +60,7 @@ function ApproverReviewsPage() {
       <Navbar text="Aprobación de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Mis Revisiones" subtitle="Consulta los viajes pendientes, aprobados y rechazados por ti." />
+        <PageHeader title="Mis Revisiones" subtitle={subtitle} />
         <div className={styles.tabsRow}>
           {mainTabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
