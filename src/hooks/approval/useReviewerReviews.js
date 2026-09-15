@@ -10,7 +10,7 @@ function useReviewerReviews() {
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('TODOS');
   const [tab, setTab] = useState('PENDIENTES');
 
@@ -66,7 +66,7 @@ function useReviewerReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
     setFilters(emptyFilters);
     setStatusFilter('TODOS');
     load(emptyFilters, true);

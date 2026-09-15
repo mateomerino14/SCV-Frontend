@@ -58,7 +58,7 @@ function UserManagementPage() {
   const {menuOpen, user: menuUser, openMenu, closeMenu} = useMenu();
   const {
     users, positions, loading, savingAction, error, fieldErrors, setFieldErrors,
-    search, setSearch, roleFilter, setRoleFilter, selectedUser,
+    search, setSearch, roleFilter, setRoleFilter, sectionFilter, setSectionFilter, selectedUser,
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
@@ -73,6 +73,10 @@ function UserManagementPage() {
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar usuarios..." value={search} onChange={(event) => setSearch(event.target.value)} />
+        </div>
+        <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
+          <Search size={16} style={{color: COLORS.labels}} />
+          <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Filtrar por sección..." value={sectionFilter} onChange={(event) => setSectionFilter(event.target.value)} />
         </div>
         <div className={styles.tabsRow}>
           {tabs.map((tab) => (

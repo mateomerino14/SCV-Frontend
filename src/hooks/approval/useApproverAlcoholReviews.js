@@ -14,7 +14,7 @@ function useApproverAlcoholReviews() {
   const [error, setError] = useState('');
   const [alreadyTaken, setAlreadyTaken] = useState(false);
   const [tab, setTab] = useState('PENDIENTES');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
   const filtersRef = useRef(filters);
 
   useEffect(() => {
@@ -64,7 +64,7 @@ function useApproverAlcoholReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
     setFilters(emptyFilters);
     load(emptyFilters, true);
   };

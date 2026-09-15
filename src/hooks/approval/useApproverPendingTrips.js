@@ -7,7 +7,7 @@ function useApproverPendingTrips() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
   const filtersRef = useRef(filters);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function useApproverPendingTrips() {
   const applyFilters = () => load(filters);
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
     setFilters(emptyFilters);
     load(emptyFilters);
   };

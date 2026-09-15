@@ -47,7 +47,10 @@ function TripReviewDetailCard({trip, statusConfig}) {
         <div className={styles.employeeInfo}>
           <p className={styles.employeeLabel} style={{color: COLORS.secondary}}>Empleado</p>
           <p className={styles.employeeName} style={{color: COLORS.text}}>{trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}</p>
-          <p className={styles.employeePosition} style={{color: COLORS.labels}}>{trip.Usuario?.Cargo?.nombre}</p>
+          <p className={styles.employeePosition} style={{color: COLORS.labels}}>
+            {trip.Usuario?.Cargo?.nombre}
+            {trip.Usuario?.numero_seccion && ` · ${trip.Usuario.numero_seccion}`}
+          </p>
         </div>
         <span className={styles.statusBadge} style={{backgroundColor: status.bg, color: status.color}}>{status.label}</span>
       </div>

@@ -1,5 +1,5 @@
 import {Users, Briefcase} from 'lucide-react';
-import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend} from 'recharts';
+import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid} from 'recharts';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -100,6 +100,24 @@ function DashboardAdminPage() {
                       contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter'}} />
                     <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter'}}>{value}</span>} />
                   </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+            {data?.viajesPorSeccion?.length > 0 && (
+              <div className={styles.chartCard} style={{backgroundColor: COLORS.backgroundHeader}}>
+                <p className={styles.chartTitle} style={{color: COLORS.text}}>Viajes por Sección</p>
+                <p className={styles.chartSub} style={{color: COLORS.labels}}>Cantidad de viajes y monto asignado, agrupados por sección del empleado</p>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={data.viajesPorSeccion} margin={{top: 10, right: 10, left: 0, bottom: 10}}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={COLORS.dataFields} />
+                    <XAxis dataKey="seccion" tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
+                    <YAxis tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
+                    <Tooltip formatter={(value, name) => [name === 'cantidadViajes' ? `${value} viaje(s)` : `Bs ${parseFloat(value).toFixed(2)}`, name === 'cantidadViajes' ? 'Viajes' : 'Monto asignado']}
+                      contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter'}} />
+                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter'}}>{value === 'cantidadViajes' ? 'Viajes' : 'Monto asignado (Bs)'}</span>} />
+                    <Bar dataKey="cantidadViajes" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="montoAsignado" fill={COLORS.title} radius={[6, 6, 0, 0]} />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             )}

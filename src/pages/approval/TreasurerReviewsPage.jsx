@@ -63,7 +63,7 @@ function TreasurerReviewsPage() {
         </div>
         {tab === 'PENDIENTES' && (
           <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-            employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
+            employees={employees} hideStatusTabs hideSectionFilter applyingFilters={applyingFilters} />
         )}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}

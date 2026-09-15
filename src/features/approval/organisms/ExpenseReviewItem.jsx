@@ -55,7 +55,10 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
           <img src={trip.Usuario?.foto_perfil || avatarDefault} alt="empleado" className={styles.avatar} />
           <div className={styles.employeeInfo}>
             <p className={styles.employeeName} style={{color: COLORS.text}}>{trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}</p>
-            <p className={styles.employeePosition} style={{color: COLORS.labels}}>{trip.Usuario?.Cargo?.nombre}</p>
+            <p className={styles.employeePosition} style={{color: COLORS.labels}}>
+              {trip.Usuario?.Cargo?.nombre}
+              {trip.Usuario?.numero_seccion && ` · ${trip.Usuario.numero_seccion}`}
+            </p>
             <p className={styles.employeeDates} style={{color: COLORS.labels}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
           </div>
           <span className={styles.conformityBadge} style={{backgroundColor: isObserved ? COLORS.error : '#d4edda', color: isObserved ? COLORS.secondary : '#155724'}}>
