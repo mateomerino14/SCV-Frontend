@@ -264,6 +264,9 @@ function useUploadInvoice(tripId) {
     if (invoice.manual && !invoice.file) {
       errors.imagen = 'Debes subir una imagen o comprobante de la factura';
     }
+    if (!invoice.data.detalle || invoice.data.detalle.length === 0) {
+      errors.detalle = 'Debes agregar al menos un producto al detalle';
+    }
     return errors;
   };
 
