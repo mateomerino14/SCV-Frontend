@@ -60,7 +60,7 @@ function InvoiceExpandedContent({invoice, index, onFieldChange, onImageChange, o
         </div>
         <div className={styles.colWrapper}>
           <InvoiceDetailPanel detail={invoice.data.detalle || []} onAdd={(item) => onAddDetail(index, item)}
-            onRemove={(detailIndex) => onRemoveDetail(index, detailIndex)} saved={invoice.saved} />
+            onRemove={(detailIndex) => onRemoveDetail(index, detailIndex)} saved={invoice.saved} error={invoice.fieldErrors?.detalle} />
         </div>
       </div>
       <div className={styles.mobileStack}>
@@ -68,7 +68,7 @@ function InvoiceExpandedContent({invoice, index, onFieldChange, onImageChange, o
         <InvoiceForm data={invoice.data} onChange={(field, value, silent) => onFieldChange(index, field, value, silent)}
           manuallyModified={invoice.manuallyModified} fieldErrors={invoice.fieldErrors} saved={invoice.saved} categories={categories} />
         <InvoiceDetailPanel detail={invoice.data.detalle || []} onAdd={(item) => onAddDetail(index, item)}
-          onRemove={(detailIndex) => onRemoveDetail(index, detailIndex)} saved={invoice.saved} />
+          onRemove={(detailIndex) => onRemoveDetail(index, detailIndex)} saved={invoice.saved} error={invoice.fieldErrors?.detalle} />
       </div>
     </>
   );
