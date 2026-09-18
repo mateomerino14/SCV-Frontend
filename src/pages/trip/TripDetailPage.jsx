@@ -99,6 +99,7 @@ function TripDetailPage() {
       <DeadlineRequestModal isOpen={deadline.showModal} onClose={() => deadline.setShowModal(false)} onConfirm={deadline.handleRequest} loading={deadline.submitting} error={deadline.modalError} />
       <DeadlineExpiredModal isOpen={deadline.isApprovedExpired && tripDetail.submitted} onClose={() => {}} message="Tu autorización de plazo ha vencido." />
       <SubstitutionRequestModal isOpen={substitution.showModal} onClose={substitution.closeModal} onConfirm={substitution.handleRequest}
+        substituteId={substitution.substituteId} onSelectSubstitute={substitution.setSubstituteId}
         employees={substitution.employees} loading={substitution.submitting} error={substitution.modalError} />
       <Footer />
     </div>

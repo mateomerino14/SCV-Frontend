@@ -1,14 +1,17 @@
 import {useState, useEffect} from 'react';
 import {requestSubstitution, getSubstitutionStatus} from '../../services/approval/substitutionService';
 import {getEmployees} from '../../services/user/userService';
+import getCurrentUserId from '../../utils/getCurrentUserId';
 
 function useSubstitutionRequest(tripId) {
   const [request, setRequest] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const [substituteId, setSubstituteId] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const currentUserId = getCurrentUserId();
 
   const load = async () => {
     if (!tripId) {
@@ -28,11 +31,12 @@ function useSubstitutionRequest(tripId) {
   }, [tripId]);
 
   const openModal = async () => {
+    setSubstituteId('');
     setShowModal(true);
     if (employees.length === 0) {
       const data = await getEmployees();
       if (!data.error) {
-        setEmployees(data);
+        setEmployees(data.filter((employee) => employee.id_usuario !== currentUserId));
       }
     }
   };
@@ -65,7 +69,7 @@ function useSubstitutionRequest(tripId) {
   const canRequest = !request || isRejected;
 
   return {
-    request, employees, loading, submitting, modalError,
+    request, employees, substituteId, setSubstituteId, loading, submitting, modalError,
     showModal, openModal, closeModal: () => setShowModal(false),
     isPending, isApproved, isRejected, canRequest,
     handleRequest, reload: load,
