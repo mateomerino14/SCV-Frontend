@@ -1,5 +1,6 @@
 import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
 import EmployeeDropdown from '../../../components/ui/EmployeeDropdown';
+import SectionDropdown from '../../../components/ui/SectionDropdown';
 import DateRangeFilter from '../molecules/DateRangeFilter';
 import StatusTabs from '../molecules/StatusTabs';
 import {COLORS} from '../../../constants';
@@ -15,7 +16,7 @@ const styles = {
   divider: 'border-t mt-3 pt-3',
 };
 
-function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], tabs, hideStatusTabs = false, hideSectionFilter = false, applyingFilters}) {
+function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], sections = [], tabs, hideStatusTabs = false, hideSectionFilter = false, applyingFilters}) {
   const employeeDropdown = useSimpleSelector();
   let applyLabel = 'Aplicar Filtros';
   if (applyingFilters) {
@@ -37,13 +38,11 @@ function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onAp
               onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
           </div>
         )}
-        {!hideSectionFilter && (
+        {!hideSectionFilter && sections.length > 0 && (
           <div className={styles.employeeSection}>
             <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Sección</p>
-            <input type="text" value={filters.numero_seccion || ''} placeholder="Ej: Ventas"
-              onChange={(event) => setFilters((prev) => ({...prev, numero_seccion: event.target.value}))}
-              className="w-full p-2.5 rounded-xl text-sm font-inter outline-none border"
-              style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text}} />
+            <SectionDropdown sections={sections} selectedSection={filters.id_seccion}
+              onSelect={(value) => setFilters((prev) => ({...prev, id_seccion: value}))} />
           </div>
         )}
         <div className={styles.btnRow}>

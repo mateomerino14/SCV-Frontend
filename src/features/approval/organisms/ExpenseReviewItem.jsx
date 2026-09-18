@@ -57,7 +57,7 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             <p className={styles.employeeName} style={{color: COLORS.text}}>{trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}</p>
             <p className={styles.employeePosition} style={{color: COLORS.labels}}>
               {trip.Usuario?.Cargo?.nombre}
-              {trip.Usuario?.numero_seccion && ` · ${trip.Usuario.numero_seccion}`}
+              {trip.Usuario?.Seccion?.nombre && ` · ${trip.Usuario.Seccion?.nombre}`}
             </p>
             <p className={styles.employeeDates} style={{color: COLORS.labels}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
           </div>

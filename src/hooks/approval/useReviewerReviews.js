@@ -1,5 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
 import {getPendingReviews, getMyReviews, getReviewerEmployees} from '../../services/approval/reviewerService';
+import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
@@ -8,10 +9,11 @@ function useReviewerReviews() {
   const [myPending, setMyPending] = useState([]);
   const [history, setHistory] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('TODOS');
   const [tab, setTab] = useState('PENDIENTES');
 
@@ -51,6 +53,10 @@ function useReviewerReviews() {
       if (!data.error) {
         setEmployees(data);
       }
+      const sectionData = await getSections();
+      if (!sectionData.error) {
+        setSections(sectionData);
+      }
     };
     start();
     const polling = setInterval(() => load(filters, false), pollingInterval);
@@ -68,7 +74,7 @@ function useReviewerReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     setStatusFilter('TODOS');
     load(emptyFilters, true);
@@ -107,6 +113,7 @@ function useReviewerReviews() {
     totalPending: pending.length,
     totalMyPending: myPending.length,
     employees,
+    sections,
     loading,
     applyingFilters,
     error,

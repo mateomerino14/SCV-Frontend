@@ -1,9 +1,10 @@
 import {useState, useEffect} from 'react';
-import {getUsers, createUser, updateUser, suspendUser, activateUser, getPositions} from '../../services/admin/adminService';
+import {getUsers, createUser, updateUser, suspendUser, activateUser, getPositions, getSections} from '../../services/admin/adminService';
 
 function useUserManagement() {
   const [users, setUsers] = useState([]);
   const [positions, setPositions] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
@@ -21,18 +22,21 @@ function useUserManagement() {
     nombre: '', apellido_paterno: '', apellido_materno: '',
     email_corporativo: '', telefono: '', contrasenia: '',
     id_cargo: '', id_rol: 3,
-    id_jefe_directo: '', numero_seccion: '', carnet_identidad: '',
+    id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
   });
 
   const load = async () => {
     setLoading(true);
-    const [usersData, positionsData] = await Promise.all([getUsers(), getPositions()]);
+    const [usersData, positionsData, sectionsData] = await Promise.all([getUsers(), getPositions(), getSections()]);
     setLoading(false);
     if (!usersData.error) {
       setUsers(usersData);
     }
     if (!positionsData.error) {
       setPositions(positionsData);
+    }
+    if (!sectionsData.error) {
+      setSections(sectionsData);
     }
   };
 
@@ -110,12 +114,6 @@ function useUserManagement() {
         errors.telefono = 'Máximo 8 dígitos';
       }
     }
-    if (!formData.numero_seccion.trim()) {
-      errors.numero_seccion = 'El número de sección es requerido';
-    }
-    else if (formData.numero_seccion.trim().length > 50) {
-      errors.numero_seccion = 'Máximo 50 caracteres';
-    }
     if (!formData.id_cargo) {
       errors.id_cargo = 'Selecciona un cargo';
     }
@@ -134,7 +132,7 @@ function useUserManagement() {
     const fullName = `${user.nombre} ${user.apellido_paterno}`.toLowerCase();
     const matchesSearch = fullName.includes(search.toLowerCase());
     const matchesRole = roleFilter === 'TODOS' || user.Rol?.nombre === roleFilter;
-    const matchesSection = !sectionFilter || (user.numero_seccion || '').toLowerCase().includes(sectionFilter.toLowerCase());
+    const matchesSection = !sectionFilter || String(user.id_seccion) === String(sectionFilter);
     return matchesSearch && matchesRole && matchesSection;
   });
 
@@ -144,7 +142,7 @@ function useUserManagement() {
       nombre: '', apellido_paterno: '', apellido_materno: '',
       email_corporativo: '', telefono: '', contrasenia: '',
       id_cargo: firstActivePosition?.id_cargo || '', id_rol: 3,
-      id_jefe_directo: '', numero_seccion: '', carnet_identidad: '',
+      id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
     });
     setError('');
     setFieldErrors({});
@@ -163,7 +161,7 @@ function useUserManagement() {
       id_cargo: user.Cargo?.id_cargo || '',
       id_rol: user.id_rol,
       id_jefe_directo: user.id_jefe_directo || '',
-      numero_seccion: user.numero_seccion || '',
+      id_seccion: user.id_seccion || '',
       carnet_identidad: user.carnet_identidad || '',
     });
     setError('');
@@ -184,7 +182,7 @@ function useUserManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await createUser({...formData, activo: true, id_jefe_directo: formData.id_jefe_directo || null});
+    const data = await createUser({...formData, activo: true, id_jefe_directo: formData.id_jefe_directo || null, id_seccion: formData.id_seccion || null});
     setSavingAction(false);
     if (data.error) {
       showError(data.error);
@@ -212,7 +210,7 @@ function useUserManagement() {
       id_cargo: formData.id_cargo,
       id_rol: formData.id_rol,
       id_jefe_directo: formData.id_jefe_directo || null,
-      numero_seccion: formData.numero_seccion,
+      id_seccion: formData.id_seccion || null,
       carnet_identidad: formData.carnet_identidad?.trim() || null,
     };
     setSavingAction(true);
@@ -256,7 +254,7 @@ function useUserManagement() {
   return {
     users: filteredUsers,
     allUsers: users,
-    positions, loading, savingAction, error, fieldErrors, setFieldErrors,
+    positions, sections, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, roleFilter, setRoleFilter, sectionFilter, setSectionFilter,
     selectedUser,
     showCreate, setShowCreate, showEdit, setShowEdit,

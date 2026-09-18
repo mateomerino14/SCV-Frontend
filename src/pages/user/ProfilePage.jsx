@@ -83,7 +83,7 @@ function ProfilePage() {
                   onEditValueChange={(event) => setPhone(event.target.value.replace(/[^0-9]/g, ''))} onStartEdit={() => setEditingPhone(true)}
                   onSave={handleSavePhone} onCancel={handleCancelPhone} saving={saving} inputType="tel" inputMode="numeric" maxLength={8} />
                 <ReadOnlyField icon={Briefcase} label="Cargo" value={user?.Cargo?.nombre} />
-                {user?.numero_seccion && <ReadOnlyField icon={Layers} label="N° Sección" value={user.numero_seccion} />}
+                {user?.Seccion?.nombre && <ReadOnlyField icon={Layers} label="Sección" value={user.Seccion.nombre} />}
               </div>
             </div>
             {error && <InlineAlert type="error">{error}</InlineAlert>}

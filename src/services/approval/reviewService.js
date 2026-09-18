@@ -22,6 +22,9 @@ export const getPendingTripReviews = async (filters = {}) => {
     if (filters.id_empleado) {
       params.id_empleado = filters.id_empleado;
     }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
+    }
     const response = await apiClient.get('/review/trip-review/pending', {params});
     return response.data;
   }
@@ -30,9 +33,22 @@ export const getPendingTripReviews = async (filters = {}) => {
   }
 };
 
-export const getMyTripReviews = async () => {
+export const getMyTripReviews = async (filters = {}) => {
   try {
-    const response = await apiClient.get('/review/trip-review/mine');
+    const params = {};
+    if (filters.fecha_inicio) {
+      params.fecha_inicio = filters.fecha_inicio;
+    }
+    if (filters.fecha_fin) {
+      params.fecha_fin = filters.fecha_fin;
+    }
+    if (filters.id_empleado) {
+      params.id_empleado = filters.id_empleado;
+    }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
+    }
+    const response = await apiClient.get('/review/trip-review/mine', {params});
     return response.data;
   }
   catch (error) {
@@ -132,6 +148,9 @@ export const getPendingExpenseReviews = async (filters = {}) => {
     if (filters.id_empleado) {
       params.id_empleado = filters.id_empleado;
     }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
+    }
     const response = await apiClient.get('/review/expense-review/pending', {params});
     return response.data;
   }
@@ -151,6 +170,9 @@ export const getMyExpenseReviews = async (filters = {}) => {
     }
     if (filters.id_empleado) {
       params.id_empleado = filters.id_empleado;
+    }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
     }
     const response = await apiClient.get('/review/expense-review/mine', {params});
     return response.data;

@@ -24,9 +24,16 @@ const styles = {
 function SupervisorExpenseReviewHistoryPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, total, employees, loading, applyingFilters, error, filters, setFilters,
+    trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorExpenseReviewHistory();
+  let subtitle = 'Rendiciones de gastos pendientes de tu revisión.';
+  if (statusFilter === 'APROBADO_SUPERVISOR') {
+    subtitle = 'Rendiciones de gastos que ya aprobaste.';
+  }
+  else if (statusFilter === 'RECHAZADO') {
+    subtitle = 'Rendiciones de gastos que ya rechazaste.';
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -34,9 +41,9 @@ function SupervisorExpenseReviewHistoryPage() {
       <Navbar text="Mis Revisiones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Historial de Revisiones" subtitle="Rendiciones de gastos que ya revisaste, con su resultado." />
+        <PageHeader title="Mis Revisiones" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
-          onApply={applyFilters} onClear={clearFilters} employees={employees} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
+          onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}

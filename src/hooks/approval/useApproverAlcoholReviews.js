@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from 'react';
 import {getPendingAlcoholReviews, getMyAlcoholReviews, takeAlcoholReview} from '../../services/approval/approverAlcoholReviewService';
 import {getEmployees} from '../../services/user/userService';
+import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
@@ -8,13 +9,14 @@ function useApproverAlcoholReviews() {
   const [pending, setPending] = useState([]);
   const [myTrips, setMyTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [taking, setTaking] = useState(null);
   const [error, setError] = useState('');
   const [alreadyTaken, setAlreadyTaken] = useState(false);
   const [tab, setTab] = useState('PENDIENTES');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const filtersRef = useRef(filters);
 
   useEffect(() => {
@@ -51,6 +53,10 @@ function useApproverAlcoholReviews() {
       if (!employeeData.error) {
         setEmployees(employeeData);
       }
+      const sectionData = await getSections();
+      if (!sectionData.error) {
+        setSections(sectionData);
+      }
     };
     start();
     const polling = setInterval(() => load(filtersRef.current, false), pollingInterval);
@@ -64,7 +70,7 @@ function useApproverAlcoholReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     load(emptyFilters, true);
   };
@@ -109,6 +115,7 @@ function useApproverAlcoholReviews() {
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,
     employees,
+    sections,
     loading, applyingFilters, taking, error,
     alreadyTaken, closeAlreadyTakenModal,
     tab, setTab,
