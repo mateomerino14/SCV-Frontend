@@ -9,7 +9,6 @@ function normalizePositionName(name) {
 }
 
 function usePositionManagement() {
-  const [positions, setPositions] = useState([]);
   const [allPositions, setAllPositions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
@@ -24,19 +23,18 @@ function usePositionManagement() {
   const [successMessage, setSuccessMessage] = useState('');
   const [formData, setFormData] = useState({nombre: '', monto_diario: '', monto_diario_usd: ''});
 
-  useEffect(() => {
-    load();
-  }, []);
-
   const load = async () => {
     setLoading(true);
     const data = await getPositions();
     setLoading(false);
     if (!data.error) {
-      setPositions(data);
       setAllPositions(data);
     }
   };
+
+  useEffect(() => {
+    load();
+  }, []);
 
   const showError = (message) => {
     setError(message);

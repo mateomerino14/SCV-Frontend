@@ -22,6 +22,9 @@ export const getPendingTrips = async (filters = {}) => {
     if (filters.id_empleado) {
       params.id_empleado = filters.id_empleado;
     }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
+    }
     const response = await apiClient.get('/approver/pending-trips', {params});
     return response.data;
   }
@@ -30,9 +33,22 @@ export const getPendingTrips = async (filters = {}) => {
   }
 };
 
-export const getMyTrips = async () => {
+export const getMyTrips = async (filters = {}) => {
   try {
-    const response = await apiClient.get('/approver/my-trips');
+    const params = {};
+    if (filters.fecha_inicio) {
+      params.fecha_inicio = filters.fecha_inicio;
+    }
+    if (filters.fecha_fin) {
+      params.fecha_fin = filters.fecha_fin;
+    }
+    if (filters.id_empleado) {
+      params.id_empleado = filters.id_empleado;
+    }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
+    }
+    const response = await apiClient.get('/approver/my-trips', {params});
     return response.data;
   }
   catch (error) {

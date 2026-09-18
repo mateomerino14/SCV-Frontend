@@ -8,6 +8,7 @@ import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import SuccessModal from '../../components/ui/SuccessModal';
 import SkeletonList from '../../components/ui/SkeletonList';
+import SectionDropdown from '../../components/ui/SectionDropdown';
 import useUserManagement from '../../hooks/admin/useUserManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
@@ -57,11 +58,12 @@ const roleConfig = {
 function UserManagementPage() {
   const {menuOpen, user: menuUser, openMenu, closeMenu} = useMenu();
   const {
-    users, positions, loading, savingAction, error, fieldErrors, setFieldErrors,
+    users, positions, sections, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, roleFilter, setRoleFilter, sectionFilter, setSectionFilter, selectedUser,
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
+    allUsers,
   } = useUserManagement();
 
   return (
@@ -74,10 +76,11 @@ function UserManagementPage() {
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar usuarios..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
-        <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
-          <Search size={16} style={{color: COLORS.labels}} />
-          <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Filtrar por sección..." value={sectionFilter} onChange={(event) => setSectionFilter(event.target.value)} />
-        </div>
+        {sections.length > 0 && (
+          <div className="mb-4">
+            <SectionDropdown sections={sections} selectedSection={sectionFilter} onSelect={setSectionFilter} placeholder="Todas las secciones" />
+          </div>
+        )}
         <div className={styles.tabsRow}>
           {tabs.map((tab) => (
             <button key={tab.valor} className={styles.tab} onClick={() => setRoleFilter(tab.valor)}
@@ -133,10 +136,10 @@ function UserManagementPage() {
         <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <UserFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
-        title="Nuevo Usuario" btnLabel="Registrar" formData={formData} setFormData={setFormData} positions={positions}
+        title="Nuevo Usuario" btnLabel="Registrar" formData={formData} setFormData={setFormData} positions={positions} allUsers={allUsers} sections={sections}
         loading={savingAction} error={error} fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} selectedUser={null} />
       <UserFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
-        title="Editar Usuario" btnLabel="Actualizar" formData={formData} setFormData={setFormData} positions={positions}
+        title="Editar Usuario" btnLabel="Actualizar" formData={formData} setFormData={setFormData} positions={positions} allUsers={allUsers} sections={sections}
         loading={savingAction} error={error} fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} selectedUser={selectedUser} />
       <ConfirmDialog isOpen={showSuspend} icon={selectedUser?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}
         title={selectedUser?.activo ? 'Suspender Usuario' : 'Activar Usuario'}

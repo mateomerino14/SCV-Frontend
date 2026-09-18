@@ -40,7 +40,7 @@ const historyStatusTabs = [
 function ReviewerReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalMyPending, employees, loading, applyingFilters, error, filters, setFilters,
+    trips, totalPending, totalMyPending, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, tab, setTab, applyFilters, clearFilters,
   } = useReviewerReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
@@ -72,7 +72,7 @@ function ReviewerReviewsPage() {
         </div>
         {tab !== 'MIS_PENDIENTES' && (
           <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
-            onApply={applyFilters} onClear={clearFilters} employees={employees} tabs={isPendingTab ? pendingTabsDefault : historyStatusTabs} applyingFilters={applyingFilters} />
+            onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={isPendingTab ? pendingTabsDefault : historyStatusTabs} applyingFilters={applyingFilters} />
         )}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''}</p>}

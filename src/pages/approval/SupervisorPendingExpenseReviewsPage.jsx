@@ -27,7 +27,7 @@ const styles = {
 function SupervisorPendingExpenseReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, total, employees, loading, applyingFilters, taking, error, alreadyTaken, closeAlreadyTakenModal,
+    trips, total, employees, sections, loading, applyingFilters, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, statusFilter, setStatusFilter, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingExpenseReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
@@ -42,7 +42,7 @@ function SupervisorPendingExpenseReviewsPage() {
       <div className={styles.content}>
         <PageHeader title="Rendiciones Sin Asignar" subtitle="Rendiciones que todavía no tienen un jefe directo definido en la jerarquía, o cuya sección no tiene un supervisor cargado. Se muestran a todos para que alguien las tome." />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
-          onApply={applyFilters} onClear={clearFilters} employees={employees} tabs={pendingTabsDefault} applyingFilters={applyingFilters} />
+          onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={pendingTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} de {total} viaje{total !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}

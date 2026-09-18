@@ -100,6 +100,56 @@ export const activatePosition = async (id) => {
   }
 };
 
+export const getSections = async () => {
+  try {
+    const response = await apiClient.get('/section');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener secciones'};
+  }
+};
+
+export const createSection = async (section) => {
+  try {
+    const response = await apiClient.post('/section', section);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al crear sección'};
+  }
+};
+
+export const updateSection = async (id, data) => {
+  try {
+    const response = await apiClient.put(`/section/${id}`, data);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al actualizar sección'};
+  }
+};
+
+export const suspendSection = async (id) => {
+  try {
+    const response = await apiClient.patch(`/section/${id}/suspend`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al suspender sección'};
+  }
+};
+
+export const activateSection = async (id) => {
+  try {
+    const response = await apiClient.patch(`/section/${id}/activate`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al activar sección'};
+  }
+};
+
 export const getDashboard = async () => {
   try {
     const response = await apiClient.get('/admin/dashboard');

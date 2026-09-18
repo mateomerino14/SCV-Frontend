@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from 'react';
 import {getPendingTrips, getMyTrips} from '../../services/approval/approverService';
 import {getEmployees} from '../../services/user/userService';
+import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
@@ -8,11 +9,12 @@ function useApproverReviews() {
   const [pending, setPending] = useState([]);
   const [myTrips, setMyTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('PENDIENTES');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const filtersRef = useRef(filters);
 
   useEffect(() => {
@@ -49,6 +51,10 @@ function useApproverReviews() {
       if (!employeeData.error) {
         setEmployees(employeeData);
       }
+      const sectionData = await getSections();
+      if (!sectionData.error) {
+        setSections(sectionData);
+      }
     };
     start();
     const polling = setInterval(() => load(filtersRef.current, false), pollingInterval);
@@ -62,7 +68,7 @@ function useApproverReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     load(emptyFilters, true);
   };
@@ -88,6 +94,7 @@ function useApproverReviews() {
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,
     employees,
+    sections,
     loading, applyingFilters, error,
     tab, setTab,
     filters, setFilters,

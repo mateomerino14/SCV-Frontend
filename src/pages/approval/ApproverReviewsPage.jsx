@@ -34,7 +34,7 @@ const mainTabs = [
 function ApproverReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalMyPending, totalApproved, totalRejected, employees, loading, applyingFilters, error, tab, setTab,
+    trips, totalPending, totalMyPending, totalApproved, totalRejected, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
   } = useApproverReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
@@ -71,7 +71,7 @@ function ApproverReviewsPage() {
         </div>
         {tab === 'PENDIENTES' && (
           <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-            employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
+            employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         )}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}

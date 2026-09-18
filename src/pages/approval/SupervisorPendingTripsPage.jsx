@@ -26,7 +26,7 @@ const styles = {
 function SupervisorPendingTripsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, employees, loading, taking, error, alreadyTaken, closeAlreadyTakenModal,
+    trips, employees, sections, loading, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, applyingFilters, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingTrips();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
@@ -41,7 +41,7 @@ function SupervisorPendingTripsPage() {
       <div className={styles.content}>
         <PageHeader title="Viajes Sin Asignar" subtitle="Viajes que todavía no tienen un jefe directo definido en la jerarquía, o cuya sección no tiene un supervisor cargado. Se muestran a todos para que alguien los tome." />
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-          employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
+          employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''} pendiente{trips.length !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}

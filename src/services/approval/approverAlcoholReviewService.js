@@ -12,6 +12,9 @@ export const getPendingAlcoholReviews = async (filters = {}) => {
     if (filters.id_empleado) {
       params.id_empleado = filters.id_empleado;
     }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
+    }
     const response = await apiClient.get('/approver/alcohol-review/pending', {params});
     return response.data;
   }
@@ -31,6 +34,9 @@ export const getMyAlcoholReviews = async (filters = {}) => {
     }
     if (filters.id_empleado) {
       params.id_empleado = filters.id_empleado;
+    }
+    if (filters.id_seccion) {
+      params.id_seccion = filters.id_seccion;
     }
     const response = await apiClient.get('/approver/alcohol-review/mine', {params});
     return response.data;

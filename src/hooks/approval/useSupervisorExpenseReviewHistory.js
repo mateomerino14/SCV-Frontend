@@ -1,13 +1,15 @@
 import {useState, useEffect} from 'react';
+import {getSections} from '../../services/admin/adminService';
 import {getMyExpenseReviews, returnExpenseReview, getReviewEmployees} from '../../services/approval/reviewService';
 
 function useSupervisorExpenseReviewHistory() {
   const [trips, setTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('EN_REVISION');
 
   const load = async (currentFilters = filters, showLoading = true) => {
@@ -32,6 +34,11 @@ function useSupervisorExpenseReviewHistory() {
         setEmployees(data);
       }
     });
+    getSections().then((data) => {
+      if (!data.error) {
+        setSections(data);
+      }
+    });
   }, []);
 
   const applyFilters = async () => {
@@ -41,7 +48,7 @@ function useSupervisorExpenseReviewHistory() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', numero_seccion: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     setStatusFilter('EN_REVISION');
     load(emptyFilters);
@@ -73,6 +80,7 @@ function useSupervisorExpenseReviewHistory() {
     trips: filteredTrips,
     total: filteredTrips.length,
     employees,
+    sections,
     loading,
     applyingFilters,
     error,

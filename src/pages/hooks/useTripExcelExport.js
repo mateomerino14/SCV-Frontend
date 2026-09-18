@@ -269,7 +269,7 @@ function useTripExcelExport() {
     sheet.mergeCells(5, infoStartCol + 4, 5, infoStartCol + 4);
     styleInfoLabel(sheet.getCell(5, infoStartCol + 4), 'DEP./SECCIÓN:');
     sheet.mergeCells(5, infoStartCol + 5, 5, infoEndCol);
-    styleInfoValue(sheet.getCell(5, infoStartCol + 5), trip.Usuario?.numero_seccion || '');
+    styleInfoValue(sheet.getCell(5, infoStartCol + 5), trip.Usuario?.Seccion?.nombre || '');
     sheet.getRow(5).height = 22;
     applyOuterBorder(sheet, 3, 5, infoStartCol, infoEndCol);
     const headers = ['N°', 'FECHA', 'CUENTA/ORACLE', 'D E T A L L E', 'TIPO GASTO', 'N° DOCUMENTO', 'NIT', 'IMPORTE FACT./REC.', 'TRAMOS DE CAMBIO', 'IMPORTE Bs./USD', 'I.V.A.', 'RC-IVA', 'IUE', 'IT', 'IMPORTE COSTO/ GASTO'];

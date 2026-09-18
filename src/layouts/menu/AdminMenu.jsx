@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {LayoutDashboard, Users, Briefcase, Plane, User, Settings, LogOut, Wallet} from 'lucide-react';
+import {LayoutDashboard, Users, Briefcase, Layers, Plane, User, Settings, LogOut, Wallet} from 'lucide-react';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import useIsTreasurer from '../../hooks/user/useIsTreasurer';
@@ -29,6 +29,7 @@ const administrationSection = [
   {path: routes.adminDashboard, label: 'Dashboard', icon: LayoutDashboard},
   {path: routes.adminUsers, label: 'Usuarios', icon: Users},
   {path: routes.adminPositions, label: 'Cargos', icon: Briefcase},
+  {path: routes.adminSections, label: 'Secciones', icon: Layers},
 ];
 
 const treasurySection = [

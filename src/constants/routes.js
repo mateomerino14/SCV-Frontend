@@ -8,6 +8,7 @@ export const routes = {
   adminDashboard: '/dashboard/administrador',
   adminUsers: '/dashboard/administrador/usuarios',
   adminPositions: '/dashboard/administrador/cargos',
+  adminSections: '/dashboard/administrador/secciones',
   adminProfile: '/dashboard/administrador/perfil',
   adminSettings: '/dashboard/administrador/configuracion',
   supervisorPendingExpenseReviews: '/dashboard/supervisor',

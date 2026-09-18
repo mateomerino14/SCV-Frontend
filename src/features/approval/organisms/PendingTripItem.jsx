@@ -49,7 +49,7 @@ function PendingTripItem({trip, detailRoute, originRoute, onTake, onReturn, taki
               style={{borderColor: COLORS.dataFields}} onError={(event) => {event.target.onerror = null; event.target.src = avatarDefault;}} />
             <div className="min-w-0">
               <p className="text-sm font-bold font-inter truncate" style={{color: COLORS.text}}>{trip.Usuario.nombre} {trip.Usuario.apellido_paterno}</p>
-              {trip.Usuario.numero_seccion && <p className="text-xs font-inter truncate" style={{color: COLORS.labels}}>{trip.Usuario.numero_seccion}</p>}
+              {trip.Usuario.Seccion?.nombre && <p className="text-xs font-inter truncate" style={{color: COLORS.labels}}>{trip.Usuario.Seccion?.nombre}</p>}
             </div>
           </div>
         ) : <div />}
