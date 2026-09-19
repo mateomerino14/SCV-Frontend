@@ -397,21 +397,23 @@ function useTripExcelExport() {
     currentRow += 1;
     const totalsUsdRowNumber = currentRow;
     const totalsUsdRow = sheet.getRow(totalsUsdRowNumber);
-    totalsUsdRow.getCell(1).value = 'Sumas Totales (USD)';
-    totalsUsdRow.getCell(1).font = {bold: true, size: 9};
-    totalsUsdRow.getCell(10).value = totalImporteUsd;
-    totalsUsdRow.getCell(15).value = totalCostUsd;
-    for (let col = 1; col <= totalCols; col++) {
-      const cell = totalsUsdRow.getCell(col);
-      cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: internationalRowFill}};
-      cell.border = thinBorder;
-      cell.font = {bold: true, size: 9};
-      cell.alignment = {horizontal: col === 1 ? 'left' : 'center', vertical: 'middle'};
-      if (col === 10 || col === 15) {
-        cell.numFmt = '#,##0.00';
+    if (trip.tipo === 'Internacional') {
+      totalsUsdRow.getCell(1).value = 'Sumas Totales (USD)';
+      totalsUsdRow.getCell(1).font = {bold: true, size: 9};
+      totalsUsdRow.getCell(10).value = totalImporteUsd;
+      totalsUsdRow.getCell(15).value = totalCostUsd;
+      for (let col = 1; col <= totalCols; col++) {
+        const cell = totalsUsdRow.getCell(col);
+        cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: internationalRowFill}};
+        cell.border = thinBorder;
+        cell.font = {bold: true, size: 9};
+        cell.alignment = {horizontal: col === 1 ? 'left' : 'center', vertical: 'middle'};
+        if (col === 10 || col === 15) {
+          cell.numFmt = '#,##0.00';
+        }
       }
+      totalsUsdRow.height = 20;
     }
-    totalsUsdRow.height = 20;
     currentRow += 1;
     applyOuterBorder(sheet, headerRowNumber, totalsUsdRowNumber, 1, totalCols);
     currentRow += 1;
