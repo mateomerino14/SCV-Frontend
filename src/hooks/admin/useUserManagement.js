@@ -20,7 +20,7 @@ function useUserManagement() {
   const [successMessage, setSuccessMessage] = useState('');
   const [formData, setFormData] = useState({
     nombre: '', apellido_paterno: '', apellido_materno: '',
-    email_corporativo: '', telefono: '', contrasenia: '',
+    email_corporativo: '', telefono: '',
     id_cargo: '', id_rol: 3,
     id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
   });
@@ -63,7 +63,7 @@ function useUserManagement() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const onlyNumbers = /^[0-9]+$/;
 
-  const validateFields = (isNew, excludeId = null) => {
+  const validateFields = (excludeId = null) => {
     const errors = {};
     if (!formData.nombre.trim()) {
       errors.nombre = 'El nombre es requerido';
@@ -117,14 +117,6 @@ function useUserManagement() {
     if (!formData.id_cargo) {
       errors.id_cargo = 'Selecciona un cargo';
     }
-    if (isNew) {
-      if (!formData.contrasenia) {
-        errors.contrasenia = 'La contraseña es requerida';
-      }
-      else if (formData.contrasenia.length < 8) {
-        errors.contrasenia = 'Mínimo 8 caracteres';
-      }
-    }
     return errors;
   };
 
@@ -140,7 +132,7 @@ function useUserManagement() {
     const firstActivePosition = positions.filter((position) => position.activo)[0];
     setFormData({
       nombre: '', apellido_paterno: '', apellido_materno: '',
-      email_corporativo: '', telefono: '', contrasenia: '',
+      email_corporativo: '', telefono: '',
       id_cargo: firstActivePosition?.id_cargo || '', id_rol: 3,
       id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
     });
@@ -157,7 +149,6 @@ function useUserManagement() {
       apellido_materno: user.apellido_materno || '',
       email_corporativo: user.email_corporativo,
       telefono: user.telefono || '',
-      contrasenia: '',
       id_cargo: user.Cargo?.id_cargo || '',
       id_rol: user.id_rol,
       id_jefe_directo: user.id_jefe_directo || '',
@@ -175,7 +166,7 @@ function useUserManagement() {
   };
 
   const handleCreate = async () => {
-    const errors = validateFields(true);
+    const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -195,7 +186,7 @@ function useUserManagement() {
   };
 
   const handleEdit = async () => {
-    const errors = validateFields(false, selectedUser.id_usuario);
+    const errors = validateFields(selectedUser.id_usuario);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
