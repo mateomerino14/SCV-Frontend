@@ -217,7 +217,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>
                 {formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)
               </p>
-              <textarea className={styles.textarea} rows={2} placeholder="Detalle el motivo del exceso de este día..."
+              <textarea className={styles.textarea} rows={4} maxLength={300} placeholder="Detalle el motivo del exceso de este día..."
                 value={dayJustifications[day.fecha] || ''} onChange={(event) => setDayJustification(day.fecha, event.target.value)} disabled={actionsDisabled}
                 style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text, opacity: actionsDisabled ? 0.6 : 1}} />
             </div>
@@ -225,7 +225,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           {exceedsHotels && (
             <div className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>Exceso en Hoteles</p>
-              <textarea className={styles.textarea} rows={2} placeholder="Detalle el motivo del exceso en hoteles..."
+              <textarea className={styles.textarea} rows={4} maxLength={300} placeholder="Detalle el motivo del exceso en hoteles..."
                 value={dayJustifications.HOTEL || ''} onChange={(event) => setDayJustification('HOTEL', event.target.value)} disabled={actionsDisabled}
                 style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text, opacity: actionsDisabled ? 0.6 : 1}} />
             </div>
@@ -239,14 +239,14 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           {exceededDays.map((day) => dayJustifications[day.fecha] && (
             <div key={day.fecha} className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)}</p>
-              <textarea className={styles.textarea} rows={2} value={dayJustifications[day.fecha]} readOnly
+              <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
                 style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           ))}
           {exceedsHotels && dayJustifications.HOTEL && (
             <div className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>Hoteles</p>
-              <textarea className={styles.textarea} rows={2} value={dayJustifications.HOTEL} readOnly
+              <textarea className={styles.textarea} rows={3} value={dayJustifications.HOTEL} readOnly
                 style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           )}
