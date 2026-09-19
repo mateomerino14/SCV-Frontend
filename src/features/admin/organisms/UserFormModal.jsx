@@ -71,8 +71,8 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   error={fieldErrors.id_jefe_directo} onChange={(id) => handleChange('id_jefe_directo', id)} />
                 <SectionSelector sections={sections} sectionId={formData.id_seccion}
                   onChange={(value) => handleChange('id_seccion', value)} error={fieldErrors.id_seccion} />
-                <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={30} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
-                  onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 30)} />
+                <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={15} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
+                  onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 15)} />
                 {isNew && (
                   <p className="text-xs font-inter italic" style={{color: COLORS.labels}}>
                     Se generará una contraseña temporal automáticamente y se enviará por correo al nuevo usuario.
