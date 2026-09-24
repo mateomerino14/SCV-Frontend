@@ -1,4 +1,4 @@
-import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle, Users} from 'lucide-react';
+import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle, Users, Building2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {registerExpensePath, uploadInvoicePath} from '../../../constants/routes';
 import {formatDateRange, formatDateShort} from '../../../utils/dateFormatter';
@@ -6,6 +6,7 @@ import {tripStatusConfig, tripStatusMessages} from '../hooks/useTripStatusConfig
 import TripStatusBadge from '../atoms/TripStatusBadge';
 import TripTypeBadge from '../atoms/TripTypeBadge';
 import BudgetBar from '../molecules/BudgetBar';
+import DailyBreakdownCard from '../molecules/DailyBreakdownCard';
 import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import TripObservationsList from '../molecules/TripObservationsList';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
@@ -44,7 +45,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
     accumulatedExpense, accumulatedExpenseUsd, totalExceeds, totalExceedsUsd, tripInProgress,
     submittingReview, error, exceededDays, exceedsHotels, isSubstitution, dayJustifications, setDayJustification, observations,
     showAllNational, setShowAllNational, showAllInternational, setShowAllInternational,
-    handleRequestSubmitReview, handleRequestDelete,
+    handleRequestSubmitReview, handleRequestDelete, dailyBreakdown,
   } = tripDetail;
 
   const {
@@ -115,6 +116,13 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <BudgetBar accumulatedExpense={accumulatedExpenseUsd} assignedAmount={trip.monto_asignado_usd} isUsd />
         </div>
       )}
+      <DailyBreakdownCard dailyBreakdown={dailyBreakdown} dailyRate={parseFloat(trip.Usuario?.Cargo?.monto_diario || 0)} dailyRateUsd={parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0)} />
+      <div className="flex items-center gap-2 mt-2 px-1">
+        <Building2 size={13} style={{color: COLORS.labels, flexShrink: 0}} />
+        <p className="text-xs font-inter" style={{color: COLORS.labels}}>
+          Los hoteles no se controlan día por día: se descuentan del presupuesto total del viaje.
+        </p>
+      </div>
 
       {tripInProgress && !isInternational && (
         <div className={styles.actionRow}>
