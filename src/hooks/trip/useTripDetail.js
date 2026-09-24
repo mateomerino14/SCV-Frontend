@@ -10,6 +10,7 @@ function useTripDetail(tripId) {
   const [deletingExpense, setDeletingExpense] = useState(false);
   const [error, setError] = useState('');
   const [exceededDays, setExceededDays] = useState([]);
+  const [dailyBreakdown, setDailyBreakdown] = useState([]);
   const [exceedsHotels, setExceedsHotels] = useState(false);
   const [isSubstitution, setIsSubstitution] = useState(false);
   const [dayJustifications, setDayJustifications] = useState({});
@@ -51,6 +52,7 @@ function useTripDetail(tripId) {
       setTotalExceeds(!!data.excedeTotal);
       setTotalExceedsUsd(!!data.excedeTotalUsd);
       setExceededDays(data.diasExcedidos || []);
+      setDailyBreakdown(data.desgloseDiario || []);
       setExceedsHotels(!!data.excedeHoteles);
       setIsSubstitution(!!data.esSustitucion);
       if (data.comentarios && data.comentarios.length > 0) {
@@ -180,6 +182,7 @@ function useTripDetail(tripId) {
     totalExceeds,
     totalExceedsUsd,
     exceededDays,
+    dailyBreakdown,
     exceedsHotels,
     isSubstitution,
     dayJustifications, setDayJustification,

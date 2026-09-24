@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
 import {extractOracleAccount} from '../../utils/oracleAccount';
 import {toOracleExpenseType} from '../../utils/expenseTypeCode';
+import buildTripCode from '../../utils/tripCode';
 import {MAXAM_LOGO} from '../../constants';
 
 const vatRate = 0.13;
@@ -250,7 +251,7 @@ function useTripExcelExport() {
     sheet.mergeCells(4, infoStartCol, 4, infoStartCol + 1);
     styleInfoLabel(sheet.getCell(4, infoStartCol), 'MEMORANDUM:');
     sheet.mergeCells(4, infoStartCol + 2, 4, infoStartCol + 3);
-    styleInfoValue(sheet.getCell(4, infoStartCol + 2), `V-${trip.id_viaje}`);
+    styleInfoValue(sheet.getCell(4, infoStartCol + 2), buildTripCode(trip));
     sheet.mergeCells(4, infoStartCol + 4, 4, infoStartCol + 4);
     styleInfoLabel(sheet.getCell(4, infoStartCol + 4), 'FECHA:');
     sheet.mergeCells(4, infoStartCol + 5, 4, infoEndCol);
