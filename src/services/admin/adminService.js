@@ -159,3 +159,26 @@ export const getDashboard = async () => {
     return {error: error.response?.data?.error || 'Error al obtener dashboard'};
   }
 };
+
+export const getAudits = async (filters = {}) => {
+  try {
+    const params = {};
+    if (filters.tipo) {
+      params.tipo = filters.tipo;
+    }
+    if (filters.id_usuario) {
+      params.id_usuario = filters.id_usuario;
+    }
+    if (filters.fecha_inicio) {
+      params.fecha_inicio = filters.fecha_inicio;
+    }
+    if (filters.fecha_fin) {
+      params.fecha_fin = filters.fecha_fin;
+    }
+    const response = await apiClient.get('/audit', {params});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener el historial de auditoría'};
+  }
+};
