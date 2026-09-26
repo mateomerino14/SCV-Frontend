@@ -35,6 +35,7 @@ const styles = {
   confirmBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer transition-colors mt-3",
   cancelBtn: "w-full py-3 rounded-xl font-bold font-nunito text-base cursor-pointer mt-2 border",
   errorMsg: "text-xs font-inter italic text-center mt-3",
+  loadErrorMsg: "text-sm font-inter text-center py-3 px-4 rounded-xl mb-4",
   rightCol: "flex flex-col gap-4 h-full",
 };
 
@@ -48,8 +49,8 @@ function EditTripPage() {
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
-    days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
-    loading, loadingData, error, fieldErrors, loadingLocation,
+    nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
+    loading, loadingData, loadError, error, fieldErrors, loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleUseCurrentLocation, handleSave,
   } = useEditTrip(id, user);
@@ -63,6 +64,26 @@ function EditTripPage() {
         <Navbar text="Editar Viaje" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
         <div className={styles.content}><SkeletonCard lines={6} /></div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className={styles.page} style={{backgroundColor: COLORS.background}}>
+        <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+        <Navbar text="Editar Viaje" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+        <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
+        <div className={styles.content}>
+          <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
+            <ArrowLeft size={25} style={{color: COLORS.title}} />
+          </button>
+          <p className={styles.loadErrorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{loadError}</p>
+          <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}} onClick={() => navigate(originRoute)}>
+            Volver
+          </button>
+        </div>
         <Footer />
       </div>
     );
