@@ -27,13 +27,8 @@ const styles = {
 
 const mainTabs = [
   {valor: 'MIS_PENDIENTES', label: 'Pendientes'},
-  {valor: 'HISTORIAL', label: 'Historial'},
-];
-
-const historyStatusTabs = [
-  {valor: 'TODOS', label: 'Todos'},
-  {valor: 'APROBADO_FINAL', label: 'Aprobados'},
-  {valor: 'RECHAZADO', label: 'Rechazados'},
+  {valor: 'APROBADOS', label: 'Aprobados'},
+  {valor: 'RECHAZADOS', label: 'Rechazados'},
 ];
 
 function ReviewerReviewsPage() {
@@ -45,8 +40,11 @@ function ReviewerReviewsPage() {
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
   const isPendingTab = tab === 'MIS_PENDIENTES';
   let subtitle = 'Rendiciones aprobadas en las etapas anteriores que esperan tu revisión final.';
-  if (tab === 'HISTORIAL') {
-    subtitle = 'Rendiciones que ya aprobaste o rechazaste en revisión final.';
+  if (tab === 'APROBADOS') {
+    subtitle = 'Rendiciones que aprobaste en revisión final.';
+  }
+  else if (tab === 'RECHAZADOS') {
+    subtitle = 'Rendiciones que rechazaste en revisión final.';
   }
 
   return (
@@ -66,7 +64,7 @@ function ReviewerReviewsPage() {
           ))}
         </div>
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
-          onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={isPendingTab ? pendingTabsDefault : historyStatusTabs} applyingFilters={applyingFilters} />
+          onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={pendingTabsDefault} hideStatusTabs={!isPendingTab} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}

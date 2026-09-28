@@ -6,7 +6,8 @@ const pollingInterval = 30 * 1000;
 
 function useReviewerReviews() {
   const [myPending, setMyPending] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [approved, setApproved] = useState([]);
+  const [rejected, setRejected] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +34,8 @@ function useReviewerReviews() {
       return;
     }
     setMyPending((historyData || []).filter((trip) => trip.estado === 'APROBADO_SUPERVISOR'));
-    setHistory((historyData || []).filter((trip) => trip.estado === 'APROBADO_FINAL' || trip.estado === 'RECHAZADO'));
+    setApproved((historyData || []).filter((trip) => trip.estado === 'APROBADO_FINAL'));
+    setRejected((historyData || []).filter((trip) => trip.estado === 'RECHAZADO'));
   }, [filters]);
 
   useEffect(() => {
@@ -80,24 +82,19 @@ function useReviewerReviews() {
     return true;
   });
 
-  const filteredHistory = history.filter((trip) => {
-    if (statusFilter === 'APROBADO_FINAL') {
-      return trip.estado === 'APROBADO_FINAL';
-    }
-    if (statusFilter === 'RECHAZADO') {
-      return trip.estado === 'RECHAZADO';
-    }
-    return true;
-  });
-
   let trips = filteredPending;
-  if (tab === 'HISTORIAL') {
-    trips = filteredHistory;
+  if (tab === 'APROBADOS') {
+    trips = approved;
+  }
+  else if (tab === 'RECHAZADOS') {
+    trips = rejected;
   }
 
   return {
     trips,
     totalMyPending: myPending.length,
+    totalApproved: approved.length,
+    totalRejected: rejected.length,
     employees,
     sections,
     loading,
