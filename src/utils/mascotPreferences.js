@@ -61,3 +61,16 @@ export function pendingMessage(name, count, singular, plural) {
   }
   return `${greetingFor(name)} No tienes pendientes aquí por ahora. ¡Todo al día!`;
 }
+
+// Olvida que pantallas ya saludo, para que el proximo inicio de sesion salude de nuevo
+// (se llama al cerrar sesion, aunque se vuelva a entrar en la misma pestana)
+export function resetMascotSeen() {
+  try {
+    Object.keys(sessionStorage)
+      .filter((key) => key.startsWith(seenPrefix))
+      .forEach((key) => sessionStorage.removeItem(key));
+  }
+  catch {
+    // sin almacenamiento disponible
+  }
+}
