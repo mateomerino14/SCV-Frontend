@@ -73,13 +73,13 @@ function EditInvoicePage() {
             <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
           </div>
           <div className={styles.colWrapper}>
-            <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
+            <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
           </div>
         </div>
         <div className={styles.mobileStack}>
           {imageSection}
           <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
-          <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
+          <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
         </div>
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         <button className={styles.guardarBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.primary}} onClick={handleSave} disabled={loading}>

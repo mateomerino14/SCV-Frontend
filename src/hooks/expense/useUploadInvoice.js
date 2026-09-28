@@ -3,6 +3,23 @@ import {extractInvoice, saveInvoice} from '../../services/expense/invoiceService
 import {getCategories} from '../../services/expense/expenseService';
 import {compressImage} from '../../utils/imageCompressor';
 
+const validationSaveError = 'Completa los campos requeridos';
+
+// Quita los errores de los campos indicados y, si ya no queda ninguno, tambien el
+// aviso general de validacion de la tarjeta
+const clearFieldErrors = (invoice, fields) => {
+  const fieldErrors = {...invoice.fieldErrors};
+  fields.forEach((field) => {
+    delete fieldErrors[field];
+  });
+  const hasErrors = Object.values(fieldErrors).some(Boolean);
+  let saveError = invoice.saveError;
+  if (!hasErrors && saveError === validationSaveError) {
+    saveError = null;
+  }
+  return {fieldErrors, saveError};
+};
+
 function useUploadInvoice(tripId) {
   const [invoices, setInvoices] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -177,7 +194,7 @@ function useUploadInvoice(tripId) {
         return {
           ...invoice,
           data: {...invoice.data, [field]: value},
-          fieldErrors: {...invoice.fieldErrors, [field]: undefined},
+          ...clearFieldErrors(invoice, [field]),
           manuallyModified,
         };
       })
@@ -202,7 +219,7 @@ function useUploadInvoice(tripId) {
           file: compressed,
           preview: URL.createObjectURL(compressed),
           name: compressed.name,
-          fieldErrors: {...invoice.fieldErrors, image: undefined},
+          ...clearFieldErrors(invoice, ['image']),
         };
       })
     );
@@ -220,6 +237,7 @@ function useUploadInvoice(tripId) {
         return {
           ...invoice,
           data: {...invoice.data, detalle: [...(invoice.data.detalle || []), item]},
+          ...clearFieldErrors(invoice, ['detalle']),
           manuallyModified: true,
         };
       })
@@ -262,7 +280,7 @@ function useUploadInvoice(tripId) {
       errors.id_categoria_gasto = 'La categoría es requerida';
     }
     if (invoice.manual && !invoice.file) {
-      errors.imagen = 'Debes subir una imagen o comprobante de la factura';
+      errors.image = 'Debes subir una imagen o comprobante de la factura';
     }
     if (!invoice.data.detalle || invoice.data.detalle.length === 0) {
       errors.detalle = 'Debes agregar al menos un producto al detalle';
@@ -290,7 +308,7 @@ function useUploadInvoice(tripId) {
         setInvoices((prev) =>
           prev.map((current, idx) => {
             if (idx === i) {
-              return {...current, fieldErrors: errors, saveError: 'Completa los campos requeridos'};
+              return {...current, fieldErrors: errors, saveError: validationSaveError};
             }
             return current;
           })

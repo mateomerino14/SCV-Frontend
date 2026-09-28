@@ -90,6 +90,7 @@ function useEditInvoice(expenseId) {
   const handleAddDetail = (item) => {
     setData((prev) => ({...prev, detalle: [...(prev.detalle || []), item]}));
     setManuallyModified(true);
+    setFieldErrors((prev) => ({...prev, detalle: undefined}));
   };
 
   const handleRemoveDetail = (index) => {
@@ -135,6 +136,9 @@ function useEditInvoice(expenseId) {
     }
     if (!data?.id_categoria_gasto) {
       errors.id_categoria_gasto = 'La categoría es requerida';
+    }
+    if (!data?.detalle || data.detalle.length === 0) {
+      errors.detalle = 'Debes agregar al menos un producto al detalle';
     }
     return errors;
   };
