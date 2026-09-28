@@ -17,6 +17,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useApproverPendingTripDetail from '../../hooks/approval/useApproverPendingTripDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import approverTripStatusConfig from '../../features/approval/constants/approverTripStatus';
+import {routes} from '../../constants/routes';
 import {COLORS} from '../../constants';
 
 const styles = {
@@ -39,7 +40,7 @@ function ApproverTripReviewDetailPage() {
   const {id} = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const originRoute = location.state?.from || '/dashboard/aprobador/viajes-pendientes';
+  const originRoute = location.state?.from || routes.approverReviews;
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const [showAddComment, setShowAddComment] = useState(false);
   const {

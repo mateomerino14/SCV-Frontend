@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {getHomeRoute} from '../../constants/roleHome';
 import {login, checkEmail, sendCode, verifyCode} from '../../services/user/authService';
 import {setToken} from '../../services/shared/tokenStore';
 import {jwtDecode} from 'jwt-decode';
@@ -32,21 +33,10 @@ function useLogin() {
     setCodeError('');
   };
 
+  // Tras iniciar sesion, cada rol empieza en la primera opcion de su menu
   const redirectByRole = (token) => {
     const decoded = jwtDecode(token);
-    const role = decoded.id_rol;
-    if (role === 1) {
-      window.location.href = '/dashboard/administrador';
-    }
-    else if (role === 2) {
-      window.location.href = '/dashboard/supervisor/viajes-pendientes';
-    }
-    else if (role === 4) {
-      window.location.href = '/dashboard/revisor';
-    }
-    else {
-      window.location.href = '/dashboard/empleado';
-    }
+    window.location.href = getHomeRoute(decoded.id_rol);
   };
 
   const handleEmailChange = (value) => {
