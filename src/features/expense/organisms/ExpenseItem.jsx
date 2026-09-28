@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {Trash2, Pencil, Globe, MapPin, Calendar, Tag, FileText, ArrowRight, MessageSquare, List, Receipt} from 'lucide-react';
+import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, MessageSquare, List, Receipt, FolderOpen} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseFieldTag from '../atoms/ExpenseFieldTag';
@@ -51,6 +51,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
         {expenseDate && <ExpenseFieldTag icon={Calendar} text={formatDateShort(expenseDate)} color={accentColor} />}
         <ExpenseFieldTag icon={Tag} text={typeLabels[expense.tipo] || expense.tipo} color={accentColor} />
         {expense.Factura?.numero_factura && <ExpenseFieldTag icon={FileText} text={`N° ${expense.Factura.numero_factura}`} color={accentColor} />}
+        {expense.Categoria_Gasto?.nombre && expense.Proveedor?.nombre && <ExpenseFieldTag icon={FolderOpen} text={expense.Categoria_Gasto.nombre} color={accentColor} />}
         {docLabel && <span style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter'}}>{docLabel}</span>}
       </div>
       {isInternational && (
