@@ -4,6 +4,7 @@ import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import ReceiptSentModal from '../../features/expense/organisms/ReceiptSentModal';
+import ReceiptSendingModal from '../../features/expense/organisms/ReceiptSendingModal';
 import ExpenseHeaderCard from '../../features/expense/molecules/ExpenseHeaderCard';
 import ExpenseSectionCard from '../../features/expense/molecules/ExpenseSectionCard';
 import ExpenseFieldRow from '../../features/expense/atoms/ExpenseFieldRow';
@@ -180,6 +181,7 @@ function ExpenseDetailPage() {
           </ExpenseSectionCard>
         )}
       </div>
+      <ReceiptSendingModal isOpen={sending} />
       <ReceiptSentModal isOpen={receiptModal.show} onClose={closeReceiptModal} success={receiptModal.success} message={receiptModal.message} />
       <Footer />
     </div>

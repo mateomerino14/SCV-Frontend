@@ -5,6 +5,7 @@ import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseFieldTag from '../atoms/ExpenseFieldTag';
 import ExpenseObservationsModal from '../../approval/organisms/ExpenseObservationsModal';
 import ReceiptSentModal from './ReceiptSentModal';
+import ReceiptSendingModal from './ReceiptSendingModal';
 import useExpenseReceipt from '../hooks/useExpenseReceipt';
 import useExpenseObservations from '../hooks/useExpenseObservations';
 import useExpenseNavigation from '../hooks/useExpenseNavigation';
@@ -94,6 +95,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
       <ExpenseObservationsModal isOpen={showModal} onClose={close} expenseName={displayName} observations={expenseObservations}
         canEdit={false} newText="" setNewText={() => {}} onAdd={() => {}} onEdit={() => {}} onDelete={() => {}} loading={false} error={null} />
 
+      <ReceiptSendingModal isOpen={sending} />
       <ReceiptSentModal isOpen={modal.show} onClose={closeModal} success={modal.success} message={modal.message} />
     </motion.div>
   );
