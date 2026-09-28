@@ -109,6 +109,7 @@ function useEditInvoice(expenseId) {
     setImage(compressed);
     setImagePreview(URL.createObjectURL(compressed));
     setExistingImage(null);
+    setFieldErrors((prev) => ({...prev, image: undefined}));
   };
 
   const handleRemoveImage = () => {
@@ -139,6 +140,9 @@ function useEditInvoice(expenseId) {
     }
     if (!data?.detalle || data.detalle.length === 0) {
       errors.detalle = 'Debes agregar al menos un producto al detalle';
+    }
+    if (!image && !existingImage) {
+      errors.image = 'Debes subir una imagen o comprobante de la factura';
     }
     return errors;
   };
