@@ -2,6 +2,7 @@ import {useNavigate} from 'react-router-dom';
 import {Mail, Phone, Briefcase, LogOut, Layers} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import PhotoModal from '../../features/user/organisms/PhotoModal';
@@ -59,6 +60,8 @@ function ProfilePage() {
     );
   }
 
+  const mascotMessage = menuUser ? 'Mantén tus datos al día: tu carnet de identidad aparece en tus recibos.' : null;
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -94,6 +97,7 @@ function ProfilePage() {
           Cerrar Sesión
         </button>
       </div>
+      <MascotGreeting pageKey="perfil" message={mascotMessage} />
       <Footer />
     </div>
   );

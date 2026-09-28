@@ -1,5 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {pendingMessage} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
@@ -46,6 +48,8 @@ function TreasurerReviewsPage() {
     subtitle = 'Viajes que rechazaste en la asignación de fondos.';
   }
 
+  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalPending, 'viaje esperando fondos', 'viajes esperando fondos');
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -76,6 +80,7 @@ function TreasurerReviewsPage() {
           </div>
         )}
       </div>
+      <MascotGreeting pageKey="tesorero-fondos" message={mascotMessage} />
       <Footer />
     </div>
   );

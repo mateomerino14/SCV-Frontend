@@ -1,5 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {pendingMessage} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
@@ -46,6 +48,8 @@ function ApproverReviewsPage() {
     subtitle = 'Viajes que ya rechazaste.';
   }
 
+  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'viaje por aprobar', 'viajes por aprobar');
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -76,6 +80,7 @@ function ApproverReviewsPage() {
           </div>
         )}
       </div>
+      <MascotGreeting pageKey="aprobador-viajes" message={mascotMessage} />
       <Footer />
     </div>
   );

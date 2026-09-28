@@ -1,5 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {pendingMessage} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
@@ -35,6 +37,8 @@ function SupervisorExpenseReviewHistoryPage() {
     subtitle = 'Rendiciones que rechazaste para que el empleado las corrija.';
   }
 
+  const mascotMessage = !loading && statusFilter === 'EN_REVISION' ? pendingMessage(user?.nombre, total, 'rendición por revisar', 'rendiciones por revisar') : null;
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -64,6 +68,7 @@ function SupervisorExpenseReviewHistoryPage() {
           </div>
         )}
       </div>
+      <MascotGreeting pageKey="supervisor-rendiciones" message={mascotMessage} />
       <Footer />
     </div>
   );

@@ -2,6 +2,8 @@ import {Users, Briefcase} from 'lucide-react';
 import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid} from 'recharts';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {greetingFor} from '../../utils/mascotPreferences';
 import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
 import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
@@ -53,6 +55,8 @@ function DashboardAdminPage() {
   const {showModal, loading: loadingChange, error: errorChange, handleChange} = usePasswordExpiredCheck();
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
+
+  const mascotMessage = loading ? null : `${greetingFor(user?.nombre)} Aquí tienes el resumen del sistema.`;
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -127,6 +131,7 @@ function DashboardAdminPage() {
           </>
         )}
       </div>
+      <MascotGreeting pageKey="admin-resumen" message={mascotMessage} />
       <Footer />
     </div>
   );

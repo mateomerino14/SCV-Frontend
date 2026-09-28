@@ -1,5 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {greetingFor} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
@@ -30,6 +32,8 @@ function SupervisorPendingTripsPage() {
     filters, setFilters, applyingFilters, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingTrips();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
+
+  const mascotMessage = loading ? null : (trips.length > 0 ? `${greetingFor(user?.nombre)} Hay ${trips.length} ${trips.length === 1 ? 'viaje sin asignar esperando' : 'viajes sin asignar esperando'} que alguien lo${trips.length === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay viajes sin asignar por ahora.`);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -62,6 +66,7 @@ function SupervisorPendingTripsPage() {
           </div>
         )}
       </div>
+      <MascotGreeting pageKey="supervisor-viajes-sin-asignar" message={mascotMessage} />
       <Footer />
     </div>
   );

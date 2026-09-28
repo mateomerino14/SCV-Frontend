@@ -1,11 +1,13 @@
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {KeyRound, FileText, LogOut} from 'lucide-react';
+import {KeyRound, FileText, LogOut, Smile} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ConfigOption from '../../features/user/atoms/ConfigOption';
+import ConfigToggle from '../../features/user/atoms/ConfigToggle';
+import {isMascotEnabled, setMascotEnabled} from '../../utils/mascotPreferences';
 import ChangePasswordModal from '../../features/user/organisms/ChangePasswordModal';
 import TermsModal from '../../features/user/organisms/TermsModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
@@ -25,6 +27,11 @@ const styles = {
 };
 
 function SettingsPage() {
+  const [mascotEnabled, setMascotEnabledState] = useState(isMascotEnabled());
+  const handleMascotChange = (enabled) => {
+    setMascotEnabled(enabled);
+    setMascotEnabledState(enabled);
+  };
   const navigate = useNavigate();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
@@ -46,6 +53,13 @@ function SettingsPage() {
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cuenta</p>
             <div className={styles.sectionWrapper}>
               <ConfigOption icon={KeyRound} label="Cambiar contraseña" onClick={() => setShowChangePassword(true)} />
+            </div>
+          </div>
+          <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
+            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Preferencias</p>
+            <div className={styles.sectionWrapper}>
+              <ConfigToggle icon={Smile} label="Mostrar a Casquito" description="La mascota del sistema te saluda y te recuerda tus pendientes."
+                checked={mascotEnabled} onChange={handleMascotChange} />
             </div>
           </div>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>

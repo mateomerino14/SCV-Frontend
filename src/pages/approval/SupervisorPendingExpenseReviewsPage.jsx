@@ -1,5 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {greetingFor} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
@@ -32,6 +34,8 @@ function SupervisorPendingExpenseReviewsPage() {
   } = useSupervisorPendingExpenseReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
 
+  const mascotMessage = loading ? null : (total > 0 ? `${greetingFor(user?.nombre)} Hay ${total} ${total === 1 ? 'rendición sin asignar esperando' : 'rendiciones sin asignar esperando'} que alguien la${total === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay rendiciones sin asignar por ahora.`);
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -63,6 +67,7 @@ function SupervisorPendingExpenseReviewsPage() {
           </div>
         )}
       </div>
+      <MascotGreeting pageKey="supervisor-rendiciones-sin-asignar" message={mascotMessage} />
       <Footer />
     </div>
   );

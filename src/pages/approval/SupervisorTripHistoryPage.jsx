@@ -1,5 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {pendingMessage} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
@@ -40,6 +42,8 @@ function SupervisorTripHistoryPage() {
     subtitle = 'Viajes que ya rechazaste.';
   }
 
+  const mascotMessage = !loading && statusFilter === 'EN_REVISION_VIAJE' ? pendingMessage(user?.nombre, total, 'viaje por revisar', 'viajes por revisar') : null;
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -69,6 +73,7 @@ function SupervisorTripHistoryPage() {
           </div>
         )}
       </div>
+      <MascotGreeting pageKey="supervisor-viajes" message={mascotMessage} />
       <Footer />
     </div>
   );

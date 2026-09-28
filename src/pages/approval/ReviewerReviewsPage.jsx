@@ -1,5 +1,7 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {pendingMessage} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
@@ -31,7 +33,7 @@ const mainTabs = [
 function ReviewerReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, employees, sections, loading, applyingFilters, error, filters, setFilters,
+    trips, totalMyPending, employees, sections, loading, applyingFilters, error, filters, setFilters,
     tab, setTab, applyFilters, clearFilters,
   } = useReviewerReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
@@ -42,6 +44,8 @@ function ReviewerReviewsPage() {
   else if (tab === 'RECHAZADOS') {
     subtitle = 'Rendiciones que rechazaste en revisión final.';
   }
+
+  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición por revisar', 'rendiciones por revisar');
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -72,6 +76,7 @@ function ReviewerReviewsPage() {
           </div>
         )}
       </div>
+      <MascotGreeting pageKey="revisor-rendiciones" message={mascotMessage} />
       <Footer />
     </div>
   );

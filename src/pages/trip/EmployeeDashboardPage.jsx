@@ -1,6 +1,8 @@
 import {useNavigate} from 'react-router-dom';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {greetingFor} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import DraftTripCard from '../../features/trip/organisms/DraftTripCard';
@@ -31,6 +33,17 @@ const styles = {
   scrollRow: "flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory items-stretch",
 };
 
+// Mensaje de Casquito en Mis Viajes, segun lo que el empleado tiene pendiente
+function buildDashboardMessage(name, inProgressCount, draftCount) {
+  if (inProgressCount > 0) {
+    return `${greetingFor(name)} Tienes ${inProgressCount} ${inProgressCount === 1 ? 'viaje en curso' : 'viajes en curso'}: registra tus gastos a tiempo.`;
+  }
+  if (draftCount > 0) {
+    return `${greetingFor(name)} Tienes ${draftCount} ${draftCount === 1 ? 'borrador' : 'borradores'} sin enviar a revisión.`;
+  }
+  return `${greetingFor(name)} Cuando tengas un viaje, créalo desde aquí.`;
+}
+
 function EmployeeDashboardPage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
@@ -49,6 +62,8 @@ function EmployeeDashboardPage() {
       </div>
     );
   }
+
+  const mascotMessage = loading ? null : buildDashboardMessage(user?.nombre, inProgressTrips.length, draftTrips.length);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -131,6 +146,7 @@ function EmployeeDashboardPage() {
         </div>
       </div>
       <SubmitTripConfirmModal isOpen={!!tripToConfirm} onClose={handleCancelSubmitReview} onConfirm={handleConfirmSubmitReview} loading={!!submittingReview} />
+      <MascotGreeting pageKey="mis-viajes" message={mascotMessage} />
       <Footer />
     </div>
   );
