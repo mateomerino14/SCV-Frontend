@@ -27,6 +27,9 @@ const styles = {
 
 const approvalSection = [
   {path: routes.approverReviews, label: 'Viajes por Aprobar', icon: ClipboardCheck},
+];
+
+const alcoholSection = [
   {path: routes.approverAlcoholReviews, label: 'Rendiciones con Alcohol', icon: Wine},
 ];
 
@@ -67,6 +70,10 @@ function ApproverMenu({isOpen, onClose, user}) {
           <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Viajes</p>
             {renderOptions(approvalSection)}
+          </div>
+          <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
+            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Revisión de Rendiciones</p>
+            {renderOptions(alcoholSection)}
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
