@@ -37,10 +37,10 @@ function SettingsPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Configuración" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Ajustes de Cuenta" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Ajustes de Cuenta" subtitle="Gestiona tu contraseña y revisa los términos del sistema." />
+        <PageHeader title="Ajustes de Cuenta" subtitle="Cambia tu contraseña y consulta los términos de uso del sistema." />
         <div className={styles.grid}>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cuenta</p>

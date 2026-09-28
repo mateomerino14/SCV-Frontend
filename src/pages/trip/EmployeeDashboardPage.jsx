@@ -61,11 +61,11 @@ function EmployeeDashboardPage() {
       `}</style>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <Navbar text="Gestor de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <div className={styles.headerRow}>
-          <PageHeader title="Mis Viajes" subtitle="Gestiona tus viajes y rinde tus gastos." />
+          <PageHeader title="Mis Viajes" subtitle="Crea un viaje, sigue su aprobación y registra tus gastos mientras está en curso." />
           <button className={styles.newTripBtn} style={{backgroundColor: COLORS.primary}} onClick={() => navigate(routes.employeeCreateTrip)}>
             <span className="w-8 h-8 text-sm bg-white rounded-full inline-flex items-center justify-center" style={{color: COLORS.primary}}>+</span>
             Crear Nuevo Viaje

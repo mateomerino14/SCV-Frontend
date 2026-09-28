@@ -59,7 +59,7 @@ function EditExpensePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <PageHeader title="Editar Gasto" subtitle="Corrige los datos de este gasto antes de volver a enviarlo." />
+        <PageHeader title="Editar Gasto" subtitle="Corrige los datos del gasto o su comprobante y guarda los cambios." />
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseEditForm type={type} date={date} supplier={supplier} amount={amount} description={description} categoryId={categoryId}
             categories={categories} imagePreview={imagePreview} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}

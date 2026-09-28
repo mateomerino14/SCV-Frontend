@@ -34,7 +34,7 @@ function SubstitutionRequestsPage() {
       <Navbar text="Solicitudes de Reemplazo" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Solicitudes de Reemplazo" subtitle="Solicitudes para que un tercero rinda gastos en nombre de otro empleado." />
+        <PageHeader title="Solicitudes de Reemplazo" subtitle="Aprueba o rechaza las solicitudes para que otra persona de la misma sección rinda los gastos de un viaje." />
         <div className={styles.tabsRow}>
           {tabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}

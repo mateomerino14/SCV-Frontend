@@ -27,26 +27,26 @@ const styles = {
 
 const tripApprovalSection = [
   {path: routes.supervisorPendingTrips, label: 'Viajes Sin Asignar', icon: ListChecks},
-  {path: routes.supervisorTripHistory, label: 'Mis Viajes Revisados', icon: FileCheck},
+  {path: routes.supervisorTripHistory, label: 'Viajes Asignados a Mí', icon: FileCheck},
 ];
 
 const expenseReviewSection = [
   {path: routes.supervisorPendingExpenseReviews, label: 'Rendiciones Sin Asignar', icon: ClipboardList},
-  {path: routes.supervisorExpenseReviewHistory, label: 'Mis Revisiones', icon: BookOpen},
+  {path: routes.supervisorExpenseReviewHistory, label: 'Rendiciones Asignadas a Mí', icon: BookOpen},
 ];
 
 const treasurySection = [
-  {path: routes.treasurerReviews, label: 'Aprobación de Fondos', icon: Wallet},
+  {path: routes.treasurerReviews, label: 'Asignación de Fondos', icon: Wallet},
 ];
 
 const personalSection = [
-  {path: routes.employeeDashboard, label: 'Viajes Personales', icon: Briefcase},
-  {path: routes.employeeHistory, label: 'Mis Viajes', icon: Plane},
+  {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
+  {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},
 ];
 
 const accountSection = [
-  {path: routes.supervisorProfile, label: 'Perfil', icon: User},
-  {path: routes.supervisorSettings, label: 'Ajustes', icon: Settings},
+  {path: routes.supervisorProfile, label: 'Mi Perfil', icon: User},
+  {path: routes.supervisorSettings, label: 'Ajustes de Cuenta', icon: Settings},
 ];
 
 function SupervisorMenu({isOpen, onClose, user}) {
@@ -70,16 +70,16 @@ function SupervisorMenu({isOpen, onClose, user}) {
       <div className={styles.navScroll}>
         <motion.div className={styles.nav} variants={listVariants} initial="hidden" animate="visible">
           <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Viajes</p>
+            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Revisión de Viajes</p>
             {renderOptions(tripApprovalSection)}
           </div>
           <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Rendición de Gastos</p>
+            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Revisión de Rendiciones</p>
             {renderOptions(expenseReviewSection)}
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
+              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Asignación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}

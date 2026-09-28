@@ -26,22 +26,22 @@ const styles = {
 };
 
 const approvalSection = [
-  {path: routes.approverReviews, label: 'Mis Revisiones', icon: ClipboardCheck},
-  {path: routes.approverAlcoholReviews, label: 'Revisión por Alcohol', icon: Wine},
+  {path: routes.approverReviews, label: 'Viajes por Aprobar', icon: ClipboardCheck},
+  {path: routes.approverAlcoholReviews, label: 'Rendiciones con Alcohol', icon: Wine},
 ];
 
 const treasurySection = [
-  {path: routes.treasurerReviews, label: 'Aprobación de Fondos', icon: Wallet},
+  {path: routes.treasurerReviews, label: 'Asignación de Fondos', icon: Wallet},
 ];
 
 const personalSection = [
-  {path: routes.employeeDashboard, label: 'Viajes Personales', icon: Briefcase},
-  {path: routes.employeeHistory, label: 'Mis Viajes', icon: Plane},
+  {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
+  {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},
 ];
 
 const accountSection = [
-  {path: routes.approverProfile, label: 'Perfil', icon: User},
-  {path: routes.approverSettings, label: 'Ajustes', icon: Settings},
+  {path: routes.approverProfile, label: 'Mi Perfil', icon: User},
+  {path: routes.approverSettings, label: 'Ajustes de Cuenta', icon: Settings},
 ];
 
 function ApproverMenu({isOpen, onClose, user}) {
@@ -70,7 +70,7 @@ function ApproverMenu({isOpen, onClose, user}) {
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
+              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Asignación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}

@@ -68,10 +68,10 @@ function UserManagementPage() {
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <Navbar text="Gestión de Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+      <Navbar text="Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
       <div className={styles.content}>
-        <PageHeader title="Usuarios" subtitle="Administra los usuarios del sistema." />
+        <PageHeader title="Usuarios" subtitle="Crea usuarios y asígnales rol, cargo, sección y jefe directo; también puedes suspender o reactivar cuentas." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar usuarios..." value={search} onChange={(event) => setSearch(event.target.value)} />

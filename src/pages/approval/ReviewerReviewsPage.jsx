@@ -35,7 +35,7 @@ function ReviewerReviewsPage() {
     tab, setTab, applyFilters, clearFilters,
   } = useReviewerReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
-  let subtitle = 'Rendiciones aprobadas en las etapas anteriores que esperan tu revisión final.';
+  let subtitle = 'Rendiciones aprobadas por el supervisor: haz la revisión final para aprobarlas o rechazarlas.';
   if (tab === 'APROBADOS') {
     subtitle = 'Rendiciones que aprobaste en revisión final.';
   }
@@ -47,10 +47,10 @@ function ReviewerReviewsPage() {
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Revisión Final" subtitle={subtitle} />
+        <PageHeader title="Rendiciones por Revisar" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

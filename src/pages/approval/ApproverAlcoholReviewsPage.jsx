@@ -36,10 +36,10 @@ function ApproverAlcoholReviewsPage() {
   } = useApproverAlcoholReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
   let total = totalMyPending;
-  let subtitle = 'Rendiciones con alcohol aprobadas por el supervisor que esperan tu revisión adicional.';
+  let subtitle = 'Rendiciones con gastos de alcohol que necesitan tu revisión antes de pasar a la revisión final.';
   if (tab === 'APROBADOS') {
     total = totalApproved;
-    subtitle = 'Rendiciones con alcohol que ya aprobaste.';
+    subtitle = 'Rendiciones con alcohol que aprobaste y pasaron a la revisión final.';
   }
   else if (tab === 'RECHAZADOS') {
     total = totalRejected;
@@ -50,10 +50,10 @@ function ApproverAlcoholReviewsPage() {
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <Navbar text="Revisión por Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Revisión por Alcohol" subtitle={subtitle} />
+        <PageHeader title="Rendiciones con Alcohol" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

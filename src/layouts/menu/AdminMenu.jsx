@@ -26,7 +26,7 @@ const styles = {
 };
 
 const administrationSection = [
-  {path: routes.adminDashboard, label: 'Dashboard', icon: LayoutDashboard},
+  {path: routes.adminDashboard, label: 'Resumen General', icon: LayoutDashboard},
   {path: routes.adminUsers, label: 'Usuarios', icon: Users},
   {path: routes.adminPositions, label: 'Cargos', icon: Briefcase},
   {path: routes.adminSections, label: 'Secciones', icon: Layers},
@@ -34,17 +34,17 @@ const administrationSection = [
 ];
 
 const treasurySection = [
-  {path: routes.treasurerReviews, label: 'Aprobación de Fondos', icon: Wallet},
+  {path: routes.treasurerReviews, label: 'Asignación de Fondos', icon: Wallet},
 ];
 
 const personalSection = [
-  {path: routes.employeeDashboard, label: 'Viajes Personales', icon: Plane},
-  {path: routes.employeeHistory, label: 'Mis Viajes', icon: Plane},
+  {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
+  {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},
 ];
 
 const accountSection = [
-  {path: routes.adminProfile, label: 'Perfil', icon: User},
-  {path: routes.adminSettings, label: 'Ajustes', icon: Settings},
+  {path: routes.adminProfile, label: 'Mi Perfil', icon: User},
+  {path: routes.adminSettings, label: 'Ajustes de Cuenta', icon: Settings},
 ];
 
 function AdminMenu({isOpen, onClose, user}) {
@@ -73,7 +73,7 @@ function AdminMenu({isOpen, onClose, user}) {
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
+              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Asignación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}

@@ -36,7 +36,7 @@ function TreasurerReviewsPage() {
   } = useTreasurerReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
   let total = totalPending;
-  let subtitle = 'Viajes aprobados que esperan la asignación de fondos.';
+  let subtitle = 'Viajes aprobados que esperan fondos: revisa o ajusta los montos y apruébalos.';
   if (tab === 'APROBADOS') {
     total = totalApproved;
     subtitle = 'Viajes a los que ya les asignaste fondos.';
@@ -50,10 +50,10 @@ function TreasurerReviewsPage() {
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <Navbar text="Aprobación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Asignación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Aprobación de Fondos" subtitle={subtitle} />
+        <PageHeader title="Asignación de Fondos" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

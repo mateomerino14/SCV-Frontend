@@ -72,7 +72,7 @@ function ReviewerReviewDetailPage() {
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-        <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={6} /></div>
         <Footer />
@@ -84,7 +84,7 @@ function ReviewerReviewDetailPage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.blockedWrapper}>
           <div className={styles.blockedIcon} style={{backgroundColor: COLORS.error}}>
@@ -132,7 +132,7 @@ function ReviewerReviewDetailPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
 
       <div className={styles.content}>

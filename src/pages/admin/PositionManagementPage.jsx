@@ -47,10 +47,10 @@ function PositionManagementPage() {
   } = usePositionManagement();
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <Navbar text="Gestión de Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Gestión de Cargos" subtitle="Administra los cargos y salarios del sistema." />
+        <PageHeader title="Cargos" subtitle="Define los cargos y su monto de viático diario en bolivianos y en dólares." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />

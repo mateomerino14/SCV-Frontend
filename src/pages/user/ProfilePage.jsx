@@ -51,7 +51,7 @@ function ProfilePage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Perfil Corporativo" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+        <Navbar text="Mi Perfil" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={5} /></div>
         <Footer />
@@ -62,12 +62,12 @@ function ProfilePage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Perfil Corporativo" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+      <Navbar text="Mi Perfil" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <PhotoModal isOpen={showPhotoModal} onClose={closePhotoModal} onNewPhoto={handleNewPhoto} onRemove={handleRemovePhotoModal} saving={saving} />
       <SuccessModal isOpen={!!success} title="Actualizado" message={success} onAccept={closeSuccess} />
       <div className={styles.content}>
-        <PageHeader title="Mi Cuenta" subtitle="Consulta y edita tu información personal." />
+        <PageHeader title="Mi Perfil" subtitle="Consulta tus datos, cambia tu foto y actualiza tu información de contacto." />
         <div className={styles.grid}>
           <div className={styles.leftCol}>
             <ProfileSummaryCard user={user} onEditPhoto={openPhotoModal} saving={saving} />

@@ -32,9 +32,9 @@ function SupervisorTripHistoryPage() {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters,
   } = useSupervisorTripHistory();
-  let subtitle = 'Viajes pendientes de tu revisión previa.';
+  let subtitle = 'Viajes asignados a ti: revísalos y apruébalos, o recházalos con observaciones.';
   if (statusFilter === 'APROBADO_VIAJE') {
-    subtitle = 'Viajes que ya aprobaste.';
+    subtitle = 'Viajes que aprobaste y pasaron al aprobador.';
   }
   else if (statusFilter === 'RECHAZADO') {
     subtitle = 'Viajes que ya rechazaste.';
@@ -43,10 +43,10 @@ function SupervisorTripHistoryPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Viajes Asignados a Mí" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Mis Viajes" subtitle={subtitle} />
+        <PageHeader title="Viajes Asignados a Mí" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={tabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

@@ -36,10 +36,10 @@ function ApproverReviewsPage() {
   } = useApproverReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
   let total = totalMyPending;
-  let subtitle = 'Viajes aprobados por el supervisor que esperan tu aprobación.';
+  let subtitle = 'Viajes aprobados por el supervisor: al aprobarlos se genera el memorándum y pasan a tesorería.';
   if (tab === 'APROBADOS') {
     total = totalApproved;
-    subtitle = 'Viajes que ya aprobaste.';
+    subtitle = 'Viajes que aprobaste y pasaron a tesorería.';
   }
   else if (tab === 'RECHAZADOS') {
     total = totalRejected;
@@ -50,10 +50,10 @@ function ApproverReviewsPage() {
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <Navbar text="Aprobación de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Viajes por Aprobar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Mis Revisiones" subtitle={subtitle} />
+        <PageHeader title="Viajes por Aprobar" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

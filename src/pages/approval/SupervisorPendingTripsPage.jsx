@@ -36,10 +36,10 @@ function SupervisorPendingTripsPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
-      <Navbar text="Revisión de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Viajes Sin Asignar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Viajes Sin Asignar" subtitle="Viajes que todavía no tienen un jefe directo definido en la jerarquía, o cuya sección no tiene un supervisor cargado. Se muestran a todos para que alguien los tome." />
+        <PageHeader title="Viajes Sin Asignar" subtitle="Viajes que esperan revisión y no tienen un supervisor asignado; tómalos para revisarlos." />
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
           employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

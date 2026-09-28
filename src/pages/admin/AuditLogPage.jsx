@@ -64,7 +64,7 @@ function AuditLogPage() {
       <Navbar text="Historial de Accesos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Historial de Accesos" subtitle="Registro de ingresos, salidas y cambios de contraseña en el sistema." />
+        <PageHeader title="Historial de Accesos" subtitle="Consulta los ingresos, salidas y cambios de contraseña de los usuarios, y expórtalos a Excel." />
 
         <div className={styles.filtersCard} style={{backgroundColor: COLORS.backgroundHeader, borderColor: COLORS.dataFields}}>
           <div className={styles.filtersGrid}>

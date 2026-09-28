@@ -43,10 +43,10 @@ function SectionManagementPage() {
   } = useSectionManagement();
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <Navbar text="Gestión de Secciones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Secciones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Gestión de Secciones" subtitle="Administra las secciones o departamentos de la empresa." />
+        <PageHeader title="Secciones" subtitle="Crea y organiza las secciones de la empresa; se usan para asignar revisores, reemplazos y filtrar reportes." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar secciones..." value={search} onChange={(event) => setSearch(event.target.value)} />

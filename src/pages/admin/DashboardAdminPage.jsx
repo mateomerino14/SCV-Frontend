@@ -57,10 +57,10 @@ function DashboardAdminPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <PasswordExpiredModal isOpen={showModal} onConfirm={handleChange} loading={loadingChange} error={errorChange} />
-      <Navbar text="Dashboard" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Resumen General" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Dashboard" subtitle="Resumen general del sistema." />
+        <PageHeader title="Resumen General" subtitle="Indicadores de viajes, gastos y usuarios del sistema." />
         {loading ? (
           <SkeletonCard lines={6} />
         ) : (

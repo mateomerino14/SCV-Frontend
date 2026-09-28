@@ -28,10 +28,10 @@ function TripHistoryPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Historial de Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Historial de Viajes" subtitle="Consulta y filtra todos tus viajes registrados." />
+        <PageHeader title="Historial de Mis Viajes" subtitle="Consulta todos tus viajes y su estado; usa los filtros para encontrarlos rápido." />
         <TripHistoryFilter activeFilter={filter} onChange={setFilter} />
         {loading && <SkeletonList count={4} />}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

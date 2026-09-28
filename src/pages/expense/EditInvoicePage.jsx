@@ -66,7 +66,7 @@ function EditInvoicePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <PageHeader title="Editar Factura" subtitle="Corrige los datos del comprobante fiscal registrado." />
+        <PageHeader title="Editar Factura" subtitle="Corrige los datos de la factura, su detalle de productos o su comprobante, y guarda los cambios." />
         <div className={styles.desktopGrid}>
           {imageSection}
           <div className={styles.colWrapper}>

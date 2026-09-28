@@ -26,23 +26,23 @@ const styles = {
 };
 
 const finalReviewSection = [
-  {path: routes.reviewerReviews, label: 'Revisión Final', icon: ClipboardList},
+  {path: routes.reviewerReviews, label: 'Rendiciones por Revisar', icon: ClipboardList},
   {path: routes.reviewerDeadlineRequests, label: 'Solicitudes de Plazo', icon: AlertTriangle},
   {path: routes.substitutionRequests, label: 'Solicitudes de Reemplazo', icon: Users},
 ];
 
 const treasurySection = [
-  {path: routes.treasurerReviews, label: 'Aprobación de Fondos', icon: Wallet},
+  {path: routes.treasurerReviews, label: 'Asignación de Fondos', icon: Wallet},
 ];
 
 const personalSection = [
-  {path: routes.employeeDashboard, label: 'Viajes Personales', icon: Briefcase},
-  {path: routes.employeeHistory, label: 'Mis Viajes', icon: Plane},
+  {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
+  {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},
 ];
 
 const accountSection = [
-  {path: routes.reviewerProfile, label: 'Perfil', icon: User},
-  {path: routes.reviewerSettings, label: 'Ajustes', icon: Settings},
+  {path: routes.reviewerProfile, label: 'Mi Perfil', icon: User},
+  {path: routes.reviewerSettings, label: 'Ajustes de Cuenta', icon: Settings},
 ];
 
 function ReviewerMenu({isOpen, onClose, user}) {
@@ -71,7 +71,7 @@ function ReviewerMenu({isOpen, onClose, user}) {
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
+              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Asignación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}

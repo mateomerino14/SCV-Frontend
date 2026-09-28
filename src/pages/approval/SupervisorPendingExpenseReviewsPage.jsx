@@ -37,10 +37,10 @@ function SupervisorPendingExpenseReviewsPage() {
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
-      <Navbar text="Rendición de Gastos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones Sin Asignar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Rendiciones Sin Asignar" subtitle="Rendiciones que todavía no tienen un jefe directo definido en la jerarquía, o cuya sección no tiene un supervisor cargado. Se muestran a todos para que alguien las tome." />
+        <PageHeader title="Rendiciones Sin Asignar" subtitle="Rendiciones de gastos que no tienen un supervisor asignado; tómalas para revisarlas." />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={pendingTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

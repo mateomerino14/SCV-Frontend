@@ -27,21 +27,21 @@ function SupervisorExpenseReviewHistoryPage() {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorExpenseReviewHistory();
-  let subtitle = 'Rendiciones de gastos pendientes de tu revisión.';
+  let subtitle = 'Rendiciones asignadas a ti: revisa los gastos, deja observaciones y apruébalas o recházalas.';
   if (statusFilter === 'APROBADO_SUPERVISOR') {
-    subtitle = 'Rendiciones de gastos que ya aprobaste.';
+    subtitle = 'Rendiciones que aprobaste y pasaron a la siguiente revisión.';
   }
   else if (statusFilter === 'RECHAZADO') {
-    subtitle = 'Rendiciones de gastos que ya rechazaste.';
+    subtitle = 'Rendiciones que rechazaste para que el empleado las corrija.';
   }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Mis Revisiones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones Asignadas a Mí" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Mis Revisiones" subtitle={subtitle} />
+        <PageHeader title="Rendiciones Asignadas a Mí" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

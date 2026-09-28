@@ -34,7 +34,7 @@ function DeadlineAuthorizationRequestsPage() {
       <Navbar text="Solicitudes de Plazo" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Solicitudes de Plazo" subtitle="Solicitudes de tus empleados para registrar gastos fuera del plazo." />
+        <PageHeader title="Solicitudes de Plazo" subtitle="Aprueba o rechaza las solicitudes para registrar gastos fuera del plazo de tolerancia." />
         <div className={styles.tabsRow}>
           {tabs.map((mainTab) => (
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
