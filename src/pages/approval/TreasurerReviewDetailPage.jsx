@@ -125,7 +125,7 @@ function TreasurerReviewDetailPage() {
           assignedAmount={assignedAmount} assignedAmountUsd={assignedAmountUsd}
           handleAssignedAmountChange={handleAssignedAmountChange} handleAssignedAmountUsdChange={handleAssignedAmountUsdChange}
           savingAmounts={savingAmounts} handleSaveAmounts={handleSaveAmounts} />
-        <SelectableObservationsList observations={observationComments} canManage={canAct}
+        <SelectableObservationsList observations={observationComments} canManage={canAct} currentUserId={user?.id_usuario}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}
           editingComment={editingComment} deletingComment={deletingComment} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

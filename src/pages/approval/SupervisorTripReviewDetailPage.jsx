@@ -117,7 +117,7 @@ function SupervisorTripReviewDetailPage() {
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
         <TripReviewDetailCard trip={trip} />
-        <SelectableObservationsList observations={observationComments} canManage={canAct}
+        <SelectableObservationsList observations={observationComments} canManage={canAct} currentUserId={user?.id_usuario}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}
           editingComment={editingComment} deletingComment={deletingComment} />
         {takeError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{takeError}</p>}

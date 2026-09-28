@@ -25,8 +25,7 @@ const styles = {
 };
 
 const mainTabs = [
-  {valor: 'MIS_PENDIENTES', label: 'Mis Pendientes'},
-  {valor: 'PENDIENTES', label: 'Sin Asignar'},
+  {valor: 'MIS_PENDIENTES', label: 'Pendientes'},
   {valor: 'APROBADOS', label: 'Aprobados'},
   {valor: 'RECHAZADOS', label: 'Rechazados'},
 ];
@@ -34,17 +33,13 @@ const mainTabs = [
 function ApproverReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalMyPending, totalApproved, totalRejected, employees, sections, loading, applyingFilters, error, tab, setTab,
+    trips, totalMyPending, totalApproved, totalRejected, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
   } = useApproverReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
   let total = totalMyPending;
-  let subtitle = 'Viajes asignados directamente a vos, pendientes de tu aprobación.';
-  if (tab === 'PENDIENTES') {
-    total = totalPending;
-    subtitle = 'Viajes sin jefe directo asignado en la jerarquía, o cuya sección no tiene un aprobador cargado. Se muestran a todos para que alguien los tome.';
-  }
-  else if (tab === 'APROBADOS') {
+  let subtitle = 'Viajes aprobados por el supervisor que esperan tu aprobación.';
+  if (tab === 'APROBADOS') {
     total = totalApproved;
     subtitle = 'Viajes que ya aprobaste.';
   }
@@ -69,10 +64,8 @@ function ApproverReviewsPage() {
             </button>
           ))}
         </div>
-        {tab === 'PENDIENTES' && (
-          <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-            employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
-        )}
+        <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
+          employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}

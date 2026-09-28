@@ -4,7 +4,6 @@ import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
 import ExpenseReviewItem from '../../features/approval/organisms/ExpenseReviewItem';
-import TripAlreadyTakenModal from '../../features/approval/organisms/TripAlreadyTakenModal';
 import EmptyState from '../../components/ui/EmptyState';
 import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
@@ -26,8 +25,7 @@ const styles = {
 };
 
 const mainTabs = [
-  {valor: 'MIS_PENDIENTES', label: 'Mis Pendientes'},
-  {valor: 'PENDIENTES', label: 'Sin Asignar'},
+  {valor: 'MIS_PENDIENTES', label: 'Pendientes'},
   {valor: 'APROBADOS', label: 'Aprobados'},
   {valor: 'RECHAZADOS', label: 'Rechazados'},
 ];
@@ -35,17 +33,13 @@ const mainTabs = [
 function ApproverAlcoholReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalMyPending, totalApproved, totalRejected, employees, sections, loading, applyingFilters, taking, error,
-    alreadyTaken, closeAlreadyTakenModal, tab, setTab, filters, setFilters, applyFilters, clearFilters, handleTake,
+    trips, totalMyPending, totalApproved, totalRejected, employees, sections, loading, applyingFilters, error,
+    tab, setTab, filters, setFilters, applyFilters, clearFilters,
   } = useApproverAlcoholReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
   let total = totalMyPending;
-  let subtitle = 'Rendiciones con alcohol asignadas directamente a vos, pendientes de tu decisión.';
-  if (tab === 'PENDIENTES') {
-    total = totalPending;
-    subtitle = 'Rendiciones sin jefe directo asignado en la jerarquía, o cuya sección no tiene un aprobador cargado. Se muestran a todos para que alguien las tome.';
-  }
-  else if (tab === 'APROBADOS') {
+  let subtitle = 'Rendiciones con alcohol aprobadas por el supervisor que esperan tu revisión adicional.';
+  if (tab === 'APROBADOS') {
     total = totalApproved;
     subtitle = 'Rendiciones con alcohol que ya aprobaste.';
   }
@@ -58,7 +52,6 @@ function ApproverAlcoholReviewsPage() {
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
       <Navbar text="Revisión por Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
@@ -71,10 +64,8 @@ function ApproverAlcoholReviewsPage() {
             </button>
           ))}
         </div>
-        {tab === 'PENDIENTES' && (
-          <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-            employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
-        )}
+        <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
+          employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}
@@ -89,8 +80,7 @@ function ApproverAlcoholReviewsPage() {
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {trips.map((trip) => (
-              <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={approverAlcoholReviewPath(trip.id_viaje)} originRoute={routes.approverAlcoholReviews}
-                onTake={tab === 'PENDIENTES' ? handleTake : null} taking={taking === trip.id_viaje} />
+              <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={approverAlcoholReviewPath(trip.id_viaje)} originRoute={routes.approverAlcoholReviews} />
             ))}
           </div>
         )}

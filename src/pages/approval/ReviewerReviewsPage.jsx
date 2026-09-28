@@ -26,8 +26,7 @@ const styles = {
 };
 
 const mainTabs = [
-  {valor: 'MIS_PENDIENTES', label: 'Mis Pendientes'},
-  {valor: 'PENDIENTES', label: 'Sin Asignar'},
+  {valor: 'MIS_PENDIENTES', label: 'Pendientes'},
   {valor: 'HISTORIAL', label: 'Historial'},
 ];
 
@@ -40,16 +39,13 @@ const historyStatusTabs = [
 function ReviewerReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalMyPending, employees, sections, loading, applyingFilters, error, filters, setFilters,
+    trips, totalMyPending, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, tab, setTab, applyFilters, clearFilters,
   } = useReviewerReviews();
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
-  const isPendingTab = tab === 'PENDIENTES';
-  let subtitle = 'Rendiciones asignadas directamente a vos, pendientes de tu revisión final.';
-  if (tab === 'PENDIENTES') {
-    subtitle = 'Rendiciones sin jefe directo asignado en la jerarquía, o cuya sección no tiene un revisor cargado. Se muestran a todos para que alguien las tome.';
-  }
-  else if (tab === 'HISTORIAL') {
+  const isPendingTab = tab === 'MIS_PENDIENTES';
+  let subtitle = 'Rendiciones aprobadas en las etapas anteriores que esperan tu revisión final.';
+  if (tab === 'HISTORIAL') {
     subtitle = 'Rendiciones que ya aprobaste o rechazaste en revisión final.';
   }
 
@@ -66,14 +62,11 @@ function ReviewerReviewsPage() {
             <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
               style={{backgroundColor: tab === mainTab.valor ? COLORS.primary : 'transparent', borderColor: tab === mainTab.valor ? COLORS.primary : COLORS.dataFields, color: tab === mainTab.valor ? COLORS.background : COLORS.labels}}>
               {mainTab.label} {mainTab.valor === 'MIS_PENDIENTES' && totalMyPending > 0 ? `(${totalMyPending})` : ''}
-              {mainTab.valor === 'PENDIENTES' && totalPending > 0 ? `(${totalPending})` : ''}
             </button>
           ))}
         </div>
-        {tab !== 'MIS_PENDIENTES' && (
-          <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
-            onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={isPendingTab ? pendingTabsDefault : historyStatusTabs} applyingFilters={applyingFilters} />
-        )}
+        <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
+          onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={isPendingTab ? pendingTabsDefault : historyStatusTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}

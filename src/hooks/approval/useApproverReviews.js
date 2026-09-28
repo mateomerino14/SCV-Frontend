@@ -1,19 +1,18 @@
 import {useState, useEffect, useRef} from 'react';
-import {getPendingTrips, getMyTrips} from '../../services/approval/approverService';
+import {getMyTrips} from '../../services/approval/approverService';
 import {getEmployees} from '../../services/user/userService';
 import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
 function useApproverReviews() {
-  const [pending, setPending] = useState([]);
   const [myTrips, setMyTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
-  const [tab, setTab] = useState('PENDIENTES');
+  const [tab, setTab] = useState('MIS_PENDIENTES');
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const filtersRef = useRef(filters);
 
@@ -25,22 +24,15 @@ function useApproverReviews() {
     if (showLoading) {
       setLoading(true);
     }
-    const [pendingData, myTripsData] = await Promise.all([
-      getPendingTrips(currentFilters),
-      getMyTrips(),
-    ]);
+    // El aprobador es unico: todos los viajes de su etapa le llegan asignados
+    const myTripsData = await getMyTrips(currentFilters);
     if (showLoading) {
       setLoading(false);
-    }
-    if (pendingData.error) {
-      setError(pendingData.error);
-      return;
     }
     if (myTripsData.error) {
       setError(myTripsData.error);
       return;
     }
-    setPending(pendingData);
     setMyTrips(myTripsData);
   };
 
@@ -76,11 +68,8 @@ function useApproverReviews() {
   const approvedTrips = myTrips.filter((trip) => ['EN_REVISION_TESORERO', 'EN_CURSO'].includes(trip.estado));
   const rejectedTrips = myTrips.filter((trip) => trip.estado === 'RECHAZADO');
   const myPendingTrips = myTrips.filter((trip) => trip.estado === 'APROBADO_VIAJE');
-  let displayedTrips = pending;
-  if (tab === 'MIS_PENDIENTES') {
-    displayedTrips = myPendingTrips;
-  }
-  else if (tab === 'APROBADOS') {
+  let displayedTrips = myPendingTrips;
+  if (tab === 'APROBADOS') {
     displayedTrips = approvedTrips;
   }
   else if (tab === 'RECHAZADOS') {
@@ -89,7 +78,6 @@ function useApproverReviews() {
 
   return {
     trips: displayedTrips,
-    totalPending: pending.length,
     totalMyPending: myPendingTrips.length,
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,

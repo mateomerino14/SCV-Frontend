@@ -14,9 +14,10 @@ const styles = {
   bullet: 'w-2 h-2 rounded-full shrink-0',
   date: 'text-xs font-inter',
   text: 'text-sm font-inter leading-relaxed p-3 rounded-xl ml-4 break-words overflow-hidden',
+  otherTag: 'text-[10px] font-bold font-inter uppercase px-2 py-0.5 rounded-full',
 };
 
-function SelectableObservationsList({observations, canManage, onAdd, onEdit, onDelete, editingComment, deletingComment}) {
+function SelectableObservationsList({observations, canManage, currentUserId, onAdd, onEdit, onDelete, editingComment, deletingComment}) {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
@@ -48,8 +49,11 @@ function SelectableObservationsList({observations, canManage, onAdd, onEdit, onD
     return null;
   }
 
+  // Solo se pueden seleccionar (para editar o borrar) las observaciones propias
+  const isOwn = (observation) => !currentUserId || observation.id_usuario === currentUserId;
+
   const handleSelect = (observation) => {
-    if (!canManage) {
+    if (!canManage || !isOwn(observation)) {
       return;
     }
     if (selected?.id_comentario === observation.id_comentario) {
@@ -59,10 +63,6 @@ function SelectableObservationsList({observations, canManage, onAdd, onEdit, onD
     setSelected(observation);
   };
 
-  let itemCursor = 'default';
-  if (canManage) {
-    itemCursor = 'pointer';
-  }
 
   let editDeleteOpacity = 0.5;
   let editDeleteBackground = COLORS.dataFields;
@@ -93,6 +93,11 @@ function SelectableObservationsList({observations, canManage, onAdd, onEdit, onD
       </div>
       {observations.map((observation) => {
         const isSelected = selected?.id_comentario === observation.id_comentario;
+        const own = isOwn(observation);
+        let itemCursor = 'default';
+        if (canManage && own) {
+          itemCursor = 'pointer';
+        }
         let bulletColor = COLORS.secondary;
         if (isSelected) {
           bulletColor = COLORS.primary;
@@ -108,6 +113,7 @@ function SelectableObservationsList({observations, canManage, onAdd, onEdit, onD
             <div className={styles.bulletRow}>
               <div className={styles.bullet} style={{backgroundColor: bulletColor}} />
               <p className={styles.date} style={{color: COLORS.labels}}>{formatDateTime(observation.fecha)}</p>
+              {!own && <span className={styles.otherTag} style={{color: COLORS.labels, backgroundColor: COLORS.dataFields}}>De otro revisor</span>}
             </div>
             <div className={styles.text} style={{backgroundColor: textBackground, color: COLORS.text, border: textBorder}}>
               {observation.descripcion}

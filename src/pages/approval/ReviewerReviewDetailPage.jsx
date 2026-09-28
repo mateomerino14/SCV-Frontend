@@ -206,7 +206,7 @@ function ReviewerReviewDetailPage() {
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <ExpenseObservationsModal isOpen={showExpenseObservations} onClose={closeExpenseObservations}
         expenseName={expenses.find((expense) => expense.id_gasto === activeExpense)?.Proveedor?.nombre}
-        observations={activeExpenseObservations()} canEdit={canAct} newText={newText} setNewText={setNewText}
+        observations={activeExpenseObservations()} canEdit={canAct} currentUserId={user?.id_usuario} newText={newText} setNewText={setNewText}
         onAdd={handleAddComment} onEdit={handleOpenEdit} onDelete={handleOpenDelete} loading={savingAction} error={error} />
       <EditCommentModal isOpen={!!editingComment} onClose={() => setEditingComment(null)} onConfirm={handleConfirmEdit} text={editText} setText={setEditText} loading={savingAction} error={error} />
       <DeleteCommentConfirmModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)} onConfirm={handleConfirmDelete} loading={savingAction} />
