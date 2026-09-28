@@ -1,16 +1,22 @@
 import {useState, useEffect} from 'react';
 import {getMyTrips} from '../../services/approval/approverService';
 
+const pollingInterval = 30 * 1000;
+
 function useApproverTripHistory() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState('APROBADO_VIAJE');
 
-  const load = async () => {
-    setLoading(true);
+  const load = async (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
     const data = await getMyTrips();
-    setLoading(false);
+    if (showLoading) {
+      setLoading(false);
+    }
     if (data.error) {
       setError(data.error);
       return;
@@ -20,6 +26,8 @@ function useApproverTripHistory() {
 
   useEffect(() => {
     load();
+    const polling = setInterval(() => load(false), pollingInterval);
+    return () => clearInterval(polling);
   }, []);
 
   const filteredTrips = trips.filter((trip) => {

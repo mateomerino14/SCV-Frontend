@@ -1,6 +1,8 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {getSections} from '../../services/admin/adminService';
 import {getMyTripReviews, getReviewEmployees} from '../../services/approval/reviewService';
+
+const pollingInterval = 30 * 1000;
 
 function useSupervisorTripHistory() {
   const [trips, setTrips] = useState([]);
@@ -12,7 +14,13 @@ function useSupervisorTripHistory() {
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('EN_REVISION_VIAJE');
 
-  const load = async (currentFilters = filters, showLoading = true) => {
+  const filtersRef = useRef(filters);
+
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  const load = async (currentFilters = filtersRef.current, showLoading = true) => {
     if (showLoading) {
       setLoading(true);
     }
@@ -39,6 +47,8 @@ function useSupervisorTripHistory() {
         setSections(data);
       }
     });
+    const polling = setInterval(() => load(filtersRef.current, false), pollingInterval);
+    return () => clearInterval(polling);
   }, []);
 
   const applyFilters = async () => {

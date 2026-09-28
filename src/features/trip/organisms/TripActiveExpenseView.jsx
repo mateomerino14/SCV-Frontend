@@ -117,7 +117,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
         </div>
       )}
       <DailyBreakdownCard dailyBreakdown={dailyBreakdown} dailyRate={parseFloat(trip.Usuario?.Cargo?.monto_diario || 0)} dailyRateUsd={parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0)} />
-      <div className="flex items-center gap-2 mt-2 px-1">
+      <div className="flex items-center gap-2 mt-2 mb-6 px-1">
         <Building2 size={13} style={{color: COLORS.labels, flexShrink: 0}} />
         <p className="text-xs font-inter" style={{color: COLORS.labels}}>
           Los hoteles no se controlan día por día: se descuentan del presupuesto total del viaje.
