@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import {Mail, Phone, Briefcase, LogOut, Layers} from 'lucide-react';
+import {Mail, Phone, Briefcase, LogOut, Layers, IdCard, UserCheck} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import MascotGreeting from '../../components/mascot/MascotGreeting';
@@ -85,8 +85,10 @@ function ProfilePage() {
                 <ProfileField icon={Phone} label="Teléfono" value={user?.telefono} editing={editingPhone} editValue={phone}
                   onEditValueChange={(event) => setPhone(event.target.value.replace(/[^0-9]/g, ''))} onStartEdit={() => setEditingPhone(true)}
                   onSave={handleSavePhone} onCancel={handleCancelPhone} saving={saving} inputType="tel" inputMode="numeric" maxLength={8} />
+                <ReadOnlyField icon={IdCard} label="Carnet de Identidad" value={user?.carnet_identidad || '—'} />
                 <ReadOnlyField icon={Briefcase} label="Cargo" value={user?.Cargo?.nombre} />
                 {user?.Seccion?.nombre && <ReadOnlyField icon={Layers} label="Sección" value={user.Seccion.nombre} />}
+                <ReadOnlyField icon={UserCheck} label="Jefe Directo" value={user?.Jefe ? `${user.Jefe.nombre} ${user.Jefe.apellido_paterno}` : '—'} />
               </div>
             </div>
             {error && <InlineAlert type="error">{error}</InlineAlert>}
