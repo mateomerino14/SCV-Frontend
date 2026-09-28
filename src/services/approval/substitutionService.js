@@ -59,3 +59,13 @@ export const rejectSubstitution = async (requestId, observation) => {
     return {error: error.response?.data?.error || 'Error al rechazar la solicitud'};
   }
 };
+
+export const getSubstitutionCandidates = async () => {
+  try {
+    const response = await apiClient.get('/substitution/candidates');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener las personas de tu sección'};
+  }
+};

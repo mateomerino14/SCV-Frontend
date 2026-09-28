@@ -1,7 +1,5 @@
 import {useState, useEffect} from 'react';
-import {requestSubstitution, getSubstitutionStatus} from '../../services/approval/substitutionService';
-import {getEmployees} from '../../services/user/userService';
-import getCurrentUserId from '../../utils/getCurrentUserId';
+import {requestSubstitution, getSubstitutionStatus, getSubstitutionCandidates} from '../../services/approval/substitutionService';
 
 function useSubstitutionRequest(tripId) {
   const [request, setRequest] = useState(null);
@@ -11,7 +9,7 @@ function useSubstitutionRequest(tripId) {
   const [submitting, setSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const currentUserId = getCurrentUserId();
+  const [withoutSection, setWithoutSection] = useState(false);
 
   const load = async () => {
     if (!tripId) {
@@ -33,11 +31,11 @@ function useSubstitutionRequest(tripId) {
   const openModal = async () => {
     setSubstituteId('');
     setShowModal(true);
-    if (employees.length === 0) {
-      const data = await getEmployees();
-      if (!data.error) {
-        setEmployees(data.filter((employee) => employee.id_usuario !== currentUserId));
-      }
+    // Solo personas activas de la misma seccion (el backend excluye al propio usuario)
+    const data = await getSubstitutionCandidates();
+    if (!data.error) {
+      setEmployees(data.candidatos || []);
+      setWithoutSection(!!data.sinSeccion);
     }
   };
 
@@ -69,6 +67,7 @@ function useSubstitutionRequest(tripId) {
   const canRequest = !request || isRejected;
 
   return {
+    withoutSection,
     request, employees, substituteId, setSubstituteId, loading, submitting, modalError,
     showModal, openModal, closeModal: () => setShowModal(false),
     isPending, isApproved, isRejected, canRequest,

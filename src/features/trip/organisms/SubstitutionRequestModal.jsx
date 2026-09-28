@@ -18,7 +18,7 @@ const styles = {
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
-function SubstitutionRequestModal({isOpen, onClose, onConfirm, substituteId, onSelectSubstitute, employees, loading, error}) {
+function SubstitutionRequestModal({isOpen, onClose, onConfirm, substituteId, onSelectSubstitute, employees, withoutSection = false, loading, error}) {
   const {open, opensUpward, wrapperRef, triggerRef, toggle, close} = useSimpleSelector();
   const selectedEmployee = employees.find((employee) => String(employee.id_usuario) === String(substituteId));
   const label = selectedEmployee ? `${selectedEmployee.nombre} ${selectedEmployee.apellido_paterno}` : 'Selecciona un empleado...';
@@ -39,7 +39,7 @@ function SubstitutionRequestModal({isOpen, onClose, onConfirm, substituteId, onS
               </div>
             </div>
             {employees.length === 0 ? (
-              <p className={styles.subtitle} style={{color: COLORS.backgroundHeader}}>No hay otros empleados disponibles para designar como reemplazo.</p>
+              <p className={styles.subtitle} style={{color: COLORS.backgroundHeader}}>{withoutSection ? 'No tienes una sección asignada. Pide al administrador que te asigne una para poder designar un reemplazo.' : 'No hay otras personas activas en tu sección para designar como reemplazo.'}</p>
             ) : (
               <InlineDropdown wrapperRef={wrapperRef} triggerRef={triggerRef} open={open} opensUpward={opensUpward} onToggle={toggle}
                 label={label} options={options} selectedValue={substituteId}
