@@ -1,10 +1,11 @@
-import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle, Users, Building2} from 'lucide-react';
+import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle, Users, Building2, Car} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {registerExpensePath, uploadInvoicePath} from '../../../constants/routes';
 import {formatDateRange, formatDateShort} from '../../../utils/dateFormatter';
 import {tripStatusConfig, tripStatusMessages} from '../hooks/useTripStatusConfig';
 import TripStatusBadge from '../atoms/TripStatusBadge';
 import TripTypeBadge from '../atoms/TripTypeBadge';
+import TripTransportBadge from '../atoms/TripTransportBadge';
 import BudgetBar from '../molecules/BudgetBar';
 import DailyBreakdownCard from '../molecules/DailyBreakdownCard';
 import TripBalanceSummary from '../molecules/TripBalanceSummary';
@@ -18,6 +19,7 @@ const styles = {
   badges: 'flex gap-2 mb-4 flex-wrap',
   date: 'text-xs font-nunito font-bold mb-1',
   route: 'text-xs font-nunito font-bold mb-4 flex items-start gap-1 flex-wrap',
+  plate: 'text-xs font-nunito font-bold mb-2 flex items-center gap-1',
   routeText: 'truncate max-w-[100px] sm:max-w-[200px] lg:max-w-[320px]',
   destination: 'text-xs font-nunito font-bold mb-4 break-words',
   card: 'rounded-2xl p-5 shadow-md mb-4 border',
@@ -91,11 +93,15 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
 
       <div className={styles.badges}>
         <TripTypeBadge isInternational={isInternational} />
-        {trip.transporte && (
-          <span className="text-xs font-semibold font-inter px-3 py-1 rounded-full uppercase" style={{backgroundColor: COLORS.dataFields, color: COLORS.text}}>{trip.transporte}</span>
-        )}
+        <TripTransportBadge transport={trip.transporte} />
       </div>
       <p className={styles.date} style={{color: COLORS.labels}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
+      {trip.placa_vehiculo && (
+        <p className={styles.plate} style={{color: COLORS.labels}}>
+          <Car size={12} style={{color: COLORS.labels, flexShrink: 0}} />
+          Placa del vehículo: <span style={{color: COLORS.text}}>{trip.placa_vehiculo}</span>
+        </p>
+      )}
       {trip.origen ? (
         <p className={styles.route} style={{color: COLORS.labels}}>
           <Navigation size={11} style={{color: COLORS.labels, marginTop: 2, flexShrink: 0}} />
