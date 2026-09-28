@@ -27,6 +27,9 @@ const styles = {
 
 const finalReviewSection = [
   {path: routes.reviewerReviews, label: 'Rendiciones por Revisar', icon: ClipboardList},
+];
+
+const requestsSection = [
   {path: routes.reviewerDeadlineRequests, label: 'Solicitudes de Plazo', icon: AlertTriangle},
   {path: routes.substitutionRequests, label: 'Solicitudes de Reemplazo', icon: Users},
 ];
@@ -68,6 +71,10 @@ function ReviewerMenu({isOpen, onClose, user}) {
           <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Revisión Final</p>
             {renderOptions(finalReviewSection)}
+          </div>
+          <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
+            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Solicitudes</p>
+            {renderOptions(requestsSection)}
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
