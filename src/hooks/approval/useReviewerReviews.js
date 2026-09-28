@@ -14,7 +14,6 @@ function useReviewerReviews() {
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
-  const [statusFilter, setStatusFilter] = useState('TODOS');
   const [tab, setTab] = useState('MIS_PENDIENTES');
 
   const load = useCallback(async (currentFilters, showLoading = true) => {
@@ -55,9 +54,6 @@ function useReviewerReviews() {
     return () => clearInterval(polling);
   }, []);
 
-  useEffect(() => {
-    setStatusFilter('TODOS');
-  }, [tab]);
 
   const applyFilters = async () => {
     setApplyingFilters(true);
@@ -68,21 +64,10 @@ function useReviewerReviews() {
   const clearFilters = () => {
     const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
-    setStatusFilter('TODOS');
     load(emptyFilters, true);
   };
 
-  const filteredPending = myPending.filter((trip) => {
-    if (statusFilter === 'OBSERVADO') {
-      return trip.estadoRevision === 'OBSERVADO';
-    }
-    if (statusFilter === 'CONFORME') {
-      return trip.estadoRevision === 'CONFORME';
-    }
-    return true;
-  });
-
-  let trips = filteredPending;
+  let trips = myPending;
   if (tab === 'APROBADOS') {
     trips = approved;
   }
@@ -102,8 +87,6 @@ function useReviewerReviews() {
     error,
     filters,
     setFilters,
-    statusFilter,
-    setStatusFilter,
     tab,
     setTab,
     applyFilters,

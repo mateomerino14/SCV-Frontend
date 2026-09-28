@@ -17,8 +17,6 @@ import {approverPendingTripPath, routes} from '../../constants/routes';
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  tabsRow: "flex gap-2 mb-4 flex-wrap",
-  tab: "py-1.5 px-3 rounded-full text-xs font-bold font-inter cursor-pointer border text-center transition-colors",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
   totalText: "text-xs font-inter mb-3",
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
@@ -56,16 +54,8 @@ function ApproverReviewsPage() {
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <PageHeader title="Mis Revisiones" subtitle={subtitle} />
-        <div className={styles.tabsRow}>
-          {mainTabs.map((mainTab) => (
-            <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
-              style={{backgroundColor: tab === mainTab.valor ? COLORS.primary : 'transparent', borderColor: tab === mainTab.valor ? COLORS.primary : COLORS.dataFields, color: tab === mainTab.valor ? COLORS.background : COLORS.labels}}>
-              {mainTab.label}
-            </button>
-          ))}
-        </div>
-        <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-          employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
+        <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
+          onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
         {loading && <SkeletonList count={3} />}
