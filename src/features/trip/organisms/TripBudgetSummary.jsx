@@ -15,7 +15,7 @@ const styles = {
   amountUsdLabel: "text-xs font-inter uppercase opacity-70 mb-1 text-center",
   amountUsd: "text-4xl font-bold font-inter text-center",
   infoBox: "rounded-xl p-3 flex gap-2 items-start mt-4",
-  infoText: "text-xs font-inter opacity-80",
+  infoText: "text-xs font-inter opacity-80 mt-1",
   cityCard: "rounded-2xl overflow-hidden relative h-44",
   cityImage: "w-full h-full object-cover",
   cityOverlay: "absolute bottom-0 left-0 right-0 p-3",
