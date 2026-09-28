@@ -94,8 +94,9 @@ function useSupervisorExpenseReviewDetail(tripId) {
       return;
     }
     setShowApprove(false);
-    setActionCompleted('APROBADO');
-    setData((prev) => ({...prev, viaje: {...prev.viaje, estado: 'APROBADO_SUPERVISOR'}}));
+    const nextState = data?.viaje?.tiene_alcohol ? 'EN_REVISION_APROBADOR' : 'APROBADO_SUPERVISOR';
+    setActionCompleted(nextState);
+    setData((prev) => ({...prev, viaje: {...prev.viaje, estado: nextState}}));
   };
   
   const currentCycle = () => data?.viaje?.ciclo_revision || 1;

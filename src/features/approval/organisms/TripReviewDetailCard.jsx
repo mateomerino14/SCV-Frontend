@@ -2,6 +2,7 @@ import {Navigation, MapPin, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {avatarDefault} from '../../../constants/defaultImages';
+import {statusColors} from '../../../constants/tripStatusColors';
 
 
 const styles = {
@@ -24,10 +25,10 @@ const styles = {
 };
 
 const defaultStatusConfig = {
-  EN_REVISION_VIAJE: {label: 'Pendiente de Revisión', bg: '#e8d5ff', color: '#5b00a0'},
-  APROBADO_VIAJE: {label: 'Aprobado por Supervisor', bg: '#ffd700aa', color: '#7a5900'},
-  EN_REVISION_TESORERO: {label: 'Enviado a Tesorería', bg: '#ffd8a8aa', color: '#8a4b00'},
-  RECHAZADO: {label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203'},
+  EN_REVISION_VIAJE: {label: 'Pendiente de Revisión', ...statusColors.EN_REVISION_VIAJE},
+  APROBADO_VIAJE: {label: 'Aprobado por Supervisor', ...statusColors.APROBADO_VIAJE},
+  EN_REVISION_TESORERO: {label: 'Enviado a Tesorería', ...statusColors.EN_REVISION_TESORERO},
+  RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
 };
 
 function TripReviewDetailCard({trip, statusConfig}) {

@@ -19,6 +19,7 @@ import useTakeTripReview from '../../features/approval/hooks/useTakeTripReview';
 import useMenu from '../../hooks/shared/useMenu';
 import getCurrentUserId from '../../utils/getCurrentUserId';
 import {COLORS} from '../../constants';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -99,13 +100,11 @@ function SupervisorTripReviewDetailPage() {
   const isPending = trip.estado === 'EN_REVISION_VIAJE';
   const canAct = isPending && isMine;
   let successMessage = 'Viaje rechazado correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'APROBADO_VIAJE') {
     successMessage = 'Viaje aprobado correctamente';
-    successBg = '#ffd700aa';
-    successColor = '#7a5900';
   }
+  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

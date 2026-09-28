@@ -25,6 +25,7 @@ import useTripExcelExport from '../hooks/useTripExcelExport';
 import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {reviewerExpenseDetailPath, reviewerReviewPath} from '../../constants/routes';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -117,13 +118,11 @@ function ReviewerReviewDetailPage() {
   const {map: dayJustifications, list: dayJustificationsList} = buildDayJustifications(data.comentarios);
 
   let successMessage = 'Rendición rechazada correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'APROBADO_FINAL') {
     successMessage = 'Rendición aprobada definitivamente';
-    successBg = '#d4edda';
-    successColor = '#155724';
   }
+  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   const goToExpenseDetail = (expenseId) => {
     navigate(reviewerExpenseDetailPath(expenseId), {state: {from: reviewerReviewPath(id), origenViaje: originRoute}});

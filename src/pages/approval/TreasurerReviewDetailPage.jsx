@@ -18,11 +18,13 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useTreasurerReviewDetail from '../../hooks/approval/useTreasurerReviewDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import {statusColors} from '../../constants/tripStatusColors';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const treasurerStatusConfig = {
-  EN_REVISION_TESORERO: {label: 'Pend. Fondos', bg: '#ffd700aa', color: '#7a5900'},
-  EN_CURSO: {label: 'Aprobado', bg: '#d4edda', color: '#155724'},
-  RECHAZADO: {label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203'},
+  EN_REVISION_TESORERO: {label: 'Pend. Fondos', ...statusColors.EN_REVISION_TESORERO},
+  EN_CURSO: {label: 'Aprobado', ...statusColors.EN_CURSO},
+  RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
 };
 
 const styles = {
@@ -102,13 +104,11 @@ function TreasurerReviewDetailPage() {
   const isPending = trip.estado === 'EN_REVISION_TESORERO';
   const canAct = isPending;
   let successMessage = 'Viaje rechazado correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'EN_CURSO') {
     successMessage = 'Fondo aprobado. Confirmación enviada al empleado.';
-    successBg = '#d4edda';
-    successColor = '#155724';
   }
+  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

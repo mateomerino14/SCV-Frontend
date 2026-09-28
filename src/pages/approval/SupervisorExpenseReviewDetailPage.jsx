@@ -27,6 +27,7 @@ import getCurrentUserId from '../../utils/getCurrentUserId';
 import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {supervisorExpenseDetailPath, supervisorTripReviewPath} from '../../constants/routes';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -124,13 +125,11 @@ function SupervisorExpenseReviewDetailPage() {
   };
 
   let successMessage = 'Rendición rechazada correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
-  if (actionCompleted === 'APROBADO') {
+  if (actionCompleted && actionCompleted !== 'RECHAZADO') {
     successMessage = 'Rendición aprobada correctamente';
-    successBg = '#d4edda';
-    successColor = '#155724';
   }
+  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

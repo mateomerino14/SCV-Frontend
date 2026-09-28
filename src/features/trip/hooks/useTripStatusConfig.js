@@ -1,16 +1,17 @@
 import {COLORS} from '../../../constants';
+import {statusColors} from '../../../constants/tripStatusColors';
 
 const tripStatusConfig = {
   BORRADOR: {label: 'Borrador', bg: COLORS.dataFields, color: COLORS.text},
-  EN_REVISION_VIAJE: {label: 'En Revisión Previa', bg: '#e8d5ff', color: '#5b00a0'},
-  APROBADO_VIAJE: {label: 'Esperando Aprobador', bg: '#ffd700aa', color: '#7a5900'},
-  EN_REVISION_TESORERO: {label: 'Esperando Fondos', bg: '#ffd8a8aa', color: '#8a4b00'},
+  EN_REVISION_VIAJE: {label: 'En Revisión Previa', ...statusColors.EN_REVISION_VIAJE},
+  APROBADO_VIAJE: {label: 'Esperando Aprobador', ...statusColors.APROBADO_VIAJE},
+  EN_REVISION_TESORERO: {label: 'Esperando Fondos', ...statusColors.EN_REVISION_TESORERO},
   EN_CURSO: {label: 'En Curso', bg: COLORS.primary, color: COLORS.background},
-  EN_REVISION: {label: 'En Revisión', bg: '#85aff3ab', color: '#000a65'},
-  EN_REVISION_APROBADOR: {label: 'Revisión Adicional', bg: '#fef3cd', color: '#856404'},
-  APROBADO_SUPERVISOR: {label: 'Apr. Supervisor', bg: '#ffd700aa', color: '#7a5900'},
-  APROBADO_FINAL: {label: 'Aprobado', bg: '#aafac9a2', color: '#008330'},
-  RECHAZADO: {label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203'},
+  EN_REVISION: {label: 'En Revisión', ...statusColors.EN_REVISION},
+  EN_REVISION_APROBADOR: {label: 'Revisión Adicional', ...statusColors.EN_REVISION_APROBADOR},
+  APROBADO_SUPERVISOR: {label: 'Apr. Supervisor', ...statusColors.APROBADO_SUPERVISOR},
+  APROBADO_FINAL: {label: 'Aprobado', ...statusColors.APROBADO_FINAL},
+  RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
 };
 
 const tripStatusMessages = {

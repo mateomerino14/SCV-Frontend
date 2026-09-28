@@ -19,6 +19,7 @@ import useMenu from '../../hooks/shared/useMenu';
 import approverTripStatusConfig from '../../features/approval/constants/approverTripStatus';
 import {routes} from '../../constants/routes';
 import {COLORS} from '../../constants';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -91,13 +92,11 @@ function ApproverTripReviewDetailPage() {
   const isPending = trip.estado === 'APROBADO_VIAJE';
   const canAct = isPending;
   let successMessage = 'Viaje rechazado correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'EN_REVISION_TESORERO') {
     successMessage = 'Viaje aprobado. Enviado a revisión de tesorería.';
-    successBg = '#ffd8a8aa';
-    successColor = '#8a4b00';
   }
+  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />

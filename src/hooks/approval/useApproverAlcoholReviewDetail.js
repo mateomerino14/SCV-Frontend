@@ -94,7 +94,7 @@ function useApproverAlcoholReviewDetail(tripId) {
       return;
     }
     setShowApprove(false);
-    setActionCompleted('APROBADO');
+    setActionCompleted('APROBADO_SUPERVISOR');
     setData((prev) => ({...prev, viaje: {...prev.viaje, estado: 'APROBADO_SUPERVISOR'}}));
   };
   
