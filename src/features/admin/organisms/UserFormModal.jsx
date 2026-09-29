@@ -1,5 +1,5 @@
 import {motion, AnimatePresence} from 'framer-motion';
-import {User} from 'lucide-react';
+import {User, Mail} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
 import FormField from '../../../components/ui/FormField';
 import PositionSelector from '../molecules/PositionSelector';
@@ -20,6 +20,9 @@ const styles = {
   title: 'text-2xl font-bold font-inter text-center mb-2',
   selectorGrid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
   fieldsGrid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
+  passwordNote: 'flex items-center gap-3 rounded-xl border px-4 py-3',
+  passwordNoteIcon: 'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
+  passwordNoteText: 'text-xs font-inter leading-snug',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl',
   cancelBtn: 'flex-1 py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer border-2 transition-colors',
 };
@@ -73,12 +76,18 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   onChange={(value) => handleChange('id_seccion', value)} error={fieldErrors.id_seccion} />
                 <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={15} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
                   onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 15)} />
-                {isNew && (
-                  <p className="text-xs font-inter italic" style={{color: COLORS.labels}}>
-                    Se generará una contraseña temporal automáticamente y se enviará por correo al nuevo usuario.
-                  </p>
-                )}
               </div>
+              {isNew && (
+                <div className={styles.passwordNote} style={{backgroundColor: COLORS.backgroundHeader, borderColor: COLORS.dataFields}}>
+                  <div className={styles.passwordNoteIcon} style={{backgroundColor: COLORS.background}}>
+                    <Mail size={16} style={{color: COLORS.primary}} />
+                  </div>
+                  <p className={styles.passwordNoteText} style={{color: COLORS.labels}}>
+                    Se generará una <span style={{color: COLORS.text, fontWeight: 700}}>contraseña temporal</span> y se enviará
+                    al correo corporativo del nuevo usuario.
+                  </p>
+                </div>
+              )}
               {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
               <div className="flex gap-3 mt-2 justify-center">
                 <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}} onClick={onClose}>
