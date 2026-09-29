@@ -14,7 +14,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
-import {clearToken} from '../../services/shared/tokenStore';
+import {logout} from '../../services/user/authService';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -36,8 +36,10 @@ function SettingsPage() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const handleLogout = () => {
-    clearToken();
+  // Cierra la sesion en el servidor (registra la SALIDA y borra la cookie de sesion)
+  // antes de volver al inicio de sesion
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 

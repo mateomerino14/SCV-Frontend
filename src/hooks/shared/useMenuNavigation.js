@@ -1,6 +1,6 @@
 import {useNavigate, useLocation} from 'react-router-dom';
 import {routes} from '../../constants/routes';
-import {clearToken} from '../../services/shared/tokenStore';
+import {logout} from '../../services/user/authService';
 
 function useMenuNavigation(onClose, exactMatchPaths = []) {
   const navigate = useNavigate();
@@ -18,8 +18,10 @@ function useMenuNavigation(onClose, exactMatchPaths = []) {
     onClose();
   };
 
-  const handleLogout = () => {
-    clearToken();
+  // Cierra la sesion en el servidor (registra la SALIDA y borra la cookie de sesion)
+  // antes de volver al inicio de sesion
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 

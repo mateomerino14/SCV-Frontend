@@ -1,4 +1,4 @@
-import {Clock, CheckCircle, Wallet, Plane, ClipboardCheck, ShieldCheck, Award, XCircle, FileCheck, Receipt} from 'lucide-react';
+import {Clock, CheckCircle, Wallet, Plane, ClipboardCheck, Wine, Award, XCircle, FileCheck, Receipt} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {statusColors} from '../../../constants/tripStatusColors';
 
@@ -11,8 +11,8 @@ const approvalPhaseStats = [
 const expensePhaseStats = [
   {key: 'viajesEnCurso', label: 'Registrando Gastos', icon: Plane, color: COLORS.primary, bg: COLORS.error},
   {key: 'viajesEnRevision', label: 'Revisión de Gastos', icon: Clock, ...statusColors.EN_REVISION},
-  {key: 'viajesAprSupervisor', label: 'Apr. por Supervisor', icon: ClipboardCheck, ...statusColors.APROBADO_SUPERVISOR},
-  {key: 'viajesAprAprobador', label: 'Apr. por Aprobador', icon: ShieldCheck, color: '#000a65', bg: '#85aff3ab'},
+  {key: 'viajesEnRevisionAprobador', label: 'Revisión por Alcohol', icon: Wine, ...statusColors.EN_REVISION_APROBADOR},
+  {key: 'viajesAprSupervisor', label: 'Apr. Preliminar', icon: ClipboardCheck, ...statusColors.APROBADO_SUPERVISOR},
   {key: 'viajesAprobados', label: 'Rendición Aprobada', icon: Award, ...statusColors.APROBADO_FINAL},
 ];
 

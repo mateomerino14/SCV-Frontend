@@ -11,8 +11,11 @@ import SkeletonList from '../../components/ui/SkeletonList';
 import useSectionManagement from '../../hooks/admin/useSectionManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
+  totalText: 'text-xs font-inter mb-3',
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
   subtitle: 'text-sm font-inter mb-5',
@@ -39,8 +42,10 @@ function SectionManagementPage() {
     search, setSearch, selectedSection,
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
-    openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
+    openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive, suggestions,
   } = useSectionManagement();
+  // Muestra la lista de a 15 con "Cargar más"; al buscar o filtrar vuelve al inicio
+  const pagination = useClientPagination(sections, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <Navbar text="Secciones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
@@ -53,7 +58,10 @@ function SectionManagementPage() {
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Secciones Registradas</p>
         {loading && <SkeletonList count={4} />}
-        {!loading && sections.map((section) => (
+        {!loading && pagination.total > 0 && (
+          <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {pagination.visibleItems.length} de {pagination.total} secciones</p>
+        )}
+        {!loading && pagination.visibleItems.map((section) => (
           <div key={section.id_seccion} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
             <div className={styles.cardIcon} style={{backgroundColor: COLORS.positionRole}}>
               <span style={{color: COLORS.primary, fontWeight: 'bold', fontSize: 16}}>{section.nombre.charAt(0).toUpperCase()}</span>
@@ -74,6 +82,7 @@ function SectionManagementPage() {
             </div>
           </div>
         ))}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más secciones" />}
         {!loading && sections.length === 0 && (
           <EmptyState title="Sin secciones registradas" subtitle="No se encontraron secciones con los filtros aplicados"
             icon={
@@ -98,11 +107,11 @@ function SectionManagementPage() {
       <SectionFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
         title="Agregar Nueva Sección" subtitle="Defina una nueva sección o departamento de la empresa."
         btnLabel="Registrar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
-        fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} />
+        fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <SectionFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
         title="Editar Sección" subtitle="Actualice el nombre de la sección seleccionada."
         btnLabel="Actualizar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
-        fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} />
+        fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <ConfirmDialog isOpen={showSuspend} icon={selectedSection?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}
         title={selectedSection?.activo ? 'Bloquear Sección' : 'Activar Sección'}
         message={selectedSection?.activo ? '¿Estás seguro de que deseas bloquear esta sección?' : '¿Estás seguro de que deseas activar esta sección?'}

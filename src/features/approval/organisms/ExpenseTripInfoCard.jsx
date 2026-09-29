@@ -30,7 +30,6 @@ const statusConfig = {
   EN_REVISION: {label: 'En Revisión', bg: COLORS.error, color: COLORS.secondary},
   EN_REVISION_APROBADOR: {label: 'Revisión por Alcohol', ...statusColors.EN_REVISION_APROBADOR},
   APROBADO_SUPERVISOR: {label: 'Apr. Preliminar', ...statusColors.APROBADO_SUPERVISOR},
-  APROBADO_APROBADOR: {label: 'Apr. Aprobador', bg: '#85aff3ab', color: '#000a65'},
   APROBADO_FINAL: {label: 'Aprobado', ...statusColors.APROBADO_FINAL},
   RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
 };

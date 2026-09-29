@@ -1,6 +1,12 @@
 import {useState, useRef, useEffect} from 'react';
 
-function usePositionSelector(positions, positionId, onChange) {
+// Quita tildes y mayusculas para que "tesoreria" encuentre "Tesorería"
+export function normalizeSearchText(text) {
+  return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+// Lista desplegable con buscador. options: [{value, label, searchText?}]
+function useSearchableSelector(options, selectedValue, onChange) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [menuPosition, setMenuPosition] = useState(null);
@@ -9,12 +15,11 @@ function usePositionSelector(positions, positionId, onChange) {
   const menuRef = useRef(null);
   const inputRef = useRef(null);
 
-  const selectedPosition = positions.find((position) => String(position.id_cargo) === String(positionId));
-
-  const filteredPositions = positions
-    .filter((position) => position.activo)
-    .filter((position) => position.nombre.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => a.nombre.localeCompare(b.nombre));
+  const selectedOption = options.find((option) => String(option.value) === String(selectedValue));
+  const normalizedSearch = normalizeSearchText(search.trim());
+  const filteredOptions = normalizedSearch
+    ? options.filter((option) => normalizeSearchText(option.searchText || option.label).includes(normalizedSearch))
+    : options;
 
   const calculateMenuPosition = () => {
     if (!triggerRef.current) {
@@ -30,7 +35,7 @@ function usePositionSelector(positions, positionId, onChange) {
       bottom: opensUpward ? window.innerHeight - rect.top + 4 : undefined,
     });
   };
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -47,7 +52,7 @@ function usePositionSelector(positions, positionId, onChange) {
 
   useEffect(() => {
     if (!open) {
-      return;
+      return undefined;
     }
     const handleReposition = () => calculateMenuPosition();
     window.addEventListener('scroll', handleReposition, true);
@@ -68,8 +73,8 @@ function usePositionSelector(positions, positionId, onChange) {
     setOpen(nextState);
   };
 
-  const handleSelect = (position) => {
-    onChange(position.id_cargo);
+  const handleSelect = (option) => {
+    onChange(option.value);
     setOpen(false);
     setSearch('');
   };
@@ -77,9 +82,9 @@ function usePositionSelector(positions, positionId, onChange) {
   return {
     open, search, setSearch, menuPosition,
     wrapperRef, triggerRef, menuRef, inputRef,
-    selectedPosition, filteredPositions,
+    selectedOption, filteredOptions,
     handleToggle, handleSelect,
   };
 }
 
-export default usePositionSelector;
+export default useSearchableSelector;

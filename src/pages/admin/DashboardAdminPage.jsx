@@ -49,6 +49,22 @@ function renderPieLabel({cx, cy, midAngle, innerRadius, outerRadius, percent}) {
 
 const roleColors = [COLORS.primary, '#4a7fd4', '#2d7a3a', COLORS.secondary, COLORS.title];
 
+// Tooltip del grafico por seccion: viajes, monto en Bs y, si hay viajes internacionales, en USD
+function SectionTooltip({active, payload, label}) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+  const row = payload[0].payload;
+  return (
+    <div style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter', padding: '8px 12px'}}>
+      <p style={{fontWeight: 700, color: COLORS.text, marginBottom: 4}}>{label}</p>
+      <p style={{color: COLORS.primary}}>{row.cantidadViajes} viaje{row.cantidadViajes !== 1 ? 's' : ''}</p>
+      <p style={{color: COLORS.title}}>Bs {row.montoAsignado.toFixed(2)}</p>
+      {row.montoAsignadoUsd > 0 && <p style={{color: COLORS.title}}>USD {row.montoAsignadoUsd.toFixed(2)}</p>}
+    </div>
+  );
+}
+
 function DashboardAdminPage() {
   const {menuOpen, user, openMenu, closeMenu} = useMenu();
   const {data, loading} = useAdminDashboard();
@@ -110,17 +126,17 @@ function DashboardAdminPage() {
             {data?.viajesPorSeccion?.length > 0 && (
               <div className={styles.chartCard} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <p className={styles.chartTitle} style={{color: COLORS.text}}>Viajes por Sección</p>
-                <p className={styles.chartSub} style={{color: COLORS.labels}}>Cantidad de viajes y monto asignado, agrupados por sección del empleado</p>
-                <ResponsiveContainer width="100%" height={240}>
+                <p className={styles.chartSub} style={{color: COLORS.labels}}>Cantidad de viajes (eje izquierdo) y monto asignado en Bs (eje derecho), por sección del empleado</p>
+                <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={data.viajesPorSeccion} margin={{top: 10, right: 10, left: 0, bottom: 10}}>
                     <CartesianGrid strokeDasharray="3 3" stroke={COLORS.dataFields} />
                     <XAxis dataKey="seccion" tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
-                    <YAxis tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
-                    <Tooltip formatter={(value, name) => [name === 'cantidadViajes' ? `${value} viaje(s)` : `Bs ${parseFloat(value).toFixed(2)}`, name === 'cantidadViajes' ? 'Viajes' : 'Monto asignado']}
-                      contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter'}} />
+                    <YAxis yAxisId="viajes" allowDecimals={false} tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
+                    <YAxis yAxisId="monto" orientation="right" tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
+                    <Tooltip content={<SectionTooltip />} />
                     <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter'}}>{value === 'cantidadViajes' ? 'Viajes' : 'Monto asignado (Bs)'}</span>} />
-                    <Bar dataKey="cantidadViajes" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
-                    <Bar dataKey="montoAsignado" fill={COLORS.title} radius={[6, 6, 0, 0]} />
+                    <Bar yAxisId="viajes" dataKey="cantidadViajes" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
+                    <Bar yAxisId="monto" dataKey="montoAsignado" fill={COLORS.title} radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

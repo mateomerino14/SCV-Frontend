@@ -7,6 +7,8 @@ import EmptyState from '../../components/ui/EmptyState';
 import SkeletonList from '../../components/ui/SkeletonList';
 import InlineDropdown from '../../components/ui/InlineDropdown';
 import EmployeeDropdown from '../../components/ui/EmployeeDropdown';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import DateRangeFilter from '../../features/approval/molecules/DateRangeFilter';
 import useSimpleSelector from '../../hooks/shared/useSimpleSelector';
 import useAuditLog from '../../hooks/admin/useAuditLog';
 import useMenu from '../../hooks/shared/useMenu';
@@ -15,13 +17,13 @@ import {COLORS} from '../../constants';
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
-  filtersCard: 'rounded-2xl p-4 mb-4 border',
-  filtersGrid: 'grid grid-cols-2 gap-3 mb-3',
-  fieldLabel: 'text-xs font-bold font-inter uppercase mb-1',
-  dateInput: 'w-full p-2.5 rounded-xl text-sm font-inter outline-none border',
-  buttonsRow: 'flex gap-2 mt-2',
-  applyBtn: 'flex-1 py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border-2',
-  clearBtn: 'flex-1 py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border-2',
+  filtersCard: 'rounded-2xl p-4 shadow-md mb-5',
+  cardTitle: 'text-xs font-bold font-inter uppercase mb-3',
+  fieldGroup: 'mt-3',
+  fieldLabel: 'text-xs font-inter uppercase mb-1',
+  buttonsRow: 'flex gap-2 mt-3',
+  filterBtn: 'flex-1 py-2.5 rounded-xl text-sm font-bold font-nunito cursor-pointer border transition-colors text-center',
+  totalText: 'text-xs font-inter mb-3',
   exportBtn: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4',
   row: 'flex items-center gap-3 rounded-2xl p-3 mb-2',
   iconWrap: 'w-9 h-9 rounded-full flex items-center justify-center shrink-0',
@@ -53,8 +55,8 @@ const typeColor = {
 function AuditLogPage() {
   const {menuOpen, user, openMenu, closeMenu} = useMenu();
   const {
-    audits, employees, loading, applyingFilters, error, filters, setFilters,
-    applyFilters, clearFilters, exportToExcel, typeLabels,
+    audits, total, hasMorePages, loadMore, loadingMore, employees, loading, applyingFilters, exporting, error,
+    filters, setFilters, applyFilters, clearFilters, exportToExcel, typeLabels,
   } = useAuditLog();
   const typeDropdown = useSimpleSelector();
   const employeeDropdown = useSimpleSelector();
@@ -66,54 +68,46 @@ function AuditLogPage() {
       <div className={styles.content}>
         <PageHeader title="Historial de Accesos" subtitle="Consulta los ingresos, salidas y cambios de contraseña de los usuarios, y expórtalos a Excel." />
 
-        <div className={styles.filtersCard} style={{backgroundColor: COLORS.backgroundHeader, borderColor: COLORS.dataFields}}>
-          <div className={styles.filtersGrid}>
-            <div>
-              <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Desde</p>
-              <input type="date" className={styles.dateInput} value={filters.fecha_inicio}
-                onChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
-                style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text}} />
-            </div>
-            <div>
-              <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Hasta</p>
-              <input type="date" className={styles.dateInput} value={filters.fecha_fin}
-                onChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))}
-                style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields, color: COLORS.text}} />
-            </div>
+        <div className={styles.filtersCard} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>
+          <p className={styles.cardTitle} style={{color: COLORS.labels}}>Filtros de Búsqueda</p>
+          <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
+            onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
+            onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
+          <div className={styles.fieldGroup}>
+            <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Evento</p>
+            <InlineDropdown wrapperRef={typeDropdown.wrapperRef} triggerRef={typeDropdown.triggerRef} open={typeDropdown.open}
+              opensUpward={typeDropdown.opensUpward} onToggle={typeDropdown.toggle}
+              label={typeOptions.find((option) => option.value === filters.tipo)?.label || 'Todos los eventos'}
+              options={typeOptions} selectedValue={filters.tipo}
+              onSelect={(value) => {setFilters((prev) => ({...prev, tipo: value})); typeDropdown.close();}} />
           </div>
-          <div className={styles.filtersGrid}>
-            <div>
-              <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Evento</p>
-              <InlineDropdown wrapperRef={typeDropdown.wrapperRef} triggerRef={typeDropdown.triggerRef} open={typeDropdown.open}
-                opensUpward={typeDropdown.opensUpward} onToggle={typeDropdown.toggle}
-                label={typeOptions.find((option) => option.value === filters.tipo)?.label || 'Todos los eventos'}
-                options={typeOptions} selectedValue={filters.tipo}
-                onSelect={(value) => {setFilters((prev) => ({...prev, tipo: value})); typeDropdown.close();}} />
-            </div>
-            <div>
-              <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Usuario</p>
-              <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
-                onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_usuario}
-                onSelect={(id) => {setFilters((prev) => ({...prev, id_usuario: id})); employeeDropdown.close();}} />
-            </div>
+          <div className={styles.fieldGroup}>
+            <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Usuario</p>
+            <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
+              onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_usuario}
+              onSelect={(id) => {setFilters((prev) => ({...prev, id_usuario: id})); employeeDropdown.close();}} />
           </div>
           <div className={styles.buttonsRow}>
-            <button className={styles.applyBtn} onClick={applyFilters} disabled={applyingFilters}
-              style={{backgroundColor: COLORS.primary, borderColor: COLORS.primary, color: COLORS.background}}>
-              {applyingFilters ? 'Aplicando...' : 'Aplicar Filtros'}
+            <button className={styles.filterBtn} onClick={applyFilters} disabled={applyingFilters}
+              style={{backgroundColor: applyingFilters ? COLORS.fields : COLORS.primary, borderColor: applyingFilters ? COLORS.fields : COLORS.primary, color: COLORS.background}}>
+              {applyingFilters ? 'Filtrando...' : 'Aplicar Filtros'}
             </button>
-            <button className={styles.clearBtn} onClick={clearFilters} disabled={applyingFilters}
+            <button className={styles.filterBtn} onClick={clearFilters} disabled={applyingFilters}
               style={{backgroundColor: 'transparent', borderColor: COLORS.dataFields, color: COLORS.labels}}>
               Limpiar
             </button>
           </div>
         </div>
 
-        <button className={styles.exportBtn} onClick={exportToExcel} disabled={loading || audits.length === 0}
-          style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: audits.length === 0 ? 0.6 : 1}}>
+        <button className={styles.exportBtn} onClick={exportToExcel} disabled={loading || exporting || audits.length === 0}
+          style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: audits.length === 0 || exporting ? 0.6 : 1}}>
           <Download size={16} />
-          Exportar a Excel
+          {exporting ? 'Exportando...' : 'Exportar a Excel'}
         </button>
+
+        {!loading && total > 0 && (
+          <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {audits.length} de {total} registros</p>
+        )}
 
         {error && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{error}</p>}
 
@@ -138,6 +132,8 @@ function AuditLogPage() {
             </div>
           );
         })}
+
+        {!loading && hasMorePages && <LoadMoreButton onClick={loadMore} loading={loadingMore} label="Cargar más registros" />}
 
         {!loading && audits.length === 0 && (
           <EmptyState title="Sin registros" subtitle="No se encontraron eventos con los filtros aplicados"

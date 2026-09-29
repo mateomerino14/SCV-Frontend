@@ -160,9 +160,14 @@ export const getDashboard = async () => {
   }
 };
 
-export const getAudits = async (filters = {}) => {
+// Con page y limit devuelve {registros, total}; sin ellos, todos los registros filtrados
+export const getAudits = async (filters = {}, page = null, limit = null) => {
   try {
     const params = {};
+    if (page && limit) {
+      params.pagina = page;
+      params.limite = limit;
+    }
     if (filters.tipo) {
       params.tipo = filters.tipo;
     }

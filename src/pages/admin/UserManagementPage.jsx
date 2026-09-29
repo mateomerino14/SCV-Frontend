@@ -13,9 +13,12 @@ import useUserManagement from '../../hooks/admin/useUserManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {avatarDefault} from '../../constants/defaultImages';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 
 const styles = {
+  totalText: 'text-xs font-inter mb-3',
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
   subtitle: 'text-sm font-inter mb-5',
@@ -65,6 +68,8 @@ function UserManagementPage() {
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
     allUsers,
   } = useUserManagement();
+  // Muestra la lista de a 15 con "Cargar más"; al buscar o filtrar vuelve al inicio
+  const pagination = useClientPagination(users, 15, `${search}|${roleFilter}|${sectionFilter}`);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -90,7 +95,10 @@ function UserManagementPage() {
           ))}
         </div>
         {loading && <SkeletonList count={4} />}
-        {!loading && users.map((currentUser) => {
+        {!loading && pagination.total > 0 && (
+          <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {pagination.visibleItems.length} de {pagination.total} usuarios</p>
+        )}
+        {!loading && pagination.visibleItems.map((currentUser) => {
           const config = roleConfig[currentUser.Rol?.nombre] || roleConfig['EMPLEADO'];
           return (
             <div key={currentUser.id_usuario} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
@@ -115,6 +123,7 @@ function UserManagementPage() {
             </div>
           );
         })}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más usuarios" />}
         {!loading && users.length === 0 && (
           <EmptyState title="Sin usuarios registrados" subtitle="No se encontraron usuarios con los filtros aplicados"
             icon={

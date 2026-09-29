@@ -5,11 +5,13 @@ const styles = {
   item: 'px-3 py-2 text-sm font-inter cursor-pointer',
 };
 
-function PositionNameSuggestions({suggestions, onSelect}) {
+// Muestra nombres ya registrados que coinciden con lo escrito, para no crear duplicados.
+// suggestions: [{id, nombre}]
+function ExistingNameSuggestions({suggestions, onSelect}) {
   return (
     <div className={styles.wrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
       {suggestions.slice(0, 4).map((suggestion) => (
-        <div key={suggestion.id_cargo} className={styles.item} style={{color: COLORS.text, borderBottom: `1px solid ${COLORS.dataFields}`}}
+        <div key={suggestion.id} className={styles.item} style={{color: COLORS.text, borderBottom: `1px solid ${COLORS.dataFields}`}}
           onMouseDown={() => onSelect(suggestion.nombre)}>
           {suggestion.nombre}
           <span className="text-xs ml-2" style={{color: COLORS.secondary}}>ya existe</span>
@@ -19,4 +21,4 @@ function PositionNameSuggestions({suggestions, onSelect}) {
   );
 }
 
-export default PositionNameSuggestions;
+export default ExistingNameSuggestions;

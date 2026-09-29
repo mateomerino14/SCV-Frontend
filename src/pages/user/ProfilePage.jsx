@@ -19,7 +19,7 @@ import useMenu from '../../hooks/shared/useMenu';
 import usePhotoModal from '../hooks/usePhotoModal';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
-import {clearToken} from '../../services/shared/tokenStore';
+import {logout} from '../../services/user/authService';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -43,8 +43,10 @@ function ProfilePage() {
   } = useProfile();
   const {showModal: showPhotoModal, open: openPhotoModal, close: closePhotoModal, handleNewPhoto, handleRemovePhoto: handleRemovePhotoModal} =
     usePhotoModal(handleChangePhoto, handleRemovePhoto, loadUser);
-  const handleLogout = () => {
-    clearToken();
+  // Cierra la sesion en el servidor (registra la SALIDA y borra la cookie de sesion)
+  // antes de volver al inicio de sesion
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 

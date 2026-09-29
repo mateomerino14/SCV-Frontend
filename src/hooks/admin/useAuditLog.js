@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import ExcelJS from 'exceljs';
 import {saveAs} from 'file-saver';
 import {getAudits} from '../../services/admin/adminService';
@@ -10,31 +10,46 @@ const typeLabels = {
   CAMBIO_CLAVE: 'Cambio de Contraseña',
 };
 
+const pageSize = 20;
+const emptyFilters = {tipo: '', id_usuario: '', fecha_inicio: '', fecha_fin: ''};
+
 function useAuditLog() {
   const [audits, setAudits] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [applyingFilters, setApplyingFilters] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({tipo: '', id_usuario: '', fecha_inicio: '', fecha_fin: ''});
+  const [filters, setFilters] = useState(emptyFilters);
+  // Filtros con los que se cargo la lista: "Cargar más" y la exportacion usan estos
+  const appliedFiltersRef = useRef(emptyFilters);
 
-  const load = async (currentFilters = filters, showLoading = true) => {
-    if (showLoading) {
-      setLoading(true);
-    }
-    const data = await getAudits(currentFilters);
-    setLoading(false);
-    setApplyingFilters(false);
+  // Carga una pagina; replace reemplaza la lista (filtros nuevos) o la agrega al final
+  const load = async (currentFilters, currentPage, replace) => {
+    const data = await getAudits(currentFilters, currentPage, pageSize);
     if (data.error) {
       setError(data.error);
       return;
     }
-    setAudits(data);
+    setError('');
+    appliedFiltersRef.current = currentFilters;
+    setPage(currentPage);
+    setTotal(data.total || 0);
+    if (replace) {
+      setAudits(data.registros || []);
+    }
+    else {
+      setAudits((prev) => [...prev, ...(data.registros || [])]);
+    }
   };
 
   useEffect(() => {
     const start = async () => {
-      await load(filters, true);
+      await load(emptyFilters, 1, true);
+      setLoading(false);
       const employeeData = await getEmployees();
       if (!employeeData.error) {
         setEmployees(employeeData);
@@ -45,17 +60,32 @@ function useAuditLog() {
 
   const applyFilters = async () => {
     setApplyingFilters(true);
-    await load(filters, false);
+    await load(filters, 1, true);
+    setApplyingFilters(false);
   };
 
   const clearFilters = async () => {
-    const emptyFilters = {tipo: '', id_usuario: '', fecha_inicio: '', fecha_fin: ''};
     setFilters(emptyFilters);
     setApplyingFilters(true);
-    await load(emptyFilters, false);
+    await load(emptyFilters, 1, true);
+    setApplyingFilters(false);
   };
 
+  const loadMore = async () => {
+    setLoadingMore(true);
+    await load(appliedFiltersRef.current, page + 1, false);
+    setLoadingMore(false);
+  };
+
+  // Exporta todos los registros que cumplen los filtros aplicados, no solo la pagina visible
   const exportToExcel = async () => {
+    setExporting(true);
+    const allAudits = await getAudits(appliedFiltersRef.current);
+    if (allAudits.error) {
+      setError(allAudits.error);
+      setExporting(false);
+      return;
+    }
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Auditoría');
     sheet.columns = [
@@ -66,7 +96,7 @@ function useAuditLog() {
     ];
     sheet.getRow(1).font = {bold: true, color: {argb: 'FFFFFFFF'}};
     sheet.getRow(1).fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF870002'}};
-    audits.forEach((audit) => {
+    allAudits.forEach((audit) => {
       sheet.addRow({
         fecha: new Date(audit.fecha).toLocaleString('es-BO'),
         usuario: audit.Usuario ? `${audit.Usuario.nombre} ${audit.Usuario.apellido_paterno}` : '',
@@ -76,10 +106,12 @@ function useAuditLog() {
     });
     const buffer = await workbook.xlsx.writeBuffer();
     saveAs(new Blob([buffer]), `Auditoria_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    setExporting(false);
   };
 
   return {
-    audits, employees, loading, applyingFilters, error,
+    audits, total, hasMorePages: audits.length < total, loadMore, loadingMore,
+    employees, loading, applyingFilters, exporting, error,
     filters, setFilters,
     applyFilters, clearFilters, exportToExcel,
     typeLabels,

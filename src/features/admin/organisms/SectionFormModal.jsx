@@ -1,7 +1,9 @@
+import {useState} from 'react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {Layers} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
 import FormField from '../../../components/ui/FormField';
+import ExistingNameSuggestions from '../molecules/ExistingNameSuggestions';
 import {COLORS} from '../../../constants';
 
 const styles = {
@@ -19,10 +21,16 @@ const styles = {
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
-function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel, formData, setFormData, loading, error, fieldErrors = {}, setFieldErrors}) {
+function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel, formData, setFormData, loading, error, fieldErrors = {}, setFieldErrors, suggestions = []}) {
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const handleNameChange = (event) => {
     setFormData((prev) => ({...prev, nombre: event.target.value}));
     setFieldErrors((prev) => ({...prev, nombre: undefined}));
+    setShowSuggestions(true);
+  };
+  const handleSelectSuggestion = (name) => {
+    setFormData((prev) => ({...prev, nombre: name}));
+    setShowSuggestions(false);
   };
   return (
     <AnimatePresence>
@@ -35,8 +43,15 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
               <ModalIconHeader icon={Layers} backgroundColor={COLORS.backgroundHeader} color={COLORS.text} />
               <p className={styles.title} style={{color: COLORS.text}}>{title}</p>
               <p className={styles.subtitle} style={{color: COLORS.labels}}>{subtitle}</p>
-              <FormField label="Nombre de la Sección" placeholder="Ej: Ventas" maxLength={100}
-                value={formData.nombre} onChange={handleNameChange} error={fieldErrors.nombre} />
+              <div>
+                <FormField label="Nombre de la Sección" placeholder="Ej: Ventas" maxLength={100}
+                  value={formData.nombre} onChange={handleNameChange} error={fieldErrors.nombre}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
+                {showSuggestions && suggestions.length > 0 && (
+                  <ExistingNameSuggestions suggestions={suggestions.map((section) => ({id: section.id_seccion, nombre: section.nombre}))}
+                    onSelect={handleSelectSuggestion} />
+                )}
+              </div>
               {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
               <div className={styles.buttonsRow}>
                 <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}

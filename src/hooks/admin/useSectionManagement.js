@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {getSections, createSection, updateSection, suspendSection, activateSection} from '../../services/admin/adminService';
+import {normalizeSearchText} from '../../features/admin/hooks/useSearchableSelector';
 
 const maxName = 100;
 
@@ -154,7 +155,16 @@ function useSectionManagement() {
     await load();
   };
 
+  // Secciones ya registradas que coinciden con el nombre escrito (sin tildes ni mayusculas),
+  // para avisar antes de crear una repetida
+  const normalizedName = normalizeSearchText(formData.nombre.trim());
+  const suggestions = normalizedName.length >= 2
+    ? allSections.filter((section) => normalizeSearchText(section.nombre).includes(normalizedName)
+        && section.id_seccion !== selectedSection?.id_seccion)
+    : [];
+
   return {
+    suggestions,
     sections: filteredSections,
     allSections,
     loading, savingAction, error, fieldErrors, setFieldErrors,

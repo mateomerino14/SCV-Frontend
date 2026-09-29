@@ -5,6 +5,7 @@ import RecentTripItem from '../../features/trip/organisms/RecentTripItem';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import EmptyState from '../../components/ui/EmptyState';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useTripHistory from '../../hooks/trip/useTripHistory';
@@ -18,7 +19,6 @@ const styles = {
   emptyMsg: "text-sm font-inter text-center py-8",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
   totalText: "text-xs font-inter mb-3",
-  loadMoreBtn: "w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border mt-3",
 };
 
 function TripHistoryPage() {
@@ -49,10 +49,7 @@ function TripHistoryPage() {
         )}
         {!loading && trips.map((trip) => <RecentTripItem key={trip.id_viaje} trip={trip} from={routes.employeeHistory} />)}
         {!loading && hasMorePages && (
-          <button className={styles.loadMoreBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, opacity: loadingMore ? 0.6 : 1}}
-            onClick={loadMore} disabled={loadingMore}>
-            {loadingMore ? 'Cargando...' : 'Cargar más viajes'}
-          </button>
+          <LoadMoreButton onClick={loadMore} loading={loadingMore} label="Cargar más viajes" />
         )}
       </div>
       <Footer />
