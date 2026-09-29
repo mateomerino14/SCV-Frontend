@@ -73,13 +73,16 @@ function useSupervisorExpenseReviewHistory() {
     await load();
   };
 
+  // Pendiente solo si la rendicion esta asignada a este supervisor; si ya la aprobo antes
+  // y ahora la revisa otro, sigue apareciendo en Aprobados
+  const isPendingForMe = (trip) => trip.estado === 'EN_REVISION' && trip.asignado_a_mi !== false;
   const filteredTrips = trips.filter((trip) => {
     if (statusFilter === 'EN_REVISION') {
-      return trip.estado === 'EN_REVISION';
+      return isPendingForMe(trip);
     }
     // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
     if (statusFilter === 'APROBADO_SUPERVISOR') {
-      return trip.resultado_revision === 'APROBADO' && trip.estado !== 'EN_REVISION';
+      return trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip);
     }
     if (statusFilter === 'RECHAZADO') {
       return trip.resultado_revision === 'RECHAZADO';

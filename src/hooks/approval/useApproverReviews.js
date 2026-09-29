@@ -66,9 +66,10 @@ function useApproverReviews() {
   };
 
   // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
-  const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && trip.estado !== 'APROBADO_VIAJE');
+  const isPendingForMe = (trip) => trip.estado === 'APROBADO_VIAJE' && trip.asignado_a_mi !== false;
+  const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip));
   const rejectedTrips = myTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO');
-  const myPendingTrips = myTrips.filter((trip) => trip.estado === 'APROBADO_VIAJE');
+  const myPendingTrips = myTrips.filter(isPendingForMe);
   let displayedTrips = myPendingTrips;
   if (tab === 'APROBADOS') {
     displayedTrips = approvedTrips;

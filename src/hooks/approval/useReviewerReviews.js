@@ -32,9 +32,10 @@ function useReviewerReviews() {
       }
       return;
     }
-    setMyPending((historyData || []).filter((trip) => trip.estado === 'APROBADO_SUPERVISOR'));
+    const isPendingForMe = (trip) => trip.estado === 'APROBADO_SUPERVISOR' && trip.asignado_a_mi !== false;
+    setMyPending((historyData || []).filter(isPendingForMe));
     // Aprobados y rechazados salen del historial de revision del revisor
-    setApproved((historyData || []).filter((trip) => trip.resultado_revision === 'APROBADO' && trip.estado !== 'APROBADO_SUPERVISOR'));
+    setApproved((historyData || []).filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip)));
     setRejected((historyData || []).filter((trip) => trip.resultado_revision === 'RECHAZADO'));
   }, [filters]);
 
