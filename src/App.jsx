@@ -7,6 +7,7 @@ import {getToken, setToken} from './services/shared/tokenStore';
 import {COLORS} from './constants';
 
 import LoginPage from './pages/user/LoginPage';
+import PasswordChangeGate from './features/user/organisms/PasswordChangeGate';
 
 const SettingsPage = lazy(() => import('./pages/user/SettingsPage'));
 const ProfilePage = lazy(() => import('./pages/user/ProfilePage'));
@@ -119,6 +120,7 @@ function App() {
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
+      <PasswordChangeGate />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><LoginPage /></PageTransition>} />

@@ -6,13 +6,11 @@ import MascotGreeting from '../../components/mascot/MascotGreeting';
 import {greetingFor} from '../../utils/mascotPreferences';
 import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
-import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import TripPhaseSection from '../../features/admin/organisms/TripPhaseSection';
 import PhaseTotalCard from '../../features/admin/molecules/PhaseTotalCard';
 import useAdminDashboard from '../../hooks/admin/useAdminDashboard';
 import useMenu from '../../hooks/shared/useMenu';
-import usePasswordExpiredCheck from '../../hooks/user/usePasswordExpiredCheck';
 import {approvalPhaseStats, expensePhaseStats, rejectedStat, approvalPhaseTotal, expensePhaseTotal} from '../../features/admin/constants/tripPhaseStats';
 import {COLORS} from '../../constants';
 
@@ -68,7 +66,6 @@ function SectionTooltip({active, payload, label}) {
 function DashboardAdminPage() {
   const {menuOpen, user, openMenu, closeMenu} = useMenu();
   const {data, loading} = useAdminDashboard();
-  const {showModal, loading: loadingChange, error: errorChange, handleChange} = usePasswordExpiredCheck();
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
 
@@ -76,7 +73,6 @@ function DashboardAdminPage() {
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <PasswordExpiredModal isOpen={showModal} onConfirm={handleChange} loading={loadingChange} error={errorChange} />
       <Navbar text="Resumen General" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>

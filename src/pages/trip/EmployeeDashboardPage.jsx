@@ -9,12 +9,10 @@ import DraftTripCard from '../../features/trip/organisms/DraftTripCard';
 import InProgressTripCard from '../../features/trip/organisms/InProgressTripCard';
 import RecentTripItem from '../../features/trip/organisms/RecentTripItem';
 import SubmitTripConfirmModal from '../../features/trip/organisms/SubmitTripConfirmModal';
-import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import useEmployeeDashboard from '../../hooks/trip/useEmployeeDashboard';
 import useMenu from '../../hooks/shared/useMenu';
-import usePasswordExpiredCheck from '../../hooks/user/usePasswordExpiredCheck';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 
@@ -52,7 +50,6 @@ function EmployeeDashboardPage() {
     submittingReview, submitError, tripToConfirm,
     handleRequestSubmitReview, handleCancelSubmitReview, handleConfirmSubmitReview,
   } = useEmployeeDashboard();
-  const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
 
   if (loading) {
     return (
@@ -75,7 +72,6 @@ function EmployeeDashboardPage() {
         .scroll-trips { scrollbar-width: thin; scrollbar-color: ${COLORS.dataFields} transparent; }
       `}</style>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>

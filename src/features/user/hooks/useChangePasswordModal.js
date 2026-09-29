@@ -2,7 +2,8 @@ import {useState, useEffect} from 'react';
 import {changePassword} from '../../../services/user/userService';
 
 const maxLength = 255;
-const minLength = 6;
+// Mismo minimo que exige el servidor
+const minLength = 8;
 
 function useChangePasswordModal(onClose) {
   const [currentPassword, setCurrentPassword] = useState('');
