@@ -39,10 +39,10 @@ function ReviewerReviewsPage() {
   const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
   let subtitle = 'Rendiciones aprobadas por el supervisor: haz la revisión final para aprobarlas o rechazarlas.';
   if (tab === 'APROBADOS') {
-    subtitle = 'Rendiciones que aprobaste en revisión final.';
+    subtitle = 'Historial de las rendiciones que aprobaste en revisión final.';
   }
   else if (tab === 'RECHAZADOS') {
-    subtitle = 'Rendiciones que rechazaste en revisión final.';
+    subtitle = 'Rendiciones que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
   const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición por revisar', 'rendiciones por revisar');

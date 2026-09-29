@@ -41,11 +41,11 @@ function ApproverReviewsPage() {
   let subtitle = 'Viajes aprobados por el supervisor: al aprobarlos se genera el memorándum y pasan a tesorería.';
   if (tab === 'APROBADOS') {
     total = totalApproved;
-    subtitle = 'Viajes que aprobaste y pasaron a tesorería.';
+    subtitle = 'Historial de los viajes que aprobaste, con el estado en que están ahora.';
   }
   else if (tab === 'RECHAZADOS') {
     total = totalRejected;
-    subtitle = 'Viajes que ya rechazaste.';
+    subtitle = 'Viajes que rechazaste y el empleado aún no corrige. Al reenviarlos a revisión salen de esta lista.';
   }
 
   const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'viaje por aprobar', 'viajes por aprobar');

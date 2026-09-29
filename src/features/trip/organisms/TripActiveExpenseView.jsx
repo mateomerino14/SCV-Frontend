@@ -252,7 +252,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Excesos</p>
           {exceededDays.map((day) => dayJustifications[day.fecha] && (
             <div key={day.fecha} className={styles.justificationItem}>
-              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)}</p>
+              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
                 style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>

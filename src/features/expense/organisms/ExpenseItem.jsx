@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, MessageSquare, List, Receipt, FolderOpen} from 'lucide-react';
+import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, MessageSquare, List, Receipt, FolderOpen, ArrowLeftRight} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseFieldTag from '../atoms/ExpenseFieldTag';
@@ -37,6 +37,9 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
   const expenseDate = expense.Factura?.fecha_emision || expense.fecha_gasto;
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;
+  // Cada tramo registrado es una conversion de una moneda de origen a USD
+  const conversionsCount = isInternational ? (expense.Gasto_Tramo_Moneda || []).length : 0;
+  const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
   const expenseObservations = observations.filter((observation) => observation.id_gasto === expense.id_gasto);
 
   return (
@@ -55,17 +58,27 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
         {expense.Categoria_Gasto?.nombre && expense.Proveedor?.nombre && <ExpenseFieldTag icon={FolderOpen} text={expense.Categoria_Gasto.nombre} color={accentColor} />}
         {docLabel && <span style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter'}}>{docLabel}</span>}
       </div>
-      {isInternational && (
-        <span style={{display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter', backgroundColor: COLORS.primary + '15', color: COLORS.primary, padding: '2px 8px', borderRadius: 6, width: 'fit-content'}}>
-          <Globe size={10} />
-          {parseFloat(expense.monto_total).toFixed(2)} USD
-        </span>
-      )}
-      {hasSubitems && (
-        <span style={{display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter', backgroundColor: COLORS.title + '15', color: COLORS.title, padding: '2px 8px', borderRadius: 6, width: 'fit-content'}}>
-          <List size={10} />
-          {subitems.length} subgasto{subitems.length !== 1 ? 's' : ''}
-        </span>
+      {(isInternational || hasSubitems) && (
+        <div style={{display: 'flex', flexWrap: 'wrap', gap: 6}}>
+          {isInternational && (
+            <span style={{...badgeStyle, backgroundColor: COLORS.primary + '15', color: COLORS.primary}}>
+              <Globe size={10} />
+              {parseFloat(expense.monto_total).toFixed(2)} USD
+            </span>
+          )}
+          {conversionsCount > 0 && (
+            <span style={{...badgeStyle, backgroundColor: COLORS.primary + '15', color: COLORS.primary}}>
+              <ArrowLeftRight size={10} />
+              {conversionsCount} conversi{conversionsCount !== 1 ? 'ones' : 'ón'} de moneda
+            </span>
+          )}
+          {hasSubitems && (
+            <span style={{...badgeStyle, backgroundColor: COLORS.title + '15', color: COLORS.title}}>
+              <List size={10} />
+              {subitems.length} subgasto{subitems.length !== 1 ? 's' : ''}
+            </span>
+          )}
+        </div>
       )}
       {!hasSubitems && expense.descripcion && (
         <p style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter', lineHeight: 1.4}}>{expense.descripcion}</p>

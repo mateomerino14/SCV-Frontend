@@ -77,11 +77,12 @@ function useSupervisorExpenseReviewHistory() {
     if (statusFilter === 'EN_REVISION') {
       return trip.estado === 'EN_REVISION';
     }
+    // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
     if (statusFilter === 'APROBADO_SUPERVISOR') {
-      return trip.estado === 'APROBADO_SUPERVISOR' || trip.estado === 'APROBADO_APROBADOR' || trip.estado === 'APROBADO_FINAL';
+      return trip.resultado_revision === 'APROBADO' && trip.estado !== 'EN_REVISION';
     }
     if (statusFilter === 'RECHAZADO') {
-      return trip.estado === 'RECHAZADO';
+      return trip.resultado_revision === 'RECHAZADO';
     }
     return true;
   });

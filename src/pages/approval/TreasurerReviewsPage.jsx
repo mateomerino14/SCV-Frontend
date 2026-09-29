@@ -41,11 +41,11 @@ function TreasurerReviewsPage() {
   let subtitle = 'Viajes aprobados que esperan fondos: revisa o ajusta los montos y apruébalos.';
   if (tab === 'APROBADOS') {
     total = totalApproved;
-    subtitle = 'Viajes a los que ya les asignaste fondos.';
+    subtitle = 'Historial de los viajes a los que asignaste fondos, con el estado en que están ahora.';
   }
   else if (tab === 'RECHAZADOS') {
     total = totalRejected;
-    subtitle = 'Viajes que rechazaste en la asignación de fondos.';
+    subtitle = 'Viajes que rechazaste en la asignación de fondos y el empleado aún no corrige.';
   }
 
   const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalPending, 'viaje esperando fondos', 'viajes esperando fondos');

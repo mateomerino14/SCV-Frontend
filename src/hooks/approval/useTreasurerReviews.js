@@ -73,8 +73,9 @@ function useTreasurerReviews() {
     load(emptyFilters, true);
   };
 
-  const approvedTrips = myTrips.filter((trip) => trip.estado === 'EN_CURSO');
-  const rejectedTrips = myTrips.filter((trip) => trip.estado === 'RECHAZADO');
+  // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
+  const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && trip.estado !== 'EN_REVISION_TESORERO');
+  const rejectedTrips = myTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO');
 
   let displayedTrips = pending;
   if (tab === 'APROBADOS') {

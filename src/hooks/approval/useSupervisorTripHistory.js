@@ -68,11 +68,12 @@ function useSupervisorTripHistory() {
     if (statusFilter === 'EN_REVISION_VIAJE') {
       return trip.estado === 'EN_REVISION_VIAJE';
     }
+    // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
     if (statusFilter === 'APROBADO_VIAJE') {
-      return ['APROBADO_VIAJE', 'EN_REVISION_TESORERO', 'EN_CURSO'].includes(trip.estado);
+      return trip.resultado_revision === 'APROBADO' && trip.estado !== 'EN_REVISION_VIAJE';
     }
     if (statusFilter === 'RECHAZADO') {
-      return trip.estado === 'RECHAZADO';
+      return trip.resultado_revision === 'RECHAZADO';
     }
     return true;
   });

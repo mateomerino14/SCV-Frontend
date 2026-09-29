@@ -36,10 +36,10 @@ function SupervisorTripHistoryPage() {
   } = useSupervisorTripHistory();
   let subtitle = 'Viajes asignados a ti: revísalos y apruébalos, o recházalos con observaciones.';
   if (statusFilter === 'APROBADO_VIAJE') {
-    subtitle = 'Viajes que aprobaste y pasaron al aprobador.';
+    subtitle = 'Historial de los viajes que aprobaste tú, con el estado en que están ahora.';
   }
   else if (statusFilter === 'RECHAZADO') {
-    subtitle = 'Viajes que ya rechazaste.';
+    subtitle = 'Viajes que rechazaste y el empleado aún no corrige. Al reenviarlos a revisión salen de esta lista.';
   }
 
   const mascotMessage = !loading && statusFilter === 'EN_REVISION_VIAJE' ? pendingMessage(user?.nombre, total, 'viaje por revisar', 'viajes por revisar') : null;

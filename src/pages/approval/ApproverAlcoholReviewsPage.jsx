@@ -41,11 +41,11 @@ function ApproverAlcoholReviewsPage() {
   let subtitle = 'Rendiciones con gastos de alcohol que necesitan tu revisión antes de pasar a la revisión final.';
   if (tab === 'APROBADOS') {
     total = totalApproved;
-    subtitle = 'Rendiciones con alcohol que aprobaste y pasaron a la revisión final.';
+    subtitle = 'Historial de las rendiciones con alcohol que aprobaste, con el estado en que están ahora.';
   }
   else if (tab === 'RECHAZADOS') {
     total = totalRejected;
-    subtitle = 'Rendiciones con alcohol que ya rechazaste.';
+    subtitle = 'Rendiciones con alcohol que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
   const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición con alcohol por revisar', 'rendiciones con alcohol por revisar');

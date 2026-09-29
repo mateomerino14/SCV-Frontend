@@ -31,10 +31,10 @@ function SupervisorExpenseReviewHistoryPage() {
   } = useSupervisorExpenseReviewHistory();
   let subtitle = 'Rendiciones asignadas a ti: revisa los gastos, deja observaciones y apruébalas o recházalas.';
   if (statusFilter === 'APROBADO_SUPERVISOR') {
-    subtitle = 'Rendiciones que aprobaste y pasaron a la siguiente revisión.';
+    subtitle = 'Historial de las rendiciones que aprobaste tú, con el estado en que están ahora.';
   }
   else if (statusFilter === 'RECHAZADO') {
-    subtitle = 'Rendiciones que rechazaste para que el empleado las corrija.';
+    subtitle = 'Rendiciones que rechazaste y el empleado aún no corrige. Al reenviarlas a revisión salen de esta lista.';
   }
 
   const mascotMessage = !loading && statusFilter === 'EN_REVISION' ? pendingMessage(user?.nombre, total, 'rendición por revisar', 'rendiciones por revisar') : null;
