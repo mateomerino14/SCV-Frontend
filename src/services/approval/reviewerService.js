@@ -10,29 +10,6 @@ export const getReviewerEmployees = async () => {
   }
 };
 
-export const getPendingReviews = async (filters = {}) => {
-  try {
-    const params = {};
-    if (filters.fecha_inicio) {
-      params.fecha_inicio = filters.fecha_inicio;
-    }
-    if (filters.fecha_fin) {
-      params.fecha_fin = filters.fecha_fin;
-    }
-    if (filters.id_empleado) {
-      params.id_empleado = filters.id_empleado;
-    }
-    if (filters.id_seccion) {
-      params.id_seccion = filters.id_seccion;
-    }
-    const response = await apiClient.get('/reviewer/pending', {params});
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener pendientes'};
-  }
-};
-
 export const getMyReviews = async (filters = {}) => {
   try {
     const params = {};
@@ -76,9 +53,9 @@ export const approveReview = async (tripId) => {
   }
 };
 
-export const rejectReview = async (tripId, observations) => {
+export const rejectReview = async (tripId) => {
   try {
-    const response = await apiClient.post(`/reviewer/${tripId}/reject`, {observaciones: observations});
+    const response = await apiClient.post(`/reviewer/${tripId}/reject`);
     return response.data;
   }
   catch (error) {

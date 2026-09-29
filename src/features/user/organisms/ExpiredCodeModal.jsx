@@ -24,11 +24,11 @@ function ExpiredCodeModal({isOpen, onClose, onResend}) {
       <div className={styles.icon} style={{backgroundColor: '#000000'}}>
         <RefreshCw size={36} color="white" />
       </div>
-      <h2 className={styles.title}>Codigo Expirado</h2>
-      <p className={styles.descriptionItalic}>El codigo de verificacion ha expirado</p>
-      <p className={styles.description}>Solicita un nuevo codigo para continuar</p>
+      <h2 className={styles.title}>Código Expirado</h2>
+      <p className={styles.descriptionItalic}>El código de verificación expiró o se anuló por intentos fallidos</p>
+      <p className={styles.description}>Solicita un nuevo código para continuar</p>
       <div className="w-full flex flex-col gap-3">
-        <Button text={resending ? 'Reenviando...' : 'Reenviar Codigo'} variant="primary" onClick={handleResend} />
+        <Button text={resending ? 'Reenviando...' : 'Reenviar Código'} variant="primary" onClick={handleResend} />
         <Button text="Volver al Inicio" variant="secondary" onClick={onClose} />
       </div>
     </ModalBase>

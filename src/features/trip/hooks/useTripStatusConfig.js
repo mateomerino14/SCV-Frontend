@@ -1,17 +1,18 @@
 import {COLORS} from '../../../constants';
 import {statusColors} from '../../../constants/tripStatusColors';
+import {statusLabels} from '../../../constants/tripStatusLabels';
 
 const tripStatusConfig = {
-  BORRADOR: {label: 'Borrador', bg: COLORS.dataFields, color: COLORS.text},
-  EN_REVISION_VIAJE: {label: 'En Revisión Previa', ...statusColors.EN_REVISION_VIAJE},
-  APROBADO_VIAJE: {label: 'Esperando Aprobador', ...statusColors.APROBADO_VIAJE},
-  EN_REVISION_TESORERO: {label: 'Esperando Fondos', ...statusColors.EN_REVISION_TESORERO},
-  EN_CURSO: {label: 'En Curso', bg: COLORS.primary, color: COLORS.background},
-  EN_REVISION: {label: 'En Revisión', ...statusColors.EN_REVISION},
-  EN_REVISION_APROBADOR: {label: 'Revisión Adicional', ...statusColors.EN_REVISION_APROBADOR},
-  APROBADO_SUPERVISOR: {label: 'Apr. Supervisor', ...statusColors.APROBADO_SUPERVISOR},
-  APROBADO_FINAL: {label: 'Aprobado', ...statusColors.APROBADO_FINAL},
-  RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
+  BORRADOR: {label: statusLabels.BORRADOR, ...statusColors.BORRADOR},
+  EN_REVISION_VIAJE: {label: statusLabels.EN_REVISION_VIAJE, ...statusColors.EN_REVISION_VIAJE},
+  APROBADO_VIAJE: {label: statusLabels.APROBADO_VIAJE, ...statusColors.APROBADO_VIAJE},
+  EN_REVISION_TESORERO: {label: statusLabels.EN_REVISION_TESORERO, ...statusColors.EN_REVISION_TESORERO},
+  EN_CURSO: {label: statusLabels.EN_CURSO, bg: COLORS.primary, color: COLORS.background},
+  EN_REVISION: {label: statusLabels.EN_REVISION, ...statusColors.EN_REVISION},
+  EN_REVISION_APROBADOR: {label: statusLabels.EN_REVISION_APROBADOR, ...statusColors.EN_REVISION_APROBADOR},
+  APROBADO_SUPERVISOR: {label: statusLabels.APROBADO_SUPERVISOR, ...statusColors.APROBADO_SUPERVISOR},
+  APROBADO_FINAL: {label: statusLabels.APROBADO_FINAL, ...statusColors.APROBADO_FINAL},
+  RECHAZADO: {label: statusLabels.RECHAZADO, ...statusColors.RECHAZADO},
 };
 
 const tripStatusMessages = {

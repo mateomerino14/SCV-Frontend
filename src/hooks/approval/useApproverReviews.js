@@ -33,6 +33,7 @@ function useApproverReviews() {
       setError(myTripsData.error);
       return;
     }
+    setError('');
     setMyTrips(myTripsData);
   };
 

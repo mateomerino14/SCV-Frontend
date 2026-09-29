@@ -1,6 +1,6 @@
 import {useState, useEffect, useRef} from 'react';
 import {getSections} from '../../services/admin/adminService';
-import {getMyTripReviews, getReviewEmployees} from '../../services/approval/reviewService';
+import {getMyTripReviews, getReviewEmployees, returnTripReview} from '../../services/approval/reviewService';
 
 const pollingInterval = 30 * 1000;
 
@@ -32,6 +32,7 @@ function useSupervisorTripHistory() {
       setError(data.error);
       return;
     }
+    setError('');
     setTrips(data);
   };
 
@@ -64,6 +65,17 @@ function useSupervisorTripHistory() {
     load(emptyFilters);
   };
 
+  // Devuelve un viaje tomado por error para que otro supervisor pueda revisarlo
+  const handleReturn = async (tripId) => {
+    const data = await returnTripReview(tripId);
+    if (data.error) {
+      setError(data.error);
+      return;
+    }
+    setError('');
+    await load();
+  };
+
   // Pendiente solo si el viaje esta asignado a este supervisor; si ya lo aprobo antes y
   // ahora lo revisa otro, sigue apareciendo en Aprobados
   const isPendingForMe = (trip) => trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false;
@@ -82,6 +94,7 @@ function useSupervisorTripHistory() {
   });
 
   return {
+    handleReturn,
     trips: filteredTrips,
     total: filteredTrips.length,
     employees,

@@ -7,6 +7,7 @@ import {formatDateRange} from '../../../utils/dateFormatter';
 import TripTypeBadge from '../atoms/TripTypeBadge';
 import TripRoute from '../atoms/TripRoute';
 import {statusColors as statusPalette} from '../../../constants/tripStatusColors';
+import {statusLabels as tripStatusLabels} from '../../../constants/tripStatusLabels';
 
 const styles = {
   container: "flex items-center justify-between p-3 shadow-sm border mb-3 rounded-xl gap-2",
@@ -48,17 +49,8 @@ const statusBackgrounds = {
   RECHAZADO: statusPalette.RECHAZADO.bg,
 };
 
-const statusLabels = {
-  EN_REVISION_VIAJE: 'REVISIÓN PREVIA',
-  APROBADO_VIAJE: 'APR. SUPERVISOR',
-  EN_REVISION_TESORERO: 'ESPERANDO FONDOS',
-  EN_CURSO: 'EN CURSO',
-  EN_REVISION: 'EN REVISIÓN',
-  EN_REVISION_APROBADOR: 'REVISIÓN ALCOHOL',
-  APROBADO_SUPERVISOR: 'APR. SUPERVISOR',
-  APROBADO_FINAL: 'APROBADO',
-  RECHAZADO: 'RECHAZADO',
-};
+// Mismo nombre que en el resto del sistema, en mayusculas para la etiqueta compacta
+const statusLabels = Object.fromEntries(Object.entries(tripStatusLabels).map(([state, label]) => [state, label.toUpperCase()]));
 
 function RecentTripItem({trip, from}) {
   const navigate = useNavigate();

@@ -222,9 +222,9 @@ export const approveExpenseReview = async (tripId) => {
   }
 };
 
-export const rejectExpenseReview = async (tripId, observations) => {
+export const rejectExpenseReview = async (tripId) => {
   try {
-    const response = await apiClient.post(`/review/expense-review/${tripId}/reject`, {observaciones: observations});
+    const response = await apiClient.post(`/review/expense-review/${tripId}/reject`);
     return response.data;
   }
   catch (error) {

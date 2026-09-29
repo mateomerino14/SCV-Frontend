@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import HistoryDropdownSelector from '../molecules/HistoryDropdownSelector';
+import {statusLabels} from '../../../constants/tripStatusLabels';
 
 const styles = {
   wrapper: 'flex flex-col gap-2 mb-4',
@@ -14,9 +15,9 @@ const categories = [
     label: 'Aprobación de Viaje',
     states: [
       {value: 'PREVIO', label: 'Todos los de esta categoría'},
-      {value: 'EN_REVISION_VIAJE', label: 'En Revisión'},
-      {value: 'APROBADO_VIAJE', label: 'Apr. Supervisor'},
-      {value: 'EN_REVISION_TESORERO', label: 'Esperando Fondos'},
+      {value: 'EN_REVISION_VIAJE', label: statusLabels.EN_REVISION_VIAJE},
+      {value: 'APROBADO_VIAJE', label: statusLabels.APROBADO_VIAJE},
+      {value: 'EN_REVISION_TESORERO', label: statusLabels.EN_REVISION_TESORERO},
       {value: 'RECHAZADO_PREVIO', label: 'Rechazado'},
     ],
   },
@@ -25,10 +26,11 @@ const categories = [
     label: 'Rendición de Gastos',
     states: [
       {value: 'GASTOS', label: 'Todos los de esta categoría'},
-      {value: 'EN_CURSO', label: 'En Curso'},
-      {value: 'EN_REVISION', label: 'En Revisión'},
-      {value: 'APROBADO_SUPERVISOR', label: 'Apr. Supervisor'},
-      {value: 'APROBADO_FINAL', label: 'Aprobado'},
+      {value: 'EN_CURSO', label: statusLabels.EN_CURSO},
+      {value: 'EN_REVISION', label: statusLabels.EN_REVISION},
+      {value: 'EN_REVISION_APROBADOR', label: statusLabels.EN_REVISION_APROBADOR},
+      {value: 'APROBADO_SUPERVISOR', label: statusLabels.APROBADO_SUPERVISOR},
+      {value: 'APROBADO_FINAL', label: statusLabels.APROBADO_FINAL},
       {value: 'RECHAZADO_GASTOS', label: 'Rechazado'},
     ],
   },

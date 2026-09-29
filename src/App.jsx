@@ -8,6 +8,7 @@ import {COLORS} from './constants';
 
 import LoginPage from './pages/user/LoginPage';
 import PasswordChangeGate from './features/user/organisms/PasswordChangeGate';
+import {getHomeRoute} from './constants/roleHome';
 
 const SettingsPage = lazy(() => import('./pages/user/SettingsPage'));
 const ProfilePage = lazy(() => import('./pages/user/ProfilePage'));
@@ -32,8 +33,6 @@ const SupervisorTripReviewDetailPage = lazy(() => import('./pages/approval/Super
 const SupervisorPendingExpenseReviewsPage = lazy(() => import('./pages/approval/SupervisorPendingExpenseReviewsPage'));
 const SupervisorExpenseReviewHistoryPage = lazy(() => import('./pages/approval/SupervisorExpenseReviewHistoryPage'));
 const SupervisorExpenseReviewDetailPage = lazy(() => import('./pages/approval/SupervisorExpenseReviewDetailPage'));
-const ApproverPendingTripsPage = lazy(() => import('./pages/approval/ApproverPendingTripsPage'));
-const ApproverTripHistoryPage = lazy(() => import('./pages/approval/ApproverTripHistoryPage'));
 const ApproverReviewsPage = lazy(() => import('./pages/approval/ApproverReviewsPage'));
 const ApproverAlcoholReviewsPage = lazy(() => import('./pages/approval/ApproverAlcoholReviewsPage'));
 const ApproverAlcoholReviewDetailPage = lazy(() => import('./pages/approval/ApproverAlcoholReviewDetailPage'));
@@ -65,8 +64,17 @@ function ProtectedRoute({allowedRoles, children}) {
     return <Navigate to="/" replace />;
   }
   const role = getRoleFromToken();
+  // Con sesion pero sin permiso para esta pantalla: a su pantalla de inicio, no al login
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={getHomeRoute(role)} replace />;
+  }
+  return children;
+}
+
+// La pantalla de ingreso redirige a la de inicio si ya hay una sesion activa
+function LoginRoute({children}) {
+  if (getToken()) {
+    return <Navigate to={getHomeRoute(getRoleFromToken())} replace />;
   }
   return children;
 }
@@ -123,7 +131,7 @@ function App() {
       <PasswordChangeGate />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><LoginPage /></PageTransition>} />
+        <Route path="/" element={<LoginRoute><PageTransition><LoginPage /></PageTransition></LoginRoute>} />
         <Route path="/dashboard/empleado" element={<ProtectedRoute><PageTransition><EmployeeDashboardPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/empleado/crear-viaje" element={<ProtectedRoute><PageTransition><CreateTripPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/empleado/viaje/:id" element={<ProtectedRoute><PageTransition><TripDetailPage /></PageTransition></ProtectedRoute>} />
@@ -156,8 +164,6 @@ function App() {
         <Route path="/dashboard/aprobador/revision-alcohol" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverAlcoholReviewsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/revision-alcohol/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverAlcoholReviewDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/gasto/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ExpenseDetailPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/aprobador/viajes-pendientes" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverPendingTripsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/aprobador/viajes-historial" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverTripHistoryPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/viaje-previo/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverTripReviewDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/perfil" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/configuracion" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />

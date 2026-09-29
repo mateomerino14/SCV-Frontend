@@ -20,11 +20,12 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {statusColors} from '../../constants/tripStatusColors';
 import {getStatusColors} from '../../constants/tripStatusColors';
+import {statusLabels} from '../../constants/tripStatusLabels';
 
 const treasurerStatusConfig = {
-  EN_REVISION_TESORERO: {label: 'Pend. Fondos', ...statusColors.EN_REVISION_TESORERO},
-  EN_CURSO: {label: 'Aprobado', ...statusColors.EN_CURSO},
-  RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
+  EN_REVISION_TESORERO: {label: statusLabels.EN_REVISION_TESORERO, ...statusColors.EN_REVISION_TESORERO},
+  EN_CURSO: {label: statusLabels.EN_CURSO, ...statusColors.EN_CURSO},
+  RECHAZADO: {label: statusLabels.RECHAZADO, ...statusColors.RECHAZADO},
 };
 
 const styles = {

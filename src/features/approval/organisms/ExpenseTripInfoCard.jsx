@@ -3,6 +3,7 @@ import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {avatarDefault} from '../../../constants/defaultImages';
 import {statusColors} from '../../../constants/tripStatusColors';
+import {statusLabels} from '../../../constants/tripStatusLabels';
 
 
 const styles = {
@@ -27,11 +28,11 @@ const styles = {
 };
 
 const statusConfig = {
-  EN_REVISION: {label: 'En Revisión', bg: COLORS.error, color: COLORS.secondary},
-  EN_REVISION_APROBADOR: {label: 'Revisión por Alcohol', ...statusColors.EN_REVISION_APROBADOR},
-  APROBADO_SUPERVISOR: {label: 'Apr. Preliminar', ...statusColors.APROBADO_SUPERVISOR},
-  APROBADO_FINAL: {label: 'Aprobado', ...statusColors.APROBADO_FINAL},
-  RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
+  EN_REVISION: {label: statusLabels.EN_REVISION, bg: COLORS.error, color: COLORS.secondary},
+  EN_REVISION_APROBADOR: {label: statusLabels.EN_REVISION_APROBADOR, ...statusColors.EN_REVISION_APROBADOR},
+  APROBADO_SUPERVISOR: {label: statusLabels.APROBADO_SUPERVISOR, ...statusColors.APROBADO_SUPERVISOR},
+  APROBADO_FINAL: {label: statusLabels.APROBADO_FINAL, ...statusColors.APROBADO_FINAL},
+  RECHAZADO: {label: statusLabels.RECHAZADO, ...statusColors.RECHAZADO},
 };
 
 function ExpenseTripInfoCard({trip}) {

@@ -20,8 +20,6 @@ export const routes = {
   supervisorSettings: '/dashboard/supervisor/configuracion',
   approverReviews: '/dashboard/aprobador/revisiones',
   approverAlcoholReviews: '/dashboard/aprobador/revision-alcohol',
-  approverPendingTrips: '/dashboard/aprobador/viajes-pendientes',
-  approverTripHistory: '/dashboard/aprobador/viajes-historial',
   approverProfile: '/dashboard/aprobador/perfil',
   approverSettings: '/dashboard/aprobador/configuracion',
   reviewerReviews: '/dashboard/revisor',

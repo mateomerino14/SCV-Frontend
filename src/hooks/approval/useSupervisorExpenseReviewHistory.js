@@ -32,6 +32,7 @@ function useSupervisorExpenseReviewHistory() {
       setError(data.error);
       return;
     }
+    setError('');
     setTrips(data);
   };
 
@@ -70,6 +71,7 @@ function useSupervisorExpenseReviewHistory() {
       setError(data.error);
       return;
     }
+    setError('');
     await load();
   };
 

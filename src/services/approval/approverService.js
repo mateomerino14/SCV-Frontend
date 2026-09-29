@@ -1,15 +1,5 @@
 import apiClient from '../shared/apiClient';
 
-export const getApproverEmployees = async () => {
-  try {
-    const response = await apiClient.get('/user/employees');
-    return response.data;
-  }
-  catch (error) {
-    return {error: 'Error al obtener empleados'};
-  }
-};
-
 export const getPendingTrips = async (filters = {}) => {
   try {
     const params = {};

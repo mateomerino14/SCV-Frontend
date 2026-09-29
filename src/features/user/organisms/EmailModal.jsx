@@ -46,7 +46,7 @@ function EmailModal({isOpen, onClose, onSend}) {
       <div className={styles.icon} style={{backgroundColor: '#000000'}}>
         <Send size={36} color="white" />
       </div>
-      <h2 className={styles.title}>Ingrese su correo electronico</h2>
+      <h2 className={styles.title}>Ingresa tu correo electrónico</h2>
       <div className={styles.inputWrapper} style={{backgroundColor: '#DEE2F0'}}>
         <Mail size={18} className="shrink-0" style={{color: '#475569'}} />
         <input type="email" placeholder="nombre@empresa.com" value={emailValue} disabled={sending}

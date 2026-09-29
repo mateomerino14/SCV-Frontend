@@ -13,6 +13,8 @@ import useSimpleSelector from '../../hooks/shared/useSimpleSelector';
 import useAuditLog from '../../hooks/admin/useAuditLog';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
+import {formatDateTime} from '../../utils/dateFormatter';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -53,7 +55,7 @@ const typeColor = {
 };
 
 function AuditLogPage() {
-  const {menuOpen, user, openMenu, closeMenu} = useMenu();
+  const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     audits, total, hasMorePages, loadMore, loadingMore, employees, loading, applyingFilters, exporting, error,
     filters, setFilters, applyFilters, clearFilters, exportToExcel, typeLabels,
@@ -63,6 +65,7 @@ function AuditLogPage() {
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Historial de Accesos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
@@ -128,7 +131,7 @@ function AuditLogPage() {
                 </p>
                 <p className={styles.rowEmail} style={{color: COLORS.labels}}>{audit.Usuario?.email_corporativo || ''}</p>
               </div>
-              <p className={styles.rowDate} style={{color: COLORS.labels}}>{new Date(audit.fecha).toLocaleString('es-BO')}</p>
+              <p className={styles.rowDate} style={{color: COLORS.labels}}>{formatDateTime(audit.fecha)}</p>
             </div>
           );
         })}

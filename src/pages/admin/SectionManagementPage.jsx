@@ -13,6 +13,7 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 
 const styles = {
   totalText: 'text-xs font-inter mb-3',
@@ -36,7 +37,7 @@ const styles = {
 };
 
 function SectionManagementPage() {
-  const {menuOpen, user, openMenu, closeMenu} = useMenu();
+  const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     sections, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, selectedSection,
@@ -48,6 +49,7 @@ function SectionManagementPage() {
   const pagination = useClientPagination(sections, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Secciones" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>

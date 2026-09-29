@@ -14,6 +14,7 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 
 
 const styles = {
@@ -40,7 +41,7 @@ const styles = {
 };
 
 function PositionManagementPage() {
-  const {menuOpen, user, openMenu, closeMenu, sessionExpired} = useMenu();
+  const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     positions, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, selectedPosition,
@@ -52,6 +53,7 @@ function PositionManagementPage() {
   const pagination = useClientPagination(positions, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>

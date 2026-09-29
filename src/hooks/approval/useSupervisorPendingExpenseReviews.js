@@ -23,6 +23,7 @@ function useSupervisorPendingExpenseReviews() {
       setError(data.error);
       return;
     }
+    setError('');
     setTrips(data);
   };
 

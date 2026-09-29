@@ -47,7 +47,7 @@ function EmployeeDashboardPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     draftTrips, inProgressTrips, substitutionTrips, displayedTrips, recentTrips, loading,
-    submittingReview, submitError, tripToConfirm,
+    submittingReview, submitError, loadError, tripToConfirm,
     handleRequestSubmitReview, handleCancelSubmitReview, handleConfirmSubmitReview,
   } = useEmployeeDashboard();
 
@@ -82,6 +82,7 @@ function EmployeeDashboardPage() {
             Crear Nuevo Viaje
           </button>
         </div>
+        {loadError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{loadError}</p>}
         {submitError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{submitError}</p>}
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes sin Enviar</p>
         {draftTrips.length > 0 ? (

@@ -40,6 +40,7 @@ function useTreasurerReviews() {
       setError(myTripsData.error);
       return;
     }
+    setError('');
     setPending(pendingData);
     setMyTrips(myTripsData);
   };

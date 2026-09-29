@@ -13,11 +13,13 @@ import useAdminDashboard from '../../hooks/admin/useAdminDashboard';
 import useMenu from '../../hooks/shared/useMenu';
 import {approvalPhaseStats, expensePhaseStats, rejectedStat, approvalPhaseTotal, expensePhaseTotal} from '../../features/admin/constants/tripPhaseStats';
 import {COLORS} from '../../constants';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 max-w-8xl mx-auto w-full',
   subtitle: 'text-sm font-inter mb-6',
+  errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4',
   grid2: 'grid grid-cols-2 gap-3 mb-6',
   statCard: 'rounded-2xl p-4 shadow-sm flex flex-col gap-1',
   statLabel: 'text-xs font-inter uppercase mt-1',
@@ -64,8 +66,8 @@ function SectionTooltip({active, payload, label}) {
 }
 
 function DashboardAdminPage() {
-  const {menuOpen, user, openMenu, closeMenu} = useMenu();
-  const {data, loading} = useAdminDashboard();
+  const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
+  const {data, loading, error} = useAdminDashboard();
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
 
@@ -73,10 +75,12 @@ function DashboardAdminPage() {
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Resumen General" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <PageHeader title="Resumen General" subtitle="Indicadores de viajes, gastos y usuarios del sistema." />
+        {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {loading ? (
           <SkeletonCard lines={6} />
         ) : (

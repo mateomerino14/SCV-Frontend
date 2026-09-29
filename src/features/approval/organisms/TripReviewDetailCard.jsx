@@ -3,6 +3,7 @@ import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {avatarDefault} from '../../../constants/defaultImages';
 import {statusColors} from '../../../constants/tripStatusColors';
+import {statusLabels} from '../../../constants/tripStatusLabels';
 
 
 const styles = {
@@ -25,10 +26,10 @@ const styles = {
 };
 
 const defaultStatusConfig = {
-  EN_REVISION_VIAJE: {label: 'Pendiente de Revisión', ...statusColors.EN_REVISION_VIAJE},
-  APROBADO_VIAJE: {label: 'Aprobado por Supervisor', ...statusColors.APROBADO_VIAJE},
-  EN_REVISION_TESORERO: {label: 'Enviado a Tesorería', ...statusColors.EN_REVISION_TESORERO},
-  RECHAZADO: {label: 'Rechazado', ...statusColors.RECHAZADO},
+  EN_REVISION_VIAJE: {label: statusLabels.EN_REVISION_VIAJE, ...statusColors.EN_REVISION_VIAJE},
+  APROBADO_VIAJE: {label: statusLabels.APROBADO_VIAJE, ...statusColors.APROBADO_VIAJE},
+  EN_REVISION_TESORERO: {label: statusLabels.EN_REVISION_TESORERO, ...statusColors.EN_REVISION_TESORERO},
+  RECHAZADO: {label: statusLabels.RECHAZADO, ...statusColors.RECHAZADO},
 };
 
 function TripReviewDetailCard({trip, statusConfig}) {

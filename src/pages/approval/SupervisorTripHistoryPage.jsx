@@ -32,7 +32,7 @@ function SupervisorTripHistoryPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
-    statusFilter, setStatusFilter, applyFilters, clearFilters,
+    statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorTripHistory();
   let subtitle = 'Viajes asignados a ti: revísalos y apruébalos, o recházalos con observaciones.';
   if (statusFilter === 'APROBADO_VIAJE') {
@@ -68,7 +68,7 @@ function SupervisorTripHistoryPage() {
           <div className={styles.grid}>
             {trips.map((trip) => (
               <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={supervisorPendingTripPath(trip.id_viaje)} originRoute={routes.supervisorTripHistory}
-                detailLabel="Ver Detalle" />
+                detailLabel="Ver Detalle" onReturn={trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false ? handleReturn : null} />
             ))}
           </div>
         )}

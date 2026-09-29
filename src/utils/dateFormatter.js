@@ -1,5 +1,9 @@
+// Fecha corta ("28 sept 2026"); acepta YYYY-MM-DD o un timestamp y devuelve '' si no hay fecha
 export function formatDateShort(dateString) {
-  const [year, month, day] = dateString.split('-');
+  if (!dateString) {
+    return '';
+  }
+  const [year, month, day] = String(dateString).slice(0, 10).split('-');
   return new Date(year, month - 1, day).toLocaleDateString('es-ES', {day: 'numeric', month: 'short', year: 'numeric'});
 }
 

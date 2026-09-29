@@ -27,6 +27,7 @@ function useSupervisorPendingTrips() {
       setError(data.error);
       return;
     }
+    setError('');
     setTrips(data);
   };
 

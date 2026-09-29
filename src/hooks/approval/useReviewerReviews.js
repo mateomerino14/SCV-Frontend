@@ -32,6 +32,7 @@ function useReviewerReviews() {
       }
       return;
     }
+    setError('');
     const isPendingForMe = (trip) => trip.estado === 'APROBADO_SUPERVISOR' && trip.asignado_a_mi !== false;
     setMyPending((historyData || []).filter(isPendingForMe));
     // Aprobados y rechazados salen del historial de revision del revisor

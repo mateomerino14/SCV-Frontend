@@ -26,6 +26,7 @@ function useTripHistory() {
       setError(data.error);
       return;
     }
+    setError('');
     setTotal(data.total || 0);
     if (replace) {
       setTrips(data.viajes || []);

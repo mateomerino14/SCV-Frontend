@@ -15,6 +15,7 @@ import {COLORS} from '../../constants';
 import {avatarDefault} from '../../constants/defaultImages';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 
 
 const styles = {
@@ -59,7 +60,7 @@ const roleConfig = {
 };
 
 function UserManagementPage() {
-  const {menuOpen, user: menuUser, openMenu, closeMenu} = useMenu();
+  const {menuOpen, user: menuUser, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     users, positions, sections, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, roleFilter, setRoleFilter, sectionFilter, setSectionFilter, selectedUser,
@@ -73,6 +74,7 @@ function UserManagementPage() {
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
       <div className={styles.content}>

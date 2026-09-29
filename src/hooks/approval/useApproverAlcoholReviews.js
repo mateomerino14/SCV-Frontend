@@ -33,6 +33,7 @@ function useApproverAlcoholReviews() {
       setError(myTripsData.error);
       return;
     }
+    setError('');
     setMyTrips(myTripsData);
   };
 

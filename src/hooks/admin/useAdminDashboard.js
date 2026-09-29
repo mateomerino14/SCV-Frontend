@@ -6,6 +6,7 @@ const pollingInterval = 30 * 1000;
 function useAdminDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async (isInitialLoad = false) => {
@@ -16,15 +17,19 @@ function useAdminDashboard() {
       if (isInitialLoad) {
         setLoading(false);
       }
-      if (!result.error) {
-        setData(result);
+      // Si falla se conservan los datos anteriores y se avisa (en vez de mostrar todo en 0)
+      if (result.error) {
+        setError('No se pudo actualizar el resumen. Se reintentará en unos segundos.');
+        return;
       }
+      setError('');
+      setData(result);
     };
     load(true);
     const polling = setInterval(() => load(false), pollingInterval);
     return () => clearInterval(polling);
   }, []);
-  return {data, loading};
+  return {data, loading, error};
 }
 
 export default useAdminDashboard;

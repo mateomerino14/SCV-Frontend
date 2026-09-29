@@ -14,9 +14,16 @@ function useEmployeeDashboard() {
   const [submittingReview, setSubmittingReview] = useState(null);
   const [submitError, setSubmitError] = useState('');
   const [tripToConfirm, setTripToConfirm] = useState(null);
+  const [loadError, setLoadError] = useState('');
 
   const loadDashboard = async () => {
     const data = await getDashboard();
+    // Si falla, se conservan los datos anteriores en vez de mostrar el panel vacio
+    if (data.error) {
+      setLoadError('No se pudieron actualizar tus viajes. Revisa tu conexión; se reintentará en unos segundos.');
+      return;
+    }
+    setLoadError('');
     setDraftTrips(data.viajesBorrador || []);
     setInProgressTrips(data.viajesEnCurso || []);
     setSubstitutionTrips(data.viajesSustitucion || []);
@@ -27,7 +34,9 @@ function useEmployeeDashboard() {
     const start = async () => {
       setLoading(true);
       const [userData] = await Promise.all([getMe(), loadDashboard()]);
-      setUser(userData);
+      if (!userData?.error) {
+        setUser(userData);
+      }
       setLoading(false);
     };
     start();
@@ -65,6 +74,7 @@ function useEmployeeDashboard() {
     loading,
     submittingReview,
     submitError,
+    loadError,
     tripToConfirm,
     handleRequestSubmitReview,
     handleCancelSubmitReview,
