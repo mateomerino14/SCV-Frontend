@@ -15,6 +15,7 @@ const styles = {
   buttons: 'flex flex-row gap-4 mt-2 justify-center',
   fieldRow: 'w-full',
   fieldError: 'text-xs font-inter mt-1',
+  logoutLink: 'text-xs font-inter underline cursor-pointer mt-1 bg-transparent border-none',
 };
 
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
@@ -34,7 +35,7 @@ const texts = {
 };
 
 // reason: 'TEMPORAL' (no pide la contrasena actual) o 'VENCIDA'
-function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, loading, error: externalError}) {
+function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, loading, error: externalError}) {
   const isTemporary = reason === 'TEMPORAL';
   const text = texts[reason] || texts.VENCIDA;
   const {
@@ -80,6 +81,11 @@ function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, loading, e
                 onClick={() => handleConfirm(onConfirm)}
                 disabled={loading || !!fieldErrors.newPassword || !!fieldErrors.confirmPassword} />
             </div>
+            {onLogout && (
+              <button className={styles.logoutLink} style={{color: COLORS.backgroundHeader}} onClick={onLogout} disabled={loading}>
+                ¿No recuerdas tu contraseña? Cerrar sesión
+              </button>
+            )}
           </motion.div>
         </motion.div>
       )}

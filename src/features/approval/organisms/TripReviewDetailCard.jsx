@@ -3,7 +3,7 @@ import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {avatarDefault} from '../../../constants/defaultImages';
 import {statusColors} from '../../../constants/tripStatusColors';
-import {statusLabels} from '../../../constants/tripStatusLabels';
+import {statusLabels, getStatusBadge} from '../../../constants/tripStatusLabels';
 
 
 const styles = {
@@ -34,7 +34,7 @@ const defaultStatusConfig = {
 
 function TripReviewDetailCard({trip, statusConfig}) {
   const activeConfig = statusConfig || defaultStatusConfig;
-  const status = activeConfig[trip.estado] || Object.values(activeConfig)[0];
+  const status = activeConfig[trip.estado] || getStatusBadge(trip.estado);
   const isInternational = trip.tipo === 'Internacional';
   let typeIcon = <MapPin size={13} style={{color: COLORS.title}} />;
   if (isInternational) {

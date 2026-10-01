@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {changePassword} from '../../../services/user/userService';
+import {setToken} from '../../../services/shared/tokenStore';
 
 const maxLength = 255;
 // Mismo minimo que exige el servidor
@@ -59,6 +60,10 @@ function useChangePasswordModal(onClose) {
     if (data.error) {
       showError(data.error);
       return;
+    }
+    // El servidor cierra las demas sesiones y entrega una nueva para este dispositivo
+    if (data.token) {
+      setToken(data.token);
     }
     setSuccess(true);
   };

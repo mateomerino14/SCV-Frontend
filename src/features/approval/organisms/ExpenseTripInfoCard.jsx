@@ -2,8 +2,7 @@ import {MapPin, Navigation} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {avatarDefault} from '../../../constants/defaultImages';
-import {statusColors} from '../../../constants/tripStatusColors';
-import {statusLabels} from '../../../constants/tripStatusLabels';
+import {getStatusBadge} from '../../../constants/tripStatusLabels';
 
 
 const styles = {
@@ -27,16 +26,8 @@ const styles = {
   routeText: 'break-words min-w-0',
 };
 
-const statusConfig = {
-  EN_REVISION: {label: statusLabels.EN_REVISION, bg: COLORS.error, color: COLORS.secondary},
-  EN_REVISION_APROBADOR: {label: statusLabels.EN_REVISION_APROBADOR, ...statusColors.EN_REVISION_APROBADOR},
-  APROBADO_SUPERVISOR: {label: statusLabels.APROBADO_SUPERVISOR, ...statusColors.APROBADO_SUPERVISOR},
-  APROBADO_FINAL: {label: statusLabels.APROBADO_FINAL, ...statusColors.APROBADO_FINAL},
-  RECHAZADO: {label: statusLabels.RECHAZADO, ...statusColors.RECHAZADO},
-};
-
 function ExpenseTripInfoCard({trip}) {
-  const status = statusConfig[trip.estado] || statusConfig.EN_REVISION;
+  const status = getStatusBadge(trip.estado);
   const isInternational = trip.tipo === 'Internacional';
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.background}}>

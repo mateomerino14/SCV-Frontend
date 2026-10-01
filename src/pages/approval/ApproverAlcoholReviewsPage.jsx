@@ -57,7 +57,7 @@ function ApproverAlcoholReviewsPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
+        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} rendici{total !== 1 ? 'ones' : 'ón'}</p>}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron rendiciones con alcohol con el filtro seleccionado"

@@ -1,3 +1,5 @@
+import {getStatusColors} from './tripStatusColors';
+
 // Nombre unico de cada estado de viaje, el mismo en todas las pantallas y roles
 export const statusLabels = {
   BORRADOR: 'Borrador',
@@ -14,4 +16,10 @@ export const statusLabels = {
 
 export function getStatusLabel(state) {
   return statusLabels[state] || state;
+}
+
+// Etiqueta completa (nombre y colores oficiales) de un estado; sirve de respaldo cuando un
+// mapa de una pantalla no incluye ese estado
+export function getStatusBadge(state) {
+  return {label: getStatusLabel(state), ...getStatusColors(state)};
 }

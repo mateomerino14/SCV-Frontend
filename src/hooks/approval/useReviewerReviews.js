@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback, useRef} from 'react';
 import {getMyReviews, getReviewerEmployees} from '../../services/approval/reviewerService';
 import {getSections} from '../../services/admin/adminService';
 
@@ -15,9 +15,12 @@ function useReviewerReviews() {
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [tab, setTab] = useState('MIS_PENDIENTES');
+  // Ultimos filtros aplicados: la actualizacion automatica los respeta
+  const appliedFiltersRef = useRef(filters);
 
   const load = useCallback(async (currentFilters, showLoading = true) => {
     const activeFilters = currentFilters || filters;
+    appliedFiltersRef.current = activeFilters;
     if (showLoading) {
       setLoading(true);
     }
@@ -53,7 +56,7 @@ function useReviewerReviews() {
       }
     };
     start();
-    const polling = setInterval(() => load(filters, false), pollingInterval);
+    const polling = setInterval(() => load(appliedFiltersRef.current, false), pollingInterval);
     return () => clearInterval(polling);
   }, []);
 

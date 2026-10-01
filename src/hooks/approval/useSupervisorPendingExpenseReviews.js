@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {getPendingExpenseReviews, takeExpenseReview} from '../../services/approval/reviewService';
 import {getEmployees} from '../../services/user/userService';
 import {getSections} from '../../services/admin/adminService';
@@ -17,7 +17,11 @@ function useSupervisorPendingExpenseReviews() {
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('TODOS');
 
-  const load = async (currentFilters = filters) => {
+  // Ultimos filtros aplicados: la actualizacion automatica los respeta
+  const appliedFiltersRef = useRef(filters);
+
+  const load = async (currentFilters = appliedFiltersRef.current) => {
+    appliedFiltersRef.current = currentFilters;
     const data = await getPendingExpenseReviews(currentFilters);
     if (data.error) {
       setError(data.error);
@@ -66,13 +70,14 @@ function useSupervisorPendingExpenseReviews() {
     const data = await takeExpenseReview(tripId);
     setTaking(null);
     if (data.error) {
+      // Se recarga primero y luego se muestra el error, para que la recarga no lo borre
+      await load();
       if (data.error.includes('ya fue tomado') || data.error.includes('siendo revisado')) {
         setAlreadyTaken(true);
       }
       else {
         setError(data.error);
       }
-      await load();
       return;
     }
     await load();

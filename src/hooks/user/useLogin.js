@@ -12,7 +12,6 @@ function useLogin() {
   const [forgotEmail, setForgotEmail] = useState('');
   const [codeExpiresAt, setCodeExpiresAt] = useState(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
-  const [showPasswordExpired, setShowPasswordExpired] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showExpiredModal, setShowExpiredModal] = useState(false);
@@ -175,8 +174,6 @@ function useLogin() {
     showInvalidEmailModal,
     invalidEmailReason,
     closeAllModals,
-    showPasswordExpired, setShowPasswordExpired,
-    redirectByRole,
     handleLogin,
     handleEmailChange,
     handlePasswordChange,

@@ -18,7 +18,7 @@ const categories = [
       {value: 'EN_REVISION_VIAJE', label: statusLabels.EN_REVISION_VIAJE},
       {value: 'APROBADO_VIAJE', label: statusLabels.APROBADO_VIAJE},
       {value: 'EN_REVISION_TESORERO', label: statusLabels.EN_REVISION_TESORERO},
-      {value: 'RECHAZADO_PREVIO', label: 'Rechazado'},
+      {value: 'RECHAZADO_PREVIO', label: statusLabels.RECHAZADO},
     ],
   },
   {
@@ -31,7 +31,7 @@ const categories = [
       {value: 'EN_REVISION_APROBADOR', label: statusLabels.EN_REVISION_APROBADOR},
       {value: 'APROBADO_SUPERVISOR', label: statusLabels.APROBADO_SUPERVISOR},
       {value: 'APROBADO_FINAL', label: statusLabels.APROBADO_FINAL},
-      {value: 'RECHAZADO_GASTOS', label: 'Rechazado'},
+      {value: 'RECHAZADO_GASTOS', label: statusLabels.RECHAZADO},
     ],
   },
 ];

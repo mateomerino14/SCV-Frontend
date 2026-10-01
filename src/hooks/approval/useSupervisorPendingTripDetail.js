@@ -93,7 +93,14 @@ function useSupervisorPendingTripDetail(tripId) {
     const result = await rejectTripReview(tripId);
     setSavingAction(false);
     if (result.error) {
-      setShowNoObservations(true);
+      // Solo la falta de observaciones abre ese aviso; otros errores (por ejemplo, que otra
+      // persona ya proceso el viaje) se muestran tal cual
+      if (result.error.toLowerCase().includes('observación')) {
+        setShowNoObservations(true);
+      }
+      else {
+        showError(result.error);
+      }
       return;
     }
     setActionCompleted('RECHAZADO');

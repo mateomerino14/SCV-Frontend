@@ -8,6 +8,7 @@ import TripTypeBadge from '../../trip/atoms/TripTypeBadge';
 import TransportIcon from '../atoms/TransportIcon';
 import TripActionButtons from '../molecules/TripActionButtons';
 import {avatarDefault} from '../../../constants/defaultImages';
+import {getStatusBadge} from '../../../constants/tripStatusLabels';
 
 
 const statusPendingByField = {
@@ -31,7 +32,7 @@ const styles = {
 };
 
 function PendingTripItem({trip, detailRoute, originRoute, onTake, onReturn, taking, assignedField = 'id_supervisor_asignado', detailLabel = 'Ver Detalle'}) {
-  const status = tripStatusConfig[trip.estado] || tripStatusConfig['EN_REVISION_VIAJE'];
+  const status = tripStatusConfig[trip.estado] || getStatusBadge(trip.estado);
   const isInternational = trip.tipo === 'Internacional';
   const unassigned = !trip[assignedField];
   const pendingStatus = statusPendingByField[assignedField];
