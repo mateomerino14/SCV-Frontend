@@ -95,7 +95,7 @@ src/
 ├── layouts/             Navbar, Footer y menús por rol
 │   └── menu/
 ├── utils/               Funciones auxiliares puras
-├── constants/           Paleta de colores y rutas
+├── constants/           Paleta, rutas, inicio por rol, nombres y colores de estado
 ├── App.jsx              Rutas y guardas de acceso
 └── main.jsx             Punto de entrada
 ```
@@ -132,6 +132,8 @@ Las rutas se declaran en `App.jsx`. El componente `ProtectedRoute` verifica el t
 
 Las rutas con parámetros se construyen mediante funciones de `constants/routes.js` (`tripPath`, `supervisorTripReviewPath`, `reviewerExpenseDetailPath`, entre otras) en lugar de literales dispersos.
 
+Cada rol entra a la primera opción de su menú (`constants/roleHome.js`). Si alguien abre una pantalla de otro rol, se lo lleva a la suya; con sesión activa, la pantalla de ingreso y la página 404 también llevan a su inicio.
+
 ## Gestión del estado
 
 No se emplea una biblioteca de estado global. El estado es local a cada pantalla y se gestiona con hooks nativos dentro de los hooks de negocio.
@@ -139,7 +141,11 @@ No se emplea una biblioteca de estado global. El estado es local a cada pantalla
 - **Servidor**: se obtiene en `useEffect` al montar y se refresca tras cada escritura.
 - **Sesión**: el token de acceso vive solo en memoria (`services/shared/tokenStore.js`), nunca en `localStorage`. Al cargar la app, si no hay token en memoria se intenta un refresco silencioso contra `/auth/refresh` usando la cookie `httpOnly` del refresh token, antes de renderizar las rutas protegidas.
 - **Formularios**: se mantienen en el hook, junto con sus errores por campo.
-- **Sondeo**: las bandejas de los roles aprobadores se refrescan cada 30 segundos. Solo la carga inicial activa el indicador esquelético, para que la pantalla no parpadee.
+- **Sondeo**: las bandejas de los roles revisores y los resúmenes se refrescan cada 30 segundos, con los filtros que el usuario aplicó. Solo la carga inicial activa el indicador esquelético; si una actualización falla, se conservan los datos y se muestra un aviso.
+- **Sesión expirada o invalidada**: `apiClient` detecta el token vencido (lo renueva solo), la sesión invalidada por cambio de rol o suspensión, y la cuenta suspendida; en esos casos aparece la ventana "Sesión Expirada". Además `useMenu` revisa el rol cada 30 segundos.
+- **Cambio de contraseña obligatorio**: `PasswordChangeGate` (en `App.jsx`) muestra en cualquier pantalla la ventana para crear una contraseña propia (cuenta nueva o ingreso con código) o actualizarla (más de 90 días). Incluye la opción de cerrar sesión para quien no recuerde la actual.
+- **Cierre de sesión**: siempre pasa por el servidor, que registra la salida y borra la cookie.
+- **Paginación**: las listas largas (historial de viajes, usuarios, cargos, secciones, historial de accesos) muestran "Mostrando X de Y" y un botón "Cargar más" (`LoadMoreButton`).
 
 ## Sistema de diseño
 
@@ -161,13 +167,15 @@ La paleta se centraliza en `constants/index.js`. Ningún componente define color
 
 Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
+**Estados de viaje.** Cada estado tiene un solo nombre (`constants/tripStatusLabels.js`) y un solo par de colores (`constants/tripStatusColors.js`) en todas las pantallas y roles. Los avisos de confirmación o rechazo usan el color del estado en que queda el viaje. La única excepción es "En Curso" en las pantallas del empleado, que usa el rojo institucional porque marca su viaje activo.
+
 ## Funcionalidades destacadas
 
 ### Planilla de rendición
 
 `useTripExcelExport` construye la planilla oficial en Excel con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda, la justificación de cada día que excedió la cuota diaria, y cinco bloques de firma.
 
-El empleado descarga en cambio la planilla en **PDF** (no editable) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos se generan a partir de los mismos valores de retención calculados y persistidos por el backend; no se recalculan al exportar.
+El empleado descarga en cambio la planilla en **PDF** (no editable, generada por el backend) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos se generan a partir de los mismos valores de retención calculados y persistidos por el backend; no se recalculan al exportar.
 
 ### Control de gasto diario
 
@@ -188,6 +196,18 @@ La carga de facturas presenta cada comprobante en tres columnas —imagen, formu
 ### Control de plazos
 
 `useDeadlineAuthorization` determina si el plazo de carga venció, considerando la tolerancia de cuatro días y las extensiones aprobadas vigentes. Cuando expiró sin autorización, los controles se deshabilitan y se ofrece solicitar una extensión al revisor.
+
+### Historial de revisión
+
+Cada bandeja de revisión (supervisor, aprobador, tesorero, revisor) tiene las pestañas Pendientes, Aprobados y Rechazados. **Aprobados** muestra todo lo que esa persona aprobó, con el estado actual del viaje, aunque ahora lo revise otra persona. **Rechazados** muestra solo lo que rechazó y sigue rechazado. El supervisor puede devolver un viaje o rendición que tomó por error.
+
+### Administración
+
+Resumen general con indicadores por fase y gráficos; gestión de usuarios con buscador en cargo, sección y jefe directo (`SearchableSelector`); sugerencia de nombres existentes al crear cargos y secciones; historial de accesos (ingresos, salidas y cambios de contraseña) con filtros y exportación a Excel.
+
+### Casquito
+
+Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora y los pendientes. Se puede desactivar en Ajustes de Cuenta y respeta la preferencia de reducir movimiento.
 
 ## Documentación de componentes
 
