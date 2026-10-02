@@ -44,6 +44,8 @@ function DeadlineRequestCard({request, onApprove, onReject, savingAction, showAc
   const closedAutomatically = request.estado === 'RECHAZADA' && !request.id_revisor;
   const config = statusConfig[closedAutomatically ? 'CERRADA' : request.estado] || statusConfig.PENDIENTE;
   const employee = request.Viaje?.Usuario;
+  // La pidio el reemplazo aprobado, no el titular del viaje
+  const requestedBySubstitute = request.Solicitante && request.Viaje?.id_usuario && request.Solicitante.id_usuario !== request.Viaje.id_usuario;
 
   const handleConfirmReject = () => {
     onReject(request.id_solicitud, rejectReason);
@@ -58,6 +60,9 @@ function DeadlineRequestCard({request, onApprove, onReject, savingAction, showAc
         <div className={styles.info}>
           <p className={styles.name} style={{color: COLORS.text}}>{employee?.nombre} {employee?.apellido_paterno}</p>
           <p className={styles.position} style={{color: COLORS.labels}}>{employee?.Cargo?.nombre}</p>
+          {requestedBySubstitute && (
+            <p className={styles.position} style={{color: COLORS.secondary}}>Solicitado por {request.Solicitante.nombre} {request.Solicitante.apellido_paterno} (reemplazo)</p>
+          )}
         </div>
         <span className={styles.statusBadge} style={{backgroundColor: config.bg, color: config.color}}>{config.label}</span>
       </div>
