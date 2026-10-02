@@ -11,13 +11,18 @@ function useSubstitutionRequest(tripId) {
   const [showModal, setShowModal] = useState(false);
   const [withoutSection, setWithoutSection] = useState(false);
 
-  const load = async () => {
+  // silent: actualizacion de fondo (sondeo), sin indicador de carga
+  const load = async (silent = false) => {
     if (!tripId) {
       return;
     }
-    setLoading(true);
+    if (!silent) {
+      setLoading(true);
+    }
     const data = await getSubstitutionStatus(tripId);
-    setLoading(false);
+    if (!silent) {
+      setLoading(false);
+    }
     if (!data || data.error) {
       return;
     }
@@ -27,6 +32,17 @@ function useSubstitutionRequest(tripId) {
   useEffect(() => {
     load();
   }, [tripId]);
+
+  // Mientras la solicitud espera respuesta del revisor, se consulta cada 30 segundos para
+  // mostrar la aprobacion o el rechazo sin recargar la pagina
+  const waitingResponse = request?.estado === 'PENDIENTE';
+  useEffect(() => {
+    if (!waitingResponse) {
+      return undefined;
+    }
+    const interval = setInterval(() => load(true), 30000);
+    return () => clearInterval(interval);
+  }, [waitingResponse, tripId]);
 
   const openModal = async () => {
     setSubstituteId('');

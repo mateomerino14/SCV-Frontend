@@ -35,13 +35,18 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
   const [showExpiredNotice, setShowExpiredNotice] = useState(false);
   const [noticeShown, setNoticeShown] = useState(false);
 
-  const load = async () => {
+  // silent: actualizacion de fondo (sondeo), sin indicador de carga
+  const load = async (silent = false) => {
     if (!tripId) {
       return;
     }
-    setLoading(true);
+    if (!silent) {
+      setLoading(true);
+    }
     const data = await getRequestStatus(tripId);
-    setLoading(false);
+    if (!silent) {
+      setLoading(false);
+    }
     if (!data || data.error) {
       return;
     }
@@ -51,6 +56,17 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
   useEffect(() => {
     load();
   }, [tripId]);
+
+  // Mientras la solicitud espera respuesta del revisor, se consulta cada 30 segundos para
+  // mostrar la aprobacion o el rechazo sin recargar la pagina
+  const waitingResponse = request?.estado === 'PENDIENTE';
+  useEffect(() => {
+    if (!waitingResponse) {
+      return undefined;
+    }
+    const interval = setInterval(() => load(true), 30000);
+    return () => clearInterval(interval);
+  }, [waitingResponse, tripId]);
 
   const deadlineExpired = fechaFin ? isDeadlineExpired(fechaFin) : true;
   const isPending = request?.estado === 'PENDIENTE';
