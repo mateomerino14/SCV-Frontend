@@ -16,6 +16,8 @@ import {pendingTabsDefault} from '../../features/approval/constants/reviewTabs';
 import {COLORS} from '../../constants';
 import {supervisorTripReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -30,6 +32,8 @@ function SupervisorPendingExpenseReviewsPage() {
     trips, total, employees, sections, loading, applyingFilters, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, statusFilter, setStatusFilter, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingExpenseReviews();
+  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
+  const pagination = useClientPagination(trips, 12, statusFilter);
 
   const mascotMessage = loading ? null : (total > 0 ? `${greetingFor(user?.nombre)} Hay ${total} ${total === 1 ? 'rendición sin asignar esperando' : 'rendiciones sin asignar esperando'} que alguien la${total === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay rendiciones sin asignar por ahora.`);
 
@@ -44,7 +48,7 @@ function SupervisorPendingExpenseReviewsPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={pendingTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <ListCount shown={trips.length} total={total} singular="rendición" plural="rendiciones" />}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="rendición" plural="rendiciones" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin solicitudes pendientes" subtitle="No hay rendiciones de gastos esperando revisión"
@@ -56,12 +60,13 @@ function SupervisorPendingExpenseReviewsPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((trip) => (
+            {pagination.visibleItems.map((trip) => (
               <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={supervisorTripReviewPath(trip.id_viaje)} originRoute={routes.supervisorPendingExpenseReviews}
                 onTake={handleTake} taking={taking === trip.id_viaje} />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="supervisor-rendiciones-sin-asignar" message={mascotMessage} />
       <Footer />

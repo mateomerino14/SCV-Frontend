@@ -37,7 +37,7 @@ function TripActionButtons({detailRoute, originRoute, onTake, taking, onReturn, 
           onClick={() => navigate(detailRoute, {state: {from: originRoute}})}>Revisar</button>
         <button className={styles.btn} style={{backgroundColor: 'transparent', border: `1.5px solid ${COLORS.secondary}`, color: COLORS.secondary, opacity: returning ? 0.6 : 1}}
           disabled={returning} onClick={() => setConfirmReturn(true)}>{returning ? 'Devolviendo...' : 'Devolver'}</button>
-        <ConfirmDialog isOpen={confirmReturn} icon={Undo2} title="Devolver revisión"
+        <ConfirmDialog isOpen={confirmReturn} icon={Undo2} title="Devolver Revisión"
           message="El viaje volverá a la lista sin asignar para que otra persona pueda revisarlo."
           confirmText="Devolver" onConfirm={handleConfirmReturn} onCancel={() => setConfirmReturn(false)} loading={returning} compact />
       </div>

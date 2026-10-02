@@ -23,8 +23,10 @@ const visibleTime = 9000;
 function MascotGreeting({pageKey, message}) {
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
-  // Ultimo mensaje mostrado: la burbuja conserva su texto aunque la pantalla cambie de pestaña
+  // Mensaje con el que aparecio; si mientras esta visible el mensaje se actualiza (por ejemplo,
+  // cambia la cantidad de pendientes) se muestra el nuevo, y si queda vacio se conserva este
   const [shownMessage, setShownMessage] = useState('');
+  const bubbleMessage = message || shownMessage;
 
   useEffect(() => {
     if (!message || reduceMotion || !isMascotEnabled() || wasMascotSeen(pageKey)) {
@@ -61,7 +63,7 @@ function MascotGreeting({pageKey, message}) {
               <X size={12} style={{color: COLORS.background}} />
             </button>
             <p className={styles.bubbleName} style={{color: COLORS.primary}}>Casquito</p>
-            <p className={styles.bubbleText} style={{color: COLORS.text}}>{shownMessage}</p>
+            <p className={styles.bubbleText} style={{color: COLORS.text}}>{bubbleMessage}</p>
           </motion.div>
           <motion.div className={styles.mascot} onClick={close} title="Cerrar"
             animate={{y: [0, -6, 0]}} transition={{duration: 1.1, repeat: Infinity, ease: 'easeInOut'}}>

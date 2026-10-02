@@ -10,6 +10,10 @@ import useDeadlineAuthorizationRequests from '../../hooks/approval/useDeadlineAu
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
+import useClientPagination from '../../hooks/shared/useClientPagination';
+import {CheckCircle} from 'lucide-react';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -26,7 +30,8 @@ const tabs = [
 
 function DeadlineAuthorizationRequestsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const {trips, totalPending, loading, savingAction, error, tab, setTab, handleApprove, handleReject} = useDeadlineAuthorizationRequests();
+  const {trips, totalPending, loading, savingAction, error, tab, setTab, handleApprove, handleReject, resultMessage, closeResult} = useDeadlineAuthorizationRequests();
+  const pagination = useClientPagination(trips, 12, tab);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -44,7 +49,7 @@ function DeadlineAuthorizationRequestsPage() {
           ))}
         </div>
         {error && <p className="text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4" style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <ListCount shown={trips.length} total={trips.length} singular="solicitud" plural="solicitudes" />}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="solicitud" plural="solicitudes" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin solicitudes" subtitle={tab === 'PENDIENTES' ? 'No hay solicitudes pendientes de plazo' : 'Aún no hay historial de solicitudes'}
@@ -57,13 +62,16 @@ function DeadlineAuthorizationRequestsPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((request) => (
+            {pagination.visibleItems.map((request) => (
               <DeadlineRequestCard key={request.id_solicitud} request={request} onApprove={handleApprove} onReject={handleReject}
                 savingAction={savingAction} showActions={tab === 'PENDIENTES'} />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
+      <ConfirmDialog isOpen={!!resultMessage} compact icon={CheckCircle} iconColor={COLORS.primary}
+        title="Listo" message={resultMessage} confirmText="Entendido" hideCancel onConfirm={closeResult} />
       <Footer />
     </div>
   );

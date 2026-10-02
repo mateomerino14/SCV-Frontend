@@ -1,7 +1,8 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {getTripHistory} from '../../services/trip/tripService';
 
 const pageSize = 10;
+const pollingInterval = 30 * 1000;
 
 function useTripHistory() {
   const [trips, setTrips] = useState([]);
@@ -40,6 +41,26 @@ function useTripHistory() {
     setPage(1);
     load(1, filter, true);
   }, [filter]);
+
+  // Cada 30 segundos se recargan los viajes ya mostrados (todas las paginas cargadas), para
+  // ver los cambios de estado sin perder el "Cargar más"
+  const pollingStateRef = useRef({page, filter});
+  useEffect(() => {
+    pollingStateRef.current = {page, filter};
+  }, [page, filter]);
+  useEffect(() => {
+    const polling = setInterval(async () => {
+      const {page: currentPage, filter: currentFilter} = pollingStateRef.current;
+      const data = await getTripHistory(1, currentPage * pageSize, currentFilter);
+      if (data.error) {
+        return;
+      }
+      setError('');
+      setTotal(data.total || 0);
+      setTrips(data.viajes || []);
+    }, pollingInterval);
+    return () => clearInterval(polling);
+  }, []);
 
   const loadMore = () => {
     const nextPage = page + 1;

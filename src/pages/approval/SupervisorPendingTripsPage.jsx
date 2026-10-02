@@ -15,6 +15,8 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -29,6 +31,8 @@ function SupervisorPendingTripsPage() {
     trips, employees, sections, loading, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, applyingFilters, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingTrips();
+  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
+  const pagination = useClientPagination(trips, 12, '');
 
   const mascotMessage = loading ? null : (trips.length > 0 ? `${greetingFor(user?.nombre)} Hay ${trips.length} ${trips.length === 1 ? 'viaje sin asignar esperando' : 'viajes sin asignar esperando'} que alguien lo${trips.length === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay viajes sin asignar por ahora.`);
 
@@ -43,7 +47,7 @@ function SupervisorPendingTripsPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
           employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <ListCount shown={trips.length} total={trips.length} singular="viaje" plural="viajes" />}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="viaje" plural="viajes" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes pendientes" subtitle="No hay viajes esperando revisión"
@@ -55,12 +59,13 @@ function SupervisorPendingTripsPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((trip) => (
+            {pagination.visibleItems.map((trip) => (
               <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={supervisorPendingTripPath(trip.id_viaje)} originRoute={routes.supervisorPendingTrips}
                 onTake={handleTake} taking={taking === trip.id_viaje} assignedField="id_supervisor_asignado" />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="supervisor-viajes-sin-asignar" message={mascotMessage} />
       <Footer />

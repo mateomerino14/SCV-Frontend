@@ -30,15 +30,14 @@ function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onAp
         <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
           onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
           onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
-        {employees.length > 0 && (
-          <div className={styles.employeeSection}>
-            <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Empleado</p>
-            <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
-              onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_empleado}
-              onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
-          </div>
-        )}
-        {!hideSectionFilter && sections.length > 0 && (
+        {/* Todos los filtros se muestran desde el inicio; las listas se completan al cargar */}
+        <div className={styles.employeeSection}>
+          <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Empleado</p>
+          <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
+            onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_empleado}
+            onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
+        </div>
+        {!hideSectionFilter && (
           <div className={styles.employeeSection}>
             <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Sección</p>
             <SectionDropdown sections={sections} selectedSection={filters.id_seccion}

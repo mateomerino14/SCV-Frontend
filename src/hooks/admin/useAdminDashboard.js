@@ -18,6 +18,10 @@ function useAdminDashboard() {
         setLoading(false);
       }
       // Si falla se conservan los datos anteriores y se avisa (en vez de mostrar todo en 0)
+      // Mientras se exige el cambio de contraseña la ventana de cambio ya lo indica: no se avisa error
+      if (result.error && result.error.includes('cambiar tu contraseña')) {
+        return;
+      }
       if (result.error) {
         setError('No se pudo actualizar el resumen. Se reintentará en unos segundos.');
         return;

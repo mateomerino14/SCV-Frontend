@@ -64,7 +64,7 @@ function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, c
               <LimitedTextarea value={newText} maxLength={maxLength} exceedsLimit={exceedsLimit} error={error} rows={3}
                 placeholder="Escribe una nueva observación para este gasto..." onChange={(event) => setNewText(event.target.value)} />
             )}
-            <ModalActions onCancel={onClose} cancelText="Cerrar" onConfirm={handleAdd} hideConfirm={!canEdit}
+            <ModalActions onCancel={onClose} cancelLabel="Cerrar" onConfirm={handleAdd} hideConfirm={!canEdit}
               confirmLabel={loading ? 'Agregando...' : 'Agregar'} loading={loading} confirmDisabled={!newText.trim() || exceedsLimit} />
           </motion.div>
         </motion.div>

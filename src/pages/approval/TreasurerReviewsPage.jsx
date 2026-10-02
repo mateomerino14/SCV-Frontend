@@ -14,6 +14,8 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {treasurerTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -31,17 +33,16 @@ const mainTabs = [
 function TreasurerReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalApproved, totalRejected, employees, sections, loading, applyingFilters, error, tab, setTab,
+    trips, totalPending, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
   } = useTreasurerReviews();
-  let total = totalPending;
+  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
+  const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Viajes aprobados que esperan fondos: revisa o ajusta los montos y apruébalos.';
   if (tab === 'APROBADOS') {
-    total = totalApproved;
     subtitle = 'Historial de los viajes a los que asignaste fondos, con el estado en que están ahora.';
   }
   else if (tab === 'RECHAZADOS') {
-    total = totalRejected;
     subtitle = 'Viajes que rechazaste en la asignación de fondos y el empleado aún no corrige.';
   }
 
@@ -57,7 +58,7 @@ function TreasurerReviewsPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <ListCount shown={total} total={total} singular="viaje" plural="viajes" />}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="viaje" plural="viajes" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin solicitudes en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
@@ -69,12 +70,13 @@ function TreasurerReviewsPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((trip) => (
+            {pagination.visibleItems.map((trip) => (
               <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={treasurerTripPath(trip.id_viaje)} originRoute={routes.treasurerReviews}
                 detailLabel="Ver Detalle" />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="tesorero-fondos" message={mascotMessage} />
       <Footer />

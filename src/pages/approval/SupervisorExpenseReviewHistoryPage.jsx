@@ -15,6 +15,8 @@ import {historyTabsDefault} from '../../features/approval/constants/reviewTabs';
 import {COLORS} from '../../constants';
 import {supervisorTripReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -29,6 +31,8 @@ function SupervisorExpenseReviewHistoryPage() {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorExpenseReviewHistory();
+  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
+  const pagination = useClientPagination(trips, 12, statusFilter);
   let subtitle = 'Rendiciones asignadas a ti: revisa los gastos, deja observaciones y apruébalas o recházalas.';
   if (statusFilter === 'APROBADO_SUPERVISOR') {
     subtitle = 'Historial de las rendiciones que aprobaste tú, con el estado en que están ahora.';
@@ -49,7 +53,7 @@ function SupervisorExpenseReviewHistoryPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <ListCount shown={total} total={total} singular="rendición" plural="rendiciones" />}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="rendición" plural="rendiciones" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin revisiones en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
@@ -61,12 +65,13 @@ function SupervisorExpenseReviewHistoryPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((trip) => (
+            {pagination.visibleItems.map((trip) => (
               <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={supervisorTripReviewPath(trip.id_viaje)} originRoute={routes.supervisorExpenseReviewHistory}
                 onReturn={trip.estado === 'EN_REVISION' ? handleReturn : null} />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="supervisor-rendiciones" message={mascotMessage} />
       <Footer />

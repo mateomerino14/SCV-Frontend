@@ -28,6 +28,7 @@ import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {approverExpenseDetailPath, approverAlcoholReviewPath, routes} from '../../constants/routes';
 import {getStatusColors} from '../../constants/tripStatusColors';
+import ReturnReviewButton from '../../features/approval/molecules/ReturnReviewButton';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -45,7 +46,6 @@ const styles = {
   actionsRow: 'flex gap-3 mb-4',
   approveBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center',
   rejectBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center border-2',
-  returnBtn: 'w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border mb-4',
   hint: 'text-xs font-inter text-center mb-3',
   assignWrapper: 'mb-4',
   assignText: 'text-sm font-inter mb-3 text-center',
@@ -185,9 +185,7 @@ function ApproverAlcoholReviewDetailPage() {
         )}
         {canAct && !actionCompleted && (
           <>
-            <button className={styles.returnBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleReturn}>
-              Devolver Revisión
-            </button>
+            <ReturnReviewButton onReturn={handleReturn} />
             {expenses.length > 0 && <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>}
             <div className={styles.actionsRow}>
               <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar</button>

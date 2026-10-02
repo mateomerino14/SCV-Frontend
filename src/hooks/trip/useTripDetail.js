@@ -9,6 +9,8 @@ function useTripDetail(tripId) {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [deletingExpense, setDeletingExpense] = useState(false);
   const [error, setError] = useState('');
+  // Avisos de acciones (finalizar, eliminar) que se muestran en una ventana emergente
+  const [alertMessage, setAlertMessage] = useState('');
   const [exceededDays, setExceededDays] = useState([]);
   const [dailyBreakdown, setDailyBreakdown] = useState([]);
   const [exceedsHotels, setExceedsHotels] = useState(false);
@@ -96,10 +98,8 @@ function useTripDetail(tripId) {
     displayedInternationalExpenses = internationalExpenses;
   }
 
-  const showError = (message) => {
-    setError(message);
-    setTimeout(() => setError(''), 3000);
-  };
+  const showError = (message) => setAlertMessage(message);
+  const closeAlert = () => setAlertMessage('');
 
   const setDayJustification = (key, text) => {
     setDayJustifications((prev) => ({...prev, [key]: text}));
@@ -179,6 +179,8 @@ function useTripDetail(tripId) {
   };
 
   return {
+    alertMessage,
+    closeAlert,
     trip,
     expenses,
     nationalExpenses,

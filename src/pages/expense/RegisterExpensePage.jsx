@@ -78,11 +78,13 @@ function RegisterExpensePage() {
         </button>
         {saveSummary && (
           <div className="rounded-2xl px-4 py-3 mt-3 mb-3 text-center" style={{backgroundColor: saveSummary.failed > 0 ? '#fef3cd' : '#d4edda'}}>
-            <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? '#856404' : '#155724'}}>
-              {saveSummary.saved} gasto{saveSummary.saved !== 1 ? 's' : ''} guardado{saveSummary.saved !== 1 ? 's' : ''} correctamente
-            </p>
+            {saveSummary.saved > 0 && (
+              <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? '#856404' : '#155724'}}>
+                {saveSummary.saved} gasto{saveSummary.saved !== 1 ? 's' : ''} guardado{saveSummary.saved !== 1 ? 's' : ''} correctamente
+              </p>
+            )}
             {saveSummary.failed > 0 && (
-              <p className="text-xs font-inter mt-1" style={{color: '#856404'}}>
+              <p className={`font-inter ${saveSummary.saved > 0 ? 'text-xs mt-1' : 'text-sm font-bold'}`} style={{color: '#856404'}}>
                 {saveSummary.failed} gasto{saveSummary.failed !== 1 ? 's' : ''} con error — revisa las tarjetas marcadas en rojo
               </p>
             )}

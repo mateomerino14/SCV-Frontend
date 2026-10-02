@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import getCurrentUserId from '../../utils/getCurrentUserId';
 import {
   getReviewDetail,
   approveReview,
@@ -69,8 +70,11 @@ function useReviewerReviewDetail(tripId) {
   };
 
   const handleRequestReject = () => {
+    // Solo cuentan las observaciones propias de esta revision (como exige el servidor)
+    const currentUserId = getCurrentUserId();
     const savedObservations = (data?.comentarios || []).filter((comment) =>
       comment.tipo === 'OBSERVACION' &&
+      comment.id_usuario === currentUserId &&
       (comment.ciclo_revision || 1) === currentCycle() &&
       comment.id_gasto != null
     );

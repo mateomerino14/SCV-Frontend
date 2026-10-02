@@ -9,6 +9,8 @@ function useDeadlineAuthorizationRequests() {
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
+  // Confirmacion de la accion realizada (ventana emergente)
+  const [resultMessage, setResultMessage] = useState('');
   const [tab, setTab] = useState('PENDIENTES');
 
   const load = useCallback(async (showLoading = true) => {
@@ -60,6 +62,7 @@ function useDeadlineAuthorizationRequests() {
       return false;
     }
     await load(true);
+    setResultMessage('Solicitud aprobada. El empleado ya puede registrar sus gastos fuera de plazo.');
     return true;
   };
 
@@ -72,6 +75,7 @@ function useDeadlineAuthorizationRequests() {
       return false;
     }
     await load(true);
+    setResultMessage('Solicitud rechazada. Se notificó al empleado.');
     return true;
   };
 
@@ -86,6 +90,7 @@ function useDeadlineAuthorizationRequests() {
     loading, savingAction, error,
     tab, setTab,
     handleApprove, handleReject,
+    resultMessage, closeResult: () => setResultMessage(''),
   };
 }
 

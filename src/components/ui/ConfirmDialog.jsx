@@ -1,3 +1,4 @@
+import {createPortal} from 'react-dom';
 import {motion, AnimatePresence} from 'framer-motion';
 import ModalIconHeader from './ModalIconHeader';
 import Button from './Button';
@@ -5,7 +6,7 @@ import {COLORS} from '../../constants';
 
 const styles = {
   overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
-  overlayCompact: 'fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm px-4',
+  overlayCompact: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm px-4',
   card: 'items-center flex flex-col p-6 rounded-xl w-80 gap-2',
   cardCompact: 'items-center flex flex-col p-6 rounded-xl w-full max-w-xs gap-2 shadow-xl',
   title: 'text-2xl font-bold font-inter leading-tight text-center mt-3',
@@ -25,12 +26,14 @@ const cardVariants = {
   visible: {opacity: 1, scale: 1, y: 0},
 };
 
-function ConfirmDialog({isOpen, icon, iconColor, iconBackgroundColor, cardColor = COLORS.primary, title, message, warning, confirmText = 'Confirmar', cancelText = 'Cancelar', onConfirm, onCancel, loading, hideCancel, compact}) {
+// Se dibuja sobre toda la pantalla (portal en body), aunque se use dentro de una tarjeta animada;
+// por defecto el icono va en un circulo blanco, como el resto de las ventanas
+function ConfirmDialog({isOpen, icon, iconColor = COLORS.backgroundSecondary, iconBackgroundColor = COLORS.background, cardColor = COLORS.primary, title, message, warning, confirmText = 'Confirmar', cancelText = 'Cancelar', onConfirm, onCancel, loading, hideCancel, compact}) {
   let confirmLabel = confirmText;
   if (loading) {
     confirmLabel = `${confirmText}...`;
   }
-  return (
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div className={compact ? styles.overlayCompact : styles.overlay}
@@ -49,7 +52,8 @@ function ConfirmDialog({isOpen, icon, iconColor, iconBackgroundColor, cardColor 
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 

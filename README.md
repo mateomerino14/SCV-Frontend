@@ -143,9 +143,10 @@ No se emplea una biblioteca de estado global. El estado es local a cada pantalla
 - **Formularios**: se mantienen en el hook, junto con sus errores por campo.
 - **Sondeo**: las bandejas de los roles revisores y los resúmenes se refrescan cada 30 segundos, con los filtros que el usuario aplicó. Solo la carga inicial activa el indicador esquelético; si una actualización falla, se conservan los datos y se muestra un aviso.
 - **Sesión expirada o invalidada**: `apiClient` detecta el token vencido (lo renueva solo), la sesión invalidada por cambio de rol o suspensión, y la cuenta suspendida; en esos casos aparece la ventana "Sesión Expirada". Además `useMenu` revisa el rol cada 30 segundos.
-- **Cambio de contraseña obligatorio**: `PasswordChangeGate` (en `App.jsx`) muestra en cualquier pantalla la ventana para crear una contraseña propia (cuenta nueva o ingreso con código) o actualizarla (más de 90 días). Incluye la opción de cerrar sesión para quien no recuerde la actual.
+- **Cambio de contraseña obligatorio**: `PasswordChangeGate` (en `App.jsx`) muestra en cualquier pantalla la ventana de cambio, con un texto según el motivo que envía el servidor: contraseña temporal (cuenta nueva o clave puesta por el administrador), ingreso con código de verificación, o más de 90 días sin cambiarla. Solo en este último caso se pide la contraseña actual y se ofrece cerrar sesión para usar "¿Olvidaste tu contraseña?".
 - **Cierre de sesión**: siempre pasa por el servidor, que registra la salida y borra la cookie.
-- **Paginación**: las listas largas (historial de viajes, usuarios, cargos, secciones, historial de accesos) muestran "Mostrando X de Y" y un botón "Cargar más" (`LoadMoreButton`).
+- **Paginación**: las listas largas (historial de viajes, bandejas e historiales de revisión, solicitudes, usuarios, cargos, secciones, historial de accesos) muestran "Mostrando X de Y" (`ListCount`) y un botón "Cargar más" (`LoadMoreButton`). Las bandejas de revisión muestran primero lo revisado más recientemente, de 12 en 12, y se pueden acotar con los filtros de fecha.
+- **Ventanas emergentes**: `ConfirmDialog` se dibuja sobre toda la pantalla (portal en `body`), con la tarjeta en rojo institucional y el ícono en un círculo blanco. Los errores de una acción (por ejemplo, finalizar un viaje sin gastos o con una justificación inapropiada) y las confirmaciones de solicitudes se muestran en estas ventanas.
 
 ## Sistema de diseño
 
@@ -199,7 +200,9 @@ La carga de facturas presenta cada comprobante en tres columnas —imagen, formu
 
 ### Historial de revisión
 
-Cada bandeja de revisión (supervisor, aprobador, tesorero, revisor) tiene las pestañas Pendientes, Aprobados y Rechazados. **Aprobados** muestra todo lo que esa persona aprobó, con el estado actual del viaje, aunque ahora lo revise otra persona. **Rechazados** muestra solo lo que rechazó y sigue rechazado. El supervisor puede devolver un viaje o rendición que tomó por error.
+Cada bandeja de revisión (supervisor, aprobador, tesorero, revisor) tiene las pestañas Pendientes, Aprobados y Rechazados. **Aprobados** muestra todo lo que esa persona aprobó, con el estado actual del viaje, aunque ahora lo revise otra persona. **Rechazados** muestra solo lo que rechazó y sigue rechazado. El supervisor y el aprobador pueden devolver un viaje o rendición que tomaron por error (`ReturnReviewButton`, con confirmación).
+
+Para rechazar se usan solo las observaciones propias de la ronda actual; las de otros revisores se ven pero no se pueden editar, eliminar ni usar para rechazar.
 
 ### Administración
 

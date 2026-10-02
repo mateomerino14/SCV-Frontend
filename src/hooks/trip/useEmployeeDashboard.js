@@ -19,6 +19,10 @@ function useEmployeeDashboard() {
   const loadDashboard = async () => {
     const data = await getDashboard();
     // Si falla, se conservan los datos anteriores en vez de mostrar el panel vacio
+    // Mientras se exige el cambio de contraseña la ventana de cambio ya lo indica: no se avisa error
+    if (data.error && data.error.includes('cambiar tu contraseña')) {
+      return;
+    }
     if (data.error) {
       setLoadError('No se pudieron actualizar tus viajes. Revisa tu conexión; se reintentará en unos segundos.');
       return;

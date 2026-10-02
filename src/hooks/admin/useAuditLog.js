@@ -59,6 +59,10 @@ function useAuditLog() {
   }, []);
 
   const applyFilters = async () => {
+    // Rango invertido: el filtro de fechas ya muestra el aviso, no se consulta
+    if (filters.fecha_inicio && filters.fecha_fin && filters.fecha_inicio > filters.fecha_fin) {
+      return;
+    }
     setApplyingFilters(true);
     await load(filters, 1, true);
     setApplyingFilters(false);

@@ -27,6 +27,11 @@ const texts = {
     subtitle: 'Estás usando una contraseña temporal. Por seguridad, crea una contraseña propia para continuar.',
     button: 'Guardar Contraseña',
   },
+  RECUPERACION: {
+    title: 'Crea una Nueva Contraseña',
+    subtitle: 'Ingresaste con un código de verificación. Crea una nueva contraseña para seguir usando el sistema.',
+    button: 'Guardar Contraseña',
+  },
   VENCIDA: {
     title: 'Actualiza tu Contraseña',
     subtitle: 'Han pasado más de 90 días desde tu último cambio de contraseña. Por seguridad debes actualizarla para continuar.',
@@ -34,9 +39,10 @@ const texts = {
   },
 };
 
-// reason: 'TEMPORAL' (no pide la contrasena actual) o 'VENCIDA'
+// reason: 'TEMPORAL' (cuenta nueva), 'RECUPERACION' (ingreso con codigo) o 'VENCIDA' (90 dias).
+// Solo con 'VENCIDA' se pide la contrasena actual
 function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, loading, error: externalError}) {
-  const isTemporary = reason === 'TEMPORAL';
+  const isTemporary = reason === 'TEMPORAL' || reason === 'RECUPERACION';
   const text = texts[reason] || texts.VENCIDA;
   const {
     currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword,
@@ -81,9 +87,9 @@ function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, 
                 onClick={() => handleConfirm(onConfirm)}
                 disabled={loading || !!fieldErrors.newPassword || !!fieldErrors.confirmPassword} />
             </div>
-            {onLogout && (
+            {onLogout && !isTemporary && (
               <button className={styles.logoutLink} style={{color: COLORS.backgroundHeader}} onClick={onLogout} disabled={loading}>
-                ¿No recuerdas tu contraseña? Cerrar sesión
+                ¿No recuerdas tu contraseña actual? Cierra sesión y usa "¿Olvidaste tu contraseña?"
               </button>
             )}
           </motion.div>

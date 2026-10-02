@@ -21,7 +21,8 @@ import useSubstitutionRequest from '../../hooks/approval/useSubstitutionRequest'
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import EmptyState from '../../components/ui/EmptyState';
-import {FileX} from 'lucide-react';
+import {FileX, AlertCircle} from 'lucide-react';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -104,6 +105,8 @@ function TripDetailPage() {
       <div className={styles.content}>{content}</div>
       <DeleteExpenseConfirmModal isOpen={tripDetail.showDeleteModal} onClose={tripDetail.handleCancelDelete} onConfirm={tripDetail.handleConfirmDelete} loading={tripDetail.deletingExpense} />
       <SubmitReviewConfirmModal isOpen={tripDetail.showSubmitReviewModal} onClose={tripDetail.handleCancelSubmitReview} onConfirm={tripDetail.handleConfirmSubmitReview} />
+      <ConfirmDialog isOpen={!!tripDetail.alertMessage} compact icon={AlertCircle} iconColor={COLORS.primary}
+        title="No se pudo continuar" message={tripDetail.alertMessage} confirmText="Entendido" hideCancel onConfirm={tripDetail.closeAlert} />
       <DeadlineExpiredNoticeModal isOpen={deadline.showExpiredNotice} onClose={deadline.closeExpiredNotice} />
       <DeadlineRequestModal isOpen={deadline.showModal} onClose={() => deadline.setShowModal(false)} onConfirm={deadline.handleRequest} loading={deadline.submitting} error={deadline.modalError} />
       <DeadlineExpiredModal isOpen={deadline.isApprovedExpired && tripDetail.submitted} onClose={() => {}} message="Tu autorización de plazo ha vencido." />

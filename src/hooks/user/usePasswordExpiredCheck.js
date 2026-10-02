@@ -8,7 +8,7 @@ import {getToken, setToken} from '../../services/shared/tokenStore';
 const baseUrl = import.meta.env.VITE_API_URL;
 
 // Motivo por el que el usuario debe cambiar su contrasena segun su token:
-// 'TEMPORAL' (recien creado o recupero el acceso con codigo), 'VENCIDA' (90 dias) o null
+// 'TEMPORAL' (cuenta nueva), 'RECUPERACION' (ingreso con codigo), 'VENCIDA' (90 dias) o null
 function readPasswordChangeReason() {
   const token = getToken();
   if (!token) {

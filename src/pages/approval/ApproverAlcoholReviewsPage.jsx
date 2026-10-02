@@ -14,6 +14,8 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {approverAlcoholReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -31,17 +33,16 @@ const mainTabs = [
 function ApproverAlcoholReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalMyPending, totalApproved, totalRejected, employees, sections, loading, applyingFilters, error,
+    trips, totalMyPending, employees, sections, loading, applyingFilters, error,
     tab, setTab, filters, setFilters, applyFilters, clearFilters,
   } = useApproverAlcoholReviews();
-  let total = totalMyPending;
+  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
+  const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Rendiciones con gastos de alcohol que necesitan tu revisión antes de pasar a la revisión final.';
   if (tab === 'APROBADOS') {
-    total = totalApproved;
     subtitle = 'Historial de las rendiciones con alcohol que aprobaste, con el estado en que están ahora.';
   }
   else if (tab === 'RECHAZADOS') {
-    total = totalRejected;
     subtitle = 'Rendiciones con alcohol que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
@@ -57,7 +58,7 @@ function ApproverAlcoholReviewsPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <ListCount shown={total} total={total} singular="rendición" plural="rendiciones" />}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="rendición" plural="rendiciones" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron rendiciones con alcohol con el filtro seleccionado"
@@ -69,11 +70,12 @@ function ApproverAlcoholReviewsPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((trip) => (
+            {pagination.visibleItems.map((trip) => (
               <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={approverAlcoholReviewPath(trip.id_viaje)} originRoute={routes.approverAlcoholReviews} />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="aprobador-alcohol" message={mascotMessage} />
       <Footer />
