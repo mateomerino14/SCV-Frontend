@@ -56,7 +56,7 @@ function SectionTooltip({active, payload, label}) {
   }
   const row = payload[0].payload;
   return (
-    <div style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter', padding: '8px 12px'}}>
+    <div style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter, sans-serif', padding: '8px 12px'}}>
       <p style={{fontWeight: 700, color: COLORS.text, marginBottom: 4}}>{label}</p>
       <p style={{color: COLORS.primary}}>{row.cantidadViajes} viaje{row.cantidadViajes !== 1 ? 's' : ''}</p>
       <p style={{color: COLORS.title}}>Bs {row.montoAsignado.toFixed(2)}</p>
@@ -102,7 +102,7 @@ function DashboardAdminPage() {
             <div className={styles.phaseTotalsGrid}>
               <PhaseTotalCard icon={approvalPhaseTotal.icon} title="Aprobación de Viaje" subtitle="Viajes en la etapa previa, sin gastos"
                 total={approvalTotal} color={approvalPhaseTotal.color} bg={approvalPhaseTotal.bg} />
-              <PhaseTotalCard icon={expensePhaseTotal.icon} title="Rendición de Gastos" subtitle="Viajes en curso o con gastos en revisión"
+              <PhaseTotalCard icon={expensePhaseTotal.icon} title="Rendición de Gastos" subtitle="Viajes en curso, con gastos en revisión o ya aprobados"
                 total={expenseTotal} color={expensePhaseTotal.color} bg={expensePhaseTotal.bg} />
               <PhaseTotalCard icon={rejectedStat.icon} title="Rechazados" subtitle="Total de viajes rechazados"
                 total={data?.[rejectedStat.key] || 0} color={rejectedStat.color} bg={rejectedStat.bg} />
@@ -117,8 +117,8 @@ function DashboardAdminPage() {
                       {data.usuariosPorRol.map((_, index) => <Cell key={index} fill={roleColors[index % roleColors.length]} />)}
                     </Pie>
                     <Tooltip formatter={(value, name) => [`${value} usuarios`, name]}
-                      contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter'}} />
-                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter'}}>{value}</span>} />
+                      contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter, sans-serif'}} />
+                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter, sans-serif'}}>{value}</span>} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -130,11 +130,11 @@ function DashboardAdminPage() {
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={data.viajesPorSeccion} margin={{top: 10, right: 10, left: 0, bottom: 10}}>
                     <CartesianGrid strokeDasharray="3 3" stroke={COLORS.dataFields} />
-                    <XAxis dataKey="seccion" tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
-                    <YAxis yAxisId="viajes" allowDecimals={false} tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
-                    <YAxis yAxisId="monto" orientation="right" tick={{fontSize: 11, fontFamily: 'Inter', fill: COLORS.labels}} />
+                    <XAxis dataKey="seccion" tick={{fontSize: 11, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} />
+                    <YAxis yAxisId="viajes" allowDecimals={false} tick={{fontSize: 11, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} />
+                    <YAxis yAxisId="monto" orientation="right" tick={{fontSize: 11, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} />
                     <Tooltip content={<SectionTooltip />} />
-                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter'}}>{value === 'cantidadViajes' ? 'Viajes' : 'Monto asignado (Bs)'}</span>} />
+                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter, sans-serif'}}>{value === 'cantidadViajes' ? 'Viajes' : 'Monto asignado (Bs)'}</span>} />
                     <Bar yAxisId="viajes" dataKey="cantidadViajes" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
                     <Bar yAxisId="monto" dataKey="montoAsignado" fill={COLORS.title} radius={[6, 6, 0, 0]} />
                   </BarChart>

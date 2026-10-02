@@ -20,6 +20,8 @@ import useDeadlineAuthorization from '../../hooks/approval/useDeadlineAuthorizat
 import useSubstitutionRequest from '../../hooks/approval/useSubstitutionRequest';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import EmptyState from '../../components/ui/EmptyState';
+import {FileX} from 'lucide-react';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -53,7 +55,14 @@ function TripDetailPage() {
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <Navbar text="Detalles de Viaje" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-        <div className="flex-1 flex items-center justify-center"><p style={{color: COLORS.secondary}}>{error || 'No se encontró el viaje'}</p></div>
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5 py-10">
+          <EmptyState title={error === 'El viaje no existe' ? 'Viaje no encontrado' : 'Viaje no disponible'}
+            subtitle={error || 'No se encontró el viaje'}
+            icon={<FileX size={30} style={{color: 'rgba(255,255,255,0.8)'}} />} />
+          <button className="px-6 py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border-2"
+            style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}
+            onClick={() => navigate(originRoute)}>Volver</button>
+        </div>
         <Footer />
       </div>
     );

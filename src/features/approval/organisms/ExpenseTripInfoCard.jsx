@@ -35,7 +35,7 @@ function ExpenseTripInfoCard({trip}) {
         <img src={trip.Usuario?.foto_perfil || avatarDefault} alt="empleado" className={styles.avatar} style={{borderColor: COLORS.primary}}
           onError={(event) => {event.target.onerror = null; event.target.src = avatarDefault;}} />
         <div className={styles.employeeInfo}>
-          <p className={styles.employeeLabel} style={{color: COLORS.secondary}}>Empleado Asignado</p>
+          <p className={styles.employeeLabel} style={{color: COLORS.secondary}}>Empleado</p>
           <p className={styles.employeeName} style={{color: COLORS.text}}>{trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}</p>
           <p className={styles.employeePosition} style={{color: COLORS.labels}}>
             {trip.Usuario?.Cargo?.nombre}
@@ -44,7 +44,7 @@ function ExpenseTripInfoCard({trip}) {
         </div>
         <span className={styles.statusBadge} style={{backgroundColor: status.bg, color: status.color}}>{status.label}</span>
       </div>
-      <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo</p>
+      <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo del Viaje</p>
       <p className={styles.reasonText} style={{color: COLORS.text}}>{trip.motivo}</p>
       <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />
       <div className={styles.infoGrid}>

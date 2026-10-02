@@ -9,6 +9,7 @@ import {COLORS} from './constants';
 import LoginPage from './pages/user/LoginPage';
 import PasswordChangeGate from './features/user/organisms/PasswordChangeGate';
 import {getHomeRoute} from './constants/roleHome';
+import useIsTreasurer from './hooks/user/useIsTreasurer';
 
 const SettingsPage = lazy(() => import('./pages/user/SettingsPage'));
 const ProfilePage = lazy(() => import('./pages/user/ProfilePage'));
@@ -67,6 +68,19 @@ function ProtectedRoute({allowedRoles, children}) {
   // Con sesion pero sin permiso para esta pantalla: a su pantalla de inicio, no al login
   if (allowedRoles && !allowedRoles.includes(role)) {
     return <Navigate to={getHomeRoute(role)} replace />;
+  }
+  return children;
+}
+
+// Pantallas de tesoreria: solo para quien tiene el cargo de tesorero (cualquier rol);
+// los demas vuelven a su inicio
+function TreasurerRoute({children}) {
+  const {isTreasurer, loading} = useIsTreasurer();
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+  if (!isTreasurer) {
+    return <Navigate to={getHomeRoute(getRoleFromToken())} replace />;
   }
   return children;
 }
@@ -174,8 +188,8 @@ function App() {
         <Route path="/dashboard/revisor/reemplazos" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><SubstitutionRequestsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/perfil" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/configuracion" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/tesorero/revisiones" element={<ProtectedRoute><PageTransition><TreasurerReviewsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/tesorero/viaje/:id" element={<ProtectedRoute><PageTransition><TreasurerReviewDetailPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/tesorero/revisiones" element={<ProtectedRoute><TreasurerRoute><PageTransition><TreasurerReviewsPage /></PageTransition></TreasurerRoute></ProtectedRoute>} />
+        <Route path="/dashboard/tesorero/viaje/:id" element={<ProtectedRoute><TreasurerRoute><PageTransition><TreasurerReviewDetailPage /></PageTransition></TreasurerRoute></ProtectedRoute>} />
         <Route path="*" element={<PageTransition><NotFoundPage /></PageTransition>} />
       </Routes>
       </AnimatePresence>

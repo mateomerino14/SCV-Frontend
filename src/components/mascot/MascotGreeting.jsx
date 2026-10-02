@@ -23,6 +23,8 @@ const visibleTime = 9000;
 function MascotGreeting({pageKey, message}) {
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
+  // Ultimo mensaje mostrado: la burbuja conserva su texto aunque la pantalla cambie de pestaña
+  const [shownMessage, setShownMessage] = useState('');
 
   useEffect(() => {
     if (!message || reduceMotion || !isMascotEnabled() || wasMascotSeen(pageKey)) {
@@ -30,14 +32,20 @@ function MascotGreeting({pageKey, message}) {
     }
     const showTimer = setTimeout(() => {
       markMascotSeen(pageKey);
+      setShownMessage(message);
       setVisible(true);
     }, appearDelay);
-    const hideTimer = setTimeout(() => setVisible(false), appearDelay + visibleTime);
-    return () => {
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
-    };
+    return () => clearTimeout(showTimer);
   }, [pageKey, message, reduceMotion]);
+
+  // El ocultamiento depende solo de que este visible, asi un cambio de mensaje no lo cancela
+  useEffect(() => {
+    if (!visible) {
+      return undefined;
+    }
+    const hideTimer = setTimeout(() => setVisible(false), visibleTime);
+    return () => clearTimeout(hideTimer);
+  }, [visible]);
 
   const close = () => setVisible(false);
 
@@ -53,7 +61,7 @@ function MascotGreeting({pageKey, message}) {
               <X size={12} style={{color: COLORS.background}} />
             </button>
             <p className={styles.bubbleName} style={{color: COLORS.primary}}>Casquito</p>
-            <p className={styles.bubbleText} style={{color: COLORS.text}}>{message}</p>
+            <p className={styles.bubbleText} style={{color: COLORS.text}}>{shownMessage}</p>
           </motion.div>
           <motion.div className={styles.mascot} onClick={close} title="Cerrar"
             animate={{y: [0, -6, 0]}} transition={{duration: 1.1, repeat: Infinity, ease: 'easeInOut'}}>

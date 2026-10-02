@@ -49,7 +49,7 @@ function SupervisorExpenseReviewHistoryPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
+        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} rendici{total !== 1 ? 'ones' : 'ón'}</p>}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin revisiones en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"

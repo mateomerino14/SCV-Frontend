@@ -39,15 +39,15 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
   const hasSubitems = subitems.length > 0;
   // Cada tramo registrado es una conversion de una moneda de origen a USD
   const conversionsCount = isInternational ? (expense.Gasto_Tramo_Moneda || []).length : 0;
-  const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
+  const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
   const expenseObservations = observations.filter((observation) => observation.id_gasto === expense.id_gasto);
 
   return (
     <motion.div style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderLeft: `3px solid ${accentColor}`, borderRadius: 12, marginBottom: 8, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 6}}
       whileHover={{boxShadow: '0 6px 16px rgba(0,0,0,0.08)'}} transition={{duration: 0.15}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
-        <p style={{color: COLORS.text, fontWeight: 700, fontSize: 13, fontFamily: 'Inter', flex: 1, marginRight: 8, lineHeight: 1.3}}>{displayName}</p>
-        <p style={{color: accentColor, fontWeight: 700, fontSize: 14, fontFamily: 'Inter', whiteSpace: 'nowrap'}}>
+        <p style={{color: COLORS.text, fontWeight: 700, fontSize: 13, fontFamily: 'Inter, sans-serif', flex: 1, marginRight: 8, lineHeight: 1.3}}>{displayName}</p>
+        <p style={{color: accentColor, fontWeight: 700, fontSize: 14, fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap'}}>
           {parseFloat(expense.monto_total).toFixed(2)} {isInternational ? 'USD' : 'Bs'}
         </p>
       </div>
@@ -56,7 +56,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
         <ExpenseFieldTag icon={Tag} text={typeLabels[expense.tipo] || expense.tipo} color={accentColor} />
         {expense.Factura?.numero_factura && <ExpenseFieldTag icon={FileText} text={`N° ${expense.Factura.numero_factura}`} color={accentColor} />}
         {expense.Categoria_Gasto?.nombre && expense.Proveedor?.nombre && <ExpenseFieldTag icon={FolderOpen} text={expense.Categoria_Gasto.nombre} color={accentColor} />}
-        {docLabel && <span style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter'}}>{docLabel}</span>}
+        {docLabel && <span style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter, sans-serif'}}>{docLabel}</span>}
       </div>
       {(isInternational || hasSubitems) && (
         <div style={{display: 'flex', flexWrap: 'wrap', gap: 6}}>
@@ -81,10 +81,10 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
         </div>
       )}
       {!hasSubitems && expense.descripcion && (
-        <p style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter', lineHeight: 1.4}}>{expense.descripcion}</p>
+        <p style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter, sans-serif', lineHeight: 1.4}}>{expense.descripcion}</p>
       )}
       {expenseObservations.length > 0 && (
-        <button onClick={open} style={{display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, fontFamily: 'Inter', backgroundColor: COLORS.error, color: COLORS.secondary, padding: '4px 9px', borderRadius: 8, width: 'fit-content', cursor: 'pointer', border: 'none'}}>
+        <button onClick={open} style={{display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', backgroundColor: COLORS.error, color: COLORS.secondary, padding: '4px 9px', borderRadius: 8, width: 'fit-content', cursor: 'pointer', border: 'none'}}>
           <MessageSquare size={12} />
           {expenseObservations.length} Observación{expenseObservations.length !== 1 ? 'es' : ''}
         </button>
@@ -100,7 +100,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
           </>
         )}
         {!tripInProgress && (
-          <span style={{fontSize: 12, fontWeight: 700, fontFamily: 'Inter', color: accentColor, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3}} onClick={() => goToDetail(expense.id_gasto)}>
+          <span style={{fontSize: 12, fontWeight: 700, fontFamily: 'Inter, sans-serif', color: accentColor, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3}} onClick={() => goToDetail(expense.id_gasto)}>
             Ver Detalle <ArrowRight size={11} />
           </span>
         )}

@@ -18,7 +18,7 @@ function TripPreviousReviewView({trip, isInternational, originRoute, navigate}) 
       </button>
       <TripInfoCard trip={trip} isInternational={isInternational} />
       <div className={styles.alertBox} style={{backgroundColor: config?.bg}}>
-        <p style={{color: config?.color, fontFamily: 'Inter', fontSize: 13, fontWeight: 600}}>
+        <p style={{color: config?.color, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600}}>
           {tripStatusMessages[trip.estado]}
         </p>
       </div>

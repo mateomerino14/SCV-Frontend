@@ -188,7 +188,7 @@ function ApproverAlcoholReviewDetailPage() {
             <button className={styles.returnBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleReturn}>
               Devolver Revisión
             </button>
-            <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>
+            {expenses.length > 0 && <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>}
             <div className={styles.actionsRow}>
               <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar</button>
               <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>

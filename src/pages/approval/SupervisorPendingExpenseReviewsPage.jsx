@@ -44,7 +44,7 @@ function SupervisorPendingExpenseReviewsPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={pendingTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} de {total} viaje{total !== 1 ? 's' : ''}</p>}
+        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {trips.length} de {total} rendici{total !== 1 ? 'ones' : 'ón'}</p>}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin solicitudes pendientes" subtitle="No hay rendiciones de gastos esperando revisión"

@@ -28,7 +28,7 @@ function TripRejectedPreviousView({trip, tripId, isInternational, originRoute, n
         </div>
       )}
       <div className={styles.alertBox} style={{backgroundColor: '#ffa7a8aa'}}>
-        <p style={{color: '#500203', fontFamily: 'Inter', fontSize: 13, fontWeight: 600}}>
+        <p style={{color: '#500203', fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600}}>
           Tu viaje fue rechazado en la fase de aprobación previa. Revisa las observaciones y corrige los datos.
         </p>
       </div>

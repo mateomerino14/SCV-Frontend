@@ -90,7 +90,7 @@ function TripReviewDetailCard({trip, statusConfig}) {
             <p className={styles.infoRoute} style={{color: COLORS.text}}>
               <Navigation size={12} style={{color: COLORS.labels, marginTop: 3, flexShrink: 0}} />
               <span className={styles.routeText}>{trip.origen}</span>
-              <span style={{color: COLORS.dataFields, margin: '0 4px', flexShrink: 0}}>→</span>
+              <span style={{color: COLORS.labels, margin: '0 4px', flexShrink: 0}}>→</span>
               <MapPin size={12} style={{color: COLORS.secondary, marginTop: 3, flexShrink: 0}} />
               <span className={styles.routeText}>{trip.destino}</span>
             </p>
