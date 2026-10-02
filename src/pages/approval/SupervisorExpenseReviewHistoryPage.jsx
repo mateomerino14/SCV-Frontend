@@ -14,12 +14,12 @@ import useMenu from '../../hooks/shared/useMenu';
 import {historyTabsDefault} from '../../features/approval/constants/reviewTabs';
 import {COLORS} from '../../constants';
 import {supervisorTripReviewPath, routes} from '../../constants/routes';
+import ListCount from '../../components/ui/ListCount';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
-  totalText: "text-xs font-inter mb-3",
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
 };
 
@@ -49,7 +49,7 @@ function SupervisorExpenseReviewHistoryPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} rendici{total !== 1 ? 'ones' : 'ón'}</p>}
+        {!loading && <ListCount shown={total} total={total} singular="rendición" plural="rendiciones" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin revisiones en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"

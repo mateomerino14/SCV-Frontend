@@ -9,13 +9,13 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useSubstitutionRequests from '../../hooks/approval/useSubstitutionRequests';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import ListCount from '../../components/ui/ListCount';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
   tabsRow: "flex gap-2 mb-4 flex-wrap",
   tab: "py-1.5 px-3 rounded-full text-xs font-bold font-inter cursor-pointer border text-center transition-colors",
-  totalText: "text-xs font-inter mb-3",
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
 };
 
@@ -44,7 +44,7 @@ function SubstitutionRequestsPage() {
           ))}
         </div>
         {error && <p className="text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4" style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} solicitud{trips.length !== 1 ? 'es' : ''}</p>}
+        {!loading && <ListCount shown={trips.length} total={trips.length} singular="solicitud" plural="solicitudes" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin solicitudes" subtitle={tab === 'PENDIENTES' ? 'No hay solicitudes de reemplazo pendientes' : 'Aún no hay historial de solicitudes'}

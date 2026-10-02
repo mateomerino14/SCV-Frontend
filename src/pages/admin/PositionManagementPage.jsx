@@ -15,10 +15,10 @@ import {COLORS} from '../../constants';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
+import ListCount from '../../components/ui/ListCount';
 
 
 const styles = {
-  totalText: 'text-xs font-inter mb-3',
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
   subtitle: 'text-sm font-inter mb-5',
@@ -65,7 +65,7 @@ function PositionManagementPage() {
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Puesto y Salario Diario</p>
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
-          <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {pagination.visibleItems.length} de {pagination.total} cargos</p>
+          <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="cargo" plural="cargos" />
         )}
         {!loading && pagination.visibleItems.map((position) => (
           <div key={position.id_cargo} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>

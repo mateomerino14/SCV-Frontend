@@ -12,13 +12,13 @@ import useTripHistory from '../../hooks/trip/useTripHistory';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import ListCount from '../../components/ui/ListCount';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
   emptyMsg: "text-sm font-inter text-center py-8",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
-  totalText: "text-xs font-inter mb-3",
 };
 
 function TripHistoryPage() {
@@ -36,7 +36,7 @@ function TripHistoryPage() {
         {loading && <SkeletonList count={4} />}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && total > 0 && (
-          <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {trips.length} de {total} viajes</p>
+          <ListCount shown={trips.length} total={total} singular="viaje" plural="viajes" />
         )}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes registrados" subtitle="Aún no tienes viajes en esta categoría"

@@ -14,12 +14,12 @@ import useSupervisorPendingTrips from '../../hooks/approval/useSupervisorPending
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {supervisorPendingTripPath, routes} from '../../constants/routes';
+import ListCount from '../../components/ui/ListCount';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
-  totalText: "text-xs font-inter mb-3",
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
 };
 
@@ -43,7 +43,7 @@ function SupervisorPendingTripsPage() {
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
           employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''} pendiente{trips.length !== 1 ? 's' : ''}</p>}
+        {!loading && <ListCount shown={trips.length} total={trips.length} singular="viaje" plural="viajes" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes pendientes" subtitle="No hay viajes esperando revisión"

@@ -1,15 +1,21 @@
 import {useState, useEffect} from 'react';
-import HistoryDropdownSelector from '../molecules/HistoryDropdownSelector';
+import InlineDropdown from '../../../components/ui/InlineDropdown';
+import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
+import {COLORS} from '../../../constants';
 import {statusLabels} from '../../../constants/tripStatusLabels';
 
+// Misma tarjeta de filtros que las bandejas de revision (ReviewFilters)
 const styles = {
-  wrapper: 'flex flex-col gap-2 mb-4',
-  row: 'flex gap-2 flex-wrap',
+  wrapper: 'mb-5',
+  card: 'rounded-2xl p-4 shadow-md',
+  cardTitle: 'text-xs font-bold font-inter uppercase mb-3',
+  grid: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
+  fieldLabel: 'text-xs font-inter uppercase mb-1',
 };
 
 const categories = [
   {value: 'TODOS', label: 'Todos', states: null},
-  {value: 'BORRADOR', label: 'Sin Enviar', states: null},
+  {value: 'BORRADOR', label: 'Borradores (sin enviar)', states: null},
   {
     value: 'PREVIO',
     label: 'Aprobación de Viaje',
@@ -49,6 +55,8 @@ function findCategoryByValue(value) {
 }
 
 function TripHistoryFilter({activeFilter, onChange}) {
+  const categoryDropdown = useSimpleSelector();
+  const stateDropdown = useSimpleSelector();
   const initialCategory = findCategoryByValue(activeFilter);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory.value);
   useEffect(() => {
@@ -70,14 +78,31 @@ function TripHistoryFilter({activeFilter, onChange}) {
     onChange(value);
   };
 
+  const categoryOptions = categories.map((category) => ({value: category.value, label: category.label}));
+  const stateLabel = currentCategory.states?.find((state) => state.value === activeFilter)?.label || currentCategory.states?.[0]?.label;
+
   return (
     <div className={styles.wrapper}>
-      <div className={styles.row}>
-        <HistoryDropdownSelector options={categories.map((category) => ({value: category.value, label: category.label}))}
-          selectedValue={selectedCategory} onSelect={handleCategoryChange} />
-        {currentCategory.states && (
-          <HistoryDropdownSelector options={currentCategory.states} selectedValue={activeFilter} onSelect={handleStateChange} />
-        )}
+      <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>
+        <p className={styles.cardTitle} style={{color: COLORS.labels}}>Filtros de Búsqueda</p>
+        <div className={styles.grid}>
+          <div>
+            <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Etapa</p>
+            <InlineDropdown wrapperRef={categoryDropdown.wrapperRef} triggerRef={categoryDropdown.triggerRef} open={categoryDropdown.open}
+              opensUpward={categoryDropdown.opensUpward} onToggle={categoryDropdown.toggle} label={currentCategory.label}
+              options={categoryOptions} selectedValue={selectedCategory}
+              onSelect={(value) => {handleCategoryChange(value); categoryDropdown.close();}} />
+          </div>
+          {currentCategory.states && (
+            <div>
+              <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Estado</p>
+              <InlineDropdown wrapperRef={stateDropdown.wrapperRef} triggerRef={stateDropdown.triggerRef} open={stateDropdown.open}
+                opensUpward={stateDropdown.opensUpward} onToggle={stateDropdown.toggle} label={stateLabel}
+                options={currentCategory.states} selectedValue={activeFilter}
+                onSelect={(value) => {handleStateChange(value); stateDropdown.close();}} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

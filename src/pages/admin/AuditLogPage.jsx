@@ -15,6 +15,7 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import {formatDateTime} from '../../utils/dateFormatter';
+import ListCount from '../../components/ui/ListCount';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -25,7 +26,6 @@ const styles = {
   fieldLabel: 'text-xs font-inter uppercase mb-1',
   buttonsRow: 'flex gap-2 mt-3',
   filterBtn: 'flex-1 py-2.5 rounded-xl text-sm font-bold font-nunito cursor-pointer border transition-colors text-center',
-  totalText: 'text-xs font-inter mb-3',
   exportBtn: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4',
   row: 'flex items-center gap-3 rounded-2xl p-3 mb-2',
   iconWrap: 'w-9 h-9 rounded-full flex items-center justify-center shrink-0',
@@ -109,7 +109,7 @@ function AuditLogPage() {
         </button>
 
         {!loading && total > 0 && (
-          <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {audits.length} de {total} registros</p>
+          <ListCount shown={audits.length} total={total} singular="registro" plural="registros" />
         )}
 
         {error && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{error}</p>}
