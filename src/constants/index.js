@@ -1,4 +1,10 @@
-export const LOGIN_IMAGE = "https://media.licdn.com/dms/image/v2/D4E22AQE0FhfcXcva3w/feedshare-shrink_800/feedshare-shrink_800/0/1729181878955?e=2147483647&v=beta&t=8I4JqWT7e4UXjTX56rdge-w7HBCEqQL6iYiFCenBJiY"
+// Imagen de la pantalla de ingreso: archivo local src/assets/FOTO_LOGIN.jpg, incluido en la
+// compilacion (no depende de internet). Se carga con glob para que, si el archivo aun no
+// esta en el repositorio, la compilacion no falle y se use la imagen anterior.
+const localLoginImage = Object.values(import.meta.glob('../assets/FOTO_LOGIN.jpg', {eager: true, import: 'default'}))[0];
+const fallbackLoginImage = "https://media.licdn.com/dms/image/v2/D4E22AQE0FhfcXcva3w/feedshare-shrink_800/feedshare-shrink_800/0/1729181878955?e=2147483647&v=beta&t=8I4JqWT7e4UXjTX56rdge-w7HBCEqQL6iYiFCenBJiY";
+
+export const LOGIN_IMAGE = localLoginImage || fallbackLoginImage;
 export const MAXAM_LOGO = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Maxam_logo.jpg"
 
 // Paleta de colores principales

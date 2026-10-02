@@ -19,6 +19,8 @@ Crear un archivo `.env` en la raíz del proyecto:
 VITE_API_URL=http://localhost:5000
 ```
 
+`VITE_API_URL` es la dirección del backend en cada etapa: `http://localhost:5000` en local, la URL del servicio de Render en el piloto y el dominio de la API (por ejemplo `https://api.tuempresa.com`) en el VPS. En Vercel se configura en las variables de entorno del proyecto y requiere volver a desplegar.
+
 ## Ejecución
 
 ```bash
@@ -141,12 +143,22 @@ No se emplea una biblioteca de estado global. El estado es local a cada pantalla
 - **Servidor**: se obtiene en `useEffect` al montar y se refresca tras cada escritura.
 - **Sesión**: el token de acceso vive solo en memoria (`services/shared/tokenStore.js`), nunca en `localStorage`. Al cargar la app, si no hay token en memoria se intenta un refresco silencioso contra `/auth/refresh` usando la cookie `httpOnly` del refresh token, antes de renderizar las rutas protegidas.
 - **Formularios**: se mantienen en el hook, junto con sus errores por campo.
-- **Sondeo**: las bandejas de los roles revisores y los resúmenes se refrescan cada 30 segundos, con los filtros que el usuario aplicó. Solo la carga inicial activa el indicador esquelético; si una actualización falla, se conservan los datos y se muestra un aviso.
+- **Sondeo**: las bandejas de los roles revisores, las solicitudes de plazo y reemplazo, el historial de viajes del empleado y los resúmenes se refrescan cada 30 segundos, con los filtros que el usuario aplicó. Mientras el empleado tiene una solicitud de plazo o de reemplazo esperando respuesta, también se consulta cada 30 segundos para mostrar la respuesta sin recargar. Solo la carga inicial activa el indicador esquelético; si una actualización falla, se conservan los datos y se muestra un aviso.
 - **Sesión expirada o invalidada**: `apiClient` detecta el token vencido (lo renueva solo), la sesión invalidada por cambio de rol o suspensión, y la cuenta suspendida; en esos casos aparece la ventana "Sesión Expirada". Además `useMenu` revisa el rol cada 30 segundos.
 - **Cambio de contraseña obligatorio**: `PasswordChangeGate` (en `App.jsx`) muestra en cualquier pantalla la ventana de cambio, con un texto según el motivo que envía el servidor: contraseña temporal (cuenta nueva o clave puesta por el administrador), ingreso con código de verificación, o más de 90 días sin cambiarla. Solo en este último caso se pide la contraseña actual y se ofrece cerrar sesión para usar "¿Olvidaste tu contraseña?".
 - **Cierre de sesión**: siempre pasa por el servidor, que registra la salida y borra la cookie.
 - **Paginación**: las listas largas (historial de viajes, bandejas e historiales de revisión, solicitudes, usuarios, cargos, secciones, historial de accesos) muestran "Mostrando X de Y" (`ListCount`) y un botón "Cargar más" (`LoadMoreButton`). Las bandejas de revisión muestran primero lo revisado más recientemente, de 12 en 12, y se pueden acotar con los filtros de fecha.
 - **Ventanas emergentes**: `ConfirmDialog` se dibuja sobre toda la pantalla (portal en `body`), con la tarjeta en rojo institucional y el ícono en un círculo blanco. Los errores de una acción (por ejemplo, finalizar un viaje sin gastos o con una justificación inapropiada) y las confirmaciones de solicitudes se muestran en estas ventanas.
+
+## Imágenes
+
+Las imágenes propias del sistema están en `src/assets/` y se importan desde el código, así que Vite las incluye en la compilación y no dependen de internet:
+
+| Archivo | Uso |
+|---|---|
+| `FOTO_LOGIN.jpg` | Imagen de la pantalla de ingreso (`LOGIN_IMAGE` en `constants/index.js`) |
+
+Para cambiar la imagen de ingreso basta con reemplazar ese archivo manteniendo el nombre exacto (mayúsculas y extensión `.jpg`: en Vercel y en Linux se distinguen). Si el archivo no está en el repositorio, la compilación no falla: se usa la imagen anterior de internet.
 
 ## Sistema de diseño
 
@@ -188,7 +200,7 @@ Cuando una rendición contiene bebidas alcohólicas, tras la aprobación del sup
 
 ### Rendición por terceros
 
-Un empleado puede solicitar desde su viaje que otra persona rinda los gastos en su nombre (`useSubstitutionRequest`). El revisor aprueba o rechaza la solicitud (`SubstitutionRequestsPage`); el viaje aparece en el dashboard del sustituto con la etiqueta "Rendición de [nombre]", sin afectar los documentos oficiales, que siempre llevan el nombre del titular original.
+Un empleado puede solicitar desde su viaje que otra persona rinda los gastos en su nombre (`useSubstitutionRequest`). El revisor aprueba o rechaza la solicitud (`SubstitutionRequestsPage`); el viaje aparece en el dashboard del sustituto con la etiqueta "Rendición de [nombre]", sin afectar los documentos oficiales, que siempre llevan el nombre del titular original. Si el viaje se envía a revisión antes de que el revisor responda, la solicitud se cierra sola y en el historial aparece como "Cerrada" (no como rechazada); si el revisor intenta atenderla, una ventana emergente le explica que ya se cerró.
 
 ### Digitalización de comprobantes
 
@@ -196,7 +208,7 @@ La carga de facturas presenta cada comprobante en tres columnas —imagen, formu
 
 ### Control de plazos
 
-`useDeadlineAuthorization` determina si el plazo de carga venció, considerando la tolerancia de cuatro días y las extensiones aprobadas vigentes. Cuando expiró sin autorización, los controles se deshabilitan y se ofrece solicitar una extensión al revisor.
+`useDeadlineAuthorization` determina si el plazo de carga venció, considerando la tolerancia de cuatro días y las extensiones aprobadas vigentes. Cuando expiró sin autorización, los controles se deshabilitan y se ofrece solicitar una extensión al revisor. El plazo es del viaje: una extensión aprobada vale también para el reemplazo, que puede pedirla igual que el titular; el revisor ve quién la pidió.
 
 ### Historial de revisión
 
