@@ -63,8 +63,10 @@ function useSubstitutionRequest(tripId) {
 
   const isPending = request?.estado === 'PENDIENTE';
   const isApproved = request?.estado === 'APROBADA';
-  const isRejected = request?.estado === 'RECHAZADA';
-  const canRequest = !request || isRejected;
+  // Una solicitud cerrada por el sistema (sin revisor) no se muestra como rechazada
+  const isClosed = request?.estado === 'RECHAZADA';
+  const isRejected = isClosed && !!request?.id_revisor;
+  const canRequest = !request || isClosed;
 
   return {
     withoutSection,

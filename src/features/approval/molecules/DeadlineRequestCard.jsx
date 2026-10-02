@@ -34,12 +34,15 @@ const statusConfig = {
   PENDIENTE: {label: 'Pendiente', bg: '#ffd700aa', color: '#7a5900'},
   APROBADA: {label: 'Aprobada', bg: '#d4edda', color: '#155724'},
   RECHAZADA: {label: 'Rechazada', bg: '#ffa7a8aa', color: '#500203'},
+  // Cerrada por el sistema (sin revisor): el viaje se envio a revision antes de responderla
+  CERRADA: {label: 'Cerrada', bg: '#e5e7eb', color: '#374151'},
 };
 
 function DeadlineRequestCard({request, onApprove, onReject, savingAction, showActions}) {
   const [showRejectBox, setShowRejectBox] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const config = statusConfig[request.estado] || statusConfig.PENDIENTE;
+  const closedAutomatically = request.estado === 'RECHAZADA' && !request.id_revisor;
+  const config = statusConfig[closedAutomatically ? 'CERRADA' : request.estado] || statusConfig.PENDIENTE;
   const employee = request.Viaje?.Usuario;
 
   const handleConfirmReject = () => {
@@ -82,9 +85,9 @@ function DeadlineRequestCard({request, onApprove, onReject, savingAction, showAc
         {request.fecha_solicitud && <p className="text-xs font-inter mt-1" style={{color: COLORS.labels}}>{formatDateTime(request.fecha_solicitud)}</p>}
       </div>
       {request.observacion_revisor && (
-        <div className={styles.reasonBox} style={{backgroundColor: COLORS.error}}>
-          <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo del rechazo</p>
-          <p className={styles.reasonText} style={{color: COLORS.secondary}}>{request.observacion_revisor}</p>
+        <div className={styles.reasonBox} style={{backgroundColor: closedAutomatically ? COLORS.backgroundHeader : COLORS.error}}>
+          <p className={styles.reasonLabel} style={{color: closedAutomatically ? COLORS.labels : COLORS.secondary}}>{closedAutomatically ? 'Motivo del cierre' : 'Motivo del rechazo'}</p>
+          <p className={styles.reasonText} style={{color: closedAutomatically ? COLORS.text : COLORS.secondary}}>{request.observacion_revisor}</p>
         </div>
       )}
       <div className={styles.spacer} />

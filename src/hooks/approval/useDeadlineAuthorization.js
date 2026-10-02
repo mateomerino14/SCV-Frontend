@@ -54,10 +54,12 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
 
   const deadlineExpired = fechaFin ? isDeadlineExpired(fechaFin) : true;
   const isPending = request?.estado === 'PENDIENTE';
-  const isRejected = request?.estado === 'RECHAZADA';
+  // Una solicitud cerrada por el sistema (sin revisor) no se muestra como rechazada
+  const isClosed = request?.estado === 'RECHAZADA';
+  const isRejected = isClosed && !!request?.id_revisor;
   const isApprovedActive = request?.estado === 'APROBADA' && !request?.extension_vencida;
   const isApprovedExpired = request?.estado === 'APROBADA' && !!request?.extension_vencida;
-  const canRequest = deadlineExpired && (!request || isRejected || isApprovedExpired);
+  const canRequest = deadlineExpired && (!request || isClosed || isApprovedExpired);
 
   useEffect(() => {
     if (loading || noticeShown || !fechaFin || !tripInProgress) {
