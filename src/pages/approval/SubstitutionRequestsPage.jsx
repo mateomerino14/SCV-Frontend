@@ -13,7 +13,7 @@ import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import useClientPagination from '../../hooks/shared/useClientPagination';
-import {CheckCircle} from 'lucide-react';
+import {CheckCircle, AlertCircle} from 'lucide-react';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -30,7 +30,7 @@ const tabs = [
 
 function SubstitutionRequestsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const {trips, totalPending, loading, savingAction, error, tab, setTab, handleApprove, handleReject, resultMessage, closeResult} = useSubstitutionRequests();
+  const {trips, totalPending, loading, savingAction, error, tab, setTab, handleApprove, handleReject, result, closeResult} = useSubstitutionRequests();
   const pagination = useClientPagination(trips, 12, tab);
 
   return (
@@ -70,8 +70,8 @@ function SubstitutionRequestsPage() {
         )}
         {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
-      <ConfirmDialog isOpen={!!resultMessage} compact icon={CheckCircle} iconColor={COLORS.primary}
-        title="Listo" message={resultMessage} confirmText="Entendido" hideCancel onConfirm={closeResult} />
+      <ConfirmDialog isOpen={!!result} compact icon={result?.success ? CheckCircle : AlertCircle} iconColor={COLORS.primary}
+        title={result?.success ? 'Listo' : 'No se pudo completar'} message={result?.message} confirmText="Entendido" hideCancel onConfirm={closeResult} />
       <Footer />
     </div>
   );
