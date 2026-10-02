@@ -22,7 +22,7 @@ function SessionExpiredModal({isOpen, onClose}) {
         <motion.div className={styles.overlay} variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
-            <ModalIconHeader icon={Clock} backgroundColor={COLORS.backgroundSecondary} color={COLORS.background} />
+            <ModalIconHeader icon={Clock} backgroundColor={COLORS.background} color={COLORS.backgroundSecondary} />
             <h2 className={styles.title} style={{color: COLORS.background}}>Sesión Expirada</h2>
             <span className={styles.label} style={{color: COLORS.backgroundHeader}}>Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</span>
             <div className={styles.buttons}>
