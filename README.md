@@ -156,9 +156,9 @@ Las imágenes propias del sistema están en `src/assets/` y se importan desde el
 
 | Archivo | Uso |
 |---|---|
-| `FOTO_LOGIN.jpg` | Imagen de la pantalla de ingreso (`LOGIN_IMAGE` en `constants/index.js`) |
+| `foto-login.jpg` | Imagen de la pantalla de ingreso (`LOGIN_IMAGE` en `constants/index.js`) |
 
-Para cambiar la imagen de ingreso basta con reemplazar ese archivo manteniendo el nombre exacto (mayúsculas y extensión `.jpg`: en Vercel y en Linux se distinguen). Si el archivo no está en el repositorio, la compilación no falla: se usa la imagen anterior de internet.
+Para cambiar la imagen de ingreso basta con reemplazar ese archivo manteniendo el nombre exacto, en minúsculas y con extensión `.jpg` (en Vercel y en Linux se distinguen). Si el archivo no está en el repositorio, la compilación no falla: se usa la imagen anterior de internet.
 
 ## Sistema de diseño
 
