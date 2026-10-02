@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {LayoutDashboard, Users, Briefcase, Layers, Plane, User, Settings, LogOut, Wallet, History} from 'lucide-react';
+import {LayoutDashboard, Users, Briefcase, Layers, Plane, User, Settings, LogOut, Wallet, History, BellRing} from 'lucide-react';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import useIsTreasurer from '../../hooks/user/useIsTreasurer';
@@ -31,6 +31,7 @@ const administrationSection = [
   {path: routes.adminPositions, label: 'Cargos', icon: Briefcase},
   {path: routes.adminSections, label: 'Secciones', icon: Layers},
   {path: routes.adminAuditLog, label: 'Historial de Accesos', icon: History},
+  {path: routes.adminReminders, label: 'Recordatorios', icon: BellRing},
 ];
 
 const treasurySection = [

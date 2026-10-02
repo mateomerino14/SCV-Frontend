@@ -187,3 +187,42 @@ export const getAudits = async (filters = {}, page = null, limit = null) => {
     return {error: error.response?.data?.error || 'Error al obtener el historial de auditoría'};
   }
 };
+export const getReminderSchedule = async () => {
+  try {
+    const response = await apiClient.get('/admin/reminders');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener la configuración de recordatorios'};
+  }
+};
+
+export const updateReminderSchedule = async (schedule) => {
+  try {
+    const response = await apiClient.put('/admin/reminders', schedule);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al guardar la configuración de recordatorios'};
+  }
+};
+
+export const previewReminderDigest = async () => {
+  try {
+    const response = await apiClient.get('/admin/reminders/preview');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al generar la vista previa'};
+  }
+};
+
+export const sendReminderDigestNow = async () => {
+  try {
+    const response = await apiClient.post('/admin/reminders/send-now');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al enviar el resumen de pendientes'};
+  }
+};

@@ -10,6 +10,7 @@ export const routes = {
   adminPositions: '/dashboard/administrador/cargos',
   adminSections: '/dashboard/administrador/secciones',
   adminAuditLog: '/dashboard/administrador/historial-accesos',
+  adminReminders: '/dashboard/administrador/recordatorios',
   adminProfile: '/dashboard/administrador/perfil',
   adminSettings: '/dashboard/administrador/configuracion',
   supervisorPendingExpenseReviews: '/dashboard/supervisor',

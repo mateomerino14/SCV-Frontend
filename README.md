@@ -220,6 +220,8 @@ Para rechazar se usan solo las observaciones propias de la ronda actual; las de 
 
 Resumen general con indicadores por fase y gráficos; gestión de usuarios con buscador en cargo, sección y jefe directo (`SearchableSelector`); sugerencia de nombres existentes al crear cargos y secciones; historial de accesos (ingresos, salidas y cambios de contraseña) con filtros y exportación a Excel.
 
+**Recordatorios** (`ReminderSettingsPage`, `useReminderSettings`): el administrador activa o desactiva el resumen de pendientes por correo, elige los días de la semana y hasta 4 horas de envío (hora de Bolivia), y ve un resumen en lenguaje natural de cuándo saldrá. El backend aplica los cambios al guardar, sin reiniciarse. Desde la misma pantalla puede ver una vista previa de a quién le llegaría el resumen con los pendientes actuales y enviarlo en el momento.
+
 ### Casquito
 
 Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora y los pendientes. Se puede desactivar en Ajustes de Cuenta y respeta la preferencia de reducir movimiento.
