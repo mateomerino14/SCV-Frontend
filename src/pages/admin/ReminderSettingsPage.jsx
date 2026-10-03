@@ -15,7 +15,7 @@ import {formatDateTime} from '../../utils/dateFormatter';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
-  content: 'flex-1 px-5 py-6 w-full max-w-3xl mx-auto',
+  content: 'flex-1 px-5 py-6 w-full',
   buttonsRow: 'flex gap-2 mb-2',
   primaryBtn: 'flex-1 py-2.5 rounded-xl text-sm font-bold font-nunito cursor-pointer border transition-colors text-center',
   lastUpdate: 'text-xs font-inter text-center mb-6',
