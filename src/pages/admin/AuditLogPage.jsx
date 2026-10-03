@@ -9,6 +9,9 @@ import InlineDropdown from '../../components/ui/InlineDropdown';
 import EmployeeDropdown from '../../components/ui/EmployeeDropdown';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import DateRangeFilter from '../../features/approval/molecules/DateRangeFilter';
+import PeriodPresets from '../../features/admin/molecules/PeriodPresets';
+import {periodOptions} from '../../utils/periodRange';
+import {formatDateShort} from '../../utils/dateFormatter';
 import useSimpleSelector from '../../hooks/shared/useSimpleSelector';
 import useAuditLog from '../../hooks/admin/useAuditLog';
 import useMenu from '../../hooks/shared/useMenu';
@@ -33,6 +36,7 @@ const styles = {
   rowName: 'text-sm font-bold font-inter truncate',
   rowEmail: 'text-xs font-inter truncate',
   rowDate: 'text-xs font-inter text-right shrink-0',
+  periodCaption: 'text-xs font-inter font-bold mb-1',
 };
 
 const typeOptions = [
@@ -58,8 +62,12 @@ function AuditLogPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     audits, total, hasMorePages, loadMore, loadingMore, employees, loading, applyingFilters, exporting, error,
-    filters, setFilters, applyFilters, clearFilters, exportToExcel, typeLabels,
+    filters, setFilters, preset, selectPreset, appliedFilters, applyFilters, clearFilters, exportToExcel, typeLabels,
   } = useAuditLog();
+  let periodCaption = 'Registros de todo el historial';
+  if (appliedFilters.fecha_inicio && appliedFilters.fecha_fin) {
+    periodCaption = `Registros del ${formatDateShort(appliedFilters.fecha_inicio)} al ${formatDateShort(appliedFilters.fecha_fin)}`;
+  }
   const typeDropdown = useSimpleSelector();
   const employeeDropdown = useSimpleSelector();
 
@@ -73,9 +81,15 @@ function AuditLogPage() {
 
         <div className={styles.filtersCard} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>
           <p className={styles.cardTitle} style={{color: COLORS.labels}}>Filtros de Búsqueda</p>
-          <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
-            onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
-            onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
+          <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Periodo</p>
+          <PeriodPresets options={periodOptions} selected={preset} onSelect={selectPreset} disabled={applyingFilters} />
+          {preset === 'rango' && (
+            <div className={styles.fieldGroup}>
+              <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
+                onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
+                onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
+            </div>
+          )}
           <div className={styles.fieldGroup}>
             <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Evento</p>
             <InlineDropdown wrapperRef={typeDropdown.wrapperRef} triggerRef={typeDropdown.triggerRef} open={typeDropdown.open}
@@ -107,6 +121,8 @@ function AuditLogPage() {
           <Download size={16} />
           {exporting ? 'Exportando...' : 'Exportar a Excel'}
         </button>
+
+        <p className={styles.periodCaption} style={{color: COLORS.labels}}>{periodCaption}</p>
 
         {!loading && total > 0 && (
           <ListCount shown={audits.length} total={total} singular="registro" plural="registros" />

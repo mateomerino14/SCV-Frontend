@@ -1,12 +1,11 @@
 import DateRangeFilter from '../../approval/molecules/DateRangeFilter';
+import PeriodPresets from './PeriodPresets';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {COLORS} from '../../../constants';
 
 const styles = {
   card: 'rounded-2xl p-4 shadow-md mb-5',
   title: 'text-xs font-bold font-inter uppercase mb-3',
-  chips: 'grid grid-cols-2 sm:grid-cols-4 gap-2',
-  chip: 'py-2 rounded-xl text-sm font-bold font-nunito cursor-pointer border transition-colors text-center',
   rangeBox: 'mt-3',
   applyBtn: 'w-full mt-3 py-2.5 rounded-xl text-sm font-bold font-nunito cursor-pointer',
   error: 'text-xs font-inter mt-2',
@@ -22,17 +21,7 @@ function DashboardPeriodFilter({options, preset, onSelectPreset, customRange, on
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>
       <p className={styles.title} style={{color: COLORS.labels}}>Periodo</p>
-      <div className={styles.chips}>
-        {options.map((option) => {
-          const selected = preset === option.value;
-          return (
-            <button key={option.value} className={styles.chip} onClick={() => onSelectPreset(option.value)}
-              style={{backgroundColor: selected ? COLORS.primary : 'transparent', borderColor: selected ? COLORS.primary : COLORS.fields, color: selected ? COLORS.background : COLORS.labels}}>
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+      <PeriodPresets options={options} selected={preset} onSelect={onSelectPreset} />
       {preset === 'rango' && (
         <div className={styles.rangeBox}>
           <DateRangeFilter startDate={customRange.fecha_inicio} endDate={customRange.fecha_fin}

@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import DashboardPeriodFilter from './DashboardPeriodFilter';
-import {periodOptions} from '../../../hooks/admin/useAdminDashboard';
+import {periodOptions} from '../../../utils/periodRange';
 
 export default {
   title: 'Admin/Molecules/DashboardPeriodFilter',

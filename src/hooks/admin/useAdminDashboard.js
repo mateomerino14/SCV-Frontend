@@ -1,32 +1,8 @@
 import {useState, useEffect, useRef} from 'react';
 import {getDashboard} from '../../services/admin/adminService';
+import {getPresetRange} from '../../utils/periodRange';
 
 const pollingInterval = 30 * 1000;
-
-export const periodOptions = [
-  {value: 'mes', label: 'Este mes'},
-  {value: 'anio', label: 'Este año'},
-  {value: 'todo', label: 'Todo'},
-  {value: 'rango', label: 'Personalizado'},
-];
-
-const pad = (number) => String(number).padStart(2, '0');
-
-const toDateText = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-
-const getPresetRange = (preset) => {
-  const today = new Date();
-  if (preset === 'mes') {
-    return {
-      fecha_inicio: toDateText(new Date(today.getFullYear(), today.getMonth(), 1)),
-      fecha_fin: toDateText(new Date(today.getFullYear(), today.getMonth() + 1, 0)),
-    };
-  }
-  if (preset === 'anio') {
-    return {fecha_inicio: `${today.getFullYear()}-01-01`, fecha_fin: `${today.getFullYear()}-12-31`};
-  }
-  return {};
-};
 
 function useAdminDashboard() {
   const [data, setData] = useState(null);
