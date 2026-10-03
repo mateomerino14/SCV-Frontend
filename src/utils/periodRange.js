@@ -10,7 +10,6 @@ const pad = (number) => String(number).padStart(2, '0');
 // Fecha local en formato YYYY-MM-DD (sin pasar por UTC)
 export const toDateText = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
-// Rango de fechas del periodo elegido (mes o año actual); vacio para todo el historial
 export const getPresetRange = (preset) => {
   const today = new Date();
   if (preset === 'mes') {

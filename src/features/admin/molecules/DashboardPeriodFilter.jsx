@@ -12,7 +12,6 @@ const styles = {
   caption: 'text-xs font-inter mt-3',
 };
 
-// Filtro de periodo del resumen general, por fecha de inicio del viaje
 function DashboardPeriodFilter({options, preset, onSelectPreset, customRange, onCustomRangeChange, onApply, rangeError, appliedPeriod}) {
   let caption = 'Se muestran los viajes de todo el historial.';
   if (appliedPeriod?.fecha_inicio && appliedPeriod?.fecha_fin) {
