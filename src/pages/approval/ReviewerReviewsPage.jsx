@@ -36,7 +36,6 @@ function ReviewerReviewsPage() {
     trips, totalMyPending, employees, sections, loading, applyingFilters, error, filters, setFilters,
     tab, setTab, applyFilters, clearFilters,
   } = useReviewerReviews();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Rendiciones aprobadas por el supervisor: haz la revisión final para aprobarlas o rechazarlas.';
   if (tab === 'APROBADOS') {

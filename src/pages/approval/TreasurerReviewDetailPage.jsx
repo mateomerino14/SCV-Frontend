@@ -108,7 +108,6 @@ function TreasurerReviewDetailPage() {
   if (actionCompleted === 'EN_CURSO') {
     successMessage = 'Fondo aprobado. Confirmación enviada al empleado.';
   }
-  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
   const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (

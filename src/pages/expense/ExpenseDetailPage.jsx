@@ -67,7 +67,6 @@ function ExpenseDetailPage() {
   const typeInfo = typeConfig[expense.tipo] || typeConfig.S;
   const hasInvoice = !!expense.Factura;
   const hasImage = expense.Imagen && expense.Imagen.url_archivo;
-  // Taxi y otras categorias pueden no exigir comprobante
   const receiptRequired = expense.Categoria_Gasto?.requiere_comprobante !== false;
   const isInternational = !!expense.es_gasto_internacional;
   const currency = isInternational ? 'USD' : 'Bs';

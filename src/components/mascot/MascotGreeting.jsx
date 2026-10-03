@@ -17,14 +17,11 @@ const styles = {
 const appearDelay = 1500;
 const visibleTime = 9000;
 
-// Casquito entra por la esquina inferior derecha, dice el mensaje de la pantalla y se va.
-// Aparece una sola vez por pantalla y sesion, solo si el mensaje ya esta listo, si el
-// usuario no lo desactivo en Ajustes de Cuenta y si no pidio reducir el movimiento.
+// Casquito saluda una vez por pantalla y sesion, salvo que se desactive o se pida menos movimiento
 function MascotGreeting({pageKey, message}) {
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
-  // Mensaje con el que aparecio; si mientras esta visible el mensaje se actualiza (por ejemplo,
-  // cambia la cantidad de pendientes) se muestra el nuevo, y si queda vacio se conserva este
+  // Si el mensaje cambia mientras esta visible se muestra el nuevo; si queda vacio se conserva
   const [shownMessage, setShownMessage] = useState('');
   const bubbleMessage = message || shownMessage;
 

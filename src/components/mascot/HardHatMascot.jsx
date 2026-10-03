@@ -1,8 +1,7 @@
 import {motion} from 'framer-motion';
 import {COLORS} from '../../constants';
 
-// Mascota del sistema: un casco de seguridad con carita, en los colores de la empresa.
-// Dibujo original en SVG (liviano, sin imagenes externas).
+// Mascota del sistema: casco de seguridad con carita, dibujado en SVG
 function HardHatMascot({size = 88, waving = true}) {
   return (
     <svg width={size} height={size} viewBox="0 0 120 120" role="img" aria-label="Casquito, la mascota del sistema">

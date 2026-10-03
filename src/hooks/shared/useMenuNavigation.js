@@ -20,8 +20,7 @@ function useMenuNavigation(onClose, exactMatchPaths = []) {
     onClose();
   };
 
-  // Cierra la sesion en el servidor (registra la SALIDA y borra la cookie de sesion)
-  // antes de volver al inicio de sesion
+  // Cierra la sesion en el servidor antes de volver al ingreso
   const handleLogout = async () => {
     await logout();
     navigate(routes.login);

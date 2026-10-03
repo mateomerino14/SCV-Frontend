@@ -24,7 +24,6 @@ function useApproverAlcoholReviews() {
     if (showLoading) {
       setLoading(true);
     }
-    // El aprobador es unico: todas las rendiciones con alcohol le llegan asignadas
     const myTripsData = await getMyAlcoholReviews(currentFilters);
     if (showLoading) {
       setLoading(false);
@@ -66,7 +65,6 @@ function useApproverAlcoholReviews() {
     load(emptyFilters, true);
   };
 
-  // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
   const isPendingForMe = (trip) => trip.estado === 'EN_REVISION_APROBADOR' && trip.asignado_a_mi !== false;
   const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip));
   const rejectedTrips = myTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO');

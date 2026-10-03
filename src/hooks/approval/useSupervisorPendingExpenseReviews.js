@@ -17,7 +17,6 @@ function useSupervisorPendingExpenseReviews() {
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('TODOS');
 
-  // Ultimos filtros aplicados: la actualizacion automatica los respeta
   const appliedFiltersRef = useRef(filters);
 
   const load = async (currentFilters = appliedFiltersRef.current) => {
@@ -70,7 +69,6 @@ function useSupervisorPendingExpenseReviews() {
     const data = await takeExpenseReview(tripId);
     setTaking(null);
     if (data.error) {
-      // Se recarga primero y luego se muestra el error, para que la recarga no lo borre
       await load();
       if (data.error.includes('ya fue tomado') || data.error.includes('siendo revisado')) {
         setAlreadyTaken(true);

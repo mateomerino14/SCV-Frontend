@@ -36,8 +36,7 @@ function SettingsPage() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  // Cierra la sesion en el servidor (registra la SALIDA y borra la cookie de sesion)
-  // antes de volver al inicio de sesion
+  // Cierra la sesion en el servidor antes de volver al ingreso
   const handleLogout = async () => {
     await logout();
     navigate(routes.login);

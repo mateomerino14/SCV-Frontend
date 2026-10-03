@@ -5,8 +5,7 @@ const styles = {
   item: 'px-3 py-2 text-sm font-inter cursor-pointer',
 };
 
-// Muestra nombres ya registrados que coinciden con lo escrito, para no crear duplicados.
-// suggestions: [{id, nombre}]
+// Muestra nombres ya registrados que coinciden con lo escrito, para no crear duplicados
 function ExistingNameSuggestions({suggestions, onSelect}) {
   return (
     <div className={styles.wrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>

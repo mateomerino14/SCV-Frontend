@@ -188,8 +188,7 @@ function useTripExcelExport() {
   const exportToExcel = async (trip, expenses, dayJustifications = []) => {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('RENDICION');
-    // En viajes nacionales no hay tramos de cambio ni montos en USD: la planilla
-    // se arma solo en bolivianos y sin la columna de tramos
+    // En viajes nacionales la planilla va solo en bolivianos, sin tramos
     const isInternationalTrip = trip.tipo === 'Internacional';
     const col = {
       number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8,
@@ -208,7 +207,6 @@ function useTripExcelExport() {
     }
     columnWidths.push(14, 9, 9, 9, 9, 16);
     sheet.columns = columnWidths.map((width) => ({width}));
-    // Impresion: hoja horizontal, todo el ancho en una pagina
     sheet.pageSetup = {orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: {left: 0.3, right: 0.3, top: 0.4, bottom: 0.4, header: 0.2, footer: 0.2}};
     const logoStartCol = 0;
     const infoStartCol = 4;
@@ -501,7 +499,6 @@ function useTripExcelExport() {
     applyOuterBorder(sheet, balanceHeaderRow, currentRow - 1, 1, isInternationalTrip ? balanceUsdCol : balanceBsCol);
     currentRow += 1;
     if (dayJustifications.length > 0) {
-      // Justificaciones de excesos: tabla FECHA / JUSTIFICACION con el mismo estilo de la planilla
       const justificationDateEnd = 2;
       const justificationTextStart = 3;
       const justificationHeaderRow = currentRow;

@@ -76,14 +76,12 @@ function useSupervisorTripHistory() {
     await load();
   };
 
-  // Pendiente solo si el viaje esta asignado a este supervisor; si ya lo aprobo antes y
-  // ahora lo revisa otro, sigue apareciendo en Aprobados
+  // Pendiente solo si esta asignado a este supervisor; si ya lo aprobo sigue en Aprobados
   const isPendingForMe = (trip) => trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false;
   const filteredTrips = trips.filter((trip) => {
     if (statusFilter === 'EN_REVISION_VIAJE') {
       return isPendingForMe(trip);
     }
-    // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
     if (statusFilter === 'APROBADO_VIAJE') {
       return trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip);
     }

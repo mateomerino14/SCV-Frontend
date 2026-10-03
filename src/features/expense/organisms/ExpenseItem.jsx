@@ -37,7 +37,6 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
   const expenseDate = expense.Factura?.fecha_emision || expense.fecha_gasto;
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;
-  // Cada tramo registrado es una conversion de una moneda de origen a USD
   const conversionsCount = isInternational ? (expense.Gasto_Tramo_Moneda || []).length : 0;
   const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
   const expenseObservations = observations.filter((observation) => observation.id_gasto === expense.id_gasto);

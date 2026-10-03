@@ -15,7 +15,6 @@ function useReviewerReviews() {
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [tab, setTab] = useState('MIS_PENDIENTES');
-  // Ultimos filtros aplicados: la actualizacion automatica los respeta
   const appliedFiltersRef = useRef(filters);
 
   const load = useCallback(async (currentFilters, showLoading = true) => {
@@ -24,7 +23,6 @@ function useReviewerReviews() {
     if (showLoading) {
       setLoading(true);
     }
-    // El revisor es unico: todas las rendiciones de su etapa le llegan asignadas
     const historyData = await getMyReviews(activeFilters);
     if (showLoading) {
       setLoading(false);
@@ -38,7 +36,6 @@ function useReviewerReviews() {
     setError('');
     const isPendingForMe = (trip) => trip.estado === 'APROBADO_SUPERVISOR' && trip.asignado_a_mi !== false;
     setMyPending((historyData || []).filter(isPendingForMe));
-    // Aprobados y rechazados salen del historial de revision del revisor
     setApproved((historyData || []).filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip)));
     setRejected((historyData || []).filter((trip) => trip.resultado_revision === 'RECHAZADO'));
   }, [filters]);

@@ -42,8 +42,7 @@ function useTripHistory() {
     load(1, filter, true);
   }, [filter]);
 
-  // Cada 30 segundos se recargan los viajes ya mostrados (todas las paginas cargadas), para
-  // ver los cambios de estado sin perder el "Cargar más"
+  // Cada 30 segundos recarga los viajes ya mostrados sin perder el Cargar mas
   const pollingStateRef = useRef({page, filter});
   useEffect(() => {
     pollingStateRef.current = {page, filter};

@@ -95,7 +95,6 @@ function ApproverTripReviewDetailPage() {
   if (actionCompleted === 'EN_REVISION_TESORERO') {
     successMessage = 'Viaje aprobado. Enviado a revisión de tesorería.';
   }
-  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
   const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

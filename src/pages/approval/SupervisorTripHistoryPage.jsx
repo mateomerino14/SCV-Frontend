@@ -36,7 +36,6 @@ function SupervisorTripHistoryPage() {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorTripHistory();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, statusFilter);
   let subtitle = 'Viajes asignados a ti: revísalos y apruébalos, o recházalos con observaciones.';
   if (statusFilter === 'APROBADO_VIAJE') {

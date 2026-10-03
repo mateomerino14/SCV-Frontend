@@ -9,7 +9,6 @@ function useDeadlineAuthorizationRequests() {
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
-  // Resultado de aprobar o rechazar, en una ventana emergente: {success, message}
   const [result, setResult] = useState(null);
   const [tab, setTab] = useState('PENDIENTES');
 
@@ -54,7 +53,6 @@ function useDeadlineAuthorizationRequests() {
     const data = await approveRequest(requestId);
     setSavingAction(false);
     if (data.error) {
-      // La solicitud pudo haberse cerrado o atendido mientras tanto: se actualiza la lista
       await load(false);
       setResult({success: false, message: data.error});
       return false;
@@ -69,7 +67,6 @@ function useDeadlineAuthorizationRequests() {
     const data = await rejectRequest(requestId, observation);
     setSavingAction(false);
     if (data.error) {
-      // La solicitud pudo haberse cerrado o atendido mientras tanto: se actualiza la lista
       await load(false);
       setResult({success: false, message: data.error});
       return false;

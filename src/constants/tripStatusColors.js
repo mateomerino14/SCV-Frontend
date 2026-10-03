@@ -1,6 +1,4 @@
-// Paleta unica de colores por estado de viaje (ver documentacion, "Colores de Estado").
-// Todas las etiquetas de estado y los mensajes de confirmacion/rechazo usan este mapa,
-// asi un mismo estado se ve igual en todas las pantallas y roles.
+// Colores por estado de viaje, iguales en todas las pantallas y roles
 const pendingReview = {bg: '#e8d5ff', color: '#5b00a0'};
 const waitingApprover = {bg: '#ffd700aa', color: '#7a5900'};
 const waitingFunds = {bg: '#ffd8a8aa', color: '#8a4b00'};

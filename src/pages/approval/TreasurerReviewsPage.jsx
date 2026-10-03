@@ -36,7 +36,6 @@ function TreasurerReviewsPage() {
     trips, totalPending, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
   } = useTreasurerReviews();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Viajes aprobados que esperan fondos: revisa o ajusta los montos y apruébalos.';
   if (tab === 'APROBADOS') {

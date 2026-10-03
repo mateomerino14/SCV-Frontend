@@ -36,7 +36,6 @@ function ApproverReviewsPage() {
     trips, totalMyPending, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
   } = useApproverReviews();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Viajes aprobados por el supervisor: al aprobarlos se genera el memorándum y pasan a tesorería.';
   if (tab === 'APROBADOS') {

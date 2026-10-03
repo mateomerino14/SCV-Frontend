@@ -18,8 +18,7 @@ function useEmployeeDashboard() {
 
   const loadDashboard = async () => {
     const data = await getDashboard();
-    // Si falla, se conservan los datos anteriores en vez de mostrar el panel vacio
-    // Mientras se exige el cambio de contraseña la ventana de cambio ya lo indica: no se avisa error
+    // Si falla se conservan los datos; con cambio de contrasena pendiente no se avisa error
     if (data.error && data.error.includes('cambiar tu contraseña')) {
       return;
     }

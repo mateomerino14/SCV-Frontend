@@ -31,7 +31,6 @@ function SupervisorPendingTripsPage() {
     trips, employees, sections, loading, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, applyingFilters, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingTrips();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, '');
 
   const mascotMessage = loading ? null : (trips.length > 0 ? `${greetingFor(user?.nombre)} Hay ${trips.length} ${trips.length === 1 ? 'viaje sin asignar esperando' : 'viajes sin asignar esperando'} que alguien lo${trips.length === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay viajes sin asignar por ahora.`);

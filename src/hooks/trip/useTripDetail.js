@@ -9,7 +9,6 @@ function useTripDetail(tripId) {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [deletingExpense, setDeletingExpense] = useState(false);
   const [error, setError] = useState('');
-  // Avisos de acciones (finalizar, eliminar) que se muestran en una ventana emergente
   const [alertMessage, setAlertMessage] = useState('');
   const [exceededDays, setExceededDays] = useState([]);
   const [dailyBreakdown, setDailyBreakdown] = useState([]);
@@ -30,8 +29,7 @@ function useTripDetail(tripId) {
   const [totalExceeds, setTotalExceeds] = useState(false);
   const [totalExceedsUsd, setTotalExceedsUsd] = useState(false);
 
-  // Aplica la respuesta del servidor al estado. Los totales, el desglose diario y los dias
-  // excedidos se calculan en el backend, por eso se vuelve a pedir tras eliminar un gasto.
+  // Aplica la respuesta del servidor; los totales se calculan en el backend
   const applyDetail = useCallback((data) => {
     if (data.error) {
       const isSessionError = data.error.includes('Token inválido') || data.error.includes('token no proporcionado') || data.error.includes('suspendida');
@@ -62,7 +60,6 @@ function useTripDetail(tripId) {
           justificationsByDay[key] = comment.descripcion;
         }
       });
-      // Conserva lo que el empleado ya escribio y todavia no envio
       setDayJustifications((prev) => ({...justificationsByDay, ...prev}));
       setObservations(obs);
     }

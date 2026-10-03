@@ -7,8 +7,7 @@ import {getToken, setToken} from '../../services/shared/tokenStore';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-// Motivo por el que el usuario debe cambiar su contrasena segun su token:
-// 'TEMPORAL' (cuenta nueva), 'RECUPERACION' (ingreso con codigo), 'VENCIDA' (90 dias) o null
+// Motivo del cambio de contrasena segun el token: TEMPORAL, RECUPERACION, VENCIDA o null
 function readPasswordChangeReason() {
   const token = getToken();
   if (!token) {
@@ -33,8 +32,7 @@ function usePasswordExpiredCheck() {
 
   useEffect(() => {
     const syncWithToken = () => setReason(readPasswordChangeReason());
-    // El servidor rechazo una accion porque falta cambiar la contrasena y el token aun no lo
-    // indicaba: se renueva la sesion para conocer el motivo real (temporal o vencida)
+    // El servidor exige el cambio y el token no lo indicaba: se renueva la sesion para saber el motivo
     const handleRequired = async () => {
       if (readPasswordChangeReason()) {
         setReason(readPasswordChangeReason());
@@ -72,13 +70,11 @@ function usePasswordExpiredCheck() {
     if (data.token) {
       setToken(data.token);
     }
-    // La pantalla de fondo pudo quedar sin datos mientras el servidor pedia el cambio:
-    // se recarga para mostrarla completa
+    // Recarga la pantalla de fondo, que pudo quedar sin datos
     window.location.reload();
   };
 
-  // Salida para quien no recuerda su contrasena: cierra la sesion y vuelve al ingreso, donde
-  // puede usar "¿Olvidaste tu contraseña?"
+  // Cierra la sesion para quien no recuerda su contrasena
   const handleLogout = async () => {
     await logout();
     window.location.href = '/';

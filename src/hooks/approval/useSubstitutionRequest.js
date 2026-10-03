@@ -11,7 +11,6 @@ function useSubstitutionRequest(tripId) {
   const [showModal, setShowModal] = useState(false);
   const [withoutSection, setWithoutSection] = useState(false);
 
-  // silent: actualizacion de fondo (sondeo), sin indicador de carga
   const load = async (silent = false) => {
     if (!tripId) {
       return;
@@ -33,8 +32,7 @@ function useSubstitutionRequest(tripId) {
     load();
   }, [tripId]);
 
-  // Mientras la solicitud espera respuesta del revisor, se consulta cada 30 segundos para
-  // mostrar la aprobacion o el rechazo sin recargar la pagina
+  // Mientras espera respuesta del revisor se consulta cada 30 segundos
   const waitingResponse = request?.estado === 'PENDIENTE';
   useEffect(() => {
     if (!waitingResponse) {

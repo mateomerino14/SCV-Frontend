@@ -121,7 +121,6 @@ function ReviewerReviewDetailPage() {
   if (actionCompleted === 'APROBADO_FINAL') {
     successMessage = 'Rendición aprobada definitivamente';
   }
-  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
   const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   const goToExpenseDetail = (expenseId) => {

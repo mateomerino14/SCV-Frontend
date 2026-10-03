@@ -36,7 +36,6 @@ function ApproverAlcoholReviewsPage() {
     trips, totalMyPending, employees, sections, loading, applyingFilters, error,
     tab, setTab, filters, setFilters, applyFilters, clearFilters,
   } = useApproverAlcoholReviews();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Rendiciones con gastos de alcohol que necesitan tu revisión antes de pasar a la revisión final.';
   if (tab === 'APROBADOS') {

@@ -32,7 +32,6 @@ function SupervisorPendingExpenseReviewsPage() {
     trips, total, employees, sections, loading, applyingFilters, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, statusFilter, setStatusFilter, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingExpenseReviews();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, statusFilter);
 
   const mascotMessage = loading ? null : (total > 0 ? `${greetingFor(user?.nombre)} Hay ${total} ${total === 1 ? 'rendición sin asignar esperando' : 'rendiciones sin asignar esperando'} que alguien la${total === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay rendiciones sin asignar por ahora.`);

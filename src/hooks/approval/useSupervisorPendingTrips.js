@@ -67,7 +67,6 @@ function useSupervisorPendingTrips() {
     const data = await takeTripReview(tripId);
     setTaking(null);
     if (data.error) {
-      // Se recarga primero y luego se muestra el error, para que la recarga no lo borre
       await load();
       if (data.error.includes('ya fue tomado') || data.error.includes('siendo revisado')) {
         setAlreadyTaken(true);

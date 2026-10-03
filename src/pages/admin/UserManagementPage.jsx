@@ -69,7 +69,6 @@ function UserManagementPage() {
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
     allUsers,
   } = useUserManagement();
-  // Muestra la lista de a 15 con "Cargar más"; al buscar o filtrar vuelve al inicio
   const pagination = useClientPagination(users, 15, `${search}|${roleFilter}|${sectionFilter}`);
 
   return (

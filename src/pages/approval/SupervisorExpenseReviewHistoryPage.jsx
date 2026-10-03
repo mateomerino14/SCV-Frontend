@@ -31,7 +31,6 @@ function SupervisorExpenseReviewHistoryPage() {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorExpenseReviewHistory();
-  // Lo mas reciente primero, de 12 en 12, para que el historial no crezca sin fin
   const pagination = useClientPagination(trips, 12, statusFilter);
   let subtitle = 'Rendiciones asignadas a ti: revisa los gastos, deja observaciones y apruébalas o recházalas.';
   if (statusFilter === 'APROBADO_SUPERVISOR') {

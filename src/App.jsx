@@ -73,8 +73,7 @@ function ProtectedRoute({allowedRoles, children}) {
   return children;
 }
 
-// Pantallas de tesoreria: solo para quien tiene el cargo de tesorero (cualquier rol);
-// los demas vuelven a su inicio
+// Pantallas de tesoreria: solo para quien tiene el cargo de tesorero
 function TreasurerRoute({children}) {
   const {isTreasurer, loading} = useIsTreasurer();
   if (loading) {

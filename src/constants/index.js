@@ -1,11 +1,9 @@
-// Imagen de la pantalla de ingreso: archivo local src/assets/foto-login.jpg, incluido en la
-// compilacion (no depende de internet). Se carga con glob para que, si el archivo aun no
-// esta en el repositorio, la compilacion no falle y se use la imagen anterior.
+// Imagen de ingreso local (src/assets/foto-login.jpg); si no existe se usa la anterior
 const localLoginImage = Object.values(import.meta.glob('../assets/foto-login.jpg', {eager: true, import: 'default'}))[0];
 const fallbackLoginImage = "https://media.licdn.com/dms/image/v2/D4E22AQE0FhfcXcva3w/feedshare-shrink_800/feedshare-shrink_800/0/1729181878955?e=2147483647&v=beta&t=8I4JqWT7e4UXjTX56rdge-w7HBCEqQL6iYiFCenBJiY";
 
 export const LOGIN_IMAGE = localLoginImage || fallbackLoginImage;
-export const MAXAM_LOGO = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Maxam_logo.jpg"
+export const MAXAM_LOGO = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Maxam_logo.jpg";
 
 // Paleta de colores principales
 export const COLORS = {
@@ -33,11 +31,6 @@ export const COLORS = {
   backgroundOnColorBorder: 'rgba(255,255,255,0.4)',
   backgroundOnColorFill: 'rgba(255,255,255,0.12)',
   backgroundOnColorText: 'rgba(255,255,255,0.85)',
-}
+};
 
-// Referencias de tamaño:
-// sm  -> 640px  (pantallas pequenas)
-// md  -> 768px  (tablets)
-// lg  -> 1024px (laptops)
-// xl  -> 1280px (desktops)
-// 2xl -> 1536px (pantallas grandes)
+// Tamaños de pantalla: sm 640px, md 768px, lg 1024px, xl 1280px, 2xl 1536px

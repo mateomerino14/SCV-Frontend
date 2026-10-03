@@ -7,8 +7,7 @@ const styles = {
   button: 'w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border mb-4',
 };
 
-// "Devolver Revisión" de las pantallas de detalle: pide confirmacion y queda bloqueado
-// mientras se procesa, igual que el boton Devolver de las listas
+// Boton Devolver Revision: pide confirmacion y se bloquea mientras se procesa
 function ReturnReviewButton({onReturn}) {
   const [confirming, setConfirming] = useState(false);
   const [returning, setReturning] = useState(false);

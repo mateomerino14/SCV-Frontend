@@ -6,8 +6,7 @@ export function getToken() {
   return currentToken;
 }
 
-// Avisa a la app que cambio la sesion (ingreso, renovacion) para que revise, por ejemplo,
-// si hay un cambio de contrasena pendiente
+// Avisa a la app que cambio la sesion (ingreso o renovacion)
 export function setToken(token) {
   currentToken = token;
   window.dispatchEvent(new CustomEvent('token-changed'));

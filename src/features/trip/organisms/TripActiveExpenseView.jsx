@@ -38,7 +38,6 @@ const styles = {
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2 mb-2',
   statusBadge: 'text-sm font-bold font-inter text-center py-3 px-4 rounded-xl mb-4',
   alertBox: 'rounded-xl px-4 py-3 mb-4 text-center',
-  // Avisos que van debajo de los botones de accion: separados del boton anterior
   noticeBox: 'rounded-xl px-4 py-3 mt-4 mb-2 text-center',
   requestBtn: 'w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mt-3 flex items-center justify-center gap-2',
 };

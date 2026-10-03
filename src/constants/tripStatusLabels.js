@@ -18,8 +18,7 @@ export function getStatusLabel(state) {
   return statusLabels[state] || state;
 }
 
-// Etiqueta completa (nombre y colores oficiales) de un estado; sirve de respaldo cuando un
-// mapa de una pantalla no incluye ese estado
+// Etiqueta completa de un estado, de respaldo cuando el mapa de una pantalla no lo incluye
 export function getStatusBadge(state) {
   return {label: getStatusLabel(state), ...getStatusColors(state)};
 }

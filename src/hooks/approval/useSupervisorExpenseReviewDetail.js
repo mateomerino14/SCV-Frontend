@@ -103,7 +103,6 @@ function useSupervisorExpenseReviewDetail(tripId) {
   const currentCycle = () => data?.viaje?.ciclo_revision || 1;
 
   const handleRequestReject = () => {
-    // Solo cuentan las observaciones propias de esta revision (como exige el servidor)
     const currentUserId = getCurrentUserId();
     const savedObservations = (data?.comentarios || []).filter((comment) =>
       comment.tipo === 'OBSERVACION' &&

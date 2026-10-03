@@ -70,7 +70,6 @@ function useReviewerReviewDetail(tripId) {
   };
 
   const handleRequestReject = () => {
-    // Solo cuentan las observaciones propias de esta revision (como exige el servidor)
     const currentUserId = getCurrentUserId();
     const savedObservations = (data?.comentarios || []).filter((comment) =>
       comment.tipo === 'OBSERVACION' &&

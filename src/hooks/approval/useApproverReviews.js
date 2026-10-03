@@ -24,7 +24,6 @@ function useApproverReviews() {
     if (showLoading) {
       setLoading(true);
     }
-    // El aprobador es unico: todos los viajes de su etapa le llegan asignados
     const myTripsData = await getMyTrips(currentFilters);
     if (showLoading) {
       setLoading(false);
@@ -66,7 +65,6 @@ function useApproverReviews() {
     load(emptyFilters, true);
   };
 
-  // Aprobados y rechazados salen del historial de revision: solo lo que reviso este usuario
   const isPendingForMe = (trip) => trip.estado === 'APROBADO_VIAJE' && trip.asignado_a_mi !== false;
   const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip));
   const rejectedTrips = myTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO');

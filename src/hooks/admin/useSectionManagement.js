@@ -155,8 +155,7 @@ function useSectionManagement() {
     await load();
   };
 
-  // Secciones ya registradas que coinciden con el nombre escrito (sin tildes ni mayusculas),
-  // para avisar antes de crear una repetida
+  // Secciones con el mismo nombre (sin tildes ni mayusculas), para avisar antes de repetir
   const normalizedName = normalizeSearchText(formData.nombre.trim());
   const suggestions = normalizedName.length >= 2
     ? allSections.filter((section) => normalizeSearchText(section.nombre).includes(normalizedName)

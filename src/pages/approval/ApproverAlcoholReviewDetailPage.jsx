@@ -128,7 +128,6 @@ function ApproverAlcoholReviewDetailPage() {
   if (actionCompleted && actionCompleted !== 'RECHAZADO') {
     successMessage = 'Rendición aprobada correctamente';
   }
-  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
   const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (

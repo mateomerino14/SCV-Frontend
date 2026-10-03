@@ -45,7 +45,6 @@ function SectionManagementPage() {
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive, suggestions,
   } = useSectionManagement();
-  // Muestra la lista de a 15 con "Cargar más"; al buscar o filtrar vuelve al inicio
   const pagination = useClientPagination(sections, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

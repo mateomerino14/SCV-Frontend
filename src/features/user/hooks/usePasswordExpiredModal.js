@@ -3,8 +3,7 @@ import {useState, useEffect} from 'react';
 // Mismo minimo que exige el servidor
 const minLength = 8;
 
-// requiresCurrentPassword: false cuando la contrasena es temporal (no la eligio el usuario
-// o la olvido); en ese caso solo se piden la nueva y su confirmacion
+// Con una contrasena temporal solo se piden la nueva y su confirmacion
 function usePasswordExpiredModal(externalError, requiresCurrentPassword = true) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

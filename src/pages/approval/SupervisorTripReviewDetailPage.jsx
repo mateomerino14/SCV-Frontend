@@ -103,7 +103,6 @@ function SupervisorTripReviewDetailPage() {
   if (actionCompleted === 'APROBADO_VIAJE') {
     successMessage = 'Viaje aprobado correctamente';
   }
-  // El aviso usa el mismo color que la etiqueta del estado en que queda el viaje
   const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (

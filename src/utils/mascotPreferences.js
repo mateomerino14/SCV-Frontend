@@ -1,6 +1,4 @@
-// Preferencias de la mascota guardadas en el navegador. Todo va en try/catch porque el
-// almacenamiento puede no estar disponible (modo privado, bloqueado): en ese caso la
-// mascota simplemente se muestra con los valores por defecto.
+// Preferencias de la mascota en el navegador; si no hay almacenamiento se usan las de defecto
 const enabledKey = 'scv_mascota_activa';
 const seenPrefix = 'scv_mascota_vista_';
 
@@ -62,8 +60,7 @@ export function pendingMessage(name, count, singular, plural) {
   return `${greetingFor(name)} No tienes pendientes aquí por ahora. ¡Todo al día!`;
 }
 
-// Olvida que pantallas ya saludo, para que el proximo inicio de sesion salude de nuevo
-// (se llama al cerrar sesion, aunque se vuelva a entrar en la misma pestana)
+// Olvida que pantallas ya saludo, para saludar de nuevo en el proximo ingreso
 export function resetMascotSeen() {
   try {
     Object.keys(sessionStorage)

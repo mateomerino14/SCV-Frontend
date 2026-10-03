@@ -39,8 +39,7 @@ const texts = {
   },
 };
 
-// reason: 'TEMPORAL' (cuenta nueva), 'RECUPERACION' (ingreso con codigo) o 'VENCIDA' (90 dias).
-// Solo con 'VENCIDA' se pide la contrasena actual
+// reason: TEMPORAL, RECUPERACION o VENCIDA; solo con VENCIDA se pide la contrasena actual
 function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, loading, error: externalError}) {
   const isTemporary = reason === 'TEMPORAL' || reason === 'RECUPERACION';
   const text = texts[reason] || texts.VENCIDA;

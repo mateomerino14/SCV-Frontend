@@ -24,10 +24,8 @@ function useAuditLog() {
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState('');
   const [filters, setFilters] = useState(emptyFilters);
-  // Filtros con los que se cargo la lista: "Cargar más" y la exportacion usan estos
   const appliedFiltersRef = useRef(emptyFilters);
 
-  // Carga una pagina; replace reemplaza la lista (filtros nuevos) o la agrega al final
   const load = async (currentFilters, currentPage, replace) => {
     const data = await getAudits(currentFilters, currentPage, pageSize);
     if (data.error) {
@@ -81,7 +79,6 @@ function useAuditLog() {
     setLoadingMore(false);
   };
 
-  // Exporta todos los registros que cumplen los filtros aplicados, no solo la pagina visible
   const exportToExcel = async () => {
     setExporting(true);
     const allAudits = await getAudits(appliedFiltersRef.current);
