@@ -27,7 +27,7 @@ VITE_API_URL=http://localhost:5000
 npm run dev               # servidor de desarrollo
 npm run build              # compilación para producción
 npm run preview             # previsualización de la compilación
-npm run storybook           # documentación interactiva de los componentes de ui/
+npm run storybook           # documentación interactiva de los componentes
 npm run build-storybook     # sitio estático de Storybook
 ```
 
@@ -45,7 +45,7 @@ npm run build-storybook     # sitio estático de Storybook
 | ExcelJS + FileSaver | Generación y descarga de la planilla en Excel |
 | Lucide React | Iconografía |
 | jwt-decode | Lectura del rol desde el token |
-| Storybook | Documentación interactiva de `components/ui/` |
+| Storybook | Documentación interactiva de `components/ui/` y de los átomos y moléculas de `features/` |
 
 ## Arquitectura
 
@@ -228,7 +228,7 @@ Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora 
 
 ## Documentación de componentes
 
-Los componentes de `components/ui/` (elementos genéricos y transversales, no los de `features/`) están documentados con Storybook. Cada historia describe el propósito del componente y sus variantes principales; los componentes con estado interno (dropdowns, diálogos) incluyen un wrapper interactivo para probarlos en vivo.
+Los componentes de `components/ui/`, todos los átomos de `features/` y las moléculas reutilizables están documentados con Storybook (cada historia junto a su componente). Cada historia describe el propósito del componente y sus variantes principales; los componentes con estado interno (dropdowns, diálogos) incluyen un wrapper interactivo para probarlos en vivo.
 
 ```bash
 npm run storybook
