@@ -218,7 +218,7 @@ Para rechazar se usan solo las observaciones propias de la ronda actual; las de 
 
 ### Administración
 
-Resumen general con indicadores por fase y gráficos; gestión de usuarios con buscador en cargo, sección y jefe directo (`SearchableSelector`); sugerencia de nombres existentes al crear cargos y secciones; historial de accesos (ingresos, salidas y cambios de contraseña) con filtros y exportación a Excel.
+Resumen general con indicadores por fase y gráficos, con filtro de periodo (este mes, este año, todo o un rango, por fecha de inicio del viaje); el gráfico por sección cuenta solo los viajes con fondos entregados por tesorería; gestión de usuarios con buscador en cargo, sección y jefe directo (`SearchableSelector`); sugerencia de nombres existentes al crear cargos y secciones; historial de accesos (ingresos, salidas y cambios de contraseña) con filtros y exportación a Excel.
 
 **Recordatorios** (`ReminderSettingsPage`, `useReminderSettings`): el administrador activa o desactiva el resumen de pendientes por correo, elige los días de la semana y hasta 4 horas de envío (hora de Bolivia), y ve un resumen en lenguaje natural de cuándo saldrá. El backend aplica los cambios al guardar, sin reiniciarse. Desde la misma pantalla puede ver una vista previa de a quién le llegaría el resumen con los pendientes actuales y enviarlo en el momento.
 

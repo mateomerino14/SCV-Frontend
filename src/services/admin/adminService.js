@@ -150,9 +150,9 @@ export const activateSection = async (id) => {
   }
 };
 
-export const getDashboard = async () => {
+export const getDashboard = async (period = {}) => {
   try {
-    const response = await apiClient.get('/admin/dashboard');
+    const response = await apiClient.get('/admin/dashboard', {params: period});
     return response.data;
   }
   catch (error) {

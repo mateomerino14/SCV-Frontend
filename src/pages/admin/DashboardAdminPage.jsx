@@ -9,7 +9,8 @@ import AdminMenu from '../../layouts/menu/AdminMenu';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import TripPhaseSection from '../../features/admin/organisms/TripPhaseSection';
 import PhaseTotalCard from '../../features/admin/molecules/PhaseTotalCard';
-import useAdminDashboard from '../../hooks/admin/useAdminDashboard';
+import DashboardPeriodFilter from '../../features/admin/molecules/DashboardPeriodFilter';
+import useAdminDashboard, {periodOptions} from '../../hooks/admin/useAdminDashboard';
 import useMenu from '../../hooks/shared/useMenu';
 import {approvalPhaseStats, expensePhaseStats, rejectedStat, approvalPhaseTotal, expensePhaseTotal} from '../../features/admin/constants/tripPhaseStats';
 import {COLORS} from '../../constants';
@@ -67,7 +68,7 @@ function SectionTooltip({active, payload, label}) {
 
 function DashboardAdminPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const {data, loading, error} = useAdminDashboard();
+  const {data, loading, error, preset, selectPreset, customRange, setCustomRange, applyCustomRange, rangeError, appliedPeriod} = useAdminDashboard();
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
 
@@ -80,6 +81,8 @@ function DashboardAdminPage() {
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <PageHeader title="Resumen General" subtitle="Indicadores de viajes, gastos y usuarios del sistema." />
+        <DashboardPeriodFilter options={periodOptions} preset={preset} onSelectPreset={selectPreset} customRange={customRange}
+          onCustomRangeChange={setCustomRange} onApply={applyCustomRange} rangeError={rangeError} appliedPeriod={appliedPeriod} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {loading ? (
           <SkeletonCard lines={6} />
@@ -104,7 +107,7 @@ function DashboardAdminPage() {
                 total={approvalTotal} color={approvalPhaseTotal.color} bg={approvalPhaseTotal.bg} />
               <PhaseTotalCard icon={expensePhaseTotal.icon} title="Rendición de Gastos" subtitle="Viajes en curso, con gastos en revisión o ya aprobados"
                 total={expenseTotal} color={expensePhaseTotal.color} bg={expensePhaseTotal.bg} />
-              <PhaseTotalCard icon={rejectedStat.icon} title="Rechazados" subtitle="Total de viajes rechazados"
+              <PhaseTotalCard icon={rejectedStat.icon} title="Rechazados" subtitle="Viajes rechazados en el periodo"
                 total={data?.[rejectedStat.key] || 0} color={rejectedStat.color} bg={rejectedStat.bg} />
             </div>
             {data?.usuariosPorRol?.length > 0 && (
@@ -126,7 +129,7 @@ function DashboardAdminPage() {
             {data?.viajesPorSeccion?.length > 0 && (
               <div className={styles.chartCard} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <p className={styles.chartTitle} style={{color: COLORS.text}}>Viajes por Sección</p>
-                <p className={styles.chartSub} style={{color: COLORS.labels}}>Cantidad de viajes (eje izquierdo) y monto asignado en Bs (eje derecho), por sección del empleado</p>
+                <p className={styles.chartSub} style={{color: COLORS.labels}}>Viajes con fondos entregados por tesorería: cantidad (eje izquierdo) y monto asignado en Bs (eje derecho), por sección del empleado</p>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={data.viajesPorSeccion} margin={{top: 10, right: 10, left: 0, bottom: 10}}>
                     <CartesianGrid strokeDasharray="3 3" stroke={COLORS.dataFields} />
@@ -139,6 +142,12 @@ function DashboardAdminPage() {
                     <Bar yAxisId="monto" dataKey="montoAsignado" fill={COLORS.title} radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+            )}
+            {data?.viajesPorSeccion?.length === 0 && (
+              <div className={styles.chartCard} style={{backgroundColor: COLORS.backgroundHeader}}>
+                <p className={styles.chartTitle} style={{color: COLORS.text}}>Viajes por Sección</p>
+                <p className={styles.chartSub} style={{color: COLORS.labels}}>No hay viajes con fondos entregados en este periodo.</p>
               </div>
             )}
             <div className={styles.sectionDivider} style={{borderColor: COLORS.dataFields}} />
