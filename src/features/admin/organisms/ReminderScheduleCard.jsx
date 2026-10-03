@@ -16,7 +16,7 @@ const styles = {
   timeInput: 'flex-1 rounded-xl px-3 py-2 text-sm font-inter outline-none border',
   addBtn: 'flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold font-nunito cursor-pointer',
   hint: 'text-xs font-inter mt-2',
-  summary: 'text-sm font-inter rounded-xl px-3 py-2.5 mt-4',
+  summary: 'text-sm font-inter rounded-xl px-3 py-2.5 mt-4 text-center',
 };
 
 const weekDays = [

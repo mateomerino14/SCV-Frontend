@@ -9,7 +9,7 @@ const styles = {
   rangeBox: 'mt-3',
   applyBtn: 'w-full mt-3 py-2.5 rounded-xl text-sm font-bold font-nunito cursor-pointer',
   error: 'text-xs font-inter mt-2',
-  caption: 'text-xs font-inter mt-3',
+  caption: 'text-xs font-inter mt-3 text-center',
 };
 
 function DashboardPeriodFilter({options, preset, onSelectPreset, customRange, onCustomRangeChange, onApply, rangeError, appliedPeriod}) {
