@@ -32,9 +32,9 @@ function useAdminDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [preset, setPreset] = useState('todo');
+  const [preset, setPreset] = useState('mes');
   const [customRange, setCustomRange] = useState({fecha_inicio: '', fecha_fin: ''});
-  const [appliedPeriod, setAppliedPeriod] = useState({});
+  const [appliedPeriod, setAppliedPeriod] = useState(() => getPresetRange('mes'));
   const [rangeError, setRangeError] = useState('');
   const appliedPeriodRef = useRef(appliedPeriod);
 
