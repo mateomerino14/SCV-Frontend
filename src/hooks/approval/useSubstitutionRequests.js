@@ -9,6 +9,7 @@ function useSubstitutionRequests() {
   const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
+  const [result, setResult] = useState(null);
   const [tab, setTab] = useState('PENDIENTES');
 
   const load = useCallback(async (showLoading = true) => {
@@ -46,20 +47,18 @@ function useSubstitutionRequests() {
     return () => clearInterval(interval);
   }, [load]);
 
-  const showError = (message) => {
-    setError(message);
-    setTimeout(() => setError(''), 3000);
-  };
 
   const handleApprove = async (requestId) => {
     setSavingAction(true);
     const data = await approveSubstitution(requestId);
     setSavingAction(false);
     if (data.error) {
-      showError(data.error);
+      await load(false);
+      setResult({success: false, message: data.error});
       return false;
     }
     await load(true);
+    setResult({success: true, message: 'Solicitud aprobada. La persona de reemplazo ya puede rendir el viaje.'});
     return true;
   };
 
@@ -68,10 +67,12 @@ function useSubstitutionRequests() {
     const data = await rejectSubstitution(requestId, observation);
     setSavingAction(false);
     if (data.error) {
-      showError(data.error);
+      await load(false);
+      setResult({success: false, message: data.error});
       return false;
     }
     await load(true);
+    setResult({success: true, message: 'Solicitud rechazada. Se notificó al empleado.'});
     return true;
   };
 
@@ -86,6 +87,7 @@ function useSubstitutionRequests() {
     loading, savingAction, error,
     tab, setTab,
     handleApprove, handleReject,
+    result, closeResult: () => setResult(null),
   };
 }
 

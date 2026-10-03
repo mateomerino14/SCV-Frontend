@@ -53,7 +53,7 @@ function EditInvoicePage() {
   const imageSection = (
     <div className={styles.imageBox} style={{backgroundColor: COLORS.background}}>
       <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante</p>
-      <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image} />
+      <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image} hideLabel />
     </div>
   );
 
@@ -66,20 +66,20 @@ function EditInvoicePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <PageHeader title="Editar Factura" subtitle="Corrige los datos del comprobante fiscal registrado." />
+        <PageHeader title="Editar Factura" subtitle="Corrige los datos de la factura, su detalle de productos o su comprobante, y guarda los cambios." />
         <div className={styles.desktopGrid}>
           {imageSection}
           <div className={styles.colWrapper}>
             <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
           </div>
           <div className={styles.colWrapper}>
-            <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
+            <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
           </div>
         </div>
         <div className={styles.mobileStack}>
           {imageSection}
           <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
-          <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
+          <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
         </div>
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         <button className={styles.guardarBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.primary}} onClick={handleSave} disabled={loading}>

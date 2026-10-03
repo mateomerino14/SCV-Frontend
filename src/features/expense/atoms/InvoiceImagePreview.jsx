@@ -1,7 +1,7 @@
 import {COLORS} from '../../../constants';
 
 const styles = {
-  wrapper: "rounded-xl overflow-hidden mt-3 shadow-md max-h-200",
+  wrapper: "rounded-xl overflow-hidden shadow-md max-h-200",
   footer: "p-3 flex flex-col justify-between items-start",
   metaLabel: "text-xs font-inter pl-2",
   metaValue: "text-sm font-bold font-inter pl-2",

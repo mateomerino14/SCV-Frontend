@@ -5,20 +5,20 @@ import RecentTripItem from '../../features/trip/organisms/RecentTripItem';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import EmptyState from '../../components/ui/EmptyState';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useTripHistory from '../../hooks/trip/useTripHistory';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import ListCount from '../../components/ui/ListCount';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
   emptyMsg: "text-sm font-inter text-center py-8",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mt-2",
-  totalText: "text-xs font-inter mb-3",
-  loadMoreBtn: "w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border mt-3",
 };
 
 function TripHistoryPage() {
@@ -28,15 +28,15 @@ function TripHistoryPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Historial de Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Historial de Viajes" subtitle="Consulta y filtra todos tus viajes registrados." />
+        <PageHeader title="Historial de Mis Viajes" subtitle="Consulta todos tus viajes y su estado; usa los filtros para encontrarlos rápido." />
         <TripHistoryFilter activeFilter={filter} onChange={setFilter} />
         {loading && <SkeletonList count={4} />}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && total > 0 && (
-          <p className={styles.totalText} style={{color: COLORS.labels}}>Mostrando {trips.length} de {total} viajes</p>
+          <ListCount shown={trips.length} total={total} singular="viaje" plural="viajes" />
         )}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes registrados" subtitle="Aún no tienes viajes en esta categoría"
@@ -49,10 +49,7 @@ function TripHistoryPage() {
         )}
         {!loading && trips.map((trip) => <RecentTripItem key={trip.id_viaje} trip={trip} from={routes.employeeHistory} />)}
         {!loading && hasMorePages && (
-          <button className={styles.loadMoreBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, opacity: loadingMore ? 0.6 : 1}}
-            onClick={loadMore} disabled={loadingMore}>
-            {loadingMore ? 'Cargando...' : 'Cargar más viajes'}
-          </button>
+          <LoadMoreButton onClick={loadMore} loading={loadingMore} label="Cargar más viajes" />
         )}
       </div>
       <Footer />

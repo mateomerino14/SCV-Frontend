@@ -1,7 +1,8 @@
 import {useNavigate} from 'react-router-dom';
-import {Mail, Phone, Briefcase, LogOut, Hash, Layers} from 'lucide-react';
+import {Mail, Phone, Briefcase, LogOut, Layers, IdCard, UserCheck} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import PhotoModal from '../../features/user/organisms/PhotoModal';
@@ -18,7 +19,7 @@ import useMenu from '../../hooks/shared/useMenu';
 import usePhotoModal from '../hooks/usePhotoModal';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
-import {clearToken} from '../../services/shared/tokenStore';
+import {logout} from '../../services/user/authService';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -42,8 +43,9 @@ function ProfilePage() {
   } = useProfile();
   const {showModal: showPhotoModal, open: openPhotoModal, close: closePhotoModal, handleNewPhoto, handleRemovePhoto: handleRemovePhotoModal} =
     usePhotoModal(handleChangePhoto, handleRemovePhoto, loadUser);
-  const handleLogout = () => {
-    clearToken();
+  // Cierra la sesion en el servidor antes de volver al ingreso
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 
@@ -51,24 +53,25 @@ function ProfilePage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Perfil Corporativo" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+        <Navbar text="Mi Perfil" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={5} /></div>
         <Footer />
       </div>
     );
   }
-  const hasCodes = user?.numero_dependencia || user?.numero_seccion;
+
+  const mascotMessage = menuUser ? 'Mantén tus datos al día: tu carnet de identidad aparece en tus recibos.' : null;
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Perfil Corporativo" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+      <Navbar text="Mi Perfil" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <PhotoModal isOpen={showPhotoModal} onClose={closePhotoModal} onNewPhoto={handleNewPhoto} onRemove={handleRemovePhotoModal} saving={saving} />
       <SuccessModal isOpen={!!success} title="Actualizado" message={success} onAccept={closeSuccess} />
       <div className={styles.content}>
-        <PageHeader title="Mi Cuenta" subtitle="Consulta y edita tu información personal." />
+        <PageHeader title="Mi Perfil" subtitle="Consulta tus datos, cambia tu foto y actualiza tu información de contacto." />
         <div className={styles.grid}>
           <div className={styles.leftCol}>
             <ProfileSummaryCard user={user} onEditPhoto={openPhotoModal} saving={saving} />
@@ -83,9 +86,10 @@ function ProfilePage() {
                 <ProfileField icon={Phone} label="Teléfono" value={user?.telefono} editing={editingPhone} editValue={phone}
                   onEditValueChange={(event) => setPhone(event.target.value.replace(/[^0-9]/g, ''))} onStartEdit={() => setEditingPhone(true)}
                   onSave={handleSavePhone} onCancel={handleCancelPhone} saving={saving} inputType="tel" inputMode="numeric" maxLength={8} />
+                <ReadOnlyField icon={IdCard} label="Carnet de Identidad" value={user?.carnet_identidad || '—'} />
                 <ReadOnlyField icon={Briefcase} label="Cargo" value={user?.Cargo?.nombre} />
-                {user?.numero_dependencia && <ReadOnlyField icon={Hash} label="N° Dependencia" value={user.numero_dependencia} />}
-                {user?.numero_seccion && <ReadOnlyField icon={Layers} label="N° Sección" value={user.numero_seccion} />}
+                {user?.Seccion?.nombre && <ReadOnlyField icon={Layers} label="Sección" value={user.Seccion.nombre} />}
+                <ReadOnlyField icon={UserCheck} label="Jefe Directo" value={user?.Jefe ? `${user.Jefe.nombre} ${user.Jefe.apellido_paterno}` : '—'} />
               </div>
             </div>
             {error && <InlineAlert type="error">{error}</InlineAlert>}
@@ -96,6 +100,7 @@ function ProfilePage() {
           Cerrar Sesión
         </button>
       </div>
+      <MascotGreeting pageKey="perfil" message={mascotMessage} />
       <Footer />
     </div>
   );

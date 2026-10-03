@@ -66,6 +66,7 @@ function useEditInvoice(expenseId) {
         tipo_doc: expenseData.tipo || 'F',
         detalle: invoice?.Detalle_Factura || [],
         id_categoria_gasto: expenseData.id_categoria || null,
+        fecha_emision_valida: !!invoice?.fecha_emision,
       });
       if (expenseData.Imagen?.url_archivo) {
         setExistingImage(expenseData.Imagen.url_archivo);
@@ -89,6 +90,7 @@ function useEditInvoice(expenseId) {
   const handleAddDetail = (item) => {
     setData((prev) => ({...prev, detalle: [...(prev.detalle || []), item]}));
     setManuallyModified(true);
+    setFieldErrors((prev) => ({...prev, detalle: undefined}));
   };
 
   const handleRemoveDetail = (index) => {
@@ -107,6 +109,7 @@ function useEditInvoice(expenseId) {
     setImage(compressed);
     setImagePreview(URL.createObjectURL(compressed));
     setExistingImage(null);
+    setFieldErrors((prev) => ({...prev, image: undefined}));
   };
 
   const handleRemoveImage = () => {
@@ -134,6 +137,12 @@ function useEditInvoice(expenseId) {
     }
     if (!data?.id_categoria_gasto) {
       errors.id_categoria_gasto = 'La categoría es requerida';
+    }
+    if (!data?.detalle || data.detalle.length === 0) {
+      errors.detalle = 'Debes agregar al menos un producto al detalle';
+    }
+    if (!image && !existingImage) {
+      errors.image = 'Debes subir una imagen o comprobante de la factura';
     }
     return errors;
   };

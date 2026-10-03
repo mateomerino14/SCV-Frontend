@@ -2,7 +2,7 @@ import {motion, AnimatePresence} from 'framer-motion';
 import {Briefcase} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
 import FormField from '../../../components/ui/FormField';
-import PositionNameSuggestions from '../molecules/PositionNameSuggestions';
+import ExistingNameSuggestions from '../molecules/ExistingNameSuggestions';
 import {COLORS} from '../../../constants';
 import usePositionFormModal from '../hooks/usePositionFormModal';
 
@@ -42,7 +42,7 @@ function PositionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabe
                   value={formData.nombre} onChange={handleNameChange} error={fieldErrors.nombre}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
                 {showSuggestions && suggestions.length > 0 && (
-                  <PositionNameSuggestions suggestions={suggestions} onSelect={handleSelectSuggestion} />
+                  <ExistingNameSuggestions suggestions={suggestions.map((position) => ({id: position.id_cargo, nombre: position.nombre}))} onSelect={handleSelectSuggestion} />
                 )}
               </div>
               <div className={styles.currencyGrid}>

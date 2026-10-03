@@ -20,6 +20,9 @@ import useDeadlineAuthorization from '../../hooks/approval/useDeadlineAuthorizat
 import useSubstitutionRequest from '../../hooks/approval/useSubstitutionRequest';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import EmptyState from '../../components/ui/EmptyState';
+import {FileX, AlertCircle} from 'lucide-react';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -36,7 +39,8 @@ function TripDetailPage() {
   const {trip, loading, error} = tripDetail;
   const tripInProgress = trip?.estado === 'EN_CURSO' || (trip?.estado === 'RECHAZADO' && !!trip?.fue_iniciado);
   const deadline = useDeadlineAuthorization(id, trip?.fecha_fin, tripInProgress);
-  const substitution = useSubstitutionRequest(id);
+  // Solo el titular pide un reemplazo: para quien rinde como reemplazo no se consulta
+  const substitution = useSubstitutionRequest(trip && !tripDetail.isSubstitution ? id : null);
 
   if (loading) {
     return (
@@ -53,7 +57,14 @@ function TripDetailPage() {
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <Navbar text="Detalles de Viaje" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-        <div className="flex-1 flex items-center justify-center"><p style={{color: COLORS.secondary}}>{error || 'No se encontró el viaje'}</p></div>
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5 py-10">
+          <EmptyState title={error === 'El viaje no existe' ? 'Viaje no encontrado' : 'Viaje no disponible'}
+            subtitle={error || 'No se encontró el viaje'}
+            icon={<FileX size={30} style={{color: 'rgba(255,255,255,0.8)'}} />} />
+          <button className="px-6 py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border-2"
+            style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}
+            onClick={() => navigate(originRoute)}>Volver</button>
+        </div>
         <Footer />
       </div>
     );
@@ -95,10 +106,13 @@ function TripDetailPage() {
       <div className={styles.content}>{content}</div>
       <DeleteExpenseConfirmModal isOpen={tripDetail.showDeleteModal} onClose={tripDetail.handleCancelDelete} onConfirm={tripDetail.handleConfirmDelete} loading={tripDetail.deletingExpense} />
       <SubmitReviewConfirmModal isOpen={tripDetail.showSubmitReviewModal} onClose={tripDetail.handleCancelSubmitReview} onConfirm={tripDetail.handleConfirmSubmitReview} />
+      <ConfirmDialog isOpen={!!tripDetail.alertMessage} compact icon={AlertCircle} iconColor={COLORS.primary}
+        title="No se pudo continuar" message={tripDetail.alertMessage} confirmText="Entendido" hideCancel onConfirm={tripDetail.closeAlert} />
       <DeadlineExpiredNoticeModal isOpen={deadline.showExpiredNotice} onClose={deadline.closeExpiredNotice} />
       <DeadlineRequestModal isOpen={deadline.showModal} onClose={() => deadline.setShowModal(false)} onConfirm={deadline.handleRequest} loading={deadline.submitting} error={deadline.modalError} />
       <DeadlineExpiredModal isOpen={deadline.isApprovedExpired && tripDetail.submitted} onClose={() => {}} message="Tu autorización de plazo ha vencido." />
-      <SubstitutionRequestModal isOpen={substitution.showModal} onClose={substitution.closeModal} onConfirm={substitution.handleRequest}
+      <SubstitutionRequestModal isOpen={substitution.showModal} withoutSection={substitution.withoutSection} onClose={substitution.closeModal} onConfirm={substitution.handleRequest}
+        substituteId={substitution.substituteId} onSelectSubstitute={substitution.setSubstituteId}
         employees={substitution.employees} loading={substitution.submitting} error={substitution.modalError} />
       <Footer />
     </div>

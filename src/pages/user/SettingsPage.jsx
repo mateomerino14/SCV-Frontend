@@ -1,18 +1,20 @@
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {KeyRound, FileText, LogOut} from 'lucide-react';
+import {KeyRound, FileText, LogOut, Smile} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ConfigOption from '../../features/user/atoms/ConfigOption';
+import ConfigToggle from '../../features/user/atoms/ConfigToggle';
+import {isMascotEnabled, setMascotEnabled} from '../../utils/mascotPreferences';
 import ChangePasswordModal from '../../features/user/organisms/ChangePasswordModal';
 import TermsModal from '../../features/user/organisms/TermsModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
-import {clearToken} from '../../services/shared/tokenStore';
+import {logout} from '../../services/user/authService';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -25,27 +27,40 @@ const styles = {
 };
 
 function SettingsPage() {
+  const [mascotEnabled, setMascotEnabledState] = useState(isMascotEnabled());
+  const handleMascotChange = (enabled) => {
+    setMascotEnabled(enabled);
+    setMascotEnabledState(enabled);
+  };
   const navigate = useNavigate();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const handleLogout = () => {
-    clearToken();
+  // Cierra la sesion en el servidor antes de volver al ingreso
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Configuración" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Ajustes de Cuenta" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Ajustes de Cuenta" subtitle="Gestiona tu contraseña y revisa los términos del sistema." />
+        <PageHeader title="Ajustes de Cuenta" subtitle="Cambia tu contraseña y consulta los términos de uso del sistema." />
         <div className={styles.grid}>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cuenta</p>
             <div className={styles.sectionWrapper}>
               <ConfigOption icon={KeyRound} label="Cambiar contraseña" onClick={() => setShowChangePassword(true)} />
+            </div>
+          </div>
+          <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
+            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Preferencias</p>
+            <div className={styles.sectionWrapper}>
+              <ConfigToggle icon={Smile} label="Mostrar a Casquito" description="La mascota del sistema te saluda y te recuerda tus pendientes."
+                checked={mascotEnabled} onChange={handleMascotChange} />
             </div>
           </div>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>

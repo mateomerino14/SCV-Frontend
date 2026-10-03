@@ -35,13 +35,17 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
   const [showExpiredNotice, setShowExpiredNotice] = useState(false);
   const [noticeShown, setNoticeShown] = useState(false);
 
-  const load = async () => {
+  const load = async (silent = false) => {
     if (!tripId) {
       return;
     }
-    setLoading(true);
+    if (!silent) {
+      setLoading(true);
+    }
     const data = await getRequestStatus(tripId);
-    setLoading(false);
+    if (!silent) {
+      setLoading(false);
+    }
     if (!data || data.error) {
       return;
     }
@@ -52,12 +56,24 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
     load();
   }, [tripId]);
 
+  // Mientras espera respuesta del revisor se consulta cada 30 segundos
+  const waitingResponse = request?.estado === 'PENDIENTE';
+  useEffect(() => {
+    if (!waitingResponse) {
+      return undefined;
+    }
+    const interval = setInterval(() => load(true), 30000);
+    return () => clearInterval(interval);
+  }, [waitingResponse, tripId]);
+
   const deadlineExpired = fechaFin ? isDeadlineExpired(fechaFin) : true;
   const isPending = request?.estado === 'PENDIENTE';
-  const isRejected = request?.estado === 'RECHAZADA';
+  // Una solicitud cerrada por el sistema (sin revisor) no se muestra como rechazada
+  const isClosed = request?.estado === 'RECHAZADA';
+  const isRejected = isClosed && !!request?.id_revisor;
   const isApprovedActive = request?.estado === 'APROBADA' && !request?.extension_vencida;
   const isApprovedExpired = request?.estado === 'APROBADA' && !!request?.extension_vencida;
-  const canRequest = deadlineExpired && (!request || isRejected || isApprovedExpired);
+  const canRequest = deadlineExpired && (!request || isClosed || isApprovedExpired);
 
   useEffect(() => {
     if (loading || noticeShown || !fechaFin || !tripInProgress) {

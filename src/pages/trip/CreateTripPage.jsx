@@ -57,13 +57,13 @@ function CreateTripPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Registro de Viaje" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+      <Navbar text="Nuevo Viaje" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(routes.employeeDashboard)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <PageHeader title="Nuevo Viaje" subtitle="Completa los datos para planificar tu próximo viaje." />
+        <PageHeader title="Nuevo Viaje" subtitle="Completa los datos del viaje; el presupuesto se calcula según tu cargo y la cantidad de días." />
         <div className={styles.badgeWrapper} style={{backgroundColor: COLORS.backgroundHeader}}>
           <div className={styles.badgeIcon} style={{backgroundColor: COLORS.primary}}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

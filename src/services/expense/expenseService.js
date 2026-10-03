@@ -66,16 +66,6 @@ export const deleteExpense = async (expenseId) => {
   }
 };
 
-export const sendGroupedReceipt = async (tripId, type, isInternational = false) => {
-  try {
-    const response = await apiClient.post(`/expense/trip/${tripId}/receipt/${type}`, null, {params: {internacional: isInternational}});
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al generar el recibo'};
-  }
-};
-
 export const sendIndividualReceipt = async (expenseId) => {
   try {
     const response = await apiClient.post(`/expense/${expenseId}/receipt`);

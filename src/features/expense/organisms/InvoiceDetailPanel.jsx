@@ -23,7 +23,7 @@ const fields = [
   {key: 'cantidad', label: 'Cantidad', type: 'number'},
 ];
 
-function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false}) {
+function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
   const hasManyItems = detail.length > 9;
   const {item, selectedIndex, fieldErrors, handleSelectRow, handleFieldChange, handleAdd, handleModify} = useInvoiceDetailPanel(detail, onAdd, onRemove);
   const handleInputChange = (key, value) => {
@@ -39,6 +39,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false}) {
   return (
     <div className={styles.wrapper}>
       <p className={styles.sectionTitle} style={{color: COLORS.labels}}>Detalle de Productos / Servicios</p>
+      {error && <p className="text-xs font-inter mb-2" style={{color: COLORS.secondary}}>{error}</p>}
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <div className={styles.tableHeader} style={{color: COLORS.background, backgroundColor: COLORS.backgroundSecondary, ...gridColumns, paddingRight: hasManyItems ? '17px' : '0px'}}>
           <span>Descripción</span>

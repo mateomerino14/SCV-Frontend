@@ -8,10 +8,15 @@ import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import SuccessModal from '../../components/ui/SuccessModal';
 import SkeletonList from '../../components/ui/SkeletonList';
+import SectionDropdown from '../../components/ui/SectionDropdown';
 import useUserManagement from '../../hooks/admin/useUserManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {avatarDefault} from '../../constants/defaultImages';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
+import ListCount from '../../components/ui/ListCount';
 
 
 const styles = {
@@ -55,25 +60,33 @@ const roleConfig = {
 };
 
 function UserManagementPage() {
-  const {menuOpen, user: menuUser, openMenu, closeMenu} = useMenu();
+  const {menuOpen, user: menuUser, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    users, positions, loading, savingAction, error, fieldErrors, setFieldErrors,
-    search, setSearch, roleFilter, setRoleFilter, selectedUser,
+    users, positions, sections, loading, savingAction, error, fieldErrors, setFieldErrors,
+    search, setSearch, roleFilter, setRoleFilter, sectionFilter, setSectionFilter, selectedUser,
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
+    allUsers,
   } = useUserManagement();
+  const pagination = useClientPagination(users, 15, `${search}|${roleFilter}|${sectionFilter}`);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <Navbar text="Gestión de Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+      <Navbar text="Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
       <div className={styles.content}>
-        <PageHeader title="Usuarios" subtitle="Administra los usuarios del sistema." />
+        <PageHeader title="Usuarios" subtitle="Crea usuarios y asígnales rol, cargo, sección y jefe directo; también puedes suspender o reactivar cuentas." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar usuarios..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
+        {sections.length > 0 && (
+          <div className="mb-4">
+            <SectionDropdown sections={sections} selectedSection={sectionFilter} onSelect={setSectionFilter} placeholder="Todas las secciones" />
+          </div>
+        )}
         <div className={styles.tabsRow}>
           {tabs.map((tab) => (
             <button key={tab.valor} className={styles.tab} onClick={() => setRoleFilter(tab.valor)}
@@ -83,7 +96,10 @@ function UserManagementPage() {
           ))}
         </div>
         {loading && <SkeletonList count={4} />}
-        {!loading && users.map((currentUser) => {
+        {!loading && pagination.total > 0 && (
+          <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="usuario" plural="usuarios" />
+        )}
+        {!loading && pagination.visibleItems.map((currentUser) => {
           const config = roleConfig[currentUser.Rol?.nombre] || roleConfig['EMPLEADO'];
           return (
             <div key={currentUser.id_usuario} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
@@ -108,6 +124,7 @@ function UserManagementPage() {
             </div>
           );
         })}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más usuarios" />}
         {!loading && users.length === 0 && (
           <EmptyState title="Sin usuarios registrados" subtitle="No se encontraron usuarios con los filtros aplicados"
             icon={
@@ -129,10 +146,10 @@ function UserManagementPage() {
         <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <UserFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
-        title="Nuevo Usuario" btnLabel="Registrar" formData={formData} setFormData={setFormData} positions={positions}
+        title="Nuevo Usuario" btnLabel="Registrar" formData={formData} setFormData={setFormData} positions={positions} allUsers={allUsers} sections={sections}
         loading={savingAction} error={error} fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} selectedUser={null} />
       <UserFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
-        title="Editar Usuario" btnLabel="Actualizar" formData={formData} setFormData={setFormData} positions={positions}
+        title="Editar Usuario" btnLabel="Actualizar" formData={formData} setFormData={setFormData} positions={positions} allUsers={allUsers} sections={sections}
         loading={savingAction} error={error} fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} selectedUser={selectedUser} />
       <ConfirmDialog isOpen={showSuspend} icon={selectedUser?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}
         title={selectedUser?.activo ? 'Suspender Usuario' : 'Activar Usuario'}

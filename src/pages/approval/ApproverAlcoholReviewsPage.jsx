@@ -1,32 +1,31 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {pendingMessage} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
 import ExpenseReviewItem from '../../features/approval/organisms/ExpenseReviewItem';
-import TripAlreadyTakenModal from '../../features/approval/organisms/TripAlreadyTakenModal';
 import EmptyState from '../../components/ui/EmptyState';
 import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
-import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
 import useApproverAlcoholReviews from '../../hooks/approval/useApproverAlcoholReviews';
 import useMenu from '../../hooks/shared/useMenu';
-import usePasswordExpiredCheck from '../../hooks/user/usePasswordExpiredCheck';
 import {COLORS} from '../../constants';
 import {approverAlcoholReviewPath, routes} from '../../constants/routes';
+import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  tabsRow: "flex gap-2 mb-4 flex-wrap",
-  tab: "py-1.5 px-3 rounded-full text-xs font-bold font-inter cursor-pointer border text-center transition-colors",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
-  totalText: "text-xs font-inter mb-3",
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
 };
 
 const mainTabs = [
-  {valor: 'PENDIENTES', label: 'Pendientes'},
+  {valor: 'MIS_PENDIENTES', label: 'Pendientes'},
   {valor: 'APROBADOS', label: 'Aprobados'},
   {valor: 'RECHAZADOS', label: 'Rechazados'},
 ];
@@ -34,44 +33,34 @@ const mainTabs = [
 function ApproverAlcoholReviewsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, totalPending, totalApproved, totalRejected, employees, loading, applyingFilters, taking, error,
-    alreadyTaken, closeAlreadyTakenModal, tab, setTab, filters, setFilters, applyFilters, clearFilters, handleTake,
+    trips, totalMyPending, employees, sections, loading, applyingFilters, error,
+    tab, setTab, filters, setFilters, applyFilters, clearFilters,
   } = useApproverAlcoholReviews();
-  const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
-  let total = totalPending;
+  const pagination = useClientPagination(trips, 12, tab);
+  let subtitle = 'Rendiciones con gastos de alcohol que necesitan tu revisión antes de pasar a la revisión final.';
   if (tab === 'APROBADOS') {
-    total = totalApproved;
+    subtitle = 'Historial de las rendiciones con alcohol que aprobaste, con el estado en que están ahora.';
   }
   else if (tab === 'RECHAZADOS') {
-    total = totalRejected;
+    subtitle = 'Rendiciones con alcohol que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
+
+  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición con alcohol por revisar', 'rendiciones con alcohol por revisar');
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
-      <Navbar text="Revisión por Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Revisión por Alcohol" subtitle="Rendiciones con bebidas alcohólicas que requieren tu revisión adicional." />
-        <div className={styles.tabsRow}>
-          {mainTabs.map((mainTab) => (
-            <button key={mainTab.valor} className={styles.tab} onClick={() => setTab(mainTab.valor)}
-              style={{backgroundColor: tab === mainTab.valor ? COLORS.primary : 'transparent', borderColor: tab === mainTab.valor ? COLORS.primary : COLORS.dataFields, color: tab === mainTab.valor ? COLORS.background : COLORS.labels}}>
-              {mainTab.label}
-            </button>
-          ))}
-        </div>
-        {tab === 'PENDIENTES' && (
-          <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-            employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
-        )}
+        <PageHeader title="Rendiciones con Alcohol" subtitle={subtitle} />
+        <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
+          onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{total} viaje{total !== 1 ? 's' : ''}</p>}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="rendición" plural="rendiciones" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
-          <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron rendiciones con alcohol pendientes"
+          <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron rendiciones con alcohol con el filtro seleccionado"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M8 16L14 22L24 10" stroke="rgba(255,255,255,0.7)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -80,13 +69,14 @@ function ApproverAlcoholReviewsPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((trip) => (
-              <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={approverAlcoholReviewPath(trip.id_viaje)} originRoute={routes.approverAlcoholReviews}
-                onTake={tab === 'PENDIENTES' ? handleTake : null} taking={taking === trip.id_viaje} />
+            {pagination.visibleItems.map((trip) => (
+              <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={approverAlcoholReviewPath(trip.id_viaje)} originRoute={routes.approverAlcoholReviews} />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
+      <MascotGreeting pageKey="aprobador-alcohol" message={mascotMessage} />
       <Footer />
     </div>
   );

@@ -19,7 +19,7 @@ const styles = {
   textarea: 'w-full rounded-xl p-3 text-sm font-inter outline-none border resize-none',
   exportBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer flex items-center justify-center gap-2 mb-4',
   downloadError: 'text-xs font-inter italic text-center -mt-2 mb-4',
-  statusBadge: 'text-xs font-semibold font-inter px-3 py-2 rounded-xl text-center mb-4',
+  statusBadge: 'text-sm font-bold font-inter text-center py-3 px-4 rounded-xl mb-4',
 };
 
 function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navigate, nationalExpenses, internationalExpenses, accumulatedExpense, accumulatedExpenseUsd, totalExceeds, totalExceedsUsd, exceededDays = [], exceedsHotels, dayJustifications = {}, observations}) {
@@ -58,7 +58,7 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
           <p className={styles.justificationLabel} style={{color: COLORS.text_enviroment_types}}>Justificación de Excesos</p>
           {exceededDays.map((day) => dayJustifications[day.fecha] && (
             <div key={day.fecha} className={styles.justificationItem}>
-              <p className={styles.itemLabel} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)}</p>
+              <p className={styles.itemLabel} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
                 style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>

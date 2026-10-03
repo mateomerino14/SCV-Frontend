@@ -1,36 +1,31 @@
-import {useState, useEffect, useCallback} from 'react';
-import {getPendingReviews, getMyReviews, getReviewerEmployees} from '../../services/approval/reviewerService';
+import {useState, useEffect, useCallback, useRef} from 'react';
+import {getMyReviews, getReviewerEmployees} from '../../services/approval/reviewerService';
+import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
 function useReviewerReviews() {
-  const [pending, setPending] = useState([]);
-  const [history, setHistory] = useState([]);
+  const [myPending, setMyPending] = useState([]);
+  const [approved, setApproved] = useState([]);
+  const [rejected, setRejected] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
-  const [statusFilter, setStatusFilter] = useState('TODOS');
-  const [tab, setTab] = useState('PENDIENTES');
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
+  const [tab, setTab] = useState('MIS_PENDIENTES');
+  const appliedFiltersRef = useRef(filters);
 
   const load = useCallback(async (currentFilters, showLoading = true) => {
     const activeFilters = currentFilters || filters;
+    appliedFiltersRef.current = activeFilters;
     if (showLoading) {
       setLoading(true);
     }
-    const [pendingData, historyData] = await Promise.all([
-      getPendingReviews(activeFilters),
-      getMyReviews(activeFilters),
-    ]);
+    const historyData = await getMyReviews(activeFilters);
     if (showLoading) {
       setLoading(false);
-    }
-    if (pendingData.error) {
-      if (showLoading) {
-        setError(pendingData.error);
-      }
-      return;
     }
     if (historyData.error) {
       if (showLoading) {
@@ -38,8 +33,11 @@ function useReviewerReviews() {
       }
       return;
     }
-    setPending(pendingData);
-    setHistory((historyData || []).filter((trip) => trip.estado === 'APROBADO_FINAL' || trip.estado === 'RECHAZADO'));
+    setError('');
+    const isPendingForMe = (trip) => trip.estado === 'APROBADO_SUPERVISOR' && trip.asignado_a_mi !== false;
+    setMyPending((historyData || []).filter(isPendingForMe));
+    setApproved((historyData || []).filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip)));
+    setRejected((historyData || []).filter((trip) => trip.resultado_revision === 'RECHAZADO'));
   }, [filters]);
 
   useEffect(() => {
@@ -49,15 +47,16 @@ function useReviewerReviews() {
       if (!data.error) {
         setEmployees(data);
       }
+      const sectionData = await getSections();
+      if (!sectionData.error) {
+        setSections(sectionData);
+      }
     };
     start();
-    const polling = setInterval(() => load(filters, false), pollingInterval);
+    const polling = setInterval(() => load(appliedFiltersRef.current, false), pollingInterval);
     return () => clearInterval(polling);
   }, []);
 
-  useEffect(() => {
-    setStatusFilter('TODOS');
-  }, [tab]);
 
   const applyFilters = async () => {
     setApplyingFilters(true);
@@ -66,48 +65,31 @@ function useReviewerReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
-    setStatusFilter('TODOS');
     load(emptyFilters, true);
   };
 
-  const filteredPending = pending.filter((trip) => {
-    if (statusFilter === 'OBSERVADO') {
-      return trip.estadoRevision === 'OBSERVADO';
-    }
-    if (statusFilter === 'CONFORME') {
-      return trip.estadoRevision === 'CONFORME';
-    }
-    return true;
-  });
-
-  const filteredHistory = history.filter((trip) => {
-    if (statusFilter === 'APROBADO_FINAL') {
-      return trip.estado === 'APROBADO_FINAL';
-    }
-    if (statusFilter === 'RECHAZADO') {
-      return trip.estado === 'RECHAZADO';
-    }
-    return true;
-  });
-
-  let trips = filteredPending;
-  if (tab !== 'PENDIENTES') {
-    trips = filteredHistory;
+  let trips = myPending;
+  if (tab === 'APROBADOS') {
+    trips = approved;
+  }
+  else if (tab === 'RECHAZADOS') {
+    trips = rejected;
   }
 
   return {
     trips,
-    totalPending: pending.length,
+    totalMyPending: myPending.length,
+    totalApproved: approved.length,
+    totalRejected: rejected.length,
     employees,
+    sections,
     loading,
     applyingFilters,
     error,
     filters,
     setFilters,
-    statusFilter,
-    setStatusFilter,
     tab,
     setTab,
     applyFilters,

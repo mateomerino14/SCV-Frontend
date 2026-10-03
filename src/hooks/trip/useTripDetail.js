@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {getTripDetail, confirmCompletion} from '../../services/trip/tripService';
 import {deleteExpense} from '../../services/expense/expenseService';
 
@@ -9,7 +9,9 @@ function useTripDetail(tripId) {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [deletingExpense, setDeletingExpense] = useState(false);
   const [error, setError] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
   const [exceededDays, setExceededDays] = useState([]);
+  const [dailyBreakdown, setDailyBreakdown] = useState([]);
   const [exceedsHotels, setExceedsHotels] = useState(false);
   const [isSubstitution, setIsSubstitution] = useState(false);
   const [dayJustifications, setDayJustifications] = useState({});
@@ -27,48 +29,56 @@ function useTripDetail(tripId) {
   const [totalExceeds, setTotalExceeds] = useState(false);
   const [totalExceedsUsd, setTotalExceedsUsd] = useState(false);
 
+  // Aplica la respuesta del servidor; los totales se calculan en el backend
+  const applyDetail = useCallback((data) => {
+    if (data.error) {
+      const isSessionError = data.error.includes('Token inválido') || data.error.includes('token no proporcionado') || data.error.includes('suspendida');
+      if (!isSessionError) {
+        setError(data.error);
+      }
+      return;
+    }
+    setTrip(data.viaje);
+    setExpenses(data.gastos);
+    setAccumulatedExpense(data.gastoAcumulado || 0);
+    setAccumulatedExpenseUsd(data.gastoAcumuladoUsd || 0);
+    setExceedsBudget(!!data.excedePresupuesto);
+    setExceedsBudgetUsd(!!data.excedePresupuestoUsd);
+    setTotalExceeds(!!data.excedeTotal);
+    setTotalExceedsUsd(!!data.excedeTotalUsd);
+    setExceededDays(data.diasExcedidos || []);
+    setDailyBreakdown(data.desgloseDiario || []);
+    setExceedsHotels(!!data.excedeHoteles);
+    setIsSubstitution(!!data.esSustitucion);
+    if (data.comentarios && data.comentarios.length > 0) {
+      const justifications = data.comentarios.filter((comment) => comment.tipo === 'JUSTIFICACION');
+      const obs = data.comentarios.filter((comment) => comment.tipo === 'OBSERVACION');
+      const justificationsByDay = {};
+      justifications.forEach((comment) => {
+        const key = comment.fecha_justificada || 'HOTEL';
+        if (!justificationsByDay[key]) {
+          justificationsByDay[key] = comment.descripcion;
+        }
+      });
+      setDayJustifications((prev) => ({...justificationsByDay, ...prev}));
+      setObservations(obs);
+    }
+  }, []);
+
   useEffect(() => {
     if (!tripId) {
       return;
     }
-    const loadDetail = async () => {
-      setLoading(true);
-      const data = await getTripDetail(tripId);
+    getTripDetail(tripId).then((data) => {
       setLoading(false);
-      if (data.error) {
-        const isSessionError = data.error.includes('Token inválido') || data.error.includes('token no proporcionado') || data.error.includes('suspendida');
-        if (!isSessionError) {
-          setError(data.error);
-        }
-        return;
-      }
-      setTrip(data.viaje);
-      setExpenses(data.gastos);
-      setAccumulatedExpense(data.gastoAcumulado || 0);
-      setAccumulatedExpenseUsd(data.gastoAcumuladoUsd || 0);
-      setExceedsBudget(!!data.excedePresupuesto);
-      setExceedsBudgetUsd(!!data.excedePresupuestoUsd);
-      setTotalExceeds(!!data.excedeTotal);
-      setTotalExceedsUsd(!!data.excedeTotalUsd);
-      setExceededDays(data.diasExcedidos || []);
-      setExceedsHotels(!!data.excedeHoteles);
-      setIsSubstitution(!!data.esSustitucion);
-      if (data.comentarios && data.comentarios.length > 0) {
-        const justifications = data.comentarios.filter((comment) => comment.tipo === 'JUSTIFICACION');
-        const obs = data.comentarios.filter((comment) => comment.tipo === 'OBSERVACION');
-        const justificationsByDay = {};
-        justifications.forEach((comment) => {
-          const key = comment.fecha_justificada || 'HOTEL';
-          if (!justificationsByDay[key]) {
-            justificationsByDay[key] = comment.descripcion;
-          }
-        });
-        setDayJustifications(justificationsByDay);
-        setObservations(obs);
-      }
-    };
-    loadDetail();
-  }, [tripId]);
+      applyDetail(data);
+    });
+  }, [tripId, applyDetail]);
+
+  const reloadDetail = async () => {
+    const data = await getTripDetail(tripId);
+    applyDetail(data);
+  };
 
   const nationalExpenses = expenses.filter((expense) => !expense.es_gasto_internacional);
   const internationalExpenses = expenses.filter((expense) => !!expense.es_gasto_internacional);
@@ -85,10 +95,8 @@ function useTripDetail(tripId) {
     displayedInternationalExpenses = internationalExpenses;
   }
 
-  const showError = (message) => {
-    setError(message);
-    setTimeout(() => setError(''), 3000);
-  };
+  const showError = (message) => setAlertMessage(message);
+  const closeAlert = () => setAlertMessage('');
 
   const setDayJustification = (key, text) => {
     setDayJustifications((prev) => ({...prev, [key]: text}));
@@ -159,6 +167,7 @@ function useTripDetail(tripId) {
       return;
     }
     setExpenses((prev) => prev.filter((expense) => expense.id_gasto !== expenseToDelete));
+    await reloadDetail();
   };
 
   const handleCancelDelete = () => {
@@ -167,6 +176,8 @@ function useTripDetail(tripId) {
   };
 
   return {
+    alertMessage,
+    closeAlert,
     trip,
     expenses,
     nationalExpenses,
@@ -180,6 +191,7 @@ function useTripDetail(tripId) {
     totalExceeds,
     totalExceedsUsd,
     exceededDays,
+    dailyBreakdown,
     exceedsHotels,
     isSubstitution,
     dayJustifications, setDayJustification,

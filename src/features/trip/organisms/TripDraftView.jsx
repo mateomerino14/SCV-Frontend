@@ -23,7 +23,7 @@ function TripDraftView({trip, tripId, isInternational, originRoute, navigate}) {
       </button>
       <TripInfoCard trip={trip} isInternational={isInternational} />
       <div className={styles.alertBox} style={{backgroundColor: COLORS.backgroundHeader, borderColor: COLORS.dataFields}}>
-        <p style={{color: COLORS.text_enviroment_types, fontFamily: 'Inter', fontSize: 13, fontWeight: 600}}>
+        <p style={{color: COLORS.text_enviroment_types, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
           Este viaje aún no ha sido enviado a revisión. Complétalo y envíalo cuando esté listo.
         </p>
       </div>

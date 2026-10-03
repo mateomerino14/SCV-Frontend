@@ -1,10 +1,11 @@
 import {motion, AnimatePresence} from 'framer-motion';
-import {User} from 'lucide-react';
+import {User, Mail} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
-import ModalActions from '../../../components/ui/ModalActions';
 import FormField from '../../../components/ui/FormField';
 import PositionSelector from '../molecules/PositionSelector';
 import RoleSelector from '../molecules/RoleSelector';
+import BossSelector from '../molecules/BossSelector';
+import SectionSelector from '../molecules/SectionSelector';
 import {COLORS} from '../../../constants';
 import useUserFormModal from '../hooks/useUserFormModal';
 import {avatarDefault} from '../../../constants/defaultImages';
@@ -19,6 +20,9 @@ const styles = {
   title: 'text-2xl font-bold font-inter text-center mb-2',
   selectorGrid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
   fieldsGrid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
+  passwordNote: 'flex items-center gap-3 rounded-xl border px-4 py-3',
+  passwordNoteIcon: 'w-8 h-8 rounded-full flex items-center justify-center shrink-0',
+  passwordNoteText: 'text-xs font-inter leading-snug',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl',
   cancelBtn: 'flex-1 py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer border-2 transition-colors',
 };
@@ -26,7 +30,7 @@ const styles = {
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
-function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, setFormData, positions, loading, error, fieldErrors = {}, setFieldErrors, selectedUser}) {
+function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, setFormData, positions, allUsers = [], sections = [], loading, error, fieldErrors = {}, setFieldErrors, selectedUser}) {
   const {
     roleOptions, selectedRole, roleMenuOpen, roleMenuPosition, roleTriggerRef, roleMenuRef,
     handleChange, handleToggleRoleMenu, handleSelectRole, onlyLettersRegex, onlyNumbersRegex,
@@ -66,17 +70,24 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   onChange={(event) => handleChange('email_corporativo', event.target.value, null, 100)} />
                 <FormField label="Teléfono (opcional)" placeholder="71234567" maxLength={8} value={formData.telefono} error={fieldErrors.telefono}
                   onChange={(event) => handleChange('telefono', event.target.value, onlyNumbersRegex, 8)} />
-                <FormField label="N° Dependencia" placeholder="Ej: DEP-001" maxLength={50} value={formData.numero_dependencia} error={fieldErrors.numero_dependencia}
-                  onChange={(event) => handleChange('numero_dependencia', event.target.value, null, 50)} />
-                <FormField label="N° Sección" placeholder="Ej: SEC-01" maxLength={50} value={formData.numero_seccion} error={fieldErrors.numero_seccion}
-                  onChange={(event) => handleChange('numero_seccion', event.target.value, null, 50)} />
-                <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={20} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
-                  onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 20)} />
-                {isNew && (
-                  <FormField label="Contraseña" type="password" placeholder="Mínimo 6 caracteres" value={formData.contrasenia} error={fieldErrors.contrasenia}
-                    onChange={(event) => handleChange('contrasenia', event.target.value)} />
-                )}
+                <BossSelector users={allUsers.filter((user) => user.id_usuario !== selectedUser?.id_usuario)} bossId={formData.id_jefe_directo}
+                  error={fieldErrors.id_jefe_directo} onChange={(id) => handleChange('id_jefe_directo', id)} />
+                <SectionSelector sections={sections} sectionId={formData.id_seccion}
+                  onChange={(value) => handleChange('id_seccion', value)} error={fieldErrors.id_seccion} />
+                <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={15} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
+                  onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 15)} />
               </div>
+              {isNew && (
+                <div className={styles.passwordNote} style={{backgroundColor: COLORS.backgroundHeader, borderColor: COLORS.dataFields}}>
+                  <div className={styles.passwordNoteIcon} style={{backgroundColor: COLORS.background}}>
+                    <Mail size={16} style={{color: COLORS.primary}} />
+                  </div>
+                  <p className={styles.passwordNoteText} style={{color: COLORS.labels}}>
+                    Se generará una <span style={{color: COLORS.text, fontWeight: 700}}>contraseña temporal</span> y se enviará
+                    al correo corporativo del nuevo usuario.
+                  </p>
+                </div>
+              )}
               {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
               <div className="flex gap-3 mt-2 justify-center">
                 <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}} onClick={onClose}>

@@ -27,6 +27,8 @@ import getCurrentUserId from '../../utils/getCurrentUserId';
 import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {approverExpenseDetailPath, approverAlcoholReviewPath, routes} from '../../constants/routes';
+import {getStatusColors} from '../../constants/tripStatusColors';
+import ReturnReviewButton from '../../features/approval/molecules/ReturnReviewButton';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -44,7 +46,6 @@ const styles = {
   actionsRow: 'flex gap-3 mb-4',
   approveBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center',
   rejectBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center border-2',
-  returnBtn: 'w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border mb-4',
   hint: 'text-xs font-inter text-center mb-3',
   assignWrapper: 'mb-4',
   assignText: 'text-sm font-inter mb-3 text-center',
@@ -76,7 +77,7 @@ function ApproverAlcoholReviewDetailPage() {
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-        <Navbar text="Revisión por Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={6} /></div>
         <Footer />
@@ -87,7 +88,7 @@ function ApproverAlcoholReviewDetailPage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Revisión por Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.blockedWrapper}>
           <div className={styles.blockedIcon} style={{backgroundColor: COLORS.error}}>
@@ -124,18 +125,15 @@ function ApproverAlcoholReviewDetailPage() {
   };
 
   let successMessage = 'Rendición rechazada correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
-  if (actionCompleted === 'APROBADO') {
+  if (actionCompleted && actionCompleted !== 'RECHAZADO') {
     successMessage = 'Rendición aprobada correctamente';
-    successBg = '#d4edda';
-    successColor = '#155724';
   }
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Revisión por Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
@@ -186,10 +184,8 @@ function ApproverAlcoholReviewDetailPage() {
         )}
         {canAct && !actionCompleted && (
           <>
-            <button className={styles.returnBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleReturn}>
-              Devolver Revisión
-            </button>
-            <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>
+            <ReturnReviewButton onReturn={handleReturn} />
+            {expenses.length > 0 && <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>}
             <div className={styles.actionsRow}>
               <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar</button>
               <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>
@@ -203,7 +199,7 @@ function ApproverAlcoholReviewDetailPage() {
       <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
       <ExpenseObservationsModal isOpen={showExpenseObservations} onClose={closeExpenseObservations}
         expenseName={expenses.find((expense) => expense.id_gasto === activeExpense)?.Proveedor?.nombre}
-        observations={activeExpenseObservations()} canEdit={canAct} newText={newText} setNewText={setNewText}
+        observations={activeExpenseObservations()} canEdit={canAct} currentUserId={user?.id_usuario} newText={newText} setNewText={setNewText}
         onAdd={handleAddComment} onEdit={handleOpenEdit} onDelete={handleOpenDelete} loading={savingAction} error={modalError} />
       <EditCommentModal isOpen={!!editingComment} onClose={() => setEditingComment(null)} onConfirm={handleConfirmEdit} text={editText} setText={setEditText} loading={savingAction} error={modalError} />
       <DeleteCommentConfirmModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)} onConfirm={handleConfirmDelete} loading={savingAction} />

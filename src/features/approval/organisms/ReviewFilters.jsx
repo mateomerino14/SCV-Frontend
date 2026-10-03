@@ -1,5 +1,6 @@
 import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
 import EmployeeDropdown from '../../../components/ui/EmployeeDropdown';
+import SectionDropdown from '../../../components/ui/SectionDropdown';
 import DateRangeFilter from '../molecules/DateRangeFilter';
 import StatusTabs from '../molecules/StatusTabs';
 import {COLORS} from '../../../constants';
@@ -15,7 +16,7 @@ const styles = {
   divider: 'border-t mt-3 pt-3',
 };
 
-function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], tabs, hideStatusTabs = false, applyingFilters}) {
+function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], sections = [], tabs, hideStatusTabs = false, hideSectionFilter = false, applyingFilters}) {
   const employeeDropdown = useSimpleSelector();
   let applyLabel = 'Aplicar Filtros';
   if (applyingFilters) {
@@ -29,12 +30,18 @@ function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onAp
         <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
           onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
           onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
-        {employees.length > 0 && (
+        {/* Todos los filtros se muestran desde el inicio; las listas se completan al cargar */}
+        <div className={styles.employeeSection}>
+          <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Empleado</p>
+          <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
+            onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_empleado}
+            onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
+        </div>
+        {!hideSectionFilter && (
           <div className={styles.employeeSection}>
-            <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Empleado</p>
-            <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
-              onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_empleado}
-              onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
+            <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Sección</p>
+            <SectionDropdown sections={sections} selectedSection={filters.id_seccion}
+              onSelect={(value) => setFilters((prev) => ({...prev, id_seccion: value}))} />
           </div>
         )}
         <div className={styles.btnRow}>

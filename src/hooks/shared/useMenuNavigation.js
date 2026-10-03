@@ -1,16 +1,18 @@
 import {useNavigate, useLocation} from 'react-router-dom';
 import {routes} from '../../constants/routes';
-import {clearToken} from '../../services/shared/tokenStore';
+import {logout} from '../../services/user/authService';
 
 function useMenuNavigation(onClose, exactMatchPaths = []) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // En una pantalla de detalle se marca la opcion del menu desde la que se abrio (state.from)
+  const currentPath = location.state?.from || location.pathname;
   const isActive = (path) => {
     if (exactMatchPaths.includes(path)) {
-      return location.pathname === path;
+      return currentPath === path;
     }
-    return location.pathname.startsWith(path);
+    return currentPath.startsWith(path);
   };
 
   const handleNavigate = (path) => {
@@ -18,8 +20,9 @@ function useMenuNavigation(onClose, exactMatchPaths = []) {
     onClose();
   };
 
-  const handleLogout = () => {
-    clearToken();
+  // Cierra la sesion en el servidor antes de volver al ingreso
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 

@@ -38,6 +38,11 @@ function InProgressTripCard({trip}) {
       </div>
     );
   }
+  return <InProgressTripContent trip={trip} navigate={navigate} />;
+}
+
+// Contenido con el viaje: va aparte para que el hook se llame siempre en el mismo orden
+function InProgressTripContent({trip, navigate}) {
   const {
     isInternational, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,
     internationalExpense, assignedAmountUsd, internationalPercentage, exceedsInternational,

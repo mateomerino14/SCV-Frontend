@@ -13,6 +13,18 @@ const styles = {
   actionsRow: 'flex items-center gap-1.5 shrink-0',
 };
 
+// En un correo, el salto de linea se permite en la arroba y no en medio del nombre
+function renderValue(value, inputType) {
+  if (!value) {
+    return '—';
+  }
+  if (inputType === 'email' && String(value).includes('@')) {
+    const [localPart, domain] = String(value).split('@');
+    return <>{localPart}<wbr />@{domain}</>;
+  }
+  return value;
+}
+
 function ProfileField({icon: Icon, label, value, editing, editValue, onEditValueChange, onStartEdit, onSave, onCancel, saving, inputType = 'text', inputMode, maxLength}) {
   return (
     <div className={styles.card} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
@@ -36,7 +48,7 @@ function ProfileField({icon: Icon, label, value, editing, editValue, onEditValue
             </div>
           </div>
         ) : (
-          <p className={styles.value} style={{color: COLORS.text}}>{value || '—'}</p>
+          <p className={styles.value} style={{color: COLORS.text}}>{renderValue(value, inputType)}</p>
         )}
       </div>
       {!editing && (

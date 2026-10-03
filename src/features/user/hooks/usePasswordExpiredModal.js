@@ -1,8 +1,10 @@
 import {useState, useEffect} from 'react';
 
-const minLength = 6;
+// Mismo minimo que exige el servidor
+const minLength = 8;
 
-function usePasswordExpiredModal(externalError) {
+// Con una contrasena temporal solo se piden la nueva y su confirmacion
+function usePasswordExpiredModal(externalError, requiresCurrentPassword = true) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,7 +45,7 @@ function usePasswordExpiredModal(externalError) {
   };
 
   const handleConfirm = (onConfirm) => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
+    if ((requiresCurrentPassword && !currentPassword) || !newPassword || !confirmPassword) {
       showError('Completa todos los campos requeridos');
       return;
     }

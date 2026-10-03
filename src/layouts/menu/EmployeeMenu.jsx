@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {LayoutDashboard, Plane, User, Settings, LogOut, Wallet} from 'lucide-react';
+import {Plane, User, Settings, LogOut, Wallet, Briefcase} from 'lucide-react';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import useIsTreasurer from '../../hooks/user/useIsTreasurer';
@@ -26,17 +26,17 @@ const styles = {
 
 
 const mainSection = [
-  {path: routes.employeeDashboard, label: 'Dashboard', icon: LayoutDashboard},
-  {path: routes.employeeHistory, label: 'Mis Viajes', icon: Plane},
+  {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
+  {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},
 ];
 
 const treasurySection = [
-  {path: routes.treasurerReviews, label: 'Aprobación de Fondos', icon: Wallet},
+  {path: routes.treasurerReviews, label: 'Asignación de Fondos', icon: Wallet},
 ];
 
 const accountSection = [
-  {path: routes.employeeProfile, label: 'Perfil', icon: User},
-  {path: routes.employeeSettings, label: 'Ajustes', icon: Settings},
+  {path: routes.employeeProfile, label: 'Mi Perfil', icon: User},
+  {path: routes.employeeSettings, label: 'Ajustes de Cuenta', icon: Settings},
 ];
 
 function EmployeeMenu({isOpen, onClose, user}) {
@@ -68,7 +68,7 @@ function EmployeeMenu({isOpen, onClose, user}) {
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
+              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Asignación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}

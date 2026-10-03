@@ -5,7 +5,7 @@ import {COLORS} from '../../../constants';
 function TripCreatedModal({isOpen, onClose}) {
   return (
     <ConfirmDialog isOpen={isOpen} icon={BookmarkCheck} iconColor={COLORS.backgroundSecondary} iconBackgroundColor={COLORS.background}
-      title="Registro Exitoso" message="Se registro el viaje correctamente" confirmText="Aceptar" hideCancel onConfirm={onClose} />
+      title="Registro Exitoso" message="Se registró el viaje correctamente" confirmText="Aceptar" hideCancel onConfirm={onClose} />
   );
 }
 

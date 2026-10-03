@@ -100,12 +100,129 @@ export const activatePosition = async (id) => {
   }
 };
 
-export const getDashboard = async () => {
+export const getSections = async () => {
   try {
-    const response = await apiClient.get('/admin/dashboard');
+    const response = await apiClient.get('/section');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener secciones'};
+  }
+};
+
+export const createSection = async (section) => {
+  try {
+    const response = await apiClient.post('/section', section);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al crear sección'};
+  }
+};
+
+export const updateSection = async (id, data) => {
+  try {
+    const response = await apiClient.put(`/section/${id}`, data);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al actualizar sección'};
+  }
+};
+
+export const suspendSection = async (id) => {
+  try {
+    const response = await apiClient.patch(`/section/${id}/suspend`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al suspender sección'};
+  }
+};
+
+export const activateSection = async (id) => {
+  try {
+    const response = await apiClient.patch(`/section/${id}/activate`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al activar sección'};
+  }
+};
+
+export const getDashboard = async (period = {}) => {
+  try {
+    const response = await apiClient.get('/admin/dashboard', {params: period});
     return response.data;
   }
   catch (error) {
     return {error: error.response?.data?.error || 'Error al obtener dashboard'};
+  }
+};
+
+// Con page y limit devuelve {registros, total}; sin ellos, todos los registros filtrados
+export const getAudits = async (filters = {}, page = null, limit = null) => {
+  try {
+    const params = {};
+    if (page && limit) {
+      params.pagina = page;
+      params.limite = limit;
+    }
+    if (filters.tipo) {
+      params.tipo = filters.tipo;
+    }
+    if (filters.id_usuario) {
+      params.id_usuario = filters.id_usuario;
+    }
+    if (filters.fecha_inicio) {
+      params.fecha_inicio = filters.fecha_inicio;
+    }
+    if (filters.fecha_fin) {
+      params.fecha_fin = filters.fecha_fin;
+    }
+    const response = await apiClient.get('/audit', {params});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener el historial de auditoría'};
+  }
+};
+export const getReminderSchedule = async () => {
+  try {
+    const response = await apiClient.get('/admin/reminders');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener la configuración de recordatorios'};
+  }
+};
+
+export const updateReminderSchedule = async (schedule) => {
+  try {
+    const response = await apiClient.put('/admin/reminders', schedule);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al guardar la configuración de recordatorios'};
+  }
+};
+
+export const previewReminderDigest = async () => {
+  try {
+    const response = await apiClient.get('/admin/reminders/preview');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al generar la vista previa'};
+  }
+};
+
+export const sendReminderDigestNow = async () => {
+  try {
+    const response = await apiClient.post('/admin/reminders/send-now');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al enviar el resumen de pendientes'};
   }
 };

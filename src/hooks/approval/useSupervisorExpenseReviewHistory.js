@@ -1,16 +1,26 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
+import {getSections} from '../../services/admin/adminService';
 import {getMyExpenseReviews, returnExpenseReview, getReviewEmployees} from '../../services/approval/reviewService';
+
+const pollingInterval = 30 * 1000;
 
 function useSupervisorExpenseReviewHistory() {
   const [trips, setTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('EN_REVISION');
 
-  const load = async (currentFilters = filters, showLoading = true) => {
+  const filtersRef = useRef(filters);
+
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  const load = async (currentFilters = filtersRef.current, showLoading = true) => {
     if (showLoading) {
       setLoading(true);
     }
@@ -22,6 +32,7 @@ function useSupervisorExpenseReviewHistory() {
       setError(data.error);
       return;
     }
+    setError('');
     setTrips(data);
   };
 
@@ -32,6 +43,13 @@ function useSupervisorExpenseReviewHistory() {
         setEmployees(data);
       }
     });
+    getSections().then((data) => {
+      if (!data.error) {
+        setSections(data);
+      }
+    });
+    const polling = setInterval(() => load(filtersRef.current, false), pollingInterval);
+    return () => clearInterval(polling);
   }, []);
 
   const applyFilters = async () => {
@@ -41,7 +59,7 @@ function useSupervisorExpenseReviewHistory() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     setStatusFilter('EN_REVISION');
     load(emptyFilters);
@@ -53,18 +71,21 @@ function useSupervisorExpenseReviewHistory() {
       setError(data.error);
       return;
     }
+    setError('');
     await load();
   };
 
+  // Pendiente solo si esta asignado a este supervisor; si ya lo aprobo sigue en Aprobados
+  const isPendingForMe = (trip) => trip.estado === 'EN_REVISION' && trip.asignado_a_mi !== false;
   const filteredTrips = trips.filter((trip) => {
     if (statusFilter === 'EN_REVISION') {
-      return trip.estado === 'EN_REVISION';
+      return isPendingForMe(trip);
     }
     if (statusFilter === 'APROBADO_SUPERVISOR') {
-      return trip.estado === 'APROBADO_SUPERVISOR' || trip.estado === 'APROBADO_APROBADOR' || trip.estado === 'APROBADO_FINAL';
+      return trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip);
     }
     if (statusFilter === 'RECHAZADO') {
-      return trip.estado === 'RECHAZADO';
+      return trip.resultado_revision === 'RECHAZADO';
     }
     return true;
   });
@@ -73,6 +94,7 @@ function useSupervisorExpenseReviewHistory() {
     trips: filteredTrips,
     total: filteredTrips.length,
     employees,
+    sections,
     loading,
     applyingFilters,
     error,

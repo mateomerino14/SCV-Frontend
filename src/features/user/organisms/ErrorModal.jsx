@@ -25,14 +25,14 @@ function ErrorModal({isOpen, onClose, onResend}) {
       <div className={styles.icon} style={{backgroundColor: '#000000'}}>
         <AlertCircle size={36} color="white" />
       </div>
-      <h2 className={styles.title}>Error de Confirmacion</h2>
-      <p className={styles.description}>El codigo de verificacion es incorrecto, revise que sea valido</p>
+      <h2 className={styles.title}>Error de Confirmación</h2>
+      <p className={styles.description}>El código de verificación es incorrecto</p>
       <div className={styles.alertBox} style={{backgroundColor: 'rgba(255,255,255,0.15)'}}>
         <AlertCircle size={16} color="white" className="shrink-0" />
-        <p className={styles.alertText}>Por favor revisa que el codigo sea válido.</p>
+        <p className={styles.alertText}>Por favor revisa que el código sea el que llegó a tu correo.</p>
       </div>
       <div className="w-full flex flex-col gap-3">
-        <Button text={resending ? 'Reenviando...' : 'Reenviar Codigo'} variant="primary" onClick={handleResend} />
+        <Button text={resending ? 'Reenviando...' : 'Reenviar Código'} variant="primary" onClick={handleResend} />
         <Button text="Volver al Inicio" variant="secondary" onClick={onClose} />
       </div>
     </ModalBase>

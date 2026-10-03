@@ -2,9 +2,26 @@ import {useNavigate} from 'react-router-dom';
 import Button from '../components/ui/Button';
 import {COLORS} from '../constants';
 import useNotFoundAnimation from './hooks/useNotFoundAnimation';
+import {jwtDecode} from 'jwt-decode';
+import {getToken} from '../services/shared/tokenStore';
+import {getHomeRoute} from '../constants/roleHome';
 
 function NotFoundPage() {
   const navigate = useNavigate();
+  // Con sesion va a la pantalla de inicio de su rol; sin sesion, al ingreso
+  const goHome = () => {
+    const token = getToken();
+    if (!token) {
+      navigate('/');
+      return;
+    }
+    try {
+      navigate(getHomeRoute(jwtDecode(token)?.id_rol));
+    }
+    catch {
+      navigate('/');
+    }
+  };
   const {eyes, blinking} = useNotFoundAnimation();
 
   return (
@@ -56,7 +73,7 @@ function NotFoundPage() {
         </p>
       </div>
       <div style={{animation: 'aparecer 0.6s ease-out forwards', opacity: 0, animationDelay: '0.7s'}}>
-        <Button text="Volver al inicio" variant="primary" onClick={() => navigate(-1)} />
+        <Button text="Volver al inicio" variant="primary" onClick={goHome} />
       </div>
       <div style={{position: 'absolute', bottom: 32, display: 'flex', gap: 8, animation: 'aparecer 0.6s ease-out forwards', opacity: 0, animationDelay: '0.9s'}}>
         {[0, 1, 2].map((index) => (

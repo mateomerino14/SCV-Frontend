@@ -1,18 +1,18 @@
 import {useNavigate} from 'react-router-dom';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {greetingFor} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import DraftTripCard from '../../features/trip/organisms/DraftTripCard';
 import InProgressTripCard from '../../features/trip/organisms/InProgressTripCard';
 import RecentTripItem from '../../features/trip/organisms/RecentTripItem';
 import SubmitTripConfirmModal from '../../features/trip/organisms/SubmitTripConfirmModal';
-import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import useEmployeeDashboard from '../../hooks/trip/useEmployeeDashboard';
 import useMenu from '../../hooks/shared/useMenu';
-import usePasswordExpiredCheck from '../../hooks/user/usePasswordExpiredCheck';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 
@@ -31,15 +31,25 @@ const styles = {
   scrollRow: "flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory items-stretch",
 };
 
+// Mensaje de Casquito en Mis Viajes, segun lo que el empleado tiene pendiente
+function buildDashboardMessage(name, inProgressCount, draftCount) {
+  if (inProgressCount > 0) {
+    return `${greetingFor(name)} Tienes ${inProgressCount} ${inProgressCount === 1 ? 'viaje en curso' : 'viajes en curso'}: registra tus gastos a tiempo.`;
+  }
+  if (draftCount > 0) {
+    return `${greetingFor(name)} Tienes ${draftCount} ${draftCount === 1 ? 'borrador' : 'borradores'} sin enviar a revisión.`;
+  }
+  return `${greetingFor(name)} Cuando tengas un viaje, créalo desde aquí.`;
+}
+
 function EmployeeDashboardPage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     draftTrips, inProgressTrips, substitutionTrips, displayedTrips, recentTrips, loading,
-    submittingReview, submitError, tripToConfirm,
+    submittingReview, submitError, loadError, tripToConfirm,
     handleRequestSubmitReview, handleCancelSubmitReview, handleConfirmSubmitReview,
   } = useEmployeeDashboard();
-  const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
 
   if (loading) {
     return (
@@ -49,6 +59,8 @@ function EmployeeDashboardPage() {
       </div>
     );
   }
+
+  const mascotMessage = loading ? null : buildDashboardMessage(user?.nombre, inProgressTrips.length, draftTrips.length);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -60,17 +72,17 @@ function EmployeeDashboardPage() {
         .scroll-trips { scrollbar-width: thin; scrollbar-color: ${COLORS.dataFields} transparent; }
       `}</style>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
-      <Navbar text="Gestor de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <div className={styles.headerRow}>
-          <PageHeader title="Mis Viajes" subtitle="Gestiona tus viajes y rinde tus gastos." />
+          <PageHeader title="Mis Viajes" subtitle="Crea un viaje, sigue su aprobación y registra tus gastos mientras está en curso." />
           <button className={styles.newTripBtn} style={{backgroundColor: COLORS.primary}} onClick={() => navigate(routes.employeeCreateTrip)}>
             <span className="w-8 h-8 text-sm bg-white rounded-full inline-flex items-center justify-center" style={{color: COLORS.primary}}>+</span>
             Crear Nuevo Viaje
           </button>
         </div>
+        {loadError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{loadError}</p>}
         {submitError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{submitError}</p>}
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes sin Enviar</p>
         {draftTrips.length > 0 ? (
@@ -131,6 +143,7 @@ function EmployeeDashboardPage() {
         </div>
       </div>
       <SubmitTripConfirmModal isOpen={!!tripToConfirm} onClose={handleCancelSubmitReview} onConfirm={handleConfirmSubmitReview} loading={!!submittingReview} />
+      <MascotGreeting pageKey="mis-viajes" message={mascotMessage} />
       <Footer />
     </div>
   );

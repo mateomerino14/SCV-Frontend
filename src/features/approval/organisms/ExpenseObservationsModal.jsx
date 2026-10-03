@@ -21,7 +21,9 @@ const styles = {
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
-function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, canEdit, newText, setNewText, onAdd, onEdit, onDelete, loading, error}) {
+function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, canEdit, currentUserId, newText, setNewText, onAdd, onEdit, onDelete, loading, error}) {
+  // Solo se pueden editar o borrar las observaciones propias
+  const canManage = (observation) => canEdit && (!currentUserId || observation.id_usuario === currentUserId);
   const {maxLength, exceedsLimit} = useCommentTextarea(newText);
   const handleAdd = () => {
     if (!newText.trim() || exceedsLimit) {
@@ -54,7 +56,7 @@ function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, c
               ) : (
                 observations.map((observation) => (
                   <CommentCard key={observation.id_comentario} compact date={formatDateTime(observation.fecha)} text={observation.descripcion}
-                    backgroundColor="rgba(255,255,255,0.12)" onEdit={canEdit ? () => onEdit(observation) : null} onDelete={canEdit ? () => onDelete(observation.id_comentario) : null} />
+                    backgroundColor="rgba(255,255,255,0.12)" onEdit={canManage(observation) ? () => onEdit(observation) : null} onDelete={canManage(observation) ? () => onDelete(observation.id_comentario) : null} />
                 ))
               )}
             </div>
@@ -62,7 +64,7 @@ function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, c
               <LimitedTextarea value={newText} maxLength={maxLength} exceedsLimit={exceedsLimit} error={error} rows={3}
                 placeholder="Escribe una nueva observación para este gasto..." onChange={(event) => setNewText(event.target.value)} />
             )}
-            <ModalActions onCancel={onClose} cancelText="Cerrar" onConfirm={handleAdd} hideConfirm={!canEdit}
+            <ModalActions onCancel={onClose} cancelLabel="Cerrar" onConfirm={handleAdd} hideConfirm={!canEdit}
               confirmLabel={loading ? 'Agregando...' : 'Agregar'} loading={loading} confirmDisabled={!newText.trim() || exceedsLimit} />
           </motion.div>
         </motion.div>

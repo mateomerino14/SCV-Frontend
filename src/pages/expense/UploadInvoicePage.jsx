@@ -53,7 +53,7 @@ function UploadInvoicePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(id))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <PageHeader title="Subir Factura" subtitle="Registra un gasto a partir de una factura escaneada." />
+        <PageHeader title="Subir Factura" subtitle="Sube la foto de tu factura para que el sistema extraiga sus datos, o regístrala manualmente; revisa todo antes de guardar." />
         {isPending && (
           <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2 mb-4" style={{backgroundColor: '#ffd700aa', color: '#7a5900'}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.

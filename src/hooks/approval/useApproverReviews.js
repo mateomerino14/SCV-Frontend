@@ -1,18 +1,19 @@
 import {useState, useEffect, useRef} from 'react';
-import {getPendingTrips, getMyTrips} from '../../services/approval/approverService';
+import {getMyTrips} from '../../services/approval/approverService';
 import {getEmployees} from '../../services/user/userService';
+import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
 function useApproverReviews() {
-  const [pending, setPending] = useState([]);
   const [myTrips, setMyTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [error, setError] = useState('');
-  const [tab, setTab] = useState('PENDIENTES');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [tab, setTab] = useState('MIS_PENDIENTES');
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const filtersRef = useRef(filters);
 
   useEffect(() => {
@@ -23,22 +24,15 @@ function useApproverReviews() {
     if (showLoading) {
       setLoading(true);
     }
-    const [pendingData, myTripsData] = await Promise.all([
-      getPendingTrips(currentFilters),
-      getMyTrips(),
-    ]);
+    const myTripsData = await getMyTrips(currentFilters);
     if (showLoading) {
       setLoading(false);
-    }
-    if (pendingData.error) {
-      setError(pendingData.error);
-      return;
     }
     if (myTripsData.error) {
       setError(myTripsData.error);
       return;
     }
-    setPending(pendingData);
+    setError('');
     setMyTrips(myTripsData);
   };
 
@@ -48,6 +42,10 @@ function useApproverReviews() {
       const employeeData = await getEmployees();
       if (!employeeData.error) {
         setEmployees(employeeData);
+      }
+      const sectionData = await getSections();
+      if (!sectionData.error) {
+        setSections(sectionData);
       }
     };
     start();
@@ -62,14 +60,16 @@ function useApproverReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     load(emptyFilters, true);
   };
 
-  const approvedTrips = myTrips.filter((trip) => ['EN_REVISION_TESORERO', 'EN_CURSO'].includes(trip.estado));
-  const rejectedTrips = myTrips.filter((trip) => trip.estado === 'RECHAZADO');
-  let displayedTrips = pending;
+  const isPendingForMe = (trip) => trip.estado === 'APROBADO_VIAJE' && trip.asignado_a_mi !== false;
+  const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip));
+  const rejectedTrips = myTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO');
+  const myPendingTrips = myTrips.filter(isPendingForMe);
+  let displayedTrips = myPendingTrips;
   if (tab === 'APROBADOS') {
     displayedTrips = approvedTrips;
   }
@@ -79,10 +79,11 @@ function useApproverReviews() {
 
   return {
     trips: displayedTrips,
-    totalPending: pending.length,
+    totalMyPending: myPendingTrips.length,
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,
     employees,
+    sections,
     loading, applyingFilters, error,
     tab, setTab,
     filters, setFilters,

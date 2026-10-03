@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {getExpenseDetail, sendIndividualReceipt} from '../../services/expense/expenseService';
+import {buildReceiptSentMessage} from '../../features/expense/hooks/useExpenseReceipt';
 
 function useExpenseDetail(expenseId) {
   const [expense, setExpense] = useState(null);
@@ -30,7 +31,7 @@ function useExpenseDetail(expenseId) {
       setReceiptModal({show: true, success: false, message: data.error});
       return;
     }
-    setReceiptModal({show: true, success: true, message: 'El recibo fue enviado correctamente a tu correo.'});
+    setReceiptModal({show: true, success: true, message: buildReceiptSentMessage(data)});
   };
 
   const closeReceiptModal = () => setReceiptModal({show: false, success: false, message: ''});

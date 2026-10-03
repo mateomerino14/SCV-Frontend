@@ -1,22 +1,27 @@
 import {useState, useEffect} from 'react';
-import {requestSubstitution, getSubstitutionStatus} from '../../services/approval/substitutionService';
-import {getEmployees} from '../../services/user/userService';
+import {requestSubstitution, getSubstitutionStatus, getSubstitutionCandidates} from '../../services/approval/substitutionService';
 
 function useSubstitutionRequest(tripId) {
   const [request, setRequest] = useState(null);
   const [employees, setEmployees] = useState([]);
+  const [substituteId, setSubstituteId] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [withoutSection, setWithoutSection] = useState(false);
 
-  const load = async () => {
+  const load = async (silent = false) => {
     if (!tripId) {
       return;
     }
-    setLoading(true);
+    if (!silent) {
+      setLoading(true);
+    }
     const data = await getSubstitutionStatus(tripId);
-    setLoading(false);
+    if (!silent) {
+      setLoading(false);
+    }
     if (!data || data.error) {
       return;
     }
@@ -27,13 +32,24 @@ function useSubstitutionRequest(tripId) {
     load();
   }, [tripId]);
 
+  // Mientras espera respuesta del revisor se consulta cada 30 segundos
+  const waitingResponse = request?.estado === 'PENDIENTE';
+  useEffect(() => {
+    if (!waitingResponse) {
+      return undefined;
+    }
+    const interval = setInterval(() => load(true), 30000);
+    return () => clearInterval(interval);
+  }, [waitingResponse, tripId]);
+
   const openModal = async () => {
+    setSubstituteId('');
     setShowModal(true);
-    if (employees.length === 0) {
-      const data = await getEmployees();
-      if (!data.error) {
-        setEmployees(data);
-      }
+    // Solo personas activas de la misma seccion (el backend excluye al propio usuario)
+    const data = await getSubstitutionCandidates();
+    if (!data.error) {
+      setEmployees(data.candidatos || []);
+      setWithoutSection(!!data.sinSeccion);
     }
   };
 
@@ -61,11 +77,14 @@ function useSubstitutionRequest(tripId) {
 
   const isPending = request?.estado === 'PENDIENTE';
   const isApproved = request?.estado === 'APROBADA';
-  const isRejected = request?.estado === 'RECHAZADA';
-  const canRequest = !request || isRejected;
+  // Una solicitud cerrada por el sistema (sin revisor) no se muestra como rechazada
+  const isClosed = request?.estado === 'RECHAZADA';
+  const isRejected = isClosed && !!request?.id_revisor;
+  const canRequest = !request || isClosed;
 
   return {
-    request, employees, loading, submitting, modalError,
+    withoutSection,
+    request, employees, substituteId, setSubstituteId, loading, submitting, modalError,
     showModal, openModal, closeModal: () => setShowModal(false),
     isPending, isApproved, isRejected, canRequest,
     handleRequest, reload: load,

@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import getCurrentUserId from '../../utils/getCurrentUserId';
 import {
   getExpenseReviewDetail,
   approveExpenseReview,
@@ -94,15 +95,18 @@ function useSupervisorExpenseReviewDetail(tripId) {
       return;
     }
     setShowApprove(false);
-    setActionCompleted('APROBADO');
-    setData((prev) => ({...prev, viaje: {...prev.viaje, estado: 'APROBADO_SUPERVISOR'}}));
+    const nextState = data?.viaje?.tiene_alcohol ? 'EN_REVISION_APROBADOR' : 'APROBADO_SUPERVISOR';
+    setActionCompleted(nextState);
+    setData((prev) => ({...prev, viaje: {...prev.viaje, estado: nextState}}));
   };
   
   const currentCycle = () => data?.viaje?.ciclo_revision || 1;
 
   const handleRequestReject = () => {
+    const currentUserId = getCurrentUserId();
     const savedObservations = (data?.comentarios || []).filter((comment) =>
       comment.tipo === 'OBSERVACION' &&
+      comment.id_usuario === currentUserId &&
       (comment.ciclo_revision || 1) === currentCycle() &&
       comment.id_gasto != null
     );

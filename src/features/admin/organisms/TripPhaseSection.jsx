@@ -30,10 +30,10 @@ function TripPhaseSection({title, stats, data, showChart}) {
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" stroke={COLORS.dataFields} />
-              <XAxis dataKey="name" tick={{fontSize: 9, fontFamily: 'Inter', fill: COLORS.labels}} axisLine={false} tickLine={false} />
-              <YAxis tick={{fontSize: 10, fontFamily: 'Inter', fill: COLORS.labels}} axisLine={false} tickLine={false} allowDecimals={false} />
+              <XAxis dataKey="name" tick={{fontSize: 9, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} axisLine={false} tickLine={false} />
+              <YAxis tick={{fontSize: 10, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} axisLine={false} tickLine={false} allowDecimals={false} />
               <Tooltip formatter={(value) => [`${value} viajes`]}
-                contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter'}} />
+                contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter, sans-serif'}} />
               <Bar dataKey="valor" radius={[6, 6, 0, 0]}>
                 {chartData.map((entry, index) => <Cell key={index} fill={entry.fill} />)}
               </Bar>

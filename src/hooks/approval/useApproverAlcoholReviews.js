@@ -1,20 +1,19 @@
 import {useState, useEffect, useRef} from 'react';
-import {getPendingAlcoholReviews, getMyAlcoholReviews, takeAlcoholReview} from '../../services/approval/approverAlcoholReviewService';
+import {getMyAlcoholReviews} from '../../services/approval/approverAlcoholReviewService';
 import {getEmployees} from '../../services/user/userService';
+import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
 function useApproverAlcoholReviews() {
-  const [pending, setPending] = useState([]);
   const [myTrips, setMyTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
-  const [taking, setTaking] = useState(null);
   const [error, setError] = useState('');
-  const [alreadyTaken, setAlreadyTaken] = useState(false);
-  const [tab, setTab] = useState('PENDIENTES');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [tab, setTab] = useState('MIS_PENDIENTES');
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const filtersRef = useRef(filters);
 
   useEffect(() => {
@@ -25,22 +24,15 @@ function useApproverAlcoholReviews() {
     if (showLoading) {
       setLoading(true);
     }
-    const [pendingData, myTripsData] = await Promise.all([
-      getPendingAlcoholReviews(currentFilters),
-      getMyAlcoholReviews(),
-    ]);
+    const myTripsData = await getMyAlcoholReviews(currentFilters);
     if (showLoading) {
       setLoading(false);
-    }
-    if (pendingData.error) {
-      setError(pendingData.error);
-      return;
     }
     if (myTripsData.error) {
       setError(myTripsData.error);
       return;
     }
-    setPending(pendingData);
+    setError('');
     setMyTrips(myTripsData);
   };
 
@@ -50,6 +42,10 @@ function useApproverAlcoholReviews() {
       const employeeData = await getEmployees();
       if (!employeeData.error) {
         setEmployees(employeeData);
+      }
+      const sectionData = await getSections();
+      if (!sectionData.error) {
+        setSections(sectionData);
       }
     };
     start();
@@ -64,33 +60,16 @@ function useApproverAlcoholReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     load(emptyFilters, true);
   };
 
-  const handleTake = async (tripId) => {
-    setTaking(tripId);
-    const data = await takeAlcoholReview(tripId);
-    setTaking(null);
-    if (data.error) {
-      if (data.error.includes('ya fue tomado') || data.error.includes('siendo revisado')) {
-        setAlreadyTaken(true);
-      }
-      else {
-        setError(data.error);
-      }
-      await load();
-      return;
-    }
-    await load();
-  };
-
-  const closeAlreadyTakenModal = () => setAlreadyTaken(false);
-
-  const approvedTrips = myTrips.filter((trip) => ['APROBADO_SUPERVISOR', 'APROBADO_FINAL'].includes(trip.estado));
-  const rejectedTrips = myTrips.filter((trip) => trip.estado === 'RECHAZADO');
-  let displayedTrips = pending;
+  const isPendingForMe = (trip) => trip.estado === 'EN_REVISION_APROBADOR' && trip.asignado_a_mi !== false;
+  const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip));
+  const rejectedTrips = myTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO');
+  const myPendingTrips = myTrips.filter(isPendingForMe);
+  let displayedTrips = myPendingTrips;
   if (tab === 'APROBADOS') {
     displayedTrips = approvedTrips;
   }
@@ -100,16 +79,15 @@ function useApproverAlcoholReviews() {
 
   return {
     trips: displayedTrips,
-    totalPending: pending.length,
+    totalMyPending: myPendingTrips.length,
     totalApproved: approvedTrips.length,
     totalRejected: rejectedTrips.length,
     employees,
-    loading, applyingFilters, taking, error,
-    alreadyTaken, closeAlreadyTakenModal,
+    sections,
+    loading, applyingFilters, error,
     tab, setTab,
     filters, setFilters,
     applyFilters, clearFilters,
-    handleTake,
     reload: load,
   };
 }

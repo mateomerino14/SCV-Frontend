@@ -7,12 +7,18 @@ import {getToken, setToken} from './services/shared/tokenStore';
 import {COLORS} from './constants';
 
 import LoginPage from './pages/user/LoginPage';
+import PasswordChangeGate from './features/user/organisms/PasswordChangeGate';
+import {getHomeRoute} from './constants/roleHome';
+import useIsTreasurer from './hooks/user/useIsTreasurer';
 
 const SettingsPage = lazy(() => import('./pages/user/SettingsPage'));
 const ProfilePage = lazy(() => import('./pages/user/ProfilePage'));
 const DashboardAdminPage = lazy(() => import('./pages/admin/DashboardAdminPage'));
 const UserManagementPage = lazy(() => import('./pages/admin/UserManagementPage'));
 const PositionManagementPage = lazy(() => import('./pages/admin/PositionManagementPage'));
+const SectionManagementPage = lazy(() => import('./pages/admin/SectionManagementPage'));
+const AuditLogPage = lazy(() => import('./pages/admin/AuditLogPage'));
+const ReminderSettingsPage = lazy(() => import('./pages/admin/ReminderSettingsPage'));
 const EmployeeDashboardPage = lazy(() => import('./pages/trip/EmployeeDashboardPage'));
 const CreateTripPage = lazy(() => import('./pages/trip/CreateTripPage'));
 const EditTripPage = lazy(() => import('./pages/trip/EditTripPage'));
@@ -29,8 +35,6 @@ const SupervisorTripReviewDetailPage = lazy(() => import('./pages/approval/Super
 const SupervisorPendingExpenseReviewsPage = lazy(() => import('./pages/approval/SupervisorPendingExpenseReviewsPage'));
 const SupervisorExpenseReviewHistoryPage = lazy(() => import('./pages/approval/SupervisorExpenseReviewHistoryPage'));
 const SupervisorExpenseReviewDetailPage = lazy(() => import('./pages/approval/SupervisorExpenseReviewDetailPage'));
-const ApproverPendingTripsPage = lazy(() => import('./pages/approval/ApproverPendingTripsPage'));
-const ApproverTripHistoryPage = lazy(() => import('./pages/approval/ApproverTripHistoryPage'));
 const ApproverReviewsPage = lazy(() => import('./pages/approval/ApproverReviewsPage'));
 const ApproverAlcoholReviewsPage = lazy(() => import('./pages/approval/ApproverAlcoholReviewsPage'));
 const ApproverAlcoholReviewDetailPage = lazy(() => import('./pages/approval/ApproverAlcoholReviewDetailPage'));
@@ -62,8 +66,29 @@ function ProtectedRoute({allowedRoles, children}) {
     return <Navigate to="/" replace />;
   }
   const role = getRoleFromToken();
+  // Con sesion pero sin permiso para esta pantalla: a su pantalla de inicio, no al login
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={getHomeRoute(role)} replace />;
+  }
+  return children;
+}
+
+// Pantallas de tesoreria: solo para quien tiene el cargo de tesorero
+function TreasurerRoute({children}) {
+  const {isTreasurer, loading} = useIsTreasurer();
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+  if (!isTreasurer) {
+    return <Navigate to={getHomeRoute(getRoleFromToken())} replace />;
+  }
+  return children;
+}
+
+// La pantalla de ingreso redirige a la de inicio si ya hay una sesion activa
+function LoginRoute({children}) {
+  if (getToken()) {
+    return <Navigate to={getHomeRoute(getRoleFromToken())} replace />;
   }
   return children;
 }
@@ -117,9 +142,10 @@ function App() {
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
+      <PasswordChangeGate />
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><LoginPage /></PageTransition>} />
+        <Route path="/" element={<LoginRoute><PageTransition><LoginPage /></PageTransition></LoginRoute>} />
         <Route path="/dashboard/empleado" element={<ProtectedRoute><PageTransition><EmployeeDashboardPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/empleado/crear-viaje" element={<ProtectedRoute><PageTransition><CreateTripPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/empleado/viaje/:id" element={<ProtectedRoute><PageTransition><TripDetailPage /></PageTransition></ProtectedRoute>} />
@@ -135,6 +161,9 @@ function App() {
         <Route path="/dashboard/administrador" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><DashboardAdminPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/usuarios" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><UserManagementPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/cargos" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><PositionManagementPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/administrador/secciones" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><SectionManagementPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/administrador/historial-accesos" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><AuditLogPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/administrador/recordatorios" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><ReminderSettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/perfil" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/configuracion" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/supervisor" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SupervisorPendingExpenseReviewsPage /></PageTransition></ProtectedRoute>} />
@@ -150,8 +179,6 @@ function App() {
         <Route path="/dashboard/aprobador/revision-alcohol" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverAlcoholReviewsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/revision-alcohol/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverAlcoholReviewDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/gasto/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ExpenseDetailPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/aprobador/viajes-pendientes" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverPendingTripsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/aprobador/viajes-historial" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverTripHistoryPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/viaje-previo/:id" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverTripReviewDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/perfil" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/configuracion" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
@@ -162,8 +189,8 @@ function App() {
         <Route path="/dashboard/revisor/reemplazos" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><SubstitutionRequestsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/perfil" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/revisor/configuracion" element={<ProtectedRoute allowedRoles={[4]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/tesorero/revisiones" element={<ProtectedRoute><PageTransition><TreasurerReviewsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/tesorero/viaje/:id" element={<ProtectedRoute><PageTransition><TreasurerReviewDetailPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/tesorero/revisiones" element={<ProtectedRoute><TreasurerRoute><PageTransition><TreasurerReviewsPage /></PageTransition></TreasurerRoute></ProtectedRoute>} />
+        <Route path="/dashboard/tesorero/viaje/:id" element={<ProtectedRoute><TreasurerRoute><PageTransition><TreasurerReviewDetailPage /></PageTransition></TreasurerRoute></ProtectedRoute>} />
         <Route path="*" element={<PageTransition><NotFoundPage /></PageTransition>} />
       </Routes>
       </AnimatePresence>

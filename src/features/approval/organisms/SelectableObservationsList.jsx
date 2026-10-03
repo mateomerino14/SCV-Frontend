@@ -16,7 +16,7 @@ const styles = {
   text: 'text-sm font-inter leading-relaxed p-3 rounded-xl ml-4 break-words overflow-hidden',
 };
 
-function SelectableObservationsList({observations, canManage, onAdd, onEdit, onDelete, editingComment, deletingComment}) {
+function SelectableObservationsList({observations, canManage, currentUserId, onAdd, onEdit, onDelete, editingComment, deletingComment}) {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
@@ -48,8 +48,11 @@ function SelectableObservationsList({observations, canManage, onAdd, onEdit, onD
     return null;
   }
 
+  // Solo se pueden seleccionar (para editar o borrar) las observaciones propias
+  const isOwn = (observation) => !currentUserId || observation.id_usuario === currentUserId;
+
   const handleSelect = (observation) => {
-    if (!canManage) {
+    if (!canManage || !isOwn(observation)) {
       return;
     }
     if (selected?.id_comentario === observation.id_comentario) {
@@ -59,10 +62,6 @@ function SelectableObservationsList({observations, canManage, onAdd, onEdit, onD
     setSelected(observation);
   };
 
-  let itemCursor = 'default';
-  if (canManage) {
-    itemCursor = 'pointer';
-  }
 
   let editDeleteOpacity = 0.5;
   let editDeleteBackground = COLORS.dataFields;
@@ -93,6 +92,11 @@ function SelectableObservationsList({observations, canManage, onAdd, onEdit, onD
       </div>
       {observations.map((observation) => {
         const isSelected = selected?.id_comentario === observation.id_comentario;
+        const own = isOwn(observation);
+        let itemCursor = 'default';
+        if (canManage && own) {
+          itemCursor = 'pointer';
+        }
         let bulletColor = COLORS.secondary;
         if (isSelected) {
           bulletColor = COLORS.primary;

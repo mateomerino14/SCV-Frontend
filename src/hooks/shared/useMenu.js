@@ -26,6 +26,11 @@ function useMenu() {
     try {
       const data = await getMe();
       if (!data.error) {
+        if (originalRoleRef.current && data.id_rol !== originalRoleRef.current) {
+          clearToken();
+          window.dispatchEvent(new CustomEvent('session-expired'));
+          return;
+        }
         setUser(data);
       }
     }
