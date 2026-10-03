@@ -8,6 +8,9 @@ export const routes = {
   adminDashboard: '/dashboard/administrador',
   adminUsers: '/dashboard/administrador/usuarios',
   adminPositions: '/dashboard/administrador/cargos',
+  adminSections: '/dashboard/administrador/secciones',
+  adminAuditLog: '/dashboard/administrador/historial-accesos',
+  adminReminders: '/dashboard/administrador/recordatorios',
   adminProfile: '/dashboard/administrador/perfil',
   adminSettings: '/dashboard/administrador/configuracion',
   supervisorPendingExpenseReviews: '/dashboard/supervisor',
@@ -17,11 +20,11 @@ export const routes = {
   supervisorProfile: '/dashboard/supervisor/perfil',
   supervisorSettings: '/dashboard/supervisor/configuracion',
   approverReviews: '/dashboard/aprobador/revisiones',
-  approverPendingTrips: '/dashboard/aprobador/viajes-pendientes',
-  approverTripHistory: '/dashboard/aprobador/viajes-historial',
+  approverAlcoholReviews: '/dashboard/aprobador/revision-alcohol',
   approverProfile: '/dashboard/aprobador/perfil',
   approverSettings: '/dashboard/aprobador/configuracion',
   reviewerReviews: '/dashboard/revisor',
+  substitutionRequests: '/dashboard/revisor/reemplazos',
   reviewerDeadlineRequests: '/dashboard/revisor/solicitudes-plazo',
   reviewerProfile: '/dashboard/revisor/perfil',
   reviewerSettings: '/dashboard/revisor/configuracion',
@@ -70,6 +73,14 @@ export function supervisorExpenseDetailPath(expenseId) {
 
 export function approverPendingTripPath(tripId) {
   return `/dashboard/aprobador/viaje-previo/${tripId}`;
+}
+
+export function approverAlcoholReviewPath(tripId) {
+  return `/dashboard/aprobador/revision-alcohol/${tripId}`;
+}
+
+export function approverExpenseDetailPath(expenseId) {
+  return `/dashboard/aprobador/gasto/${expenseId}`;
 }
 
 export function reviewerReviewPath(tripId) {

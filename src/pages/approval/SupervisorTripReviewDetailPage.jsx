@@ -19,6 +19,7 @@ import useTakeTripReview from '../../features/approval/hooks/useTakeTripReview';
 import useMenu from '../../hooks/shared/useMenu';
 import getCurrentUserId from '../../utils/getCurrentUserId';
 import {COLORS} from '../../constants';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -99,13 +100,10 @@ function SupervisorTripReviewDetailPage() {
   const isPending = trip.estado === 'EN_REVISION_VIAJE';
   const canAct = isPending && isMine;
   let successMessage = 'Viaje rechazado correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'APROBADO_VIAJE') {
     successMessage = 'Viaje aprobado correctamente';
-    successBg = '#ffd700aa';
-    successColor = '#7a5900';
   }
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -117,7 +115,7 @@ function SupervisorTripReviewDetailPage() {
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
         <TripReviewDetailCard trip={trip} />
-        <SelectableObservationsList observations={observationComments} canManage={canAct}
+        <SelectableObservationsList observations={observationComments} canManage={canAct} currentUserId={user?.id_usuario}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}
           editingComment={editingComment} deletingComment={deletingComment} />
         {takeError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{takeError}</p>}

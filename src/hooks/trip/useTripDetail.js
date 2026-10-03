@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {getTripDetail, confirmCompletion} from '../../services/trip/tripService';
 import {deleteExpense} from '../../services/expense/expenseService';
 
@@ -9,7 +9,12 @@ function useTripDetail(tripId) {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [deletingExpense, setDeletingExpense] = useState(false);
   const [error, setError] = useState('');
-  const [justification, setJustification] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [exceededDays, setExceededDays] = useState([]);
+  const [dailyBreakdown, setDailyBreakdown] = useState([]);
+  const [exceedsHotels, setExceedsHotels] = useState(false);
+  const [isSubstitution, setIsSubstitution] = useState(false);
+  const [dayJustifications, setDayJustifications] = useState({});
   const [observations, setObservations] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [showAllNational, setShowAllNational] = useState(false);
@@ -17,46 +22,66 @@ function useTripDetail(tripId) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState(null);
   const [showSubmitReviewModal, setShowSubmitReviewModal] = useState(false);
+  const [accumulatedExpense, setAccumulatedExpense] = useState(0);
+  const [accumulatedExpenseUsd, setAccumulatedExpenseUsd] = useState(0);
+  const [exceedsBudget, setExceedsBudget] = useState(false);
+  const [exceedsBudgetUsd, setExceedsBudgetUsd] = useState(false);
+  const [totalExceeds, setTotalExceeds] = useState(false);
+  const [totalExceedsUsd, setTotalExceedsUsd] = useState(false);
+
+  // Aplica la respuesta del servidor; los totales se calculan en el backend
+  const applyDetail = useCallback((data) => {
+    if (data.error) {
+      const isSessionError = data.error.includes('Token inválido') || data.error.includes('token no proporcionado') || data.error.includes('suspendida');
+      if (!isSessionError) {
+        setError(data.error);
+      }
+      return;
+    }
+    setTrip(data.viaje);
+    setExpenses(data.gastos);
+    setAccumulatedExpense(data.gastoAcumulado || 0);
+    setAccumulatedExpenseUsd(data.gastoAcumuladoUsd || 0);
+    setExceedsBudget(!!data.excedePresupuesto);
+    setExceedsBudgetUsd(!!data.excedePresupuestoUsd);
+    setTotalExceeds(!!data.excedeTotal);
+    setTotalExceedsUsd(!!data.excedeTotalUsd);
+    setExceededDays(data.diasExcedidos || []);
+    setDailyBreakdown(data.desgloseDiario || []);
+    setExceedsHotels(!!data.excedeHoteles);
+    setIsSubstitution(!!data.esSustitucion);
+    if (data.comentarios && data.comentarios.length > 0) {
+      const justifications = data.comentarios.filter((comment) => comment.tipo === 'JUSTIFICACION');
+      const obs = data.comentarios.filter((comment) => comment.tipo === 'OBSERVACION');
+      const justificationsByDay = {};
+      justifications.forEach((comment) => {
+        const key = comment.fecha_justificada || 'HOTEL';
+        if (!justificationsByDay[key]) {
+          justificationsByDay[key] = comment.descripcion;
+        }
+      });
+      setDayJustifications((prev) => ({...justificationsByDay, ...prev}));
+      setObservations(obs);
+    }
+  }, []);
 
   useEffect(() => {
     if (!tripId) {
       return;
     }
-    const loadDetail = async () => {
-      setLoading(true);
-      const data = await getTripDetail(tripId);
+    getTripDetail(tripId).then((data) => {
       setLoading(false);
-      if (data.error) {
-        const isSessionError = data.error.includes('Token inválido') || data.error.includes('token no proporcionado') || data.error.includes('suspendida');
-        if (!isSessionError) {
-          setError(data.error);
-        }
-        return;
-      }
-      setTrip(data.viaje);
-      setExpenses(data.gastos);
-      if (data.comentarios && data.comentarios.length > 0) {
-        const justifications = data.comentarios.filter((comment) => comment.tipo === 'JUSTIFICACION');
-        const obs = data.comentarios.filter((comment) => comment.tipo === 'OBSERVACION');
-        if (justifications.length > 0) {
-          setJustification(justifications[0].descripcion);
-        }
-        setObservations(obs);
-      }
-    };
-    loadDetail();
-  }, [tripId]);
+      applyDetail(data);
+    });
+  }, [tripId, applyDetail]);
+
+  const reloadDetail = async () => {
+    const data = await getTripDetail(tripId);
+    applyDetail(data);
+  };
 
   const nationalExpenses = expenses.filter((expense) => !expense.es_gasto_internacional);
   const internationalExpenses = expenses.filter((expense) => !!expense.es_gasto_internacional);
-  const accumulatedExpense = nationalExpenses.reduce((sum, expense) => sum + parseFloat(expense.monto_total || 0), 0);
-  const accumulatedExpenseUsd = internationalExpenses.reduce((sum, expense) => sum + parseFloat(expense.monto_total || 0), 0);
-  let exceedsBudget = false;
-  let exceedsBudgetUsd = false;
-  if (trip) {
-    exceedsBudget = accumulatedExpense > parseFloat(trip.monto_asignado);
-    exceedsBudgetUsd = accumulatedExpenseUsd > parseFloat(trip.monto_asignado_usd || 0);
-  }
   let tripInProgress = false;
   if (trip) {
     tripInProgress = trip.estado === 'EN_CURSO' || (trip.estado === 'RECHAZADO' && !!trip.fue_iniciado);
@@ -70,9 +95,17 @@ function useTripDetail(tripId) {
     displayedInternationalExpenses = internationalExpenses;
   }
 
-  const showError = (message) => {
-    setError(message);
-    setTimeout(() => setError(''), 3000);
+  const showError = (message) => setAlertMessage(message);
+  const closeAlert = () => setAlertMessage('');
+
+  const setDayJustification = (key, text) => {
+    setDayJustifications((prev) => ({...prev, [key]: text}));
+  };
+
+  const missingJustifications = () => {
+    const missingDays = exceededDays.filter((day) => !dayJustifications[day.fecha]?.trim());
+    const missingHotel = exceedsHotels && !dayJustifications.HOTEL?.trim();
+    return {missingDays, missingHotel};
   };
 
   const handleRequestSubmitReview = () => {
@@ -84,8 +117,9 @@ function useTripDetail(tripId) {
       showError('Solo se pueden finalizar viajes en curso o rechazados con gastos');
       return;
     }
-    if ((exceedsBudget || exceedsBudgetUsd) && !justification.trim()) {
-      showError('Debes ingresar una justificación por exceso de presupuesto');
+    const {missingDays, missingHotel} = missingJustifications();
+    if (missingDays.length > 0 || missingHotel) {
+      showError('Debes justificar cada día que excede la cuota diaria, y el exceso en hoteles si corresponde');
       return;
     }
     setShowSubmitReviewModal(true);
@@ -94,11 +128,18 @@ function useTripDetail(tripId) {
   const handleConfirmSubmitReview = async () => {
     setShowSubmitReviewModal(false);
     setSubmittingReview(true);
-    let justificationToSend = null;
-    if (justification.trim()) {
-      justificationToSend = justification.trim();
+    const justificationsToSend = [];
+    exceededDays.forEach((day) => {
+      const text = dayJustifications[day.fecha]?.trim();
+      if (text) {
+        justificationsToSend.push({fecha: day.fecha, descripcion: text});
+      }
+    });
+    const hotelText = dayJustifications.HOTEL?.trim();
+    if (exceedsHotels && hotelText) {
+      justificationsToSend.push({fecha: null, descripcion: hotelText});
     }
-    const data = await confirmCompletion(tripId, justificationToSend);
+    const data = await confirmCompletion(tripId, justificationsToSend);
     setSubmittingReview(false);
     if (data.error) {
       showError(data.error);
@@ -126,6 +167,7 @@ function useTripDetail(tripId) {
       return;
     }
     setExpenses((prev) => prev.filter((expense) => expense.id_gasto !== expenseToDelete));
+    await reloadDetail();
   };
 
   const handleCancelDelete = () => {
@@ -134,6 +176,8 @@ function useTripDetail(tripId) {
   };
 
   return {
+    alertMessage,
+    closeAlert,
     trip,
     expenses,
     nationalExpenses,
@@ -144,12 +188,18 @@ function useTripDetail(tripId) {
     accumulatedExpenseUsd,
     exceedsBudget,
     exceedsBudgetUsd,
+    totalExceeds,
+    totalExceedsUsd,
+    exceededDays,
+    dailyBreakdown,
+    exceedsHotels,
+    isSubstitution,
+    dayJustifications, setDayJustification,
     tripInProgress,
     loading,
     submittingReview,
     deletingExpense,
     error,
-    justification, setJustification,
     observations,
     submitted,
     showAllNational, setShowAllNational,

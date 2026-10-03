@@ -1,7 +1,9 @@
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
+import {positionImage} from '../../constants/defaultImages';
 import PositionFormModal from '../../features/admin/organisms/PositionFormModal';
 import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -10,13 +12,15 @@ import SkeletonList from '../../components/ui/SkeletonList';
 import usePositionManagement from '../../hooks/admin/usePositionManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
+import ListCount from '../../components/ui/ListCount';
 
-const positionImage = "https://i.pinimg.com/474x/92/59/28/9259282c3e36ed39f345a91a1a182041.jpg";
 
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
-  title: 'text-3xl font-bold font-inter mb-1',
   subtitle: 'text-sm font-inter mb-5',
   searchWrapper: 'flex items-center border rounded-xl px-3 py-2 gap-2 mb-4',
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
@@ -37,7 +41,7 @@ const styles = {
 };
 
 function PositionManagementPage() {
-  const {menuOpen, user, openMenu, closeMenu, sessionExpired} = useMenu();
+  const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     positions, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, selectedPosition,
@@ -45,20 +49,24 @@ function PositionManagementPage() {
     showSuccess, setShowSuccess, successMessage, formData, setFormData, suggestions,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
   } = usePositionManagement();
+  const pagination = useClientPagination(positions, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <Navbar text="Gestión de Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+      <Navbar text="Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Gestión de Cargos</h1>
-        <p className={styles.subtitle} style={{color: COLORS.labels}}>Administra los cargos y salarios del sistema.</p>
+        <PageHeader title="Cargos" subtitle="Define los cargos y su monto de viático diario en bolivianos y en dólares." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Puesto y Salario Diario</p>
         {loading && <SkeletonList count={4} />}
-        {!loading && positions.map((position) => (
+        {!loading && pagination.total > 0 && (
+          <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="cargo" plural="cargos" />
+        )}
+        {!loading && pagination.visibleItems.map((position) => (
           <div key={position.id_cargo} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
             <img src={positionImage} alt="cargo" className={styles.cardImage} />
             <div className={styles.cardInfo}>
@@ -81,6 +89,7 @@ function PositionManagementPage() {
             </div>
           </div>
         ))}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más cargos" />}
         {!loading && positions.length === 0 && (
           <EmptyState title="Sin cargos registrados" subtitle="No se encontraron cargos con los filtros aplicados"
             icon={

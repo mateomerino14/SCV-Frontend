@@ -1,51 +1,52 @@
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {greetingFor} from '../../utils/mascotPreferences';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import ReviewFilters from '../../features/approval/organisms/ReviewFilters';
 import PendingTripItem from '../../features/approval/organisms/PendingTripItem';
 import TripAlreadyTakenModal from '../../features/approval/organisms/TripAlreadyTakenModal';
 import EmptyState from '../../components/ui/EmptyState';
 import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
-import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
 import useSupervisorPendingTrips from '../../hooks/approval/useSupervisorPendingTrips';
 import useMenu from '../../hooks/shared/useMenu';
-import usePasswordExpiredCheck from '../../hooks/user/usePasswordExpiredCheck';
 import {COLORS} from '../../constants';
 import {supervisorPendingTripPath, routes} from '../../constants/routes';
+import ListCount from '../../components/ui/ListCount';
+import LoadMoreButton from '../../components/ui/LoadMoreButton';
+import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   errorMsg: "text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4",
-  totalText: "text-xs font-inter mb-3",
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
 };
 
 function SupervisorPendingTripsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    trips, employees, loading, taking, error, alreadyTaken, closeAlreadyTakenModal,
+    trips, employees, sections, loading, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, applyingFilters, applyFilters, clearFilters, handleTake,
   } = useSupervisorPendingTrips();
-  const {showModal: showPasswordExpired, loading: loadingPasswordChange, error: errorPasswordChange, handleChange} = usePasswordExpiredCheck();
+  const pagination = useClientPagination(trips, 12, '');
+
+  const mascotMessage = loading ? null : (trips.length > 0 ? `${greetingFor(user?.nombre)} Hay ${trips.length} ${trips.length === 1 ? 'viaje sin asignar esperando' : 'viajes sin asignar esperando'} que alguien lo${trips.length === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay viajes sin asignar por ahora.`);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <PasswordExpiredModal isOpen={showPasswordExpired} onConfirm={handleChange} loading={loadingPasswordChange} error={errorPasswordChange} />
       <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
-      <Navbar text="Revisión de Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Viajes Sin Asignar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Viajes por revisar</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Viajes Pendientes</h1>
+        <PageHeader title="Viajes Sin Asignar" subtitle="Viajes que esperan revisión y no tienen un supervisor asignado; tómalos para revisarlos." />
         <ReviewFilters filters={filters} setFilters={setFilters} onApply={applyFilters} onClear={clearFilters}
-          employees={employees} hideStatusTabs applyingFilters={applyingFilters} />
+          employees={employees} sections={sections} hideStatusTabs applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
-        {!loading && <p className={styles.totalText} style={{color: COLORS.labels}}>{trips.length} viaje{trips.length !== 1 ? 's' : ''} pendiente{trips.length !== 1 ? 's' : ''}</p>}
+        {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="viaje" plural="viajes" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
           <EmptyState title="Sin viajes pendientes" subtitle="No hay viajes esperando revisión"
@@ -57,13 +58,15 @@ function SupervisorPendingTripsPage() {
         )}
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
-            {trips.map((trip) => (
+            {pagination.visibleItems.map((trip) => (
               <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={supervisorPendingTripPath(trip.id_viaje)} originRoute={routes.supervisorPendingTrips}
                 onTake={handleTake} taking={taking === trip.id_viaje} assignedField="id_supervisor_asignado" />
             ))}
           </div>
         )}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
       </div>
+      <MascotGreeting pageKey="supervisor-viajes-sin-asignar" message={mascotMessage} />
       <Footer />
     </div>
   );

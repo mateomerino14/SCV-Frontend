@@ -5,6 +5,7 @@ import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import DeleteExpenseConfirmModal from '../../features/expense/organisms/DeleteExpenseConfirmModal';
 import SubmitReviewConfirmModal from '../../features/trip/organisms/SubmitReviewConfirmModal';
 import DeadlineRequestModal from '../../features/approval/organisms/DeadlineRequestModal';
+import SubstitutionRequestModal from '../../features/trip/organisms/SubstitutionRequestModal';
 import DeadlineExpiredModal from '../../features/approval/organisms/DeadlineExpiredModal';
 import DeadlineExpiredNoticeModal from '../../features/approval/organisms/DeadlineExpiredNoticeModal';
 import TripDraftView from '../../features/trip/organisms/TripDraftView';
@@ -16,9 +17,12 @@ import SkeletonCard from '../../components/ui/SkeletonCard';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useTripDetail from '../../hooks/trip/useTripDetail';
 import useDeadlineAuthorization from '../../hooks/approval/useDeadlineAuthorization';
-import useTripExcelExport from '../hooks/useTripExcelExport';
+import useSubstitutionRequest from '../../hooks/approval/useSubstitutionRequest';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import EmptyState from '../../components/ui/EmptyState';
+import {FileX, AlertCircle} from 'lucide-react';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -31,11 +35,12 @@ function TripDetailPage() {
   const location = useLocation();
   const originRoute = location.state?.from || '/dashboard/empleado';
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const {exportToExcel} = useTripExcelExport();
   const tripDetail = useTripDetail(id);
   const {trip, loading, error} = tripDetail;
   const tripInProgress = trip?.estado === 'EN_CURSO' || (trip?.estado === 'RECHAZADO' && !!trip?.fue_iniciado);
   const deadline = useDeadlineAuthorization(id, trip?.fecha_fin, tripInProgress);
+  // Solo el titular pide un reemplazo: para quien rinde como reemplazo no se consulta
+  const substitution = useSubstitutionRequest(trip && !tripDetail.isSubstitution ? id : null);
 
   if (loading) {
     return (
@@ -52,7 +57,14 @@ function TripDetailPage() {
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <Navbar text="Detalles de Viaje" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
-        <div className="flex-1 flex items-center justify-center"><p style={{color: COLORS.secondary}}>{error || 'No se encontró el viaje'}</p></div>
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5 py-10">
+          <EmptyState title={error === 'El viaje no existe' ? 'Viaje no encontrado' : 'Viaje no disponible'}
+            subtitle={error || 'No se encontró el viaje'}
+            icon={<FileX size={30} style={{color: 'rgba(255,255,255,0.8)'}} />} />
+          <button className="px-6 py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border-2"
+            style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}
+            onClick={() => navigate(originRoute)}>Volver</button>
+        </div>
         <Footer />
       </div>
     );
@@ -75,14 +87,15 @@ function TripDetailPage() {
   }
   else if (isFinalApproved) {
     content = <TripFinalApprovedView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate}
-      expenses={tripDetail.expenses} nationalExpenses={tripDetail.nationalExpenses} internationalExpenses={tripDetail.internationalExpenses}
+      nationalExpenses={tripDetail.nationalExpenses} internationalExpenses={tripDetail.internationalExpenses}
       accumulatedExpense={tripDetail.accumulatedExpense} accumulatedExpenseUsd={tripDetail.accumulatedExpenseUsd}
-      exceedsBudget={tripDetail.exceedsBudget} exceedsBudgetUsd={tripDetail.exceedsBudgetUsd}
-      justification={tripDetail.justification} observations={tripDetail.observations} exportToExcel={exportToExcel} />;
+      totalExceeds={tripDetail.totalExceeds} totalExceedsUsd={tripDetail.totalExceedsUsd}
+      exceededDays={tripDetail.exceededDays} exceedsHotels={tripDetail.exceedsHotels} dayJustifications={tripDetail.dayJustifications}
+      observations={tripDetail.observations} />;
   }
   else {
     content = <TripActiveExpenseView trip={trip} tripId={id} isInternational={isInternational} originRoute={originRoute} navigate={navigate}
-      tripDetail={tripDetail} deadline={deadline} />;
+      tripDetail={tripDetail} deadline={deadline} substitution={substitution} />;
   }
 
   return (
@@ -93,9 +106,14 @@ function TripDetailPage() {
       <div className={styles.content}>{content}</div>
       <DeleteExpenseConfirmModal isOpen={tripDetail.showDeleteModal} onClose={tripDetail.handleCancelDelete} onConfirm={tripDetail.handleConfirmDelete} loading={tripDetail.deletingExpense} />
       <SubmitReviewConfirmModal isOpen={tripDetail.showSubmitReviewModal} onClose={tripDetail.handleCancelSubmitReview} onConfirm={tripDetail.handleConfirmSubmitReview} />
+      <ConfirmDialog isOpen={!!tripDetail.alertMessage} compact icon={AlertCircle} iconColor={COLORS.primary}
+        title="No se pudo continuar" message={tripDetail.alertMessage} confirmText="Entendido" hideCancel onConfirm={tripDetail.closeAlert} />
       <DeadlineExpiredNoticeModal isOpen={deadline.showExpiredNotice} onClose={deadline.closeExpiredNotice} />
       <DeadlineRequestModal isOpen={deadline.showModal} onClose={() => deadline.setShowModal(false)} onConfirm={deadline.handleRequest} loading={deadline.submitting} error={deadline.modalError} />
       <DeadlineExpiredModal isOpen={deadline.isApprovedExpired && tripDetail.submitted} onClose={() => {}} message="Tu autorización de plazo ha vencido." />
+      <SubstitutionRequestModal isOpen={substitution.showModal} withoutSection={substitution.withoutSection} onClose={substitution.closeModal} onConfirm={substitution.handleRequest}
+        substituteId={substitution.substituteId} onSelectSubstitute={substitution.setSubstituteId}
+        employees={substitution.employees} loading={substitution.submitting} error={substitution.modalError} />
       <Footer />
     </div>
   );

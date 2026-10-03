@@ -7,8 +7,8 @@ import {alertConfig, tripStatusConfig} from '../hooks/useTripStatusConfig';
 import TripRoute from '../../trip/atoms/TripRoute';
 import TransportIcon from '../atoms/TransportIcon';
 import TripActionButtons from '../molecules/TripActionButtons';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   card: 'rounded-2xl shadow-sm overflow-hidden flex flex-col',
@@ -55,7 +55,10 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
           <img src={trip.Usuario?.foto_perfil || avatarDefault} alt="empleado" className={styles.avatar} />
           <div className={styles.employeeInfo}>
             <p className={styles.employeeName} style={{color: COLORS.text}}>{trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}</p>
-            <p className={styles.employeePosition} style={{color: COLORS.labels}}>{trip.Usuario?.Cargo?.nombre}</p>
+            <p className={styles.employeePosition} style={{color: COLORS.labels}}>
+              {trip.Usuario?.Cargo?.nombre}
+              {trip.Usuario?.Seccion?.nombre && ` · ${trip.Usuario.Seccion?.nombre}`}
+            </p>
             <p className={styles.employeeDates} style={{color: COLORS.labels}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
           </div>
           <span className={styles.conformityBadge} style={{backgroundColor: isObserved ? COLORS.error : '#d4edda', color: isObserved ? COLORS.secondary : '#155724'}}>

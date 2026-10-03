@@ -8,16 +8,28 @@ function useEmployeeDashboard() {
   const [user, setUser] = useState(null);
   const [draftTrips, setDraftTrips] = useState([]);
   const [inProgressTrips, setInProgressTrips] = useState([]);
+  const [substitutionTrips, setSubstitutionTrips] = useState([]);
   const [recentTrips, setRecentTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submittingReview, setSubmittingReview] = useState(null);
   const [submitError, setSubmitError] = useState('');
   const [tripToConfirm, setTripToConfirm] = useState(null);
+  const [loadError, setLoadError] = useState('');
 
   const loadDashboard = async () => {
     const data = await getDashboard();
+    // Si falla se conservan los datos; con cambio de contrasena pendiente no se avisa error
+    if (data.error && data.error.includes('cambiar tu contraseña')) {
+      return;
+    }
+    if (data.error) {
+      setLoadError('No se pudieron actualizar tus viajes. Revisa tu conexión; se reintentará en unos segundos.');
+      return;
+    }
+    setLoadError('');
     setDraftTrips(data.viajesBorrador || []);
     setInProgressTrips(data.viajesEnCurso || []);
+    setSubstitutionTrips(data.viajesSustitucion || []);
     setRecentTrips(data.viajesRecientes || []);
   };
 
@@ -25,7 +37,9 @@ function useEmployeeDashboard() {
     const start = async () => {
       setLoading(true);
       const [userData] = await Promise.all([getMe(), loadDashboard()]);
-      setUser(userData);
+      if (!userData?.error) {
+        setUser(userData);
+      }
       setLoading(false);
     };
     start();
@@ -57,11 +71,13 @@ function useEmployeeDashboard() {
     user,
     draftTrips,
     inProgressTrips,
+    substitutionTrips,
     displayedTrips,
     recentTrips,
     loading,
     submittingReview,
     submitError,
+    loadError,
     tripToConfirm,
     handleRequestSubmitReview,
     handleCancelSubmitReview,

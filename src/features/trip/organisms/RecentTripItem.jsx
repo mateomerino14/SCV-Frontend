@@ -1,10 +1,13 @@
 import {motion} from 'framer-motion';
 import {useNavigate} from 'react-router-dom';
 import {COLORS} from '../../../constants';
+import {tripIcon} from '../../../constants/defaultImages';
 import {routes, tripPath} from '../../../constants/routes';
 import {formatDateRange} from '../../../utils/dateFormatter';
 import TripTypeBadge from '../atoms/TripTypeBadge';
 import TripRoute from '../atoms/TripRoute';
+import {statusColors as statusPalette} from '../../../constants/tripStatusColors';
+import {statusLabels as tripStatusLabels} from '../../../constants/tripStatusLabels';
 
 const styles = {
   container: "flex items-center justify-between p-3 shadow-sm border mb-3 rounded-xl gap-2",
@@ -23,40 +26,31 @@ const styles = {
 };
 
 const statusColors = {
-  EN_REVISION_VIAJE: '#5b00a0',
-  APROBADO_VIAJE: '#7a5900',
-  EN_REVISION_TESORERO: '#8a4b00',
+  EN_REVISION_VIAJE: statusPalette.EN_REVISION_VIAJE.color,
+  APROBADO_VIAJE: statusPalette.APROBADO_VIAJE.color,
+  EN_REVISION_TESORERO: statusPalette.EN_REVISION_TESORERO.color,
   EN_CURSO: COLORS.background,
-  EN_REVISION: '#000a65',
-  APROBADO_SUPERVISOR: '#7a5900',
-  APROBADO_APROBADOR: '#000a65',
-  APROBADO_FINAL: '#008330',
-  RECHAZADO: '#500203',
+  EN_REVISION: statusPalette.EN_REVISION.color,
+  EN_REVISION_APROBADOR: statusPalette.EN_REVISION_APROBADOR.color,
+  APROBADO_SUPERVISOR: statusPalette.APROBADO_SUPERVISOR.color,
+  APROBADO_FINAL: statusPalette.APROBADO_FINAL.color,
+  RECHAZADO: statusPalette.RECHAZADO.color,
 };
 
 const statusBackgrounds = {
-  EN_REVISION_VIAJE: '#e8d5ff',
-  APROBADO_VIAJE: '#ffd700aa',
-  EN_REVISION_TESORERO: '#ffd8a8aa',
+  EN_REVISION_VIAJE: statusPalette.EN_REVISION_VIAJE.bg,
+  APROBADO_VIAJE: statusPalette.APROBADO_VIAJE.bg,
+  EN_REVISION_TESORERO: statusPalette.EN_REVISION_TESORERO.bg,
   EN_CURSO: COLORS.primary,
-  EN_REVISION: '#85aff3ab',
-  APROBADO_SUPERVISOR: '#ffd700aa',
-  APROBADO_APROBADOR: '#85aff3ab',
-  APROBADO_FINAL: '#aafac9a2',
-  RECHAZADO: '#ffa7a8aa',
+  EN_REVISION: statusPalette.EN_REVISION.bg,
+  EN_REVISION_APROBADOR: statusPalette.EN_REVISION_APROBADOR.bg,
+  APROBADO_SUPERVISOR: statusPalette.APROBADO_SUPERVISOR.bg,
+  APROBADO_FINAL: statusPalette.APROBADO_FINAL.bg,
+  RECHAZADO: statusPalette.RECHAZADO.bg,
 };
 
-const statusLabels = {
-  EN_REVISION_VIAJE: 'REVISIÓN PREVIA',
-  APROBADO_VIAJE: 'APR. SUPERVISOR',
-  EN_REVISION_TESORERO: 'ESPERANDO FONDOS',
-  EN_CURSO: 'EN CURSO',
-  EN_REVISION: 'EN REVISIÓN',
-  APROBADO_SUPERVISOR: 'APR. SUPERVISOR',
-  APROBADO_APROBADOR: 'APR. APROBADOR',
-  APROBADO_FINAL: 'APROBADO',
-  RECHAZADO: 'RECHAZADO',
-};
+// Mismo nombre que en el resto del sistema, en mayusculas para la etiqueta compacta
+const statusLabels = Object.fromEntries(Object.entries(tripStatusLabels).map(([state, label]) => [state, label.toUpperCase()]));
 
 function RecentTripItem({trip, from}) {
   const navigate = useNavigate();
@@ -69,7 +63,7 @@ function RecentTripItem({trip, from}) {
       <div className={styles.left}>
         <div className={styles.imageWrapper} style={{backgroundColor: COLORS.fields}}>
           <img
-            src="https://thumbs.dreamstime.com/b/icono-de-glifo-negro-para-viajes-negocios-reuni%C3%B3n-trabajo-fly-work-viaje-internacional-corporativo-un-pa%C3%ADs-extranjero-222264681.jpg"
+            src={tripIcon}
             alt="Imagen por Defecto" className="h-20 rounded-lg" />
         </div>
         <div className={styles.info}>

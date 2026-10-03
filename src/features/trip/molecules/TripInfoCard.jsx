@@ -2,6 +2,7 @@ import {Navigation, MapPin} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateRange} from '../../../utils/dateFormatter';
 import TripTypeBadge from '../atoms/TripTypeBadge';
+import TripTransportBadge from '../atoms/TripTransportBadge';
 import TripStatusBadge from '../atoms/TripStatusBadge';
 
 const styles = {
@@ -26,9 +27,7 @@ function TripInfoCard({trip, isInternational}) {
       </div>
       <div className={styles.badgesRow}>
         <TripTypeBadge isInternational={isInternational} />
-        {trip.transporte && (
-          <span className="text-xs font-semibold font-inter px-3 py-1 rounded-full uppercase" style={{backgroundColor: COLORS.dataFields, color: COLORS.text}}>{trip.transporte}</span>
-        )}
+        <TripTransportBadge transport={trip.transporte} />
       </div>
       <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />
       <div className={styles.infoGrid}>
@@ -53,6 +52,12 @@ function TripInfoCard({trip, isInternational}) {
               <MapPin size={12} style={{color: COLORS.secondary, marginTop: 3, flexShrink: 0}} />
               <span className={styles.routeText}>{trip.destino}</span>
             </p>
+          </div>
+        )}
+        {trip.placa_vehiculo && (
+          <div>
+            <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Placa del vehículo</p>
+            <p className={styles.infoValue} style={{color: COLORS.text}}>{trip.placa_vehiculo}</p>
           </div>
         )}
         {!trip.origen && (

@@ -4,6 +4,9 @@ import {tripStatusConfig, tripStatusMessages} from '../hooks/useTripStatusConfig
 import TripInfoCard from '../molecules/TripInfoCard';
 import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
+import useStatementPdfDownload from '../../../hooks/trip/useStatementPdfDownload';
+
+import {formatDateShort} from '../../../utils/dateFormatter';
 
 const styles = {
   backBtn: 'flex items-center gap-1 cursor-pointer mb-4 w-fit',
@@ -11,13 +14,17 @@ const styles = {
   sectionTitle: 'text-xs font-bold font-inter uppercase mb-3',
   sectionTitleInter: 'text-xs font-bold font-inter uppercase mb-3 flex items-center gap-2',
   justificationLabel: 'text-xs font-bold font-inter uppercase mb-2',
+  justificationItem: 'mb-3',
+  itemLabel: 'text-sm font-semibold font-inter mb-2',
   textarea: 'w-full rounded-xl p-3 text-sm font-inter outline-none border resize-none',
   exportBtn: 'w-full py-3 rounded-xl font-bold font-nunito text-sm cursor-pointer flex items-center justify-center gap-2 mb-4',
-  statusBadge: 'text-xs font-semibold font-inter px-3 py-2 rounded-xl text-center mb-4',
+  downloadError: 'text-xs font-inter italic text-center -mt-2 mb-4',
+  statusBadge: 'text-sm font-bold font-inter text-center py-3 px-4 rounded-xl mb-4',
 };
 
-function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navigate, expenses, nationalExpenses, internationalExpenses, accumulatedExpense, accumulatedExpenseUsd, exceedsBudget, exceedsBudgetUsd, justification, observations, exportToExcel}) {
+function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navigate, nationalExpenses, internationalExpenses, accumulatedExpense, accumulatedExpenseUsd, totalExceeds, totalExceedsUsd, exceededDays = [], exceedsHotels, dayJustifications = {}, observations}) {
   const config = tripStatusConfig[trip.estado];
+  const {downloading, error: downloadError, handleDownload} = useStatementPdfDownload(tripId);
 
   return (
     <>
@@ -29,7 +36,7 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
           <p className={styles.sectionTitle} style={{color: COLORS.text_enviroment_types}}>Gastos Nacionales</p>
           {nationalExpenses.map((expense) => (
-            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
+            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} isFinalApproved onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
           ))}
         </div>
       )}
@@ -40,23 +47,36 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
             Gastos Internacionales
           </p>
           {internationalExpenses.map((expense) => (
-            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
+            <ExpenseItem key={expense.id_gasto} expense={expense} tripInProgress={false} isFinalApproved onDelete={() => {}} tripId={tripId} originTrip={originRoute} observations={observations} />
           ))}
         </div>
       )}
       <TripBalanceSummary trip={trip} accumulatedExpense={accumulatedExpense} accumulatedExpenseUsd={accumulatedExpenseUsd}
-        exceedsBudget={exceedsBudget} exceedsBudgetUsd={exceedsBudgetUsd} isInternational={isInternational} />
-      {(exceedsBudget || exceedsBudgetUsd) && justification && (
+        exceedsBudget={totalExceeds} exceedsBudgetUsd={totalExceedsUsd} isInternational={isInternational} />
+      {(exceededDays.length > 0 || exceedsHotels) && (
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
-          <p className={styles.justificationLabel} style={{color: COLORS.text_enviroment_types}}>Justificación de Reembolso</p>
-          <textarea className={styles.textarea} rows={4} value={justification} readOnly
-            style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+          <p className={styles.justificationLabel} style={{color: COLORS.text_enviroment_types}}>Justificación de Excesos</p>
+          {exceededDays.map((day) => dayJustifications[day.fecha] && (
+            <div key={day.fecha} className={styles.justificationItem}>
+              <p className={styles.itemLabel} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)</p>
+              <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
+                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+            </div>
+          ))}
+          {exceedsHotels && dayJustifications.HOTEL && (
+            <div className={styles.justificationItem}>
+              <p className={styles.itemLabel} style={{color: COLORS.secondary}}>Hoteles</p>
+              <textarea className={styles.textarea} rows={3} value={dayJustifications.HOTEL} readOnly
+                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+            </div>
+          )}
         </div>
       )}
-      <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses)}>
+      <button className={styles.exportBtn} style={{backgroundColor: downloading ? COLORS.fields : COLORS.primary, color: COLORS.background}} onClick={handleDownload} disabled={downloading}>
         <Download size={16} />
-        Exportar Planilla Excel
+        {downloading ? 'Generando PDF...' : 'Descargar Planilla PDF'}
       </button>
+      {downloadError && <p className={styles.downloadError} style={{color: COLORS.secondary}}>{downloadError}</p>}
       <p className={styles.statusBadge} style={{backgroundColor: config?.bg, color: config?.color}}>{tripStatusMessages[trip.estado]}</p>
     </>
   );

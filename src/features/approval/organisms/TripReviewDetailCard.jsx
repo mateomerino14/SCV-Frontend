@@ -1,8 +1,10 @@
 import {Navigation, MapPin, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
+import {avatarDefault} from '../../../constants/defaultImages';
+import {statusColors} from '../../../constants/tripStatusColors';
+import {statusLabels, getStatusBadge} from '../../../constants/tripStatusLabels';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   card: 'rounded-2xl p-5 mb-4 shadow-md',
@@ -24,15 +26,15 @@ const styles = {
 };
 
 const defaultStatusConfig = {
-  EN_REVISION_VIAJE: {label: 'Pendiente de Revisión', bg: '#e8d5ff', color: '#5b00a0'},
-  APROBADO_VIAJE: {label: 'Aprobado por Supervisor', bg: '#ffd700aa', color: '#7a5900'},
-  EN_REVISION_TESORERO: {label: 'Enviado a Tesorería', bg: '#ffd8a8aa', color: '#8a4b00'},
-  RECHAZADO: {label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203'},
+  EN_REVISION_VIAJE: {label: statusLabels.EN_REVISION_VIAJE, ...statusColors.EN_REVISION_VIAJE},
+  APROBADO_VIAJE: {label: statusLabels.APROBADO_VIAJE, ...statusColors.APROBADO_VIAJE},
+  EN_REVISION_TESORERO: {label: statusLabels.EN_REVISION_TESORERO, ...statusColors.EN_REVISION_TESORERO},
+  RECHAZADO: {label: statusLabels.RECHAZADO, ...statusColors.RECHAZADO},
 };
 
 function TripReviewDetailCard({trip, statusConfig}) {
   const activeConfig = statusConfig || defaultStatusConfig;
-  const status = activeConfig[trip.estado] || Object.values(activeConfig)[0];
+  const status = activeConfig[trip.estado] || getStatusBadge(trip.estado);
   const isInternational = trip.tipo === 'Internacional';
   let typeIcon = <MapPin size={13} style={{color: COLORS.title}} />;
   if (isInternational) {
@@ -47,7 +49,10 @@ function TripReviewDetailCard({trip, statusConfig}) {
         <div className={styles.employeeInfo}>
           <p className={styles.employeeLabel} style={{color: COLORS.secondary}}>Empleado</p>
           <p className={styles.employeeName} style={{color: COLORS.text}}>{trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}</p>
-          <p className={styles.employeePosition} style={{color: COLORS.labels}}>{trip.Usuario?.Cargo?.nombre}</p>
+          <p className={styles.employeePosition} style={{color: COLORS.labels}}>
+            {trip.Usuario?.Cargo?.nombre}
+            {trip.Usuario?.Seccion?.nombre && ` · ${trip.Usuario.Seccion?.nombre}`}
+          </p>
         </div>
         <span className={styles.statusBadge} style={{backgroundColor: status.bg, color: status.color}}>{status.label}</span>
       </div>
@@ -68,7 +73,9 @@ function TripReviewDetailCard({trip, statusConfig}) {
         </div>
         <div>
           <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Transporte</p>
-          <p className={styles.infoValue} style={{color: COLORS.text}}>{trip.transporte || '—'}</p>
+          <p className={styles.infoValue} style={{color: COLORS.text}}>
+            {trip.transporte || '—'}{trip.placa_vehiculo ? ` — ${trip.placa_vehiculo}` : ''}
+          </p>
         </div>
         <div>
           <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Presupuesto</p>
@@ -83,7 +90,7 @@ function TripReviewDetailCard({trip, statusConfig}) {
             <p className={styles.infoRoute} style={{color: COLORS.text}}>
               <Navigation size={12} style={{color: COLORS.labels, marginTop: 3, flexShrink: 0}} />
               <span className={styles.routeText}>{trip.origen}</span>
-              <span style={{color: COLORS.dataFields, margin: '0 4px', flexShrink: 0}}>→</span>
+              <span style={{color: COLORS.labels, margin: '0 4px', flexShrink: 0}}>→</span>
               <MapPin size={12} style={{color: COLORS.secondary, marginTop: 3, flexShrink: 0}} />
               <span className={styles.routeText}>{trip.destino}</span>
             </p>

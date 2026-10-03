@@ -3,8 +3,8 @@ import {Calendar} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateTime, formatDateRange} from '../../../utils/dateFormatter';
 import TripRoute from '../../trip/atoms/TripRoute';
+import {avatarDefault} from '../../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   card: "rounded-2xl p-4 shadow-sm flex flex-col h-full",
@@ -34,13 +34,18 @@ const statusConfig = {
   PENDIENTE: {label: 'Pendiente', bg: '#ffd700aa', color: '#7a5900'},
   APROBADA: {label: 'Aprobada', bg: '#d4edda', color: '#155724'},
   RECHAZADA: {label: 'Rechazada', bg: '#ffa7a8aa', color: '#500203'},
+  // Cerrada por el sistema (sin revisor): el viaje se envio a revision antes de responderla
+  CERRADA: {label: 'Cerrada', bg: '#e5e7eb', color: '#374151'},
 };
 
 function DeadlineRequestCard({request, onApprove, onReject, savingAction, showActions}) {
   const [showRejectBox, setShowRejectBox] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const config = statusConfig[request.estado] || statusConfig.PENDIENTE;
+  const closedAutomatically = request.estado === 'RECHAZADA' && !request.id_revisor;
+  const config = statusConfig[closedAutomatically ? 'CERRADA' : request.estado] || statusConfig.PENDIENTE;
   const employee = request.Viaje?.Usuario;
+  // La pidio el reemplazo aprobado, no el titular del viaje
+  const requestedBySubstitute = request.Solicitante && request.Viaje?.id_usuario && request.Solicitante.id_usuario !== request.Viaje.id_usuario;
 
   const handleConfirmReject = () => {
     onReject(request.id_solicitud, rejectReason);
@@ -55,6 +60,9 @@ function DeadlineRequestCard({request, onApprove, onReject, savingAction, showAc
         <div className={styles.info}>
           <p className={styles.name} style={{color: COLORS.text}}>{employee?.nombre} {employee?.apellido_paterno}</p>
           <p className={styles.position} style={{color: COLORS.labels}}>{employee?.Cargo?.nombre}</p>
+          {requestedBySubstitute && (
+            <p className={styles.position} style={{color: COLORS.secondary}}>Solicitado por {request.Solicitante.nombre} {request.Solicitante.apellido_paterno} (reemplazo)</p>
+          )}
         </div>
         <span className={styles.statusBadge} style={{backgroundColor: config.bg, color: config.color}}>{config.label}</span>
       </div>
@@ -82,9 +90,9 @@ function DeadlineRequestCard({request, onApprove, onReject, savingAction, showAc
         {request.fecha_solicitud && <p className="text-xs font-inter mt-1" style={{color: COLORS.labels}}>{formatDateTime(request.fecha_solicitud)}</p>}
       </div>
       {request.observacion_revisor && (
-        <div className={styles.reasonBox} style={{backgroundColor: COLORS.error}}>
-          <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo del rechazo</p>
-          <p className={styles.reasonText} style={{color: COLORS.secondary}}>{request.observacion_revisor}</p>
+        <div className={styles.reasonBox} style={{backgroundColor: closedAutomatically ? COLORS.backgroundHeader : COLORS.error}}>
+          <p className={styles.reasonLabel} style={{color: closedAutomatically ? COLORS.labels : COLORS.secondary}}>{closedAutomatically ? 'Motivo del cierre' : 'Motivo del rechazo'}</p>
+          <p className={styles.reasonText} style={{color: closedAutomatically ? COLORS.text : COLORS.secondary}}>{request.observacion_revisor}</p>
         </div>
       )}
       <div className={styles.spacer} />

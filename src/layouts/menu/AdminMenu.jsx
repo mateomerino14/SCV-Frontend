@@ -1,13 +1,13 @@
 import {motion} from 'framer-motion';
-import {LayoutDashboard, Users, Briefcase, Plane, User, Settings, LogOut, Wallet} from 'lucide-react';
+import {LayoutDashboard, Users, Briefcase, Layers, Plane, User, Settings, LogOut, Wallet, History, BellRing} from 'lucide-react';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import useIsTreasurer from '../../hooks/user/useIsTreasurer';
 import useMenuNavigation from '../../hooks/shared/useMenuNavigation';
 import MenuOption from './MenuOption';
 import MenuShell, {listVariants} from './MenuShell';
+import {avatarDefault} from '../../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   header: 'flex items-center gap-3 p-4 border-b shrink-0',
@@ -26,23 +26,26 @@ const styles = {
 };
 
 const administrationSection = [
-  {path: routes.adminDashboard, label: 'Dashboard', icon: LayoutDashboard},
+  {path: routes.adminDashboard, label: 'Resumen General', icon: LayoutDashboard},
   {path: routes.adminUsers, label: 'Usuarios', icon: Users},
   {path: routes.adminPositions, label: 'Cargos', icon: Briefcase},
+  {path: routes.adminSections, label: 'Secciones', icon: Layers},
+  {path: routes.adminAuditLog, label: 'Historial de Accesos', icon: History},
+  {path: routes.adminReminders, label: 'Recordatorios', icon: BellRing},
 ];
 
 const treasurySection = [
-  {path: routes.treasurerReviews, label: 'Aprobación de Fondos', icon: Wallet},
+  {path: routes.treasurerReviews, label: 'Asignación de Fondos', icon: Wallet},
 ];
 
 const personalSection = [
-  {path: routes.employeeDashboard, label: 'Viajes Personales', icon: Plane},
-  {path: routes.employeeHistory, label: 'Mis Viajes', icon: Plane},
+  {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
+  {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},
 ];
 
 const accountSection = [
-  {path: routes.adminProfile, label: 'Perfil', icon: User},
-  {path: routes.adminSettings, label: 'Ajustes', icon: Settings},
+  {path: routes.adminProfile, label: 'Mi Perfil', icon: User},
+  {path: routes.adminSettings, label: 'Ajustes de Cuenta', icon: Settings},
 ];
 
 function AdminMenu({isOpen, onClose, user}) {
@@ -71,7 +74,7 @@ function AdminMenu({isOpen, onClose, user}) {
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
+              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Asignación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}

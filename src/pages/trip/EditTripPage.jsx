@@ -3,6 +3,7 @@ import {ArrowLeft, Target, MapPin, LocateFixed} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
@@ -17,8 +18,6 @@ const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-md font-semibold font-inter uppercase mb-3 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
   grid: "grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch",
   formCard: "rounded-2xl p-6 flex flex-col gap-5 shadow-lg h-full",
   badgeWrapper: "flex items-center gap-3 mb-2 w-fit p-3 rounded-lg",
@@ -36,6 +35,7 @@ const styles = {
   confirmBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer transition-colors mt-3",
   cancelBtn: "w-full py-3 rounded-xl font-bold font-nunito text-base cursor-pointer mt-2 border",
   errorMsg: "text-xs font-inter italic text-center mt-3",
+  loadErrorMsg: "text-sm font-inter text-center py-3 px-4 rounded-xl mb-4",
   rightCol: "flex flex-col gap-4 h-full",
 };
 
@@ -47,9 +47,10 @@ function EditTripPage() {
   const {user} = useCurrentUser();
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const {
-    reason, origin, destination, startDate, endDate, type, setType, transport, setTransport,
-    days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
-    loading, loadingData, error, fieldErrors, loadingLocation,
+    reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
+    vehiclePlate, handleVehiclePlateChange,
+    nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
+    loading, loadingData, loadError, error, fieldErrors, loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleUseCurrentLocation, handleSave,
   } = useEditTrip(id, user);
@@ -68,6 +69,26 @@ function EditTripPage() {
     );
   }
 
+  if (loadError) {
+    return (
+      <div className={styles.page} style={{backgroundColor: COLORS.background}}>
+        <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+        <Navbar text="Editar Viaje" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+        <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
+        <div className={styles.content}>
+          <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
+            <ArrowLeft size={25} style={{color: COLORS.title}} />
+          </button>
+          <p className={styles.loadErrorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{loadError}</p>
+          <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}} onClick={() => navigate(originRoute)}>
+            Volver
+          </button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -77,8 +98,10 @@ function EditTripPage() {
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>{isDraft ? 'Continuar Planificación' : 'Corrección de Viaje'}</p>
-        <h1 className={styles.title} style={{color: COLORS.backgroundSecondary}}>{isDraft ? 'Editar Borrador' : 'Editar Viaje Rechazado'}</h1>
+        <PageHeader
+          title={isDraft ? 'Editar Borrador' : 'Editar Viaje Rechazado'}
+          subtitle={isDraft ? 'Completa los datos pendientes para enviar tu viaje a revisión.' : 'Corrige los datos observados y vuelve a enviarlo a revisión.'}
+        />
         <div className={styles.badgeWrapper} style={{backgroundColor: COLORS.backgroundHeader}}>
           <div className={styles.badgeIcon} style={{backgroundColor: COLORS.primary}}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -122,7 +145,7 @@ function EditTripPage() {
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Tipo de Viaje</p>
                 <div className={styles.radioBtns}>
                   {['Nacional', 'Internacional'].map((option) => (
-                    <button key={option} className={styles.radioBtn} onClick={() => setType(option)}
+                    <button key={option} className={styles.radioBtn} onClick={() => handleTypeChange(option)}
                       style={{backgroundColor: type === option ? COLORS.primary : COLORS.dataFields, borderColor: type === option ? COLORS.primary : COLORS.fields, color: type === option ? COLORS.background : COLORS.labels}}>
                       {option}
                     </button>
@@ -132,7 +155,7 @@ function EditTripPage() {
               <div className={styles.radioGroup}>
                 <p className={styles.radioLabel} style={{color: COLORS.labels}}>Medio de Transporte</p>
                 <div className={styles.radioBtns}>
-                  {['Terrestre', 'Aéreo'].map((option) => (
+                  {(type === 'Internacional' ? ['Terrestre', 'Aéreo'] : ['Terrestre', 'Aéreo', 'Vehículo de Empresa']).map((option) => (
                     <button key={option} className={styles.radioBtn} onClick={() => setTransport(option)}
                       style={{backgroundColor: transport === option ? COLORS.primary : COLORS.dataFields, borderColor: transport === option ? COLORS.primary : COLORS.fields, color: transport === option ? COLORS.background : COLORS.labels}}>
                       {option}
@@ -141,6 +164,12 @@ function EditTripPage() {
                 </div>
               </div>
             </div>
+            {transport === 'Vehículo de Empresa' && (
+              <InputField label="Placa del Vehículo" error={fieldErrors.vehiclePlate}>
+                <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
+                  value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
+              </InputField>
+            )}
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
             <div style={{marginTop: 'auto'}}>
               <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}}

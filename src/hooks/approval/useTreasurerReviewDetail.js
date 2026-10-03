@@ -155,7 +155,13 @@ function useTreasurerReviewDetail(tripId) {
     const result = await rejectTrip(tripId);
     setSavingAction(false);
     if (result.error) {
-      setShowNoObservations(true);
+      // Solo la falta de observaciones abre ese aviso; otros errores se muestran tal cual
+      if (result.error.toLowerCase().includes('observación')) {
+        setShowNoObservations(true);
+      }
+      else {
+        showError(result.error);
+      }
       return;
     }
     setShowReject(false);

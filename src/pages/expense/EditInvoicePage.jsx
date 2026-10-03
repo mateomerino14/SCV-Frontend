@@ -3,6 +3,7 @@ import {ArrowLeft} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import InvoiceForm from '../../features/expense/organisms/InvoiceForm';
 import InvoiceDetailPanel from '../../features/expense/organisms/InvoiceDetailPanel';
 import ReceiptUpload from '../../features/expense/organisms/ReceiptUpload';
@@ -18,8 +19,7 @@ const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
   backBtn: "flex items-center gap-1 cursor-pointer mb-4 w-fit",
-  planLabel: "text-xs font-semibold font-inter uppercase mb-2 tracking-wide",
-  title: "text-3xl font-bold font-inter mb-6",
+
   desktopGrid: "hidden md:grid md:grid-cols-3 gap-4 items-stretch",
   mobileStack: "md:hidden flex flex-col gap-4",
   colWrapper: "flex flex-col h-full",
@@ -35,7 +35,7 @@ function EditInvoicePage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    data, imagePreview, existingImage, loading, loadingData, error, fieldErrors, saved, manuallyModified, tripId,
+    data, categories, imagePreview, existingImage, loading, loadingData, error, fieldErrors, saved, manuallyModified, tripId,
     handleFieldChange, handleAddDetail, handleRemoveDetail, handleImageChange, handleRemoveImage, handleSave,
   } = useEditInvoice(id);
 
@@ -53,7 +53,7 @@ function EditInvoicePage() {
   const imageSection = (
     <div className={styles.imageBox} style={{backgroundColor: COLORS.background}}>
       <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante</p>
-      <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image} />
+      <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image} hideLabel />
     </div>
   );
 
@@ -66,21 +66,20 @@ function EditInvoicePage() {
         <button className={styles.backBtn} onClick={() => navigate(tripPath(tripId))}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Modificar comprobante fiscal</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Editar Factura</h1>
+        <PageHeader title="Editar Factura" subtitle="Corrige los datos de la factura, su detalle de productos o su comprobante, y guarda los cambios." />
         <div className={styles.desktopGrid}>
           {imageSection}
           <div className={styles.colWrapper}>
-            <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} />
+            <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
           </div>
           <div className={styles.colWrapper}>
-            <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
+            <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
           </div>
         </div>
         <div className={styles.mobileStack}>
           {imageSection}
-          <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} />
-          <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} />
+          <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
+          <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
         </div>
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         <button className={styles.guardarBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.primary}} onClick={handleSave} disabled={loading}>

@@ -22,8 +22,10 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useReviewerReviewDetail from '../../hooks/approval/useReviewerReviewDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import useTripExcelExport from '../hooks/useTripExcelExport';
+import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {reviewerExpenseDetailPath, reviewerReviewPath} from '../../constants/routes';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -71,7 +73,7 @@ function ReviewerReviewDetailPage() {
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-        <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={6} /></div>
         <Footer />
@@ -83,7 +85,7 @@ function ReviewerReviewDetailPage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.blockedWrapper}>
           <div className={styles.blockedIcon} style={{backgroundColor: COLORS.error}}>
@@ -113,16 +115,13 @@ function ReviewerReviewDetailPage() {
 
   const isPending = trip.estado === 'APROBADO_SUPERVISOR';
   const canAct = isPending && !actionCompleted;
-  const justification = (data.comentarios || []).find((comment) => comment.tipo === 'JUSTIFICACION');
+  const {map: dayJustifications, list: dayJustificationsList} = buildDayJustifications(data.comentarios);
 
   let successMessage = 'Rendición rechazada correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'APROBADO_FINAL') {
     successMessage = 'Rendición aprobada definitivamente';
-    successBg = '#d4edda';
-    successColor = '#155724';
   }
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   const goToExpenseDetail = (expenseId) => {
     navigate(reviewerExpenseDetailPath(expenseId), {state: {from: reviewerReviewPath(id), origenViaje: originRoute}});
@@ -131,7 +130,7 @@ function ReviewerReviewDetailPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Revisión Final" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
 
       <div className={styles.content}>
@@ -152,10 +151,10 @@ function ReviewerReviewDetailPage() {
         )}
 
         <ExpenseSettlementCard
-          amount={data.excedePresupuesto ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
-          exceeds={data.excedePresupuesto} isInternational={isInternational}
-          amountUsd={data.excedePresupuestoUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
-          exceedsUsd={data.excedePresupuestoUsd} justification={justification} />
+          amount={data.excedeTotal ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
+          exceeds={data.excedeTotal} isInternational={isInternational}
+          amountUsd={data.excedeTotalUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
+          exceedsUsd={data.excedeTotalUsd} exceededDays={data.diasExcedidos} exceedsHotels={data.excedeHoteles} dayJustifications={dayJustifications} />
 
         <ExpenseAlertsRow alerts={data.alertas} />
 
@@ -173,7 +172,7 @@ function ReviewerReviewDetailPage() {
         <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
 
         {expenses.length > 0 && (
-          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses)}>
+          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, dayJustificationsList)}>
             <Download size={16} />
             Exportar Excel
           </button>
@@ -191,7 +190,7 @@ function ReviewerReviewDetailPage() {
 
         {canAct && (
           <>
-            <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>
+            {expenses.length > 0 && <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>}
             <div className={styles.actionsRow}>
               <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar Definitivamente</button>
               <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>
@@ -205,7 +204,7 @@ function ReviewerReviewDetailPage() {
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <ExpenseObservationsModal isOpen={showExpenseObservations} onClose={closeExpenseObservations}
         expenseName={expenses.find((expense) => expense.id_gasto === activeExpense)?.Proveedor?.nombre}
-        observations={activeExpenseObservations()} canEdit={canAct} newText={newText} setNewText={setNewText}
+        observations={activeExpenseObservations()} canEdit={canAct} currentUserId={user?.id_usuario} newText={newText} setNewText={setNewText}
         onAdd={handleAddComment} onEdit={handleOpenEdit} onDelete={handleOpenDelete} loading={savingAction} error={error} />
       <EditCommentModal isOpen={!!editingComment} onClose={() => setEditingComment(null)} onConfirm={handleConfirmEdit} text={editText} setText={setEditText} loading={savingAction} error={error} />
       <DeleteCommentConfirmModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)} onConfirm={handleConfirmDelete} loading={savingAction} />

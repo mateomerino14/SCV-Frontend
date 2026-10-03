@@ -1,7 +1,7 @@
 import {Menu} from 'lucide-react';
 import {COLORS} from '../constants';
+import {avatarDefault} from '../constants/defaultImages';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   navbar: "flex items-center justify-between px-5 py-3 border-b sticky top-0 z-10",

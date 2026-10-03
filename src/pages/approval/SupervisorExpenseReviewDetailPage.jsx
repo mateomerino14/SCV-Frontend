@@ -24,8 +24,11 @@ import useSupervisorExpenseReviewDetail from '../../hooks/approval/useSupervisor
 import useMenu from '../../hooks/shared/useMenu';
 import useTripExcelExport from '../hooks/useTripExcelExport';
 import getCurrentUserId from '../../utils/getCurrentUserId';
+import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {supervisorExpenseDetailPath, supervisorTripReviewPath} from '../../constants/routes';
+import {getStatusColors} from '../../constants/tripStatusColors';
+import ReturnReviewButton from '../../features/approval/molecules/ReturnReviewButton';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -43,7 +46,6 @@ const styles = {
   actionsRow: 'flex gap-3 mb-4',
   approveBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center',
   rejectBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-base cursor-pointer text-center border-2',
-  returnBtn: 'w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border mb-4',
   hint: 'text-xs font-inter text-center mb-3',
   assignWrapper: 'mb-4',
   assignText: 'text-sm font-inter mb-3 text-center',
@@ -117,19 +119,16 @@ function SupervisorExpenseReviewDetailPage() {
   const unassigned = !trip.id_supervisor_asignado;
   const isPending = trip.estado === 'EN_REVISION';
   const canAct = isPending && isMine;
-  const justification = (data.comentarios || []).find((comment) => comment.tipo === 'JUSTIFICACION');
+  const {map: dayJustifications, list: dayJustificationsList} = buildDayJustifications(data.comentarios);
   const goToExpenseDetail = (expenseId) => {
     navigate(supervisorExpenseDetailPath(expenseId), {state: {from: supervisorTripReviewPath(id), origenViaje: originRoute}});
   };
 
   let successMessage = 'Rendición rechazada correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
-  if (actionCompleted === 'APROBADO') {
+  if (actionCompleted && actionCompleted !== 'RECHAZADO') {
     successMessage = 'Rendición aprobada correctamente';
-    successBg = '#d4edda';
-    successColor = '#155724';
   }
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -150,10 +149,10 @@ function SupervisorExpenseReviewDetailPage() {
           </div>
         )}
         <ExpenseSettlementCard
-          amount={data.excedePresupuesto ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
-          exceeds={data.excedePresupuesto} isInternational={isInternational}
-          amountUsd={data.excedePresupuestoUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
-          exceedsUsd={data.excedePresupuestoUsd} justification={justification} />
+          amount={data.excedeTotal ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
+          exceeds={data.excedeTotal} isInternational={isInternational}
+          amountUsd={data.excedeTotalUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
+          exceedsUsd={data.excedeTotalUsd} exceededDays={data.diasExcedidos} exceedsHotels={data.excedeHoteles} dayJustifications={dayJustifications} />
         <ExpenseAlertsRow alerts={data.alertas} />
         <ExpenseInvoicedTable expenses={invoicedExpenses} onViewExpense={goToExpenseDetail}
           countObservations={countExpenseObservations} onOpenObservations={openExpenseObservations} />
@@ -165,7 +164,7 @@ function SupervisorExpenseReviewDetailPage() {
         )}
         <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
         {expenses.length > 0 && (
-          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses)}>
+          <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, dayJustificationsList)}>
             <Download size={16} />
             Exportar Planilla Excel
           </button>
@@ -185,10 +184,8 @@ function SupervisorExpenseReviewDetailPage() {
         )}
         {canAct && !actionCompleted && (
           <>
-            <button className={styles.returnBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleReturn}>
-              Devolver Revisión
-            </button>
-            <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>
+            <ReturnReviewButton onReturn={handleReturn} />
+            {expenses.length > 0 && <p className={styles.hint} style={{color: COLORS.labels}}>Para observar un gasto, ve a la tabla y presiona el ícono de mensaje junto a él</p>}
             <div className={styles.actionsRow}>
               <button className={styles.approveBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => setShowApprove(true)}>Aprobar</button>
               <button className={styles.rejectBtn} style={{backgroundColor: 'transparent', borderColor: COLORS.secondary, color: COLORS.secondary}} onClick={handleRequestReject}>Rechazar</button>
@@ -202,7 +199,7 @@ function SupervisorExpenseReviewDetailPage() {
       <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />
       <ExpenseObservationsModal isOpen={showExpenseObservations} onClose={closeExpenseObservations}
         expenseName={expenses.find((expense) => expense.id_gasto === activeExpense)?.Proveedor?.nombre}
-        observations={activeExpenseObservations()} canEdit={canAct} newText={newText} setNewText={setNewText}
+        observations={activeExpenseObservations()} canEdit={canAct} currentUserId={user?.id_usuario} newText={newText} setNewText={setNewText}
         onAdd={handleAddComment} onEdit={handleOpenEdit} onDelete={handleOpenDelete} loading={savingAction} error={modalError} />
       <EditCommentModal isOpen={!!editingComment} onClose={() => setEditingComment(null)} onConfirm={handleConfirmEdit} text={editText} setText={setEditText} loading={savingAction} error={modalError} />
       <DeleteCommentConfirmModal isOpen={!!deletingComment} onClose={() => setDeletingComment(null)} onConfirm={handleConfirmDelete} loading={savingAction} />

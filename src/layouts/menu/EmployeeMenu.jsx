@@ -1,11 +1,12 @@
 import {motion} from 'framer-motion';
-import {LayoutDashboard, Plane, User, Settings, LogOut, Wallet} from 'lucide-react';
+import {Plane, User, Settings, LogOut, Wallet, Briefcase} from 'lucide-react';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import useIsTreasurer from '../../hooks/user/useIsTreasurer';
 import useMenuNavigation from '../../hooks/shared/useMenuNavigation';
 import MenuOption from './MenuOption';
 import MenuShell, {listVariants} from './MenuShell';
+import {avatarDefault} from '../../constants/defaultImages';
 
 const styles = {
   header: 'flex items-center gap-3 p-5 border-b shrink-0',
@@ -23,20 +24,19 @@ const styles = {
   finalDivider: 'border-t',
 };
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const mainSection = [
-  {path: routes.employeeDashboard, label: 'Dashboard', icon: LayoutDashboard},
-  {path: routes.employeeHistory, label: 'Mis Viajes', icon: Plane},
+  {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
+  {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},
 ];
 
 const treasurySection = [
-  {path: routes.treasurerReviews, label: 'Aprobación de Fondos', icon: Wallet},
+  {path: routes.treasurerReviews, label: 'Asignación de Fondos', icon: Wallet},
 ];
 
 const accountSection = [
-  {path: routes.employeeProfile, label: 'Perfil', icon: User},
-  {path: routes.employeeSettings, label: 'Ajustes', icon: Settings},
+  {path: routes.employeeProfile, label: 'Mi Perfil', icon: User},
+  {path: routes.employeeSettings, label: 'Ajustes de Cuenta', icon: Settings},
 ];
 
 function EmployeeMenu({isOpen, onClose, user}) {
@@ -68,7 +68,7 @@ function EmployeeMenu({isOpen, onClose, user}) {
           </div>
           {isTreasurer && (
             <div className={styles.section} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Aprobación de Fondos</p>
+              <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Asignación de Fondos</p>
               {renderOptions(treasurySection)}
             </div>
           )}

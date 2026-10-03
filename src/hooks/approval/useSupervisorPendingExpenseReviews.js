@@ -1,26 +1,32 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {getPendingExpenseReviews, takeExpenseReview} from '../../services/approval/reviewService';
 import {getEmployees} from '../../services/user/userService';
+import {getSections} from '../../services/admin/adminService';
 
 const pollingInterval = 30 * 1000;
 
 function useSupervisorPendingExpenseReviews() {
   const [trips, setTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [taking, setTaking] = useState(null);
   const [error, setError] = useState('');
   const [alreadyTaken, setAlreadyTaken] = useState(false);
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: ''});
+  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
   const [statusFilter, setStatusFilter] = useState('TODOS');
 
-  const load = async (currentFilters = filters) => {
+  const appliedFiltersRef = useRef(filters);
+
+  const load = async (currentFilters = appliedFiltersRef.current) => {
+    appliedFiltersRef.current = currentFilters;
     const data = await getPendingExpenseReviews(currentFilters);
     if (data.error) {
       setError(data.error);
       return;
     }
+    setError('');
     setTrips(data);
   };
 
@@ -31,6 +37,10 @@ function useSupervisorPendingExpenseReviews() {
       const employeeData = await getEmployees();
       if (!employeeData.error) {
         setEmployees(employeeData);
+      }
+      const sectionData = await getSections();
+      if (!sectionData.error) {
+        setSections(sectionData);
       }
       setLoading(false);
     };
@@ -48,7 +58,7 @@ function useSupervisorPendingExpenseReviews() {
   };
 
   const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: ''};
+    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
     setFilters(emptyFilters);
     setStatusFilter('TODOS');
     load(emptyFilters);
@@ -59,13 +69,13 @@ function useSupervisorPendingExpenseReviews() {
     const data = await takeExpenseReview(tripId);
     setTaking(null);
     if (data.error) {
+      await load();
       if (data.error.includes('ya fue tomado') || data.error.includes('siendo revisado')) {
         setAlreadyTaken(true);
       }
       else {
         setError(data.error);
       }
-      await load();
       return;
     }
     await load();
@@ -90,6 +100,7 @@ function useSupervisorPendingExpenseReviews() {
     trips: filteredTrips,
     total: trips.length,
     employees,
+    sections,
     loading,
     applyingFilters,
     taking,

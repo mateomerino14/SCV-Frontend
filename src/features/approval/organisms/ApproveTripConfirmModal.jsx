@@ -1,11 +1,10 @@
 import {CheckCircle} from 'lucide-react';
 import ConfirmDialog from '../../../components/ui/ConfirmDialog';
-import {COLORS} from '../../../constants';
 
-function ApproveTripConfirmModal({isOpen, onClose, onConfirm, loading}) {
+function ApproveTripConfirmModal({isOpen, onClose, onConfirm, loading, title = 'Aprobar Viaje', message = '¿Estás seguro de que deseas aprobar este viaje?'}) {
   return (
-    <ConfirmDialog isOpen={isOpen} icon={CheckCircle} iconColor={COLORS.background} iconBackgroundColor={COLORS.backgroundSecondary}
-      title="Aprobar Viaje" message="¿Estás seguro de que deseas aprobar este viaje?"
+    <ConfirmDialog isOpen={isOpen} icon={CheckCircle}
+      title={title} message={message}
       confirmText="Aprobar" loading={loading} onConfirm={onConfirm} onCancel={onClose} />
   );
 }

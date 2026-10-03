@@ -1,9 +1,10 @@
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
-import {ArrowLeft, Calendar, DollarSign, Tag, FileText, User, Receipt, List, Globe} from 'lucide-react';
+import {ArrowLeft, Calendar, DollarSign, Tag, FileText, User, Receipt, List, Globe, Image as ImageIcon} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import ReceiptSentModal from '../../features/expense/organisms/ReceiptSentModal';
+import ReceiptSendingModal from '../../features/expense/organisms/ReceiptSendingModal';
 import ExpenseHeaderCard from '../../features/expense/molecules/ExpenseHeaderCard';
 import ExpenseSectionCard from '../../features/expense/molecules/ExpenseSectionCard';
 import ExpenseFieldRow from '../../features/expense/atoms/ExpenseFieldRow';
@@ -66,6 +67,7 @@ function ExpenseDetailPage() {
   const typeInfo = typeConfig[expense.tipo] || typeConfig.S;
   const hasInvoice = !!expense.Factura;
   const hasImage = expense.Imagen && expense.Imagen.url_archivo;
+  const receiptRequired = expense.Categoria_Gasto?.requiere_comprobante !== false;
   const isInternational = !!expense.es_gasto_internacional;
   const currency = isInternational ? 'USD' : 'Bs';
   const installments = expense.Gasto_Tramo_Moneda || [];
@@ -74,8 +76,8 @@ function ExpenseDetailPage() {
   const hasSubitems = subitems.length > 0;
   const backRoute = location.state?.from || (expense.id_viaje ? tripPath(expense.id_viaje) : '/dashboard/empleado');
   const originPath = location.state?.from || '';
-  const isReviewContext = originPath.includes('/supervisor/') || originPath.includes('/revisor/');
-  const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && !isReviewContext;
+  const isReviewContext = originPath.includes('/supervisor/') || originPath.includes('/revisor/') || originPath.includes('/aprobador/');
+  const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && !isReviewContext && expense.Viaje?.estado === 'APROBADO_FINAL';
   const hasWithholdings = !isInternational && (expense.tipo === 'C' || expense.tipo === 'S') && (parseFloat(expense.retencion_rc_iva || 0) > 0 || parseFloat(expense.retencion_iue || 0) > 0 || parseFloat(expense.retencion_it || 0) > 0);
   let vat = null;
   if (hasInvoice) {
@@ -117,10 +119,13 @@ function ExpenseDetailPage() {
           <ExpenseFieldRow icon={Calendar} label="Fecha del Gasto" value={formatLongDate(expense.fecha_gasto)} />
           {expense.Categoria_Gasto && <ExpenseFieldRow icon={Tag} label="Categoría" value={expense.Categoria_Gasto.nombre} />}
           {expense.Proveedor && <ExpenseFieldRow icon={User} label="Proveedor" value={expense.Proveedor.nombre} />}
-          {expense.Proveedor?.numero_doc_fiscal ? (
-            <ExpenseFieldRow icon={FileText} label={expense.Proveedor.tipo_doc_fiscal || 'Documento'} value={expense.Proveedor.numero_doc_fiscal} last={!hasInvoice} />
-          ) : (
-            <ExpenseFieldRow icon={FileText} label="Comprobante" value="Sin Comprobante" last iconBg={COLORS.error} iconColor={COLORS.secondary} valueColor={COLORS.secondary} />
+          {expense.Proveedor?.numero_doc_fiscal && (
+            <ExpenseFieldRow icon={FileText} label={expense.Proveedor.tipo_doc_fiscal || 'Documento'} value={expense.Proveedor.numero_doc_fiscal} />
+          )}
+          {hasImage && <ExpenseFieldRow icon={ImageIcon} label="Comprobante" value="Adjunto (ver abajo)" last />}
+          {!hasImage && !receiptRequired && <ExpenseFieldRow icon={ImageIcon} label="Comprobante" value="No requerido para esta categoría" last />}
+          {!hasImage && receiptRequired && (
+            <ExpenseFieldRow icon={ImageIcon} label="Comprobante" value="Sin comprobante adjunto" last iconBg={COLORS.error} iconColor={COLORS.secondary} valueColor={COLORS.secondary} />
           )}
         </ExpenseSectionCard>
         {hasSubitems && (
@@ -180,6 +185,7 @@ function ExpenseDetailPage() {
           </ExpenseSectionCard>
         )}
       </div>
+      <ReceiptSendingModal isOpen={sending} />
       <ReceiptSentModal isOpen={receiptModal.show} onClose={closeReceiptModal} success={receiptModal.success} message={receiptModal.message} />
       <Footer />
     </div>

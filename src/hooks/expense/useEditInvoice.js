@@ -1,10 +1,11 @@
 import {useState, useEffect} from 'react';
-import {getExpenseDetail} from '../../services/expense/expenseService';
+import {getExpenseDetail, getCategories} from '../../services/expense/expenseService';
 import {updateInvoice} from '../../services/expense/invoiceService';
 import {compressImage} from '../../utils/imageCompressor';
 
 function useEditInvoice(expenseId) {
   const [data, setData] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
@@ -15,6 +16,16 @@ function useEditInvoice(expenseId) {
   const [saved, setSaved] = useState(false);
   const [tripId, setTripId] = useState(null);
   const [manuallyModified, setManuallyModified] = useState(false);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const categoriesData = await getCategories();
+      if (!categoriesData.error) {
+        setCategories(categoriesData);
+      }
+    };
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -54,6 +65,8 @@ function useEditInvoice(expenseId) {
         monto_total: totalAmountText,
         tipo_doc: expenseData.tipo || 'F',
         detalle: invoice?.Detalle_Factura || [],
+        id_categoria_gasto: expenseData.id_categoria || null,
+        fecha_emision_valida: !!invoice?.fecha_emision,
       });
       if (expenseData.Imagen?.url_archivo) {
         setExistingImage(expenseData.Imagen.url_archivo);
@@ -77,6 +90,7 @@ function useEditInvoice(expenseId) {
   const handleAddDetail = (item) => {
     setData((prev) => ({...prev, detalle: [...(prev.detalle || []), item]}));
     setManuallyModified(true);
+    setFieldErrors((prev) => ({...prev, detalle: undefined}));
   };
 
   const handleRemoveDetail = (index) => {
@@ -95,6 +109,7 @@ function useEditInvoice(expenseId) {
     setImage(compressed);
     setImagePreview(URL.createObjectURL(compressed));
     setExistingImage(null);
+    setFieldErrors((prev) => ({...prev, image: undefined}));
   };
 
   const handleRemoveImage = () => {
@@ -119,6 +134,15 @@ function useEditInvoice(expenseId) {
     }
     if (!data?.monto || parseFloat(data.monto) <= 0) {
       errors.monto = 'El monto es requerido y debe ser mayor a 0';
+    }
+    if (!data?.id_categoria_gasto) {
+      errors.id_categoria_gasto = 'La categoría es requerida';
+    }
+    if (!data?.detalle || data.detalle.length === 0) {
+      errors.detalle = 'Debes agregar al menos un producto al detalle';
+    }
+    if (!image && !existingImage) {
+      errors.image = 'Debes subir una imagen o comprobante de la factura';
     }
     return errors;
   };
@@ -154,6 +178,7 @@ function useEditInvoice(expenseId) {
 
   return {
     data,
+    categories,
     imagePreview,
     existingImage,
     loading,

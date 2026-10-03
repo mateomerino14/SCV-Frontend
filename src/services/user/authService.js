@@ -1,4 +1,5 @@
 import apiClient from '../shared/apiClient';
+import {clearToken} from '../shared/tokenStore';
 
 export const login = async (email, password) => {
   try {
@@ -18,7 +19,7 @@ export const logout = async () => {
     console.error('Error al cerrar sesión:', error);
   }
   finally {
-    localStorage.removeItem('token');
+    clearToken();
   }
 };
 

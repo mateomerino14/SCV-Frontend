@@ -18,3 +18,8 @@
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out both;
 }
+/* Graficos (Recharts) con la misma tipografia que el resto, con respaldo */
+.recharts-wrapper,
+.recharts-wrapper text {
+  font-family: 'Inter', sans-serif;
+}

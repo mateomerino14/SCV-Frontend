@@ -84,6 +84,7 @@ function ExpenseFormCard({
   const validInstallments = item.installments.filter((installment) => installment.currency && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0);
   const validSubitems = item.subitems.filter((subitem) => subitem.description.trim() && parseFloat(subitem.amount) > 0);
   const categoryName = categories.find((category) => category.id_categoria === item.categoryId)?.nombre;
+  const receiptRequired = categories.find((category) => category.id_categoria === item.categoryId)?.requiere_comprobante !== false;
   const automaticAmount = item.usesSubitems;
 
   return (
@@ -240,7 +241,7 @@ function ExpenseFormCard({
           <CategorySelector categories={categories} categoryId={item.categoryId} onChange={(id) => onCategoryChange(item.id, id)}
             error={item.fieldErrors.category} disabled={item.saved} />
           <ReceiptUpload previewImage={item.imagePreview} onChange={(file) => onImageChange(item.id, file)}
-            onRemove={() => onRemoveImage(item.id)} error={item.fieldErrors.image} disabled={item.saved} />
+            onRemove={() => onRemoveImage(item.id)} error={item.fieldErrors.image} disabled={item.saved} required={receiptRequired} />
         </div>
       )}
     </div>

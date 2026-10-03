@@ -1,8 +1,9 @@
 import {MapPin, Navigation} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
+import {avatarDefault} from '../../../constants/defaultImages';
+import {getStatusBadge} from '../../../constants/tripStatusLabels';
 
-const avatarDefault = "https://www.shutterstock.com/image-vector/avatar-photo-default-user-icon-600nw-2558759027.jpg";
 
 const styles = {
   card: 'rounded-2xl p-5 mb-4 shadow-md',
@@ -25,16 +26,8 @@ const styles = {
   routeText: 'break-words min-w-0',
 };
 
-const statusConfig = {
-  EN_REVISION: {label: 'En Revisión', bg: COLORS.error, color: COLORS.secondary},
-  APROBADO_SUPERVISOR: {label: 'Apr. Preliminar', bg: '#85aff3ab', color: '#000a65'},
-  APROBADO_APROBADOR: {label: 'Apr. Aprobador', bg: '#85aff3ab', color: '#000a65'},
-  APROBADO_FINAL: {label: 'Aprobado', bg: '#d4edda', color: '#155724'},
-  RECHAZADO: {label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203'},
-};
-
 function ExpenseTripInfoCard({trip}) {
-  const status = statusConfig[trip.estado] || statusConfig.EN_REVISION;
+  const status = getStatusBadge(trip.estado);
   const isInternational = trip.tipo === 'Internacional';
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.background}}>
@@ -42,13 +35,16 @@ function ExpenseTripInfoCard({trip}) {
         <img src={trip.Usuario?.foto_perfil || avatarDefault} alt="empleado" className={styles.avatar} style={{borderColor: COLORS.primary}}
           onError={(event) => {event.target.onerror = null; event.target.src = avatarDefault;}} />
         <div className={styles.employeeInfo}>
-          <p className={styles.employeeLabel} style={{color: COLORS.secondary}}>Empleado Asignado</p>
+          <p className={styles.employeeLabel} style={{color: COLORS.secondary}}>Empleado</p>
           <p className={styles.employeeName} style={{color: COLORS.text}}>{trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}</p>
-          <p className={styles.employeePosition} style={{color: COLORS.labels}}>{trip.Usuario?.Cargo?.nombre}</p>
+          <p className={styles.employeePosition} style={{color: COLORS.labels}}>
+            {trip.Usuario?.Cargo?.nombre}
+            {trip.Usuario?.Seccion?.nombre && ` · ${trip.Usuario.Seccion?.nombre}`}
+          </p>
         </div>
         <span className={styles.statusBadge} style={{backgroundColor: status.bg, color: status.color}}>{status.label}</span>
       </div>
-      <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo</p>
+      <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo del Viaje</p>
       <p className={styles.reasonText} style={{color: COLORS.text}}>{trip.motivo}</p>
       <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />
       <div className={styles.infoGrid}>
@@ -66,7 +62,9 @@ function ExpenseTripInfoCard({trip}) {
         {trip.transporte && (
           <div>
             <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Transporte</p>
-            <p className={styles.infoValue} style={{color: COLORS.text}}>{trip.transporte}</p>
+            <p className={styles.infoValue} style={{color: COLORS.text}}>
+              {trip.transporte}{trip.placa_vehiculo ? ` — ${trip.placa_vehiculo}` : ''}
+            </p>
           </div>
         )}
         <div>

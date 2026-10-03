@@ -2,52 +2,60 @@ import {useState, useEffect} from 'react';
 import {jwtDecode} from 'jwt-decode';
 import axios from 'axios';
 import {changePassword} from '../../services/user/userService';
+import {logout} from '../../services/user/authService';
+import {getToken, setToken} from '../../services/shared/tokenStore';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-function readPasswordExpired() {
-  const token = localStorage.getItem('token');
+// Motivo del cambio de contrasena segun el token: TEMPORAL, RECUPERACION, VENCIDA o null
+function readPasswordChangeReason() {
+  const token = getToken();
   if (!token) {
-    return false;
+    return null;
   }
   try {
     const decoded = jwtDecode(token);
-    return decoded.contraseniavencida === true;
+    if (decoded.contraseniavencida !== true) {
+      return null;
+    }
+    return decoded.motivo_cambio_contrasenia || 'VENCIDA';
   }
   catch {
-    return false;
+    return null;
   }
 }
 
 function usePasswordExpiredCheck() {
-  const [showModal, setShowModal] = useState(readPasswordExpired);
+  const [reason, setReason] = useState(readPasswordChangeReason);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  useEffect(() => {
-    const handleTokenRefreshed = () => {
-      if (readPasswordExpired()) {
-        setShowModal(true);
-      }
-      else {
-        setShowModal(false);
-      }
-    };
-    window.addEventListener('token-refreshed', handleTokenRefreshed);
-    return () => window.removeEventListener('token-refreshed', handleTokenRefreshed);
-  }, []);
 
-  const refreshToken = async () => {
-    try {
-      const response = await axios.post(`${baseUrl}/auth/refresh`, {}, {withCredentials: true});
-      const newToken = response.data.token;
-      localStorage.setItem('token', newToken);
-      window.dispatchEvent(new CustomEvent('token-refreshed'));
-    }
-    catch {
-      return;
-    }
-  };
+  useEffect(() => {
+    const syncWithToken = () => setReason(readPasswordChangeReason());
+    // El servidor exige el cambio y el token no lo indicaba: se renueva la sesion para saber el motivo
+    const handleRequired = async () => {
+      if (readPasswordChangeReason()) {
+        setReason(readPasswordChangeReason());
+        return;
+      }
+      try {
+        const response = await axios.post(`${baseUrl}/auth/refresh`, {}, {withCredentials: true});
+        setToken(response.data.token);
+      }
+      catch {
+        // Sin sesion renovable: la ventana de sesion expirada se encarga
+      }
+      setReason(readPasswordChangeReason() || 'VENCIDA');
+    };
+    window.addEventListener('token-refreshed', syncWithToken);
+    window.addEventListener('token-changed', syncWithToken);
+    window.addEventListener('password-change-required', handleRequired);
+    return () => {
+      window.removeEventListener('token-refreshed', syncWithToken);
+      window.removeEventListener('token-changed', syncWithToken);
+      window.removeEventListener('password-change-required', handleRequired);
+    };
+  }, []);
 
   const handleChange = async (currentPassword, newPassword) => {
     setError('');
@@ -58,12 +66,21 @@ function usePasswordExpiredCheck() {
       setError(data.error);
       return;
     }
-    await refreshToken();
-    setLoading(false);
-    setShowModal(false);
+    // El servidor entrega una sesion nueva (las anteriores quedan cerradas)
+    if (data.token) {
+      setToken(data.token);
+    }
+    // Recarga la pantalla de fondo, que pudo quedar sin datos
+    window.location.reload();
   };
 
-  return {showModal, loading, error, handleChange};
+  // Cierra la sesion para quien no recuerda su contrasena
+  const handleLogout = async () => {
+    await logout();
+    window.location.href = '/';
+  };
+
+  return {showModal: !!reason && !!getToken(), reason, loading, error, handleChange, handleLogout};
 }
 
 export default usePasswordExpiredCheck;

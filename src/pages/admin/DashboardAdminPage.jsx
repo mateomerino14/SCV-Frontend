@@ -1,24 +1,27 @@
 import {Users, Briefcase} from 'lucide-react';
-import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend} from 'recharts';
+import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid} from 'recharts';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
+import {greetingFor} from '../../utils/mascotPreferences';
+import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
-import PasswordExpiredModal from '../../features/user/organisms/PasswordExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import TripPhaseSection from '../../features/admin/organisms/TripPhaseSection';
 import PhaseTotalCard from '../../features/admin/molecules/PhaseTotalCard';
+import DashboardPeriodFilter from '../../features/admin/molecules/DashboardPeriodFilter';
 import useAdminDashboard from '../../hooks/admin/useAdminDashboard';
+import {periodOptions} from '../../utils/periodRange';
 import useMenu from '../../hooks/shared/useMenu';
-import usePasswordExpiredCheck from '../../hooks/user/usePasswordExpiredCheck';
 import {approvalPhaseStats, expensePhaseStats, rejectedStat, approvalPhaseTotal, expensePhaseTotal} from '../../features/admin/constants/tripPhaseStats';
 import {COLORS} from '../../constants';
+import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 max-w-8xl mx-auto w-full',
-  planLabel: 'text-xs font-semibold font-inter uppercase mb-2 tracking-wide',
-  title: 'text-3xl font-bold font-inter mb-1',
   subtitle: 'text-sm font-inter mb-6',
+  errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4',
   grid2: 'grid grid-cols-2 gap-3 mb-6',
   statCard: 'rounded-2xl p-4 shadow-sm flex flex-col gap-1',
   statLabel: 'text-xs font-inter uppercase mt-1',
@@ -48,22 +51,40 @@ function renderPieLabel({cx, cy, midAngle, innerRadius, outerRadius, percent}) {
 
 const roleColors = [COLORS.primary, '#4a7fd4', '#2d7a3a', COLORS.secondary, COLORS.title];
 
+// Tooltip del grafico por seccion: viajes, monto en Bs y, si hay viajes internacionales, en USD
+function SectionTooltip({active, payload, label}) {
+  if (!active || !payload?.length) {
+    return null;
+  }
+  const row = payload[0].payload;
+  return (
+    <div style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter, sans-serif', padding: '8px 12px'}}>
+      <p style={{fontWeight: 700, color: COLORS.text, marginBottom: 4}}>{label}</p>
+      <p style={{color: COLORS.primary}}>{row.cantidadViajes} viaje{row.cantidadViajes !== 1 ? 's' : ''}</p>
+      <p style={{color: COLORS.title}}>Bs {row.montoAsignado.toFixed(2)}</p>
+      {row.montoAsignadoUsd > 0 && <p style={{color: COLORS.title}}>USD {row.montoAsignadoUsd.toFixed(2)}</p>}
+    </div>
+  );
+}
+
 function DashboardAdminPage() {
-  const {menuOpen, user, openMenu, closeMenu} = useMenu();
-  const {data, loading} = useAdminDashboard();
-  const {showModal, loading: loadingChange, error: errorChange, handleChange} = usePasswordExpiredCheck();
+  const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
+  const {data, loading, error, preset, selectPreset, customRange, setCustomRange, applyCustomRange, rangeError, appliedPeriod} = useAdminDashboard();
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
 
+  const mascotMessage = loading ? null : `${greetingFor(user?.nombre)} Aquí tienes el resumen del sistema.`;
+
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <PasswordExpiredModal isOpen={showModal} onConfirm={handleChange} loading={loadingChange} error={errorChange} />
-      <Navbar text="Dashboard" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
+      <Navbar text="Resumen General" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <p className={styles.planLabel} style={{color: COLORS.title}}>Panel de Control</p>
-        <h1 className={styles.title} style={{color: COLORS.text}}>Dashboard</h1>
-        <p className={styles.subtitle} style={{color: COLORS.labels}}>Resumen general del sistema.</p>
+        <PageHeader title="Resumen General" subtitle="Indicadores de viajes, gastos y usuarios del sistema." />
+        <DashboardPeriodFilter options={periodOptions} preset={preset} onSelectPreset={selectPreset} customRange={customRange}
+          onCustomRangeChange={setCustomRange} onApply={applyCustomRange} rangeError={rangeError} appliedPeriod={appliedPeriod} />
+        {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {loading ? (
           <SkeletonCard lines={6} />
         ) : (
@@ -85,9 +106,9 @@ function DashboardAdminPage() {
             <div className={styles.phaseTotalsGrid}>
               <PhaseTotalCard icon={approvalPhaseTotal.icon} title="Aprobación de Viaje" subtitle="Viajes en la etapa previa, sin gastos"
                 total={approvalTotal} color={approvalPhaseTotal.color} bg={approvalPhaseTotal.bg} />
-              <PhaseTotalCard icon={expensePhaseTotal.icon} title="Rendición de Gastos" subtitle="Viajes en curso o con gastos en revisión"
+              <PhaseTotalCard icon={expensePhaseTotal.icon} title="Rendición de Gastos" subtitle="Viajes en curso, con gastos en revisión o ya aprobados"
                 total={expenseTotal} color={expensePhaseTotal.color} bg={expensePhaseTotal.bg} />
-              <PhaseTotalCard icon={rejectedStat.icon} title="Rechazados" subtitle="Total de viajes rechazados"
+              <PhaseTotalCard icon={rejectedStat.icon} title="Rechazados" subtitle="Viajes rechazados en el periodo"
                 total={data?.[rejectedStat.key] || 0} color={rejectedStat.color} bg={rejectedStat.bg} />
             </div>
             {data?.usuariosPorRol?.length > 0 && (
@@ -100,10 +121,34 @@ function DashboardAdminPage() {
                       {data.usuariosPorRol.map((_, index) => <Cell key={index} fill={roleColors[index % roleColors.length]} />)}
                     </Pie>
                     <Tooltip formatter={(value, name) => [`${value} usuarios`, name]}
-                      contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter'}} />
-                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter'}}>{value}</span>} />
+                      contentStyle={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.dataFields}`, borderRadius: 12, fontSize: 12, fontFamily: 'Inter, sans-serif'}} />
+                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter, sans-serif'}}>{value}</span>} />
                   </PieChart>
                 </ResponsiveContainer>
+              </div>
+            )}
+            {data?.viajesPorSeccion?.length > 0 && (
+              <div className={styles.chartCard} style={{backgroundColor: COLORS.backgroundHeader}}>
+                <p className={styles.chartTitle} style={{color: COLORS.text}}>Viajes por Sección</p>
+                <p className={styles.chartSub} style={{color: COLORS.labels}}>Viajes con fondos entregados por tesorería: cantidad (eje izquierdo) y monto asignado en Bs (eje derecho), por sección del empleado</p>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={data.viajesPorSeccion} margin={{top: 10, right: 10, left: 0, bottom: 10}}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={COLORS.dataFields} />
+                    <XAxis dataKey="seccion" tick={{fontSize: 11, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} />
+                    <YAxis yAxisId="viajes" allowDecimals={false} tick={{fontSize: 11, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} />
+                    <YAxis yAxisId="monto" orientation="right" tick={{fontSize: 11, fontFamily: 'Inter, sans-serif', fill: COLORS.labels}} />
+                    <Tooltip content={<SectionTooltip />} />
+                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{color: COLORS.text, fontSize: 11, fontFamily: 'Inter, sans-serif'}}>{value === 'cantidadViajes' ? 'Viajes' : 'Monto asignado (Bs)'}</span>} />
+                    <Bar yAxisId="viajes" dataKey="cantidadViajes" fill={COLORS.primary} radius={[6, 6, 0, 0]} />
+                    <Bar yAxisId="monto" dataKey="montoAsignado" fill={COLORS.title} radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+            {data?.viajesPorSeccion?.length === 0 && (
+              <div className={styles.chartCard} style={{backgroundColor: COLORS.backgroundHeader}}>
+                <p className={styles.chartTitle} style={{color: COLORS.text}}>Viajes por Sección</p>
+                <p className={styles.chartSub} style={{color: COLORS.labels}}>No hay viajes con fondos entregados en este periodo.</p>
               </div>
             )}
             <div className={styles.sectionDivider} style={{borderColor: COLORS.dataFields}} />
@@ -112,6 +157,7 @@ function DashboardAdminPage() {
           </>
         )}
       </div>
+      <MascotGreeting pageKey="admin-resumen" message={mascotMessage} />
       <Footer />
     </div>
   );

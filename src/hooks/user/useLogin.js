@@ -1,5 +1,7 @@
 import {useState} from 'react';
+import {getHomeRoute} from '../../constants/roleHome';
 import {login, checkEmail, sendCode, verifyCode} from '../../services/user/authService';
+import {setToken} from '../../services/shared/tokenStore';
 import {jwtDecode} from 'jwt-decode';
 
 function useLogin() {
@@ -10,7 +12,6 @@ function useLogin() {
   const [forgotEmail, setForgotEmail] = useState('');
   const [codeExpiresAt, setCodeExpiresAt] = useState(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
-  const [showPasswordExpired, setShowPasswordExpired] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showExpiredModal, setShowExpiredModal] = useState(false);
@@ -31,21 +32,10 @@ function useLogin() {
     setCodeError('');
   };
 
+  // Tras iniciar sesion, cada rol empieza en la primera opcion de su menu
   const redirectByRole = (token) => {
     const decoded = jwtDecode(token);
-    const role = decoded.id_rol;
-    if (role === 1) {
-      window.location.href = '/dashboard/administrador';
-    }
-    else if (role === 2) {
-      window.location.href = '/dashboard/supervisor/viajes-pendientes';
-    }
-    else if (role === 4) {
-      window.location.href = '/dashboard/revisor';
-    }
-    else {
-      window.location.href = '/dashboard/empleado';
-    }
+    window.location.href = getHomeRoute(decoded.id_rol);
   };
 
   const handleEmailChange = (value) => {
@@ -79,12 +69,15 @@ function useLogin() {
     const data = await login(email, password);
     setLogging(false);
     if (data.token) {
-      localStorage.setItem('token', data.token);
+      setToken(data.token);
       redirectByRole(data.token);
     }
     else {
       if (data.error?.includes('suspendida')) {
         setFieldErrors({password: 'Tu cuenta está suspendida, contacta al administrador.'});
+      }
+      else if (data.error?.includes('Demasiados intentos')) {
+        setFieldErrors({password: data.error});
       }
       else {
         setFieldErrors({password: 'El correo o la contraseña son incorrectos'});
@@ -131,7 +124,7 @@ function useLogin() {
     setVerifying(false);
     if (data.message === 'Código verificado correctamente') {
       closeAllModals();
-      localStorage.setItem('token', data.token);
+      setToken(data.token);
       redirectByRole(data.token);
     }
     else if (data.error === 'Código expirado') {
@@ -181,8 +174,6 @@ function useLogin() {
     showInvalidEmailModal,
     invalidEmailReason,
     closeAllModals,
-    showPasswordExpired, setShowPasswordExpired,
-    redirectByRole,
     handleLogin,
     handleEmailChange,
     handlePasswordChange,

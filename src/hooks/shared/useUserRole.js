@@ -1,7 +1,8 @@
 import {jwtDecode} from 'jwt-decode';
+import {getToken} from '../../services/shared/tokenStore';
 
 function useUserRole() {
-  const token = localStorage.getItem('token');
+  const token = getToken();
   let role = null;
   try {
     role = jwtDecode(token)?.id_rol;

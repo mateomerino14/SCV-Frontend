@@ -1,23 +1,24 @@
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {KeyRound, FileText, LogOut} from 'lucide-react';
+import {KeyRound, FileText, LogOut, Smile} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import ConfigOption from '../../features/user/atoms/ConfigOption';
+import ConfigToggle from '../../features/user/atoms/ConfigToggle';
+import {isMascotEnabled, setMascotEnabled} from '../../utils/mascotPreferences';
 import ChangePasswordModal from '../../features/user/organisms/ChangePasswordModal';
 import TermsModal from '../../features/user/organisms/TermsModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import {logout} from '../../services/user/authService';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  titleWrapper: "mb-6",
-  title: "text-3xl font-bold font-inter mb-1",
-  subtitle: "text-sm font-inter",
   grid: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-6",
   sectionCard: "rounded-2xl p-6 shadow-sm border",
   sectionLabel: "text-sm font-bold font-inter uppercase mb-4",
@@ -26,30 +27,40 @@ const styles = {
 };
 
 function SettingsPage() {
+  const [mascotEnabled, setMascotEnabledState] = useState(isMascotEnabled());
+  const handleMascotChange = (enabled) => {
+    setMascotEnabled(enabled);
+    setMascotEnabledState(enabled);
+  };
   const navigate = useNavigate();
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const handleLogout = () => {
-    localStorage.removeItem('token');
+  // Cierra la sesion en el servidor antes de volver al ingreso
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Configuración" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Ajustes de Cuenta" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <div className={styles.titleWrapper}>
-          <h1 className={styles.title} style={{color: COLORS.text}}>Ajustes de Cuenta</h1>
-          <p className={styles.subtitle} style={{color: COLORS.labels}}>Gestiona tu contraseña y revisa los términos del sistema.</p>
-        </div>
+        <PageHeader title="Ajustes de Cuenta" subtitle="Cambia tu contraseña y consulta los términos de uso del sistema." />
         <div className={styles.grid}>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
             <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cuenta</p>
             <div className={styles.sectionWrapper}>
               <ConfigOption icon={KeyRound} label="Cambiar contraseña" onClick={() => setShowChangePassword(true)} />
+            </div>
+          </div>
+          <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
+            <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Preferencias</p>
+            <div className={styles.sectionWrapper}>
+              <ConfigToggle icon={Smile} label="Mostrar a Casquito" description="La mascota del sistema te saluda y te recuerda tus pendientes."
+                checked={mascotEnabled} onChange={handleMascotChange} />
             </div>
           </div>
           <div className={styles.sectionCard} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>

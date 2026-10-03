@@ -18,11 +18,14 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useTreasurerReviewDetail from '../../hooks/approval/useTreasurerReviewDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
+import {statusColors} from '../../constants/tripStatusColors';
+import {getStatusColors} from '../../constants/tripStatusColors';
+import {statusLabels} from '../../constants/tripStatusLabels';
 
 const treasurerStatusConfig = {
-  EN_REVISION_TESORERO: {label: 'Pend. Fondos', bg: '#ffd700aa', color: '#7a5900'},
-  EN_CURSO: {label: 'Aprobado', bg: '#d4edda', color: '#155724'},
-  RECHAZADO: {label: 'Rechazado', bg: '#ffa7a8aa', color: '#500203'},
+  EN_REVISION_TESORERO: {label: statusLabels.EN_REVISION_TESORERO, ...statusColors.EN_REVISION_TESORERO},
+  EN_CURSO: {label: statusLabels.EN_CURSO, ...statusColors.EN_CURSO},
+  RECHAZADO: {label: statusLabels.RECHAZADO, ...statusColors.RECHAZADO},
 };
 
 const styles = {
@@ -67,7 +70,7 @@ function TreasurerReviewDetailPage() {
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-        <Navbar text="Aprobación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Asignación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={6} /></div>
         <Footer />
@@ -78,7 +81,7 @@ function TreasurerReviewDetailPage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Aprobación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Asignación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.blockedWrapper}>
           <div className={styles.blockedIcon} style={{backgroundColor: COLORS.error}}>
@@ -102,18 +105,15 @@ function TreasurerReviewDetailPage() {
   const isPending = trip.estado === 'EN_REVISION_TESORERO';
   const canAct = isPending;
   let successMessage = 'Viaje rechazado correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'EN_CURSO') {
     successMessage = 'Fondo aprobado. Confirmación enviada al empleado.';
-    successBg = '#d4edda';
-    successColor = '#155724';
   }
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Aprobación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Asignación de Fondos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
@@ -125,7 +125,7 @@ function TreasurerReviewDetailPage() {
           assignedAmount={assignedAmount} assignedAmountUsd={assignedAmountUsd}
           handleAssignedAmountChange={handleAssignedAmountChange} handleAssignedAmountUsdChange={handleAssignedAmountUsdChange}
           savingAmounts={savingAmounts} handleSaveAmounts={handleSaveAmounts} />
-        <SelectableObservationsList observations={observationComments} canManage={canAct}
+        <SelectableObservationsList observations={observationComments} canManage={canAct} currentUserId={user?.id_usuario}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}
           editingComment={editingComment} deletingComment={deletingComment} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
@@ -139,7 +139,8 @@ function TreasurerReviewDetailPage() {
           </div>
         )}
       </div>
-      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction} />
+      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction}
+        title="Aprobar Fondos" message="¿Estás seguro de que deseas aprobar los fondos de este viaje? El empleado podrá registrar sus gastos." />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <AddCommentModal isOpen={showAddComment} onClose={() => {setShowAddComment(false); editObservation(0, '');}} onConfirm={handleAddComment} observations={observations} onEdit={editObservation} loading={savingAction} error={modalError} />

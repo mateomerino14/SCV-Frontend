@@ -17,7 +17,9 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useApproverPendingTripDetail from '../../hooks/approval/useApproverPendingTripDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import approverTripStatusConfig from '../../features/approval/constants/approverTripStatus';
+import {routes} from '../../constants/routes';
 import {COLORS} from '../../constants';
+import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -39,7 +41,7 @@ function ApproverTripReviewDetailPage() {
   const {id} = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const originRoute = location.state?.from || '/dashboard/aprobador/viajes-pendientes';
+  const originRoute = location.state?.from || routes.approverReviews;
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const [showAddComment, setShowAddComment] = useState(false);
   const {
@@ -90,13 +92,10 @@ function ApproverTripReviewDetailPage() {
   const isPending = trip.estado === 'APROBADO_VIAJE';
   const canAct = isPending;
   let successMessage = 'Viaje rechazado correctamente';
-  let successBg = '#ffa7a8aa';
-  let successColor = '#500203';
   if (actionCompleted === 'EN_REVISION_TESORERO') {
     successMessage = 'Viaje aprobado. Enviado a revisión de tesorería.';
-    successBg = '#ffd8a8aa';
-    successColor = '#8a4b00';
   }
+  const {bg: successBg, color: successColor} = getStatusColors(actionCompleted);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -107,7 +106,7 @@ function ApproverTripReviewDetailPage() {
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
         <TripReviewDetailCard trip={trip} statusConfig={approverTripStatusConfig} />
-        <SelectableObservationsList observations={observationComments} canManage={canAct}
+        <SelectableObservationsList observations={observationComments} canManage={canAct} currentUserId={user?.id_usuario}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}
           editingComment={editingComment} deletingComment={deletingComment} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

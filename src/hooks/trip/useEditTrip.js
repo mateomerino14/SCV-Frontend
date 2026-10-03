@@ -1,6 +1,8 @@
 import {useState, useEffect} from 'react';
 import {getTripDetail, editTrip} from '../../services/trip/tripService';
 
+const EDITABLE_STATUSES = ['BORRADOR', 'RECHAZADO'];
+
 function useEditTrip(tripId, user) {
   const [reason, setReason] = useState('');
   const [origin, setOrigin] = useState('');
@@ -9,9 +11,11 @@ function useEditTrip(tripId, user) {
   const [endDate, setEndDate] = useState('');
   const [type, setType] = useState('Nacional');
   const [transport, setTransport] = useState('Terrestre');
+  const [vehiclePlate, setVehiclePlate] = useState('');
   const [originalStatus, setOriginalStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loadingLocation, setLoadingLocation] = useState(false);
@@ -19,12 +23,18 @@ function useEditTrip(tripId, user) {
   useEffect(() => {
     const load = async () => {
       setLoadingData(true);
+      setLoadError('');
       const data = await getTripDetail(tripId);
       setLoadingData(false);
-      if (data.error) {
+      if (data.error || !data.viaje) {
+        setLoadError(data.error || 'No se pudo cargar el viaje');
         return;
       }
       const trip = data.viaje;
+      if (!EDITABLE_STATUSES.includes(trip.estado)) {
+        setLoadError('Este viaje ya no se puede editar en su estado actual');
+        return;
+      }
       setReason(trip.motivo || '');
       setOrigin(trip.origen || '');
       setDestination(trip.destino || '');
@@ -32,6 +42,7 @@ function useEditTrip(tripId, user) {
       setEndDate(trip.fecha_fin || '');
       setType(trip.tipo || 'Nacional');
       setTransport(trip.transporte || 'Terrestre');
+      setVehiclePlate(trip.placa_vehiculo || '');
       setOriginalStatus(trip.estado || null);
     };
     load();
@@ -39,6 +50,14 @@ function useEditTrip(tripId, user) {
 
   const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
   const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
+
+  const handleTypeChange = (newType) => {
+    setType(newType);
+    if (newType === 'Internacional' && transport === 'Vehículo de Empresa') {
+      setTransport('Terrestre');
+      setVehiclePlate('');
+    }
+  };
 
   const calculateDays = () => {
     if (!startDate || !endDate) {
@@ -104,6 +123,14 @@ function useEditTrip(tripId, user) {
     setFieldErrors((prev) => ({...prev, endDate: undefined}));
   };
 
+  const handleVehiclePlateChange = (value) => {
+    if (value.length > 20) {
+      return;
+    }
+    setVehiclePlate(value);
+    setFieldErrors((prev) => ({...prev, vehiclePlate: undefined}));
+  };
+
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
       showError('Tu navegador no permite obtener la ubicación actual');
@@ -161,10 +188,16 @@ function useEditTrip(tripId, user) {
     if (startDate && endDate && calculateDays() <= 0) {
       errors.endDate = 'La fecha fin debe ser posterior a la fecha de inicio';
     }
+    if (transport === 'Vehículo de Empresa' && !vehiclePlate.trim()) {
+      errors.vehiclePlate = 'La placa del vehículo es requerida';
+    }
     return errors;
   };
 
   const handleSave = async (onSuccess) => {
+    if (loadError || !originalStatus) {
+      return;
+    }
     const errors = validate();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -180,6 +213,7 @@ function useEditTrip(tripId, user) {
       fecha_fin: endDate,
       tipo: type,
       transporte: transport,
+      placa_vehiculo: transport === 'Vehículo de Empresa' ? vehiclePlate.trim() : null,
       monto_asignado: totalAmount,
       monto_asignado_usd: totalAmountUsd,
     });
@@ -196,13 +230,14 @@ function useEditTrip(tripId, user) {
   return {
     reason, origin, destination,
     startDate, endDate,
-    type, setType,
+    type, setType, handleTypeChange,
     transport, setTransport,
+    vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,
     originalStatus,
-    loading, loadingData, error, fieldErrors,
+    loading, loadingData, loadError, error, fieldErrors,
     loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange,
     handleStartDateChange, handleEndDateChange,

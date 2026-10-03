@@ -1,8 +1,10 @@
 import {useNavigate} from 'react-router-dom';
-import {Mail, Phone, Briefcase, LogOut, Hash, Layers} from 'lucide-react';
+import {Mail, Phone, Briefcase, LogOut, Layers, IdCard, UserCheck} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
+import MascotGreeting from '../../components/mascot/MascotGreeting';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
+import PageHeader from '../../components/ui/PageHeader';
 import PhotoModal from '../../features/user/organisms/PhotoModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SuccessModal from '../../components/ui/SuccessModal';
@@ -17,13 +19,11 @@ import useMenu from '../../hooks/shared/useMenu';
 import usePhotoModal from '../hooks/usePhotoModal';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import {logout} from '../../services/user/authService';
 
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 max-w-8xl mx-auto w-full",
-  titleWrapper: "mb-6",
-  title: "text-3xl font-bold font-inter mb-1",
-  subtitle: "text-sm font-inter",
   grid: "grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6",
   leftCol: "lg:col-span-3 min-w-[220px]",
   rightCol: "lg:col-span-9",
@@ -43,8 +43,9 @@ function ProfilePage() {
   } = useProfile();
   const {showModal: showPhotoModal, open: openPhotoModal, close: closePhotoModal, handleNewPhoto, handleRemovePhoto: handleRemovePhotoModal} =
     usePhotoModal(handleChangePhoto, handleRemovePhoto, loadUser);
-  const handleLogout = () => {
-    localStorage.removeItem('token');
+  // Cierra la sesion en el servidor antes de volver al ingreso
+  const handleLogout = async () => {
+    await logout();
     navigate(routes.login);
   };
 
@@ -52,27 +53,25 @@ function ProfilePage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Perfil Corporativo" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+        <Navbar text="Mi Perfil" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={5} /></div>
         <Footer />
       </div>
     );
   }
-  const hasCodes = user?.numero_dependencia || user?.numero_seccion;
+
+  const mascotMessage = menuUser ? 'Mantén tus datos al día: tu carnet de identidad aparece en tus recibos.' : null;
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Perfil Corporativo" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
+      <Navbar text="Mi Perfil" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <PhotoModal isOpen={showPhotoModal} onClose={closePhotoModal} onNewPhoto={handleNewPhoto} onRemove={handleRemovePhotoModal} saving={saving} />
       <SuccessModal isOpen={!!success} title="Actualizado" message={success} onAccept={closeSuccess} />
       <div className={styles.content}>
-        <div className={styles.titleWrapper}>
-          <h1 className={styles.title} style={{color: COLORS.text}}>Mi Cuenta</h1>
-          <p className={styles.subtitle} style={{color: COLORS.labels}}>Consulta y edita tu información personal.</p>
-        </div>
+        <PageHeader title="Mi Perfil" subtitle="Consulta tus datos, cambia tu foto y actualiza tu información de contacto." />
         <div className={styles.grid}>
           <div className={styles.leftCol}>
             <ProfileSummaryCard user={user} onEditPhoto={openPhotoModal} saving={saving} />
@@ -87,9 +86,10 @@ function ProfilePage() {
                 <ProfileField icon={Phone} label="Teléfono" value={user?.telefono} editing={editingPhone} editValue={phone}
                   onEditValueChange={(event) => setPhone(event.target.value.replace(/[^0-9]/g, ''))} onStartEdit={() => setEditingPhone(true)}
                   onSave={handleSavePhone} onCancel={handleCancelPhone} saving={saving} inputType="tel" inputMode="numeric" maxLength={8} />
+                <ReadOnlyField icon={IdCard} label="Carnet de Identidad" value={user?.carnet_identidad || '—'} />
                 <ReadOnlyField icon={Briefcase} label="Cargo" value={user?.Cargo?.nombre} />
-                {user?.numero_dependencia && <ReadOnlyField icon={Hash} label="N° Dependencia" value={user.numero_dependencia} />}
-                {user?.numero_seccion && <ReadOnlyField icon={Layers} label="N° Sección" value={user.numero_seccion} />}
+                {user?.Seccion?.nombre && <ReadOnlyField icon={Layers} label="Sección" value={user.Seccion.nombre} />}
+                <ReadOnlyField icon={UserCheck} label="Jefe Directo" value={user?.Jefe ? `${user.Jefe.nombre} ${user.Jefe.apellido_paterno}` : '—'} />
               </div>
             </div>
             {error && <InlineAlert type="error">{error}</InlineAlert>}
@@ -100,6 +100,7 @@ function ProfilePage() {
           Cerrar Sesión
         </button>
       </div>
+      <MascotGreeting pageKey="perfil" message={mascotMessage} />
       <Footer />
     </div>
   );
