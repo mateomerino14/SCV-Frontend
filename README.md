@@ -29,6 +29,8 @@ npm run build              # compilación para producción
 npm run preview             # previsualización de la compilación
 npm run storybook           # documentación interactiva de los componentes
 npm run build-storybook     # sitio estático de Storybook
+npm test                    # pruebas unitarias (Vitest)
+npm run test:e2e            # pruebas de extremo a extremo (Playwright; ver "Pruebas automáticas")
 ```
 
 ## Stack
@@ -97,9 +99,13 @@ src/
 ├── layouts/             Navbar, Footer y menús por rol
 │   └── menu/
 ├── utils/               Funciones auxiliares puras
-├── constants/           Paleta, rutas, inicio por rol, nombres y colores de estado
+├── constants/           Paleta, rutas, inicio por rol, monedas, nombres y colores de estado
+├── test/setup.js        Configuración de las pruebas unitarias
 ├── App.jsx              Rutas y guardas de acceso
 └── main.jsx             Punto de entrada
+
+e2e/                     Pruebas de extremo a extremo (Playwright) y sus ayudas
+.github/workflows/       Ejecución automática de las pruebas en GitHub Actions
 ```
 
 ### Responsabilidad de cada capa
@@ -188,11 +194,21 @@ Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
 `useTripExcelExport` construye la planilla oficial en Excel con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda, la justificación de cada día que excedió la cuota diaria, y cinco bloques de firma.
 
+Además, el revisor y el tesorero exportan con un botón las **planillas de todos los viajes de su lista** (según el filtro aplicado) en un solo archivo: una hoja *Resumen* con una fila por viaje y una hoja de planilla por viaje. El administrador puede exportar las planillas del periodo elegido en el Resumen General.
+
 El empleado descarga en cambio la planilla en **PDF** (no editable, generada por el backend) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos se generan a partir de los mismos valores de retención calculados y persistidos por el backend; no se recalculan al exportar.
+
+### Monto solicitado
+
+Al crear o editar un viaje, el empleado escribe el monto que solicita y un hospedaje estimado (en Bs y, si el viaje es internacional, también en USD). `RequestedAmountFields` muestra la referencia (*días × tarifa diaria del cargo + hospedaje*) como tope; un monto mayor no se puede guardar, y el botón "Solicitar el tope completo" lo completa solo. Tesorería ve lo solicitado y asigna el monto final.
 
 ### Control de gasto diario
 
-El presupuesto se controla día por día contra el `monto_diario` del cargo, no contra el total del viaje. Los gastos de hotel quedan fuera de ese control y se comparan en cambio contra el total asignado. Cuando un día (o el total de hoteles) excede la cuota, `useTripDetail` exige una justificación de texto propia por cada exceso antes de permitir el envío a revisión.
+El presupuesto se controla día por día y por moneda: en un viaje nacional contra la tarifa diaria en Bs; en uno internacional, cada día con las dos tarifas por separado (Bs y USD), y se puede gastar en cualquiera de las dos monedas cualquier día. Los gastos de hotel quedan fuera de ese control y se comparan contra el total asignado. El **Control Diario** (`DailyBreakdownCard`) muestra una tarjeta por día con una barra por moneda y su estado (dentro del límite, cerca, excedido o justificado); lo ven el empleado y los revisores. Cuando un día (o el total de hoteles) excede la tarifa, `useTripDetail` exige una justificación por cada exceso antes de permitir el envío a revisión.
+
+### Tipo de cambio diario
+
+En los tramos de otra moneda de un gasto internacional, el tipo de cambio se obtiene solo según la fecha del gasto (`useDailyExchangeRates`, `InstallmentRateField`): es uno por día y moneda, igual para todos los gastos de esa fecha. Si la API no responde, se habilita el campo para escribirlo a mano y el tramo queda marcado como ingresado manualmente.
 
 ### Revisión adicional por alcohol
 
@@ -220,6 +236,8 @@ Para rechazar se usan solo las observaciones propias de la ronda actual; las de 
 
 Resumen general con indicadores por fase y gráficos, con filtro de periodo (este mes, que es el valor inicial, este año, todo o un rango, por fecha de inicio del viaje); el gráfico por sección cuenta solo los viajes con fondos entregados por tesorería; gestión de usuarios con buscador en cargo, sección y jefe directo (`SearchableSelector`); sugerencia de nombres existentes al crear cargos y secciones; historial de accesos (ingresos, salidas y cambios de contraseña) con filtro de periodo (por defecto el mes actual, en días de Bolivia); ambos usan los mismos botones de periodo (`PeriodPresets`), filtros por evento y usuario, paginación de 20 en 20 y exportación a Excel.
 
+**Exportar a Excel** (`useAdminExcelExport`, `ExportButton`): el Resumen General (del periodo elegido), Usuarios, Cargos, Secciones e Historial de Accesos tienen su botón, que exporta lo que se está viendo con el mismo estilo (encabezado rojo MAXAM y nombre con la fecha).
+
 **Recordatorios** (`ReminderSettingsPage`, `useReminderSettings`): el administrador activa o desactiva el resumen de pendientes por correo, elige los días de la semana y hasta 4 horas de envío (hora de Bolivia), y ve un resumen en lenguaje natural de cuándo saldrá. El backend aplica los cambios al guardar, sin reiniciarse. Desde la misma pantalla puede ver una vista previa de a quién le llegaría el resumen con los pendientes actuales y enviarlo en el momento.
 
 ### Casquito
@@ -233,6 +251,17 @@ Los componentes de `components/ui/`, todos los átomos de `features/` y las mol�
 ```bash
 npm run storybook
 ```
+
+## Pruebas automáticas
+
+| Tipo | Qué prueba | Comando | Dónde |
+|---|---|---|---|
+| Unitarias | Hooks, componentes y utilidades: topes del monto, control diario, tipo de cambio, periodos, Excel | `npm test` | Junto a cada archivo (`*.test.js`, `*.test.jsx`) |
+| De extremo a extremo | El sistema completo en un navegador real: ingreso por rol, monto solicitado, control diario, tipo de cambio y exportaciones | `npm run test:e2e` | `e2e/` |
+
+Las pruebas unitarias no necesitan nada más. Las de extremo a extremo necesitan el backend y el frontend levantados con la base de prueba (organización de `testing_02_organizacion_prueba.sql`); `E2E_BASE_URL` y `E2E_API_URL` indican dónde están (por defecto `localhost:5173` y `localhost:5055`). La primera vez hay que instalar el navegador con `npx playwright install chromium`.
+
+En GitHub las pruebas se ejecutan solas en cada `push` y pull request (`.github/workflows/pruebas.yml`): compila el proyecto y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña **Actions**.
 
 ## Convenciones
 
