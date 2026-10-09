@@ -5,6 +5,7 @@ import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
+import RequestedAmountFields from '../../features/trip/molecules/RequestedAmountFields';
 import TripPolicies from '../../features/trip/molecules/TripPolicies';
 import TripCreatedModal from '../../features/trip/organisms/TripCreatedModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
@@ -37,7 +38,6 @@ const styles = {
   errorMsg: "text-xs font-inter italic text-center mt-3",
   rightCol: "flex flex-col gap-4",
   policiesWrapper: "px-5 pb-6 max-w-8xl mx-auto w-full",
-  internationalBadge: "text-xs font-inter p-3 rounded-xl flex items-start gap-2",
 };
 
 function CreateTripPage() {
@@ -46,7 +46,7 @@ function CreateTripPage() {
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
-    days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd,
+    days, requestedAmounts, dailyRate, dailyRateUsd,
     loading, error, fieldErrors, showConfirmation, setShowConfirmation, loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleUseCurrentLocation, handleSaveDraft,
@@ -63,7 +63,7 @@ function CreateTripPage() {
         <button className={styles.backBtn} onClick={() => navigate(routes.employeeDashboard)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <PageHeader title="Nuevo Viaje" subtitle="Completa los datos del viaje; el presupuesto se calcula según tu cargo y la cantidad de días." />
+        <PageHeader title="Nuevo Viaje" subtitle="Completa los datos del viaje; indica el monto que solicitas dentro del tope de tu cargo." />
         <div className={styles.badgeWrapper} style={{backgroundColor: COLORS.backgroundHeader}}>
           <div className={styles.badgeIcon} style={{backgroundColor: COLORS.primary}}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -132,23 +132,17 @@ function CreateTripPage() {
                   value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
               </InputField>
             )}
-            {type === 'Internacional' && days > 0 && (
-              <div className={styles.internationalBadge} style={{backgroundColor: COLORS.backgroundHeader}}>
-                <span style={{color: COLORS.primary, fontSize: 17}}>ⓘ</span>
-                <p className="text-xs font-inter mt-1" style={{color: COLORS.labels}}>
-                  Día de salida y regreso en <strong>Bs</strong> ({nationalDays} día{nationalDays !== 1 ? 's' : ''}).
-                  Días intermedios en <strong>USD</strong> ({internationalDays} día{internationalDays !== 1 ? 's' : ''}).
-                </p>
-              </div>
-            )}
+            <RequestedAmountFields {...requestedAmounts} days={days} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd}
+              onAmountChange={requestedAmounts.handleAmountChange} onFillWithLimits={requestedAmounts.fillWithLimits} />
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
             <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}} onClick={handleSaveDraft} disabled={loading}>
               {loading ? 'Guardando...' : 'Guardar Borrador'}
             </button>
           </div>
           <div className={styles.rightCol}>
-            <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
-              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport} />
+            <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} days={days} type={type} transport={transport}
+              requestedAmount={requestedAmounts.amounts.requested} requestedAmountUsd={requestedAmounts.amounts.requestedUsd}
+              limitBs={requestedAmounts.limitBs} limitUsd={requestedAmounts.limitUsd} />
           </div>
         </div>
       </div>

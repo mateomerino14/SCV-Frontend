@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {createTrip} from '../../services/trip/tripService';
+import useRequestedAmounts from './useRequestedAmounts';
 
 function useCreateTrip(user) {
   const [reason, setReason] = useState('');
@@ -42,14 +43,7 @@ function useCreateTrip(user) {
   };
 
   const days = calculateDays();
-  let nationalDays = days;
-  let internationalDays = 0;
-  if (type === 'Internacional') {
-    nationalDays = Math.min(days, 2);
-    internationalDays = Math.max(0, days - 2);
-  }
-  const totalAmount = nationalDays * dailyRate;
-  const totalAmountUsd = internationalDays * dailyRateUsd;
+  const requestedAmounts = useRequestedAmounts({type, days, dailyRate, dailyRateUsd});
 
   const showError = (message) => {
     setError(message);
@@ -158,6 +152,10 @@ function useCreateTrip(user) {
     if (transport === 'Vehículo de Empresa' && !vehiclePlate.trim()) {
       errors.vehiclePlate = 'La placa del vehículo es requerida';
     }
+    const amountErrors = requestedAmounts.validateAmounts();
+    if (Object.keys(amountErrors).length > 0) {
+      errors.amounts = 'Revisa el monto que solicitas';
+    }
     return errors;
   };
 
@@ -178,8 +176,7 @@ function useCreateTrip(user) {
       tipo: type,
       transporte: transport,
       placa_vehiculo: transport === 'Vehículo de Empresa' ? vehiclePlate.trim() : null,
-      monto_asignado: totalAmount,
-      monto_asignado_usd: totalAmountUsd,
+      ...requestedAmounts.buildAmountsPayload(),
     });
     setLoading(false);
     if (data.error) {
@@ -195,6 +192,7 @@ function useCreateTrip(user) {
     setType('Nacional');
     setTransport('Terrestre');
     setVehiclePlate('');
+    requestedAmounts.resetAmounts();
   };
 
   return {
@@ -203,8 +201,7 @@ function useCreateTrip(user) {
     type, setType, handleTypeChange,
     transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
-    days, nationalDays, internationalDays,
-    totalAmount, totalAmountUsd,
+    days, requestedAmounts,
     dailyRate, dailyRateUsd,
     loading, error, fieldErrors,
     showConfirmation, setShowConfirmation,

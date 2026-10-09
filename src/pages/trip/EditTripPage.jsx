@@ -5,6 +5,7 @@ import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
+import RequestedAmountFields from '../../features/trip/molecules/RequestedAmountFields';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import InputField from '../../components/ui/InputField';
@@ -49,7 +50,7 @@ function EditTripPage() {
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
-    nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
+    days, requestedAmounts, dailyRate, dailyRateUsd, originalStatus,
     loading, loadingData, loadError, error, fieldErrors, loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleUseCurrentLocation, handleSave,
@@ -170,6 +171,8 @@ function EditTripPage() {
                   value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
               </InputField>
             )}
+            <RequestedAmountFields {...requestedAmounts} days={days} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd}
+              onAmountChange={requestedAmounts.handleAmountChange} onFillWithLimits={requestedAmounts.fillWithLimits} />
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
             <div style={{marginTop: 'auto'}}>
               <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}}
@@ -182,8 +185,9 @@ function EditTripPage() {
             </div>
           </div>
           <div className={styles.rightCol}>
-            <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
-              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport} />
+            <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} days={days} type={type} transport={transport}
+              requestedAmount={requestedAmounts.amounts.requested} requestedAmountUsd={requestedAmounts.amounts.requestedUsd}
+              limitBs={requestedAmounts.limitBs} limitUsd={requestedAmounts.limitUsd} />
           </div>
         </div>
       </div>
