@@ -1,23 +1,16 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useMemo} from 'react';
 import {useSearchParams} from 'react-router-dom';
 import {getCategories, registerExpense} from '../../services/expense/expenseService';
 import {getTripDetail} from '../../services/trip/tripService';
 import {compressImage} from '../../utils/imageCompressor';
+import {currencies} from '../../constants/currencies';
+import useDailyExchangeRates, {installmentRateError} from './useDailyExchangeRates';
 
 const maxAmount = 99999.99;
 const maxDescription = 1000;
-const maxExchangeRate = 9999.9999;
+const maxExchangeRate = 99999.9999;
 const maxSubitemDescription = 255;
 
-const currencies = [
-  {codigo: 'EUR', nombre: 'Euro'},
-  {codigo: 'PEN', nombre: 'Sol peruano'},
-  {codigo: 'ARS', nombre: 'Peso argentino'},
-  {codigo: 'BRL', nombre: 'Real brasileño'},
-  {codigo: 'CLP', nombre: 'Peso chileno'},
-  {codigo: 'COP', nombre: 'Peso colombiano'},
-  {codigo: 'MXN', nombre: 'Peso mexicano'},
-];
 
 function calculateWithholdings(amount, type, isInternational) {
   const amountNum = parseFloat(amount) || 0;
@@ -78,13 +71,28 @@ function newItem() {
 function useRegisterExpense(tripId) {
   const [searchParams] = useSearchParams();
   const isInternationalExpense = searchParams.get('internacional') === 'true';
-  const [items, setItems] = useState([newItem()]);
-  const [expandedId, setExpandedId] = useState(items[0].id);
+  const [rawItems, setItems] = useState([newItem()]);
+  const [expandedId, setExpandedId] = useState(rawItems[0].id);
   const [categories, setCategories] = useState([]);
   const [isInternational, setIsInternational] = useState(false);
   const [savingAll, setSavingAll] = useState(false);
   const [error, setError] = useState('');
   const [saveSummary, setSaveSummary] = useState(null);
+  const {requestRates, applyRates} = useDailyExchangeRates();
+  const items = useMemo(() => rawItems.map((item) => {
+    if (!item.usesOtherCurrency) {
+      return item;
+    }
+    return {...item, installments: applyRates(item.date, item.installments)};
+  }), [rawItems, applyRates]);
+
+  useEffect(() => {
+    rawItems.forEach((item) => {
+      if (item.usesOtherCurrency && item.date) {
+        requestRates(item.date, item.installments);
+      }
+    });
+  }, [rawItems, requestRates]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -482,8 +490,9 @@ function useRegisterExpense(tripId) {
         if (!installment.originAmount || parseFloat(installment.originAmount) <= 0) {
           currentErrors.amount = 'El monto es requerido';
         }
-        if (!installment.exchangeRate || parseFloat(installment.exchangeRate) <= 0) {
-          currentErrors.exchangeRate = 'El tipo de cambio es requerido';
+        const rateError = installmentRateError(installment);
+        if (rateError) {
+          currentErrors.exchangeRate = rateError;
         }
         if (Object.keys(currentErrors).length > 0) {
           installmentErrors[installment.id] = currentErrors;

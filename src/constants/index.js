@@ -27,6 +27,7 @@ export const COLORS = {
   element: '#eceded6a',
   error: '#fde9e9',
   comments: '#f5d6d622',
+  success: '#2d7a3a',
   // Variantes de "background" (blanco) con transparencia, para usar sobre fondos de color (modales rojos, etc.)
   backgroundOnColorBorder: 'rgba(255,255,255,0.4)',
   backgroundOnColorFill: 'rgba(255,255,255,0.12)',

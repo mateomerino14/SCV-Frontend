@@ -61,6 +61,9 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
                 conversionColor = COLORS.secondary;
                 conversionWeight = 'bold';
               }
+              if (installments.some((installment) => installment.tipo_cambio_manual)) {
+                conversion = `${conversion} · T/C manual`;
+              }
               return (
                 <tr key={expense.id_gasto} style={{backgroundColor: bg}}>
                   <td className={styles.td} style={cell({color: COLORS.labels})}>{index + 1}</td>

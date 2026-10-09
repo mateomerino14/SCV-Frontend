@@ -75,3 +75,15 @@ export const sendIndividualReceipt = async (expenseId) => {
     return {error: error.response?.data?.error || 'Error al generar el recibo'};
   }
 };
+export const getDailyExchangeRate = async (date, currency) => {
+  try {
+    const response = await apiClient.get('/exchange-rate', {params: {fecha: date, moneda: currency}});
+    return response.data;
+  }
+  catch (error) {
+    return {
+      error: error.response?.data?.error || 'No se pudo obtener el tipo de cambio del día',
+      permiteManual: !!error.response?.data?.permiteManual,
+    };
+  }
+};
