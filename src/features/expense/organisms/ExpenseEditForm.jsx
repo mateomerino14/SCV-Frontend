@@ -50,7 +50,7 @@ function AccordionSection({active, onToggleActive, icon: Icon, iconColor, label,
           <Icon size={16} style={{color: iconColor}} />
           <span className={styles.toggleLabel} style={{color: COLORS.text}}>{label}</span>
         </div>
-        <div className={styles.toggle} style={{backgroundColor: active ? iconColor : COLORS.dataFields, opacity: disabled ? 0.6 : 1}}
+        <div className={styles.toggle} role="switch" aria-checked={active} aria-label={label} style={{backgroundColor: active ? iconColor : COLORS.dataFields, opacity: disabled ? 0.6 : 1}}
           onClick={() => !disabled && onToggleActive()}>
           <div className={styles.toggleCircle} style={{left: active ? '28px' : '4px'}} />
         </div>
