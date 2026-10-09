@@ -1,4 +1,5 @@
-import {Download, LogIn, LogOut, KeyRound} from 'lucide-react';
+import {LogIn, LogOut, KeyRound} from 'lucide-react';
+import ExportButton from '../../components/ui/ExportButton';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -29,7 +30,6 @@ const styles = {
   fieldLabel: 'text-xs font-inter uppercase mb-1',
   buttonsRow: 'flex gap-2 mt-3',
   filterBtn: 'flex-1 py-2.5 rounded-xl text-sm font-bold font-nunito cursor-pointer border transition-colors text-center',
-  exportBtn: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4',
   row: 'flex items-center gap-3 rounded-2xl p-3 mb-2',
   iconWrap: 'w-9 h-9 rounded-full flex items-center justify-center shrink-0',
   rowInfo: 'flex flex-col flex-1 min-w-0',
@@ -116,11 +116,7 @@ function AuditLogPage() {
           </div>
         </div>
 
-        <button className={styles.exportBtn} onClick={exportToExcel} disabled={loading || exporting || audits.length === 0}
-          style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: audits.length === 0 || exporting ? 0.6 : 1}}>
-          <Download size={16} />
-          {exporting ? 'Exportando...' : 'Exportar a Excel'}
-        </button>
+        <ExportButton onClick={exportToExcel} exporting={exporting} disabled={loading || audits.length === 0} />
 
         <p className={styles.periodCaption} style={{color: COLORS.labels}}>{periodCaption}</p>
 

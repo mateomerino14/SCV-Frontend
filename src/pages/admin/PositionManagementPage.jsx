@@ -1,3 +1,5 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
@@ -49,6 +51,7 @@ function PositionManagementPage() {
     showSuccess, setShowSuccess, successMessage, formData, setFormData, suggestions,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
   } = usePositionManagement();
+  const {exporting, exportError, exportPositions} = useAdminExcelExport();
   const pagination = useClientPagination(positions, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -62,6 +65,8 @@ function PositionManagementPage() {
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Puesto y Salario Diario</p>
+        <ExportButton onClick={() => exportPositions(positions)} exporting={exporting} disabled={loading || positions.length === 0} />
+        {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
           <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="cargo" plural="cargos" />

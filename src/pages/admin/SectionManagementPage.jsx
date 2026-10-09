@@ -1,3 +1,5 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
@@ -45,6 +47,7 @@ function SectionManagementPage() {
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive, suggestions,
   } = useSectionManagement();
+  const {exporting, exportError, exportSections} = useAdminExcelExport();
   const pagination = useClientPagination(sections, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -58,6 +61,8 @@ function SectionManagementPage() {
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar secciones..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Secciones Registradas</p>
+        <ExportButton onClick={() => exportSections(sections)} exporting={exporting} disabled={loading || sections.length === 0} />
+        {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
           <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="sección" plural="secciones" />

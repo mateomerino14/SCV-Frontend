@@ -1,3 +1,5 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
@@ -69,6 +71,7 @@ function UserManagementPage() {
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
     allUsers,
   } = useUserManagement();
+  const {exporting, exportError, exportUsers} = useAdminExcelExport();
   const pagination = useClientPagination(users, 15, `${search}|${roleFilter}|${sectionFilter}`);
 
   return (
@@ -95,6 +98,8 @@ function UserManagementPage() {
             </button>
           ))}
         </div>
+        <ExportButton onClick={() => exportUsers(users)} exporting={exporting} disabled={loading || users.length === 0} />
+        {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
           <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="usuario" plural="usuarios" />
