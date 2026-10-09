@@ -4,7 +4,7 @@ Cliente web del sistema de gestión de viajes corporativos y rendición de gasto
 
 ## Requisitos
 
-- Node.js 18 o superior
+- Node.js 22 o superior
 - Una instancia del backend en ejecución
 
 ## Instalación
