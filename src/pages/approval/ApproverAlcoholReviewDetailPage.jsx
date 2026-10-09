@@ -12,6 +12,7 @@ import DeleteCommentConfirmModal from '../../features/approval/organisms/DeleteC
 import TripAlreadyTakenModal from '../../features/approval/organisms/TripAlreadyTakenModal';
 import ExpenseTripInfoCard from '../../features/approval/organisms/ExpenseTripInfoCard';
 import ExpenseBudgetBar from '../../features/approval/molecules/ExpenseBudgetBar';
+import DailyBreakdownCard from '../../features/trip/molecules/DailyBreakdownCard';
 import ExpenseSettlementCard from '../../features/approval/molecules/ExpenseSettlementCard';
 import ExpenseAlertsRow from '../../features/approval/molecules/ExpenseAlertsRow';
 import ExpenseInvoicedTable from '../../features/approval/organisms/ExpenseInvoicedTable';
@@ -148,6 +149,10 @@ function ApproverAlcoholReviewDetailPage() {
             <ExpenseBudgetBar accumulated={data.gastoAcumuladoUsd} assignedAmount={parseFloat(trip.monto_asignado_usd || 0)} isUsd />
           </div>
         )}
+        <DailyBreakdownCard dailyBreakdown={data.desgloseDiario || []} isInternational={isInternational}
+          dailyRate={parseFloat(trip.Usuario?.Cargo?.monto_diario || 0)} dailyRateUsd={parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0)}
+          justifiedDays={Object.keys(dayJustifications).filter((key) => dayJustifications[key])} />
+
         <ExpenseSettlementCard
           amount={data.excedeTotal ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
           exceeds={data.excedeTotal} isInternational={isInternational}

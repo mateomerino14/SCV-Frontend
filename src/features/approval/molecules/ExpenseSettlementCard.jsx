@@ -35,7 +35,7 @@ function ExpenseSettlementCard({amount, exceeds, isInternational, amountUsd, exc
           <p className={styles.justificationTitle} style={{color: 'rgba(255,255,255,0.9)'}}>Días con exceso de cuota diaria</p>
           {exceededDays.map((day) => (
             <p key={day.fecha} className={styles.justificationBox} style={{backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.85)'}}>
-              <strong>{formatDateShort(day.fecha)}</strong> — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`}
+              <strong>{formatDateShort(day.fecha)}</strong> — {[day.excedeBs && `${day.montoBs.toFixed(2)} Bs`, day.excedeUsd && `${day.montoUsd.toFixed(2)} USD`].filter(Boolean).join(' y ')}
               {dayJustifications[day.fecha] ? `: ${dayJustifications[day.fecha]}` : ' (sin justificación)'}
             </p>
           ))}

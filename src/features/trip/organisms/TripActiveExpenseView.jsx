@@ -8,6 +8,7 @@ import TripTypeBadge from '../atoms/TripTypeBadge';
 import TripTransportBadge from '../atoms/TripTransportBadge';
 import BudgetBar from '../molecules/BudgetBar';
 import DailyBreakdownCard from '../molecules/DailyBreakdownCard';
+import {describeDayExcess} from '../constants/dailyLimitStatus';
 import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import TripObservationsList from '../molecules/TripObservationsList';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
@@ -58,6 +59,8 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
   } = deadline;
 
   const isRejectedExpenses = trip.estado === 'RECHAZADO' && !!trip.fue_iniciado;
+  const dailyRate = parseFloat(trip.Usuario?.Cargo?.monto_diario || 0);
+  const dailyRateUsd = parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0);
   const generalObservations = observations.filter((observation) => !observation.id_gasto);
   const showObservations = trip.estado === 'RECHAZADO' && generalObservations.length > 0;
   const actionsDisabled = deadlineExpired && !hasActiveExtension;
@@ -123,7 +126,8 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <BudgetBar accumulatedExpense={accumulatedExpenseUsd} assignedAmount={trip.monto_asignado_usd} isUsd />
         </div>
       )}
-      <DailyBreakdownCard dailyBreakdown={dailyBreakdown} dailyRate={parseFloat(trip.Usuario?.Cargo?.monto_diario || 0)} dailyRateUsd={parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0)} />
+      <DailyBreakdownCard dailyBreakdown={dailyBreakdown} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} isInternational={isInternational}
+        justifiedDays={Object.keys(dayJustifications).filter((key) => dayJustifications[key]?.trim())} />
       <div className="flex items-center gap-2 mt-2 mb-6 px-1">
         <Building2 size={13} style={{color: COLORS.labels, flexShrink: 0}} />
         <p className="text-xs font-inter" style={{color: COLORS.labels}}>
@@ -230,7 +234,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           {exceededDays.map((day) => (
             <div key={day.fecha} className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>
-                {formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)
+                {formatDateShort(day.fecha)} — {describeDayExcess(day, dailyRate, dailyRateUsd)}
               </p>
               <textarea className={styles.textarea} rows={4} maxLength={300} placeholder="Detalle el motivo del exceso de este día..."
                 value={dayJustifications[day.fecha] || ''} onChange={(event) => setDayJustification(day.fecha, event.target.value)} disabled={actionsDisabled}
@@ -253,7 +257,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Excesos</p>
           {exceededDays.map((day) => dayJustifications[day.fecha] && (
             <div key={day.fecha} className={styles.justificationItem}>
-              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)</p>
+              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {describeDayExcess(day, dailyRate, dailyRateUsd)}</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
                 style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
