@@ -91,3 +91,12 @@ export const submitTripForReview = async (tripId) => {
     return {error: error.response?.data?.error || 'Error al enviar el viaje a revisión'};
   }
 };
+export const getStatementsForExport = async (params) => {
+  try {
+    const response = await apiClient.get('/trip/export/statements', {params});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'No se pudieron obtener las planillas'};
+  }
+};
