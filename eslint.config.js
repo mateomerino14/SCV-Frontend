@@ -6,7 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
-export default defineConfig([globalIgnores(['dist']), {
+export default defineConfig([globalIgnores(['dist', 'storybook-static', 'playwright-report', 'test-results']), {
   files: ['**/*.{js,jsx}'],
   extends: [
     js.configs.recommended,
@@ -16,5 +16,10 @@ export default defineConfig([globalIgnores(['dist']), {
   languageOptions: {
     globals: globals.browser,
     parserOptions: { ecmaFeatures: { jsx: true } },
+  },
+}, {
+  files: ['e2e/**/*.js', 'playwright.config.js'],
+  languageOptions: {
+    globals: globals.node,
   },
 }, ...storybook.configs["flat/recommended"]])
