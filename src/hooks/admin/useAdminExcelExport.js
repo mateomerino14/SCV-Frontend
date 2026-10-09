@@ -18,11 +18,16 @@ const personName = (person) => {
   return `${person.nombre} ${person.apellido_paterno}`;
 };
 
-const countBy = (users, key) => users.reduce((counts, user) => {
-  const id = user[key];
-  counts[id] = (counts[id] || 0) + 1;
-  return counts;
-}, {});
+const countBy = (users, key) => {
+  if (!Array.isArray(users)) {
+    return {};
+  }
+  return users.reduce((counts, user) => {
+    const id = user[key];
+    counts[id] = (counts[id] || 0) + 1;
+    return counts;
+  }, {});
+};
 
 const periodText = (period) => {
   if (period?.fecha_inicio && period?.fecha_fin) {
@@ -77,7 +82,7 @@ function useAdminExcelExport() {
 
   const exportPositions = (positions) => runExport(async () => {
     const users = await getUsers();
-    const counts = countBy(Array.isArray(users) ? users : [], 'id_cargo');
+    const counts = countBy(users, 'id_cargo');
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Cargos', [
       {header: 'Cargo', key: 'nombre', width: 30},
@@ -97,7 +102,7 @@ function useAdminExcelExport() {
 
   const exportSections = (sections) => runExport(async () => {
     const users = await getUsers();
-    const counts = countBy(Array.isArray(users) ? users : [], 'id_seccion');
+    const counts = countBy(users, 'id_seccion');
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Secciones', [
       {header: 'Sección', key: 'nombre', width: 30},
