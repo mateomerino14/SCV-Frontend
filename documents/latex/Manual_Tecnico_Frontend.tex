@@ -1,0 +1,654 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage[scaled=0.95]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\IfFileExists{beramono.sty}{\usepackage[scaled=0.86]{beramono}}{}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{xltabular}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+\PassOptionsToPackage{obeyspaces,spaces}{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
+\usepackage{needspace}
+
+\definecolor{maxamPrimario}{HTML}{870002}
+\definecolor{maxamSecundario}{HTML}{D20F12}
+\definecolor{maxamTitulo}{HTML}{500203}
+\definecolor{maxamTexto}{HTML}{2E2827}
+\definecolor{maxamEtiqueta}{HTML}{475569}
+\definecolor{maxamFondo}{HTML}{F3F6FF}
+\definecolor{maxamBorde}{HTML}{DEE2F0}
+\definecolor{maxamCampos}{HTML}{C2C6D4}
+\definecolor{codigoFondo}{HTML}{F7F8FC}
+
+\color{maxamTexto}
+
+\titleformat{\section}{\Large\bfseries\color{maxamTitulo}}{\thesection.}{0.6em}{}[{\color{maxamPrimario}\titlerule[0.8pt]}]
+\titleformat{\subsection}{\large\bfseries\color{maxamPrimario}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{maxamTitulo}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{18pt}{10pt}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{maxamEtiqueta}MAXAM FANEXA}
+\fancyhead[R]{\small\color{maxamEtiqueta}Sistema de Control de Viáticos --- Manual Técnico Frontend}
+\fancyfoot[C]{\small\color{maxamEtiqueta}Página \thepage\ de \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{maxamBorde}\leaders\hrule height \headrulewidth\hfill}}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=4pt,label={\color{maxamPrimario}\textbullet}}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=2pt,topsep=4pt}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.35}
+\newcommand{\cabecera}{\rowcolor{maxamPrimario}}
+\newcommand{\tth}[1]{\textcolor{white}{\textbf{#1}}}
+\newcommand{\code}[1]{\nolinkurl{#1}}
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\do\_\do\-\do\.\do\:\do\=\do\,}
+\makeatother
+
+\newtcolorbox{nota}[1][]{colback=maxamFondo,colframe=maxamPrimario,boxrule=0pt,leftrule=3pt,arc=0pt,left=8pt,right=8pt,top=6pt,bottom=6pt,#1}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={const,let,var,function,return,if,else,async,await,new,try,catch,finally,throw,for,of,in,true,false,null,undefined,require,module,exports,import,from,export,default},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`
+}
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{maxamTexto},
+  keywordstyle=\color{maxamPrimario}\bfseries,
+  commentstyle=\color{maxamEtiqueta}\itshape,
+  stringstyle=\color{maxamTitulo},
+  backgroundcolor=\color{codigoFondo},
+  frame=leftline,
+  framerule=2pt,
+  rulecolor=\color{maxamPrimario},
+  xleftmargin=10pt,
+  framexleftmargin=6pt,
+  breaklines=true,
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  aboveskip=8pt,
+  belowskip=8pt,
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1 {—}{{---}}1 {→}{{$\rightarrow$}}1 {├}{{|}}1 {└}{{`}}1 {│}{{|}}1 {─}{{-}}1
+}
+
+\hypersetup{pdftitle={Manual Técnico Frontend - Sistema de Control de Viáticos},pdfauthor={Mateo Alejandro Merino Vidal}}
+
+
+
+
+\newcommand{\muestra}[1]{\definecolor{tmpMuestra}{HTML}{#1}\tikz[baseline=-0.6ex]\node[rectangle,fill=tmpMuestra,draw=maxamCampos,minimum width=0.9cm,minimum height=0.38cm]{};}
+\newcommand{\estado}[3]{\definecolor{tmpFondo}{HTML}{#1}\definecolor{tmpTexto}{HTML}{#2}\tikz[baseline=-0.6ex]\node[rectangle,rounded corners=5pt,fill=tmpFondo,text=tmpTexto,font=\scriptsize\bfseries,inner sep=3pt]{#3};}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[maxamPrimario] (current page.north west) rectangle ([yshift=-1.1cm]current page.north east);
+  \fill[maxamSecundario] ([yshift=-1.1cm]current page.north west) rectangle ([yshift=-1.3cm]current page.north east);
+  \fill[maxamPrimario] (current page.south west) rectangle ([yshift=0.9cm]current page.south east);
+\end{tikzpicture}
+\centering
+\vspace*{1.6cm}
+\IfFileExists{logo-maxam.png}{\includegraphics[width=0.55\textwidth]{logo-maxam.png}\par}{{\Huge\bfseries\color{maxamTexto}MAXAM \textcolor{maxamSecundario}{|} FANEXA}\par}
+\vspace{1.4cm}
+{\color{maxamPrimario}\rule{0.7\textwidth}{1.2pt}}\par
+\vspace{0.8cm}
+{\fontsize{30}{36}\selectfont\bfseries\color{maxamPrimario}MANUAL TÉCNICO}\par
+\vspace{0.3cm}
+{\LARGE\bfseries\color{maxamTitulo}Frontend}\par
+\vspace{0.7cm}
+{\Large\bfseries\color{maxamEtiqueta}Sistema de Control de Viáticos (SCV)}\par
+\vspace{0.3cm}
+{\large\itshape\color{maxamEtiqueta}Gestión de viajes corporativos y rendición de gastos}\par
+\vspace{0.8cm}
+{\color{maxamPrimario}\rule{0.7\textwidth}{1.2pt}}\par
+\vfill
+\begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
+Autor: & Mateo Alejandro Merino Vidal \\
+Empresa: & MAXAM FANEXA \\
+Componente: & Cliente web (React, Vite y Tailwind CSS) \\
+Versión: & 1.1 \\
+Fecha: & 9 de octubre de 2026 \\
+\end{tabular}
+\vspace{1.8cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+\subsection{Propósito del documento}
+Este manual describe la construcción interna del cliente web del Sistema de Control de Viáticos (SCV) de MAXAM FANEXA. Está dirigido a desarrolladores que necesiten instalar, mantener o extender la interfaz, y documenta su arquitectura, organización de carpetas, control de acceso, manejo de sesión, componentes, sistema de diseño y despliegue.
+
+\subsection{Descripción general}
+El cliente es una aplicación de una sola página que atiende a seis perfiles: empleado, supervisor, aprobador, tesorero, revisor y administrador. Cada perfil tiene su propio menú y sus propias pantallas, y todas consumen la API REST del backend. La interfaz es adaptable a escritorio y celular.
+
+\begin{xltabular}{\textwidth}{L{3.2cm} Y}
+\cabecera \tth{Perfil} & \tth{Funciones principales en la interfaz} \\
+\endfirsthead
+\cabecera \tth{Perfil} & \tth{Funciones principales en la interfaz} \\
+\endhead
+\rowcolor{maxamFondo} Empleado & Crea viajes, registra gastos y facturas, finaliza la rendición, pide reemplazos y ampliaciones de plazo, descarga su planilla \\
+Supervisor & Revisión previa de viajes y revisión de rendiciones de su alcance \\
+\rowcolor{maxamFondo} Aprobador & Aprueba viajes y revisa rendiciones con alcohol \\
+Tesorero & Asigna y aprueba los fondos de cada viaje \\
+\rowcolor{maxamFondo} Revisor & Revisión final, solicitudes de plazo y de reemplazo \\
+Administrador & Resumen general, usuarios, cargos, secciones, historial de accesos y recordatorios \\
+\end{xltabular}
+
+\section{Stack tecnológico}
+
+\begin{xltabular}{\textwidth}{L{4.2cm} Y}
+\cabecera \tth{Tecnología} & \tth{Propósito} \\
+\endfirsthead
+\cabecera \tth{Tecnología} & \tth{Propósito} \\
+\endhead
+\rowcolor{maxamFondo} React 19 & Interfaz mediante componentes funcionales y hooks \\
+Vite & Servidor de desarrollo y compilación \\
+\rowcolor{maxamFondo} Tailwind CSS 4 & Utilidades de maquetado \\
+React Router DOM 7 & Enrutamiento y protección por rol \\
+\rowcolor{maxamFondo} Framer Motion & Animaciones de páginas y ventanas emergentes \\
+Axios & Cliente HTTP con interceptores de sesión \\
+\rowcolor{maxamFondo} Recharts & Gráficos del panel administrativo \\
+ExcelJS y FileSaver & Planilla de rendición y exportaciones a Excel \\
+\rowcolor{maxamFondo} Lucide React & Iconografía \\
+jwt-decode & Lectura del rol y del motivo de cambio de contraseña desde el token \\
+\rowcolor{maxamFondo} Storybook & Documentación interactiva de \code{components/ui} y de los átomos y moléculas de \code{features} \\
+ESLint & Análisis estático del código \\
+\rowcolor{maxamFondo} Vitest y Testing Library & Pruebas unitarias de hooks, componentes y utilidades \\
+Playwright & Pruebas de extremo a extremo en un navegador real \\
+\rowcolor{maxamFondo} GitHub Actions & Ejecución automática de las pruebas en cada envío al repositorio \\
+\end{xltabular}
+
+\section{Arquitectura}
+
+\subsection{Capas}
+El proyecto combina una organización por dominios con una jerarquía de componentes basada en Atomic Design. La lógica de negocio vive en los hooks; los componentes solo presentan.
+
+\begin{center}
+\begin{tikzpicture}[
+  capa/.style={rectangle,rounded corners=3pt,draw=maxamPrimario,fill=maxamFondo,minimum width=9.5cm,minimum height=0.95cm,align=center,font=\small},
+  flecha/.style={-{Stealth[length=2.5mm]},maxamPrimario,thick}]
+\node[capa,fill=maxamPrimario,text=white] (pg) {\textbf{Página} (\code{pages/}): invoca el hook y distribuye sus valores};
+\node[capa,below=0.45cm of pg] (hk) {\textbf{Hook de negocio} (\code{hooks/<dominio>/}): estado, validación y llamadas};
+\node[capa,below=0.45cm of hk] (sv) {\textbf{Servicio} (\code{services/<dominio>/}): encapsula el endpoint};
+\node[capa,below=0.45cm of sv] (ac) {\textbf{apiClient}: Axios con token e interceptores de sesión};
+\node[capa,below=0.45cm of ac,fill=maxamTitulo,text=white] (api) {\textbf{API REST} del backend};
+\draw[flecha] (pg) -- (hk); \draw[flecha] (hk) -- (sv); \draw[flecha] (sv) -- (ac); \draw[flecha] (ac) -- (api);
+\end{tikzpicture}
+\end{center}
+
+\begin{xltabular}{\textwidth}{L{2.6cm} L{3.3cm} L{3.3cm} Y}
+\cabecera \tth{Capa} & \tth{Recibe} & \tth{Entrega} & \tth{Restricción} \\
+\endfirsthead
+\cabecera \tth{Capa} & \tth{Recibe} & \tth{Entrega} & \tth{Restricción} \\
+\endhead
+\rowcolor{maxamFondo} Servicio & Parámetros primitivos & Datos o \texttt{\{error\}} & No mantiene estado \\
+Hook & Identificadores de ruta & Estado y manejadores & No renderiza JSX \\
+\rowcolor{maxamFondo} Página & Parámetros de ruta & Árbol de componentes & No llama servicios \\
+Organismo & Props & Fragmento de interfaz & No conoce hooks de negocio \\
+\end{xltabular}
+
+Ningún componente de presentación importa directamente un servicio. Un servicio típico normaliza la respuesta para que el hook solo pregunte por \code{error}:
+
+\Needspace{12\baselineskip}
+\begin{lstlisting}[language=JavaScript]
+export const getTripHistory = async (page, limit, filter) => {
+  try {
+    const response = await apiClient.get('/trip/history', {params: {pagina: page, limite: limit, filtro: filter}});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener el historial'};
+  }
+};
+\end{lstlisting}
+
+\subsection{Atomic Design}
+\begin{xltabular}{\textwidth}{L{2.4cm} L{5.2cm} Y}
+\cabecera \tth{Nivel} & \tth{Definición} & \tth{Ejemplos} \\
+\endfirsthead
+\cabecera \tth{Nivel} & \tth{Definición} & \tth{Ejemplos} \\
+\endhead
+\rowcolor{maxamFondo} Átomo & Elemento indivisible sin lógica de negocio & \code{TripRoute}, \code{StatusBadge}, \code{ExpenseObsButton} \\
+Molécula & Composición que resuelve una unidad funcional & \code{ExpenseBudgetBar}, \code{DateRangeFilter}, \code{ReturnReviewButton} \\
+\rowcolor{maxamFondo} Organismo & Bloque autónomo y complejo & \code{ExpenseInvoicedTable}, \code{ReviewFilters}, \code{UserFormModal} \\
+\end{xltabular}
+
+\subsection{Estructura de carpetas}
+\Needspace{22\baselineskip}
+\begin{lstlisting}
+src/
+├── assets/              Imágenes propias (foto-login.jpg)
+├── components/ui/       Componentes genéricos transversales
+├── features/            Dominios: admin, approval, expense, trip, user
+│   └── <dominio>/
+│       ├── atoms/  molecules/  organisms/
+│       ├── hooks/       Lógica presentacional
+│       └── constants/   Configuración visual del dominio
+├── hooks/               Hooks de negocio: admin, approval, expense, trip, user, shared
+├── pages/               Páginas asociadas a rutas, y pages/hooks
+├── services/            Acceso a la API por dominio y shared/apiClient.js
+├── layouts/             Navbar, Footer y menús por rol
+├── utils/               Funciones puras (fechas, código de viaje, compresión de imágenes)
+├── constants/           Paleta, rutas, inicio por rol, monedas, nombres y colores de estado
+├── test/setup.js        Configuración de las pruebas unitarias
+├── App.jsx              Rutas y guardas de acceso
+└── main.jsx             Punto de entrada
+e2e/                     Pruebas de extremo a extremo (Playwright)
+.github/workflows/       Pruebas automáticas en GitHub Actions
+\end{lstlisting}
+
+Todas las páginas, salvo la de ingreso, se cargan con \code{React.lazy}: cada ruta genera su propio fragmento de JavaScript y las librerías pesadas (ExcelJS, Recharts) no forman parte del paquete inicial.
+
+\section{Instalación y configuración}
+
+\subsection{Requisitos}
+\begin{itemize}
+  \item Node.js 22 o superior y npm.
+  \item El backend en ejecución y accesible desde el navegador.
+\end{itemize}
+
+\subsection{Comandos}
+\Needspace{11\baselineskip}
+\begin{lstlisting}
+npm install
+npm run dev               # servidor de desarrollo (http://localhost:5173)
+npm run build             # compilación para producción (carpeta dist/)
+npm run preview           # previsualización de la compilación
+npm run lint              # análisis estático
+npm run storybook         # documentación de componentes (http://localhost:6006)
+npm test                  # pruebas unitarias (Vitest)
+npm run test:e2e          # pruebas de extremo a extremo (Playwright)
+\end{lstlisting}
+
+\subsection{Variables de entorno}
+La única variable es \code{VITE_API_URL}, la dirección del backend. Se define en el archivo \code{.env} en desarrollo y en las variables del proyecto en Vercel; un cambio requiere volver a compilar.
+
+\begin{xltabular}{\textwidth}{L{3.4cm} Y}
+\cabecera \tth{Etapa} & \tth{Valor de \code{VITE_API_URL}} \\
+\endfirsthead
+\cabecera \tth{Etapa} & \tth{Valor} \\
+\endhead
+\rowcolor{maxamFondo} Local & \code{http://localhost:5000} \\
+Piloto & Dirección del servicio en Render \\
+\rowcolor{maxamFondo} VPS & Dominio de la API, por ejemplo \code{https://api.tuempresa.com} \\
+\end{xltabular}
+
+\subsection{Imagen de ingreso}
+La imagen de la pantalla de ingreso es el archivo \code{src/assets/foto-login.jpg}, que se incluye en la compilación y no depende de internet. Para cambiarla basta con reemplazar el archivo manteniendo el nombre exacto (Linux y Vercel distinguen mayúsculas y extensión). Se carga con \code{import.meta.glob}, de modo que si el archivo aún no está en el repositorio la compilación no falla y se usa la imagen anterior.
+
+\section{Rutas y control de acceso}
+
+\subsection{Guardas}
+\begin{xltabular}{\textwidth}{L{3.6cm} Y}
+\cabecera \tth{Componente} & \tth{Comportamiento} \\
+\endfirsthead
+\cabecera \tth{Componente} & \tth{Comportamiento} \\
+\endhead
+\rowcolor{maxamFondo} \code{ProtectedRoute} & Exige sesión y que el rol del token esté entre \code{allowedRoles}; si no, lleva al inicio del rol del usuario \\
+\code{LoginRoute} & Con sesión activa, la pantalla de ingreso redirige al inicio del rol \\
+\rowcolor{maxamFondo} \code{TreasurerRoute} & Permite las pantallas de tesorería solo a quien tiene el cargo de tesorero \\
+\code{PasswordChangeGate} & Muestra en cualquier pantalla la ventana de cambio de contraseña obligatorio \\
+\end{xltabular}
+
+Cada rol entra a la primera opción de su menú (\code{constants/roleHome.js}), y las rutas con parámetros se construyen con funciones de \code{constants/routes.js} (\code{tripPath}, \code{supervisorTripReviewPath}, entre otras) en lugar de textos sueltos.
+
+\subsection{Rutas por perfil}
+{\small
+\begin{xltabular}{\textwidth}{L{6.6cm} Y}
+\cabecera \tth{Ruta} & \tth{Página} \\
+\endfirsthead
+\cabecera \tth{Ruta} & \tth{Página} \\
+\endhead
+\multicolumn{2}{l}{\cellcolor{maxamBorde}\textbf{\color{maxamTitulo}Empleado (rol 3)}} \\
+\rowcolor{maxamFondo} \code{/dashboard/empleado} & Panel: borradores, viajes en curso, reemplazos y recientes \\
+\code{/dashboard/empleado/crear-viaje} & Creación de viaje \\
+\rowcolor{maxamFondo} \code{/dashboard/empleado/viaje/:id} & Detalle del viaje según su estado \\
+\code{/dashboard/empleado/viaje/:id/editar} & Edición de borrador o viaje rechazado \\
+\rowcolor{maxamFondo} \code{/dashboard/empleado/viaje/:id/registrar-gasto} & Registro de gastos sin factura \\
+\code{/dashboard/empleado/viaje/:id/subir-factura} & Carga y lectura de facturas \\
+\rowcolor{maxamFondo} \code{/dashboard/empleado/gasto/:id} & Detalle de un gasto \\
+\code{/dashboard/empleado/historial} & Historial de viajes \\
+\multicolumn{2}{l}{\cellcolor{maxamBorde}\textbf{\color{maxamTitulo}Supervisor (rol 2)}} \\
+\rowcolor{maxamFondo} \code{/dashboard/supervisor} & Rendiciones pendientes \\
+\code{/dashboard/supervisor/historial} & Historial de rendiciones revisadas \\
+\rowcolor{maxamFondo} \code{/dashboard/supervisor/revision/:id} & Revisión de una rendición \\
+\code{/dashboard/supervisor/viajes-pendientes} & Viajes en revisión previa \\
+\rowcolor{maxamFondo} \code{/dashboard/supervisor/viaje-previo/:id} & Revisión previa de un viaje \\
+\multicolumn{2}{l}{\cellcolor{maxamBorde}\textbf{\color{maxamTitulo}Aprobador (rol 5)}} \\
+\rowcolor{maxamFondo} \code{/dashboard/aprobador/revisiones} & Viajes por aprobar, aprobados y rechazados \\
+\code{/dashboard/aprobador/revision-alcohol} & Rendiciones con alcohol \\
+\rowcolor{maxamFondo} \code{/dashboard/aprobador/viaje-previo/:id} & Aprobación de un viaje \\
+\multicolumn{2}{l}{\cellcolor{maxamBorde}\textbf{\color{maxamTitulo}Revisor (rol 4)}} \\
+\rowcolor{maxamFondo} \code{/dashboard/revisor} & Rendiciones para revisión final \\
+\code{/dashboard/revisor/revision/:id} & Revisión final \\
+\rowcolor{maxamFondo} \code{/dashboard/revisor/solicitudes-plazo} & Solicitudes de ampliación de plazo \\
+\code{/dashboard/revisor/reemplazos} & Solicitudes de reemplazo \\
+\multicolumn{2}{l}{\cellcolor{maxamBorde}\textbf{\color{maxamTitulo}Tesorero (por cargo)}} \\
+\rowcolor{maxamFondo} \code{/dashboard/tesorero/revisiones} & Viajes por asignar fondos, aprobados y rechazados \\
+\code{/dashboard/tesorero/viaje/:id} & Asignación y aprobación de fondos \\
+\multicolumn{2}{l}{\cellcolor{maxamBorde}\textbf{\color{maxamTitulo}Administrador (rol 1)}} \\
+\rowcolor{maxamFondo} \code{/dashboard/administrador} & Resumen general con indicadores, gráficos y filtro de periodo \\
+\code{/dashboard/administrador/usuarios} & Gestión de usuarios \\
+\rowcolor{maxamFondo} \code{/dashboard/administrador/cargos} & Gestión de cargos \\
+\code{/dashboard/administrador/secciones} & Gestión de secciones \\
+\rowcolor{maxamFondo} \code{/dashboard/administrador/historial-accesos} & Ingresos, salidas y cambios de contraseña \\
+\code{/dashboard/administrador/recordatorios} & Días y horas del resumen de pendientes \\
+\end{xltabular}
+}
+Todos los perfiles tienen además sus rutas \code{/perfil} y \code{/configuracion}.
+
+\section{Gestión de sesión}
+
+\subsection{Token y renovación}
+El token de acceso vive solo en memoria (\code{services/shared/tokenStore.js}), nunca en \code{localStorage}. Al abrir la aplicación sin token, \code{App.jsx} intenta un refresco silencioso con la cookie \code{httpOnly} antes de mostrar las rutas protegidas.
+
+\code{apiClient} agrega el token a cada petición y, ante una respuesta \code{Token expirado}, pide uno nuevo a \code{/auth/refresh} y repite la petición. Si varias peticiones vencen a la vez, solo una renueva y las demás esperan en una cola:
+
+\Needspace{15\baselineskip}
+\begin{lstlisting}[language=JavaScript]
+if (isTokenExpired && !originalRequest._retried) {
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => {
+      waitingQueue.push({resolve, reject});
+    }).then((token) => {
+      originalRequest.headers.Authorization = `Bearer ${token}`;
+      return apiClient(originalRequest);
+    });
+  }
+  originalRequest._retried = true;
+  isRefreshing = true;
+}
+\end{lstlisting}
+
+\subsection{Sesión expirada}
+Si la renovación falla (cookie vencida, sesión invalidada por cambio de rol, suspensión o cambio de contraseña en otro equipo), \code{apiClient} borra el token y emite el evento \code{session-expired}. \code{useMenu} lo escucha y muestra la ventana ``Sesión Expirada'', presente en todas las pantallas salvo la de ingreso; su botón cierra la sesión y vuelve al ingreso. \code{useMenu} además compara el rol cada 30 segundos.
+
+\subsection{Cambio de contraseña obligatorio}
+Cuando el servidor responde 403 con \code{CAMBIO_CONTRASENIA_REQUERIDO}, \code{apiClient} emite \code{password-change-required} y \code{PasswordChangeGate} muestra la ventana según el motivo del token:
+
+\begin{xltabular}{\textwidth}{L{3.2cm} L{5.4cm} Y}
+\cabecera \tth{Motivo} & \tth{Texto de la ventana} & \tth{Campos} \\
+\endfirsthead
+\cabecera \tth{Motivo} & \tth{Texto de la ventana} & \tth{Campos} \\
+\endhead
+\rowcolor{maxamFondo} \code{TEMPORAL} & Contraseña temporal: crea una propia & Nueva y confirmación \\
+\code{RECUPERACION} & Ingresaste con un código de verificación & Nueva y confirmación \\
+\rowcolor{maxamFondo} \code{VENCIDA} & Actualiza tu contraseña (90 días) & Actual, nueva y confirmación; ofrece cerrar sesión \\
+\end{xltabular}
+
+Mientras está activa, los paneles ignoran los errores causados por el bloqueo para no mostrar avisos falsos.
+
+\section{Gestión de estado}
+No se usa una biblioteca de estado global: el estado es local a cada pantalla y vive en su hook de negocio.
+
+\begin{itemize}
+  \item \textbf{Servidor}: se obtiene al montar y se refresca tras cada escritura.
+  \item \textbf{Formularios}: el hook guarda los valores y los errores por campo.
+  \item \textbf{Sondeo}: cada 30 segundos se actualizan las bandejas de revisión, las solicitudes de plazo y reemplazo, el historial de viajes del empleado y los resúmenes. Mientras el empleado tiene una solicitud esperando respuesta, también se consulta cada 30 segundos. Solo la carga inicial muestra el indicador esquelético; si una actualización falla se conservan los datos y se muestra un aviso.
+  \item \textbf{Concurrencia}: si otra persona ya procesó un viaje o una solicitud, el servidor responde 409 y la interfaz lo explica y actualiza la lista.
+\end{itemize}
+
+\section{Capa de servicios}
+\begin{xltabular}{\textwidth}{L{5.6cm} Y}
+\cabecera \tth{Servicio} & \tth{Endpoints que encapsula} \\
+\endfirsthead
+\cabecera \tth{Servicio} & \tth{Endpoints que encapsula} \\
+\endhead
+\rowcolor{maxamFondo} \code{user/authService} & Ingreso, cierre de sesión, códigos de recuperación \\
+\code{user/userService} & Perfil, foto, contraseña, usuarios, empleados \\
+\rowcolor{maxamFondo} \code{trip/tripService} & Panel, historial, detalle, creación, edición, envío, finalización, planilla PDF y planillas de varios viajes para Excel \\
+\code{expense/expenseService} & Gastos, detalle, recibos y tipo de cambio del día \\
+\rowcolor{maxamFondo} \code{expense/invoiceService} & Extracción, registro y edición de facturas \\
+\code{approval/reviewService} & Revisión del supervisor (viajes y rendiciones) \\
+\rowcolor{maxamFondo} \code{approval/approverService} & Aprobación de viajes \\
+\code{approval/approverAlcoholReviewService} & Revisión por alcohol \\
+\rowcolor{maxamFondo} \code{approval/treasurerService} & Asignación y aprobación de fondos \\
+\code{approval/reviewerService} & Revisión final \\
+\rowcolor{maxamFondo} \code{approval/deadlineAuthorizationService} & Solicitudes de ampliación de plazo \\
+\code{approval/substitutionService} & Solicitudes de reemplazo \\
+\rowcolor{maxamFondo} \code{admin/adminService} & Resumen general, usuarios, cargos, secciones, historial de accesos y recordatorios \\
+\end{xltabular}
+
+\section{Hooks de negocio}
+\begin{xltabular}{\textwidth}{L{2.4cm} Y}
+\cabecera \tth{Dominio} & \tth{Hooks} \\
+\endfirsthead
+\cabecera \tth{Dominio} & \tth{Hooks} \\
+\endhead
+\rowcolor{maxamFondo} trip & \code{useEmployeeDashboard}, \code{useCreateTrip}, \code{useEditTrip}, \code{useRequestedAmounts}, \code{useTripDetail}, \code{useTripHistory}, \code{useStatementPdfDownload} \\
+expense & \code{useRegisterExpense}, \code{useEditExpense}, \code{useDailyExchangeRates}, \code{useUploadInvoice}, \code{useEditInvoice}, \code{useInvoiceForm}, \code{useInvoiceDetailPanel} \\
+\rowcolor{maxamFondo} approval & Uno por bandeja y por detalle de cada revisor (\code{useSupervisorPendingTrips}, \code{useApproverReviews}, \code{useTreasurerReviews}, \code{useReviewerReviews}, \ldots), más \code{useDeadlineAuthorization}, \code{useSubstitutionRequest} y sus pares del revisor; \code{useStatementsExport} para exportar planillas en grupo \\
+admin & \code{useAdminDashboard}, \code{useUserManagement}, \code{usePositionManagement}, \code{useSectionManagement}, \code{useAuditLog}, \code{useReminderSettings}, \code{useAdminExcelExport} \\
+\rowcolor{maxamFondo} user & \code{useLogin}, \code{useProfile}, \code{useCurrentUser}, \code{useIsTreasurer}, \code{usePasswordExpiredCheck} \\
+shared & \code{useMenu}, \code{useMenuNavigation}, \code{useClientPagination}, \code{useSimpleSelector}, \code{useUserRole} \\
+\end{xltabular}
+
+Ejemplo de hook con validación previa y ventana de aviso, tomado de la finalización de un viaje:
+
+\Needspace{15\baselineskip}
+\begin{lstlisting}[language=JavaScript]
+const handleRequestSubmitReview = () => {
+  if (expenses.length === 0) {
+    showError('El viaje debe tener por lo menos un gasto asociado para ser finalizado');
+    return;
+  }
+  const {missingDays, missingHotel} = missingJustifications();
+  if (missingDays.length > 0 || missingHotel) {
+    showError('Debes justificar cada día que excede la cuota diaria, y el exceso en hoteles si corresponde');
+    return;
+  }
+  setShowSubmitReviewModal(true);
+};
+\end{lstlisting}
+
+\section{Componentes}
+
+\subsection{Componentes transversales}
+\begin{xltabular}{\textwidth}{L{4.2cm} Y}
+\cabecera \tth{Componente} & \tth{Uso} \\
+\endfirsthead
+\cabecera \tth{Componente} & \tth{Uso} \\
+\endhead
+\rowcolor{maxamFondo} \code{ConfirmDialog} & Ventana emergente de confirmación o aviso; se dibuja en un portal sobre toda la pantalla \\
+\code{Button}, \code{ModalActions} & Botones primario y secundario \\
+\rowcolor{maxamFondo} \code{ModalIconHeader} & Ícono en círculo blanco de las ventanas \\
+\code{InputField}, \code{PasswordField}, \code{FormField}, \code{LimitedTextarea} & Campos de formulario \\
+\rowcolor{maxamFondo} \code{EmployeeDropdown}, \code{SectionDropdown}, \code{InlineDropdown} & Selectores con búsqueda \\
+\code{ListCount}, \code{LoadMoreButton} & ``Mostrando X de Y'' y paginación \\
+\rowcolor{maxamFondo} \code{SkeletonCard}, \code{SkeletonList} & Indicadores de carga \\
+\code{EmptyState}, \code{InlineAlert}, \code{SuccessModal} & Estados vacíos y avisos \\
+\rowcolor{maxamFondo} \code{PageHeader}, \code{AppHeader}, \code{AppLogo} & Encabezados \\
+\code{CommentCard} & Observación de un revisor \\
+\rowcolor{maxamFondo} \code{ExportButton} & Botón ``Exportar a Excel'' con estado de carga \\
+\end{xltabular}
+
+\subsection{Componentes por dominio}
+\begin{xltabular}{\textwidth}{L{2.4cm} Y}
+\cabecera \tth{Dominio} & \tth{Organismos principales} \\
+\endfirsthead
+\cabecera \tth{Dominio} & \tth{Organismos principales} \\
+\endhead
+\rowcolor{maxamFondo} trip & \code{TripActiveExpenseView}, \code{TripDraftView}, \code{TripFinalApprovedView}, \code{TripBudgetSummary}, \code{DailyBreakdownCard}, \code{RequestedAmountFields}, \code{TripHistoryFilter}, \code{SubstitutionRequestModal} \\
+expense & \code{InvoiceForm}, \code{InvoiceDropZone}, \code{InvoiceDetailPanel}, \code{ExpenseFormCard}, \code{InstallmentRateField}, \code{ExpenseWithholdingsCard}, \code{ReceiptSentModal} \\
+\rowcolor{maxamFondo} approval & \code{ReviewFilters}, \code{PendingTripItem}, \code{ExpenseInvoicedTable}, \code{ExpenseUninvoicedTable}, \code{ExpenseInternationalTable}, \code{SelectableObservationsList}, \code{TreasurerAmountsCard} \\
+admin & \code{UserFormModal}, \code{PositionFormModal}, \code{SectionFormModal}, \code{TripPhaseSection} \\
+\rowcolor{maxamFondo} user & \code{PasswordChangeGate}, \code{PasswordExpiredModal}, \code{SessionExpiredModal}, \code{VerificationCodeModal}, \code{TermsModal} \\
+\end{xltabular}
+
+\section{Sistema de diseño}
+
+\subsection{Paleta de colores}
+La paleta se centraliza en \code{constants/index.js}; ningún componente define colores sueltos.
+
+\begin{xltabular}{\textwidth}{L{1.4cm} L{3.4cm} L{2cm} Y}
+\cabecera \tth{Color} & \tth{Token} & \tth{Valor} & \tth{Uso} \\
+\endfirsthead
+\cabecera \tth{Color} & \tth{Token} & \tth{Valor} & \tth{Uso} \\
+\endhead
+\muestra{870002} & \code{primary} & \texttt{\#870002} & Acciones principales y ventanas emergentes \\
+\muestra{D20F12} & \code{secondary} & \texttt{\#D20F12} & Botón de confirmación, errores \\
+\muestra{500203} & \code{title} & \texttt{\#500203} & Títulos \\
+\muestra{2E2827} & \code{text} & \texttt{\#2E2827} & Texto \\
+\muestra{475569} & \code{labels} & \texttt{\#475569} & Etiquetas y texto secundario \\
+\muestra{FFFFFF} & \code{background} & \texttt{\#FFFFFF} & Fondo general \\
+\muestra{000000} & \code{backgroundSecondary} & \texttt{\#000000} & Íconos sobre círculo blanco \\
+\muestra{F3F6FF} & \code{backgroundHeader} & \texttt{\#F3F6FF} & Tarjetas y encabezados de tabla \\
+\muestra{DEE2F0} & \code{dataFields} & \texttt{\#DEE2F0} & Bordes y separadores \\
+\muestra{C2C6D4} & \code{fields} & \texttt{\#C2C6D4} & Controles deshabilitados \\
+\muestra{FDE9E9} & \code{error} & \texttt{\#FDE9E9} & Fondo de mensajes de error \\
+\end{xltabular}
+
+Tipografías: \textbf{Inter} para el contenido y \textbf{Nunito} para los botones.
+
+\subsection{Colores de estado}
+Cada estado de viaje tiene un único nombre (\code{constants/tripStatusLabels.js}) y un único par de colores (\code{constants/tripStatusColors.js}) en todas las pantallas. Los avisos de confirmación o rechazo usan el color del estado en que queda el viaje.
+
+\begin{xltabular}{\textwidth}{L{4.4cm} L{4cm} Y}
+\cabecera \tth{Estado} & \tth{Etiqueta} & \tth{Significado} \\
+\endfirsthead
+\cabecera \tth{Estado} & \tth{Etiqueta} & \tth{Significado} \\
+\endhead
+\code{BORRADOR} & \estado{E5E7EB}{374151}{Borrador} & Aún no enviado \\
+\code{EN_REVISION_VIAJE} & \estado{E8D5FF}{5B00A0}{Revisión Previa} & Con el supervisor \\
+\code{APROBADO_VIAJE} & \estado{FFE766}{7A5900}{Esperando Aprobador} & Con el aprobador \\
+\code{EN_REVISION_TESORERO} & \estado{FFE3C2}{8A4B00}{Esperando Fondos} & Con tesorería \\
+\code{EN_CURSO} & \estado{D4EDDA}{155724}{En Curso} & Registro de gastos \\
+\code{EN_REVISION} & \estado{E8D5FF}{5B00A0}{En Revisión} & Rendición con el supervisor \\
+\code{EN_REVISION_APROBADOR} & \estado{FFE766}{7A5900}{Revisión por Alcohol} & Con el aprobador \\
+\code{APROBADO_SUPERVISOR} & \estado{A9C6F6}{000A65}{Apr. Preliminar} & Con el revisor final \\
+\code{APROBADO_FINAL} & \estado{D4EDDA}{155724}{Aprobado} & Cerrado \\
+\code{RECHAZADO} & \estado{FFC2C3}{500203}{Rechazado} & Debe corregirse \\
+\end{xltabular}
+
+En las pantallas del empleado, ``En Curso'' usa el rojo institucional porque marca su viaje activo.
+
+\subsection{Ventanas emergentes}
+Todas las confirmaciones y avisos importantes usan \code{ConfirmDialog}: tarjeta en rojo institucional, ícono negro en un círculo blanco y botones primario y secundario. Se dibuja con \code{createPortal} sobre el \code{body}, lo que evita parpadeos cuando se abre desde una tarjeta animada.
+
+\Needspace{7\baselineskip}
+\begin{lstlisting}[language=JavaScript]
+<ConfirmDialog isOpen={!!result} compact
+  icon={result?.success ? CheckCircle : AlertCircle} iconColor={COLORS.primary}
+  title={result?.success ? 'Listo' : 'No se pudo completar'}
+  message={result?.message} confirmText="Entendido" hideCancel onConfirm={closeResult} />
+\end{lstlisting}
+
+Se muestran en ventana, entre otros: los errores al finalizar un viaje, la devolución de una revisión, el resultado del envío de recibos, las respuestas a solicitudes y los avisos de solicitudes cerradas automáticamente.
+
+\section{Funcionalidades destacadas}
+
+\subsection{Planilla de rendición}
+\code{useTripExcelExport} construye la planilla oficial en Excel: logotipo, simbología, distinción entre gastos nacionales e internacionales, cuenta Oracle por categoría, tramos de cambio, totales por moneda, justificaciones de exceso y cinco bloques de firma. El revisor y el tesorero exportan además las planillas de todos los viajes de su lista, según el filtro aplicado, en un solo archivo: una hoja \emph{Resumen} con una fila por viaje y una hoja de planilla por viaje; el administrador puede exportar las del periodo elegido. El empleado descarga en cambio la planilla en PDF, generada por el backend, cuando el viaje está aprobado. Ambos formatos usan las retenciones persistidas por el backend.
+
+\subsection{Monto solicitado}
+Al crear o editar un viaje, el empleado escribe el monto que solicita y un hospedaje estimado, en bolivianos y, si el viaje es internacional, también en dólares. \code{RequestedAmountFields} muestra la referencia (\emph{días × tarifa diaria del cargo + hospedaje}) como tope; un monto mayor no se puede guardar y el enlace ``Solicitar el tope completo'' lo completa. Tesorería ve lo solicitado y asigna el monto final.
+
+\subsection{Control de gasto diario}
+El \emph{Control Diario} (\code{DailyBreakdownCard}) muestra una tarjeta por día con una barra por moneda y su estado: dentro del límite, cerca del límite, excedido o justificado. En un viaje nacional se controla la tarifa en bolivianos; en uno internacional, cada día con las dos tarifas por separado, y se puede gastar en cualquiera de las dos monedas cualquier día. Lo ven el empleado y los revisores. Cuando un día o el total de hoteles excede la tarifa, \code{useTripDetail} exige una justificación por cada exceso antes de permitir el envío a revisión.
+
+\subsection{Tipo de cambio diario}
+En los tramos de otra moneda de un gasto internacional, \code{useDailyExchangeRates} obtiene el tipo de cambio de la fecha del gasto y \code{InstallmentRateField} lo muestra como dato de solo lectura con su equivalente en dólares. Es uno por día y moneda. Si la API no responde, se habilita el campo para escribirlo a mano y el tramo queda marcado como ingresado manualmente.
+
+\subsection{Digitalización de comprobantes}
+La carga de facturas presenta cada comprobante en tres columnas (imagen, formulario y detalle de productos) para corregir los datos extraídos antes de guardar. Cada factura tiene su propio estado: en extracción, con datos, con error o guardada. La fecha de emisión queda bloqueada si se extrajo con formato válido y editable si vino vacía o mal formada. Las imágenes se comprimen en el navegador antes de enviarse.
+
+\subsection{Revisión y observaciones}
+Cada bandeja de revisión tiene las pestañas Pendientes, Aprobados y Rechazados, con filtros por fecha, empleado y sección, y muestra lo revisado más reciente primero, de 12 en 12. Para rechazar se seleccionan observaciones propias de la ronda actual; las de otros revisores se ven, pero no se pueden editar, borrar ni usar para rechazar. El supervisor y el aprobador pueden devolver una revisión tomada por error.
+
+\subsection{Plazos y reemplazos}
+\code{useDeadlineAuthorization} determina si venció el plazo de carga (cuatro días de tolerancia más las ampliaciones vigentes) y ofrece pedir una ampliación. El plazo es del viaje, por lo que el reemplazo ve y puede pedir la misma ampliación. \code{useSubstitutionRequest} gestiona el pedido de reemplazo; el viaje aparece en el panel del reemplazo como ``Rendición de [nombre]''. Las solicitudes cerradas por el sistema se muestran como ``Cerrada'' y no como rechazadas.
+
+\subsection{Administración}
+Resumen general con indicadores por fase y gráficos, con filtro de periodo (este mes, que es el valor inicial, este año, todo o un rango, por fecha de inicio del viaje); el gráfico por sección cuenta solo los viajes con fondos entregados por tesorería; gestión de usuarios con buscador en cargo, sección y jefe directo (\code{SearchableSelector}); sugerencias de nombres existentes al crear cargos y secciones; historial de accesos con filtro de periodo (por defecto el mes actual, en días de Bolivia; ambos usan los mismos botones de periodo, \code{PeriodPresets}), filtros por evento y usuario, paginación de 20 en 20 y exportación a Excel; la exportación a Excel del Resumen General, Usuarios, Cargos y Secciones (\code{useAdminExcelExport}), con el mismo estilo; y la pantalla de \emph{Recordatorios}, donde el administrador activa o desactiva el resumen de pendientes, elige los días de la semana y hasta cuatro horas de envío (hora de Bolivia), ve una vista previa de a quién le llegaría y puede enviarlo en el momento. Los cambios se aplican al guardar, sin reiniciar el servidor.
+
+\subsection{Casquito}
+Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora y los pendientes. Se puede desactivar en Ajustes de Cuenta y respeta la preferencia de reducir movimiento.
+
+\section{Documentación de componentes}
+Los componentes de \code{components/ui}, todos los átomos de \code{features} y las moléculas reutilizables están documentados en Storybook, con cada historia junto a su componente (128 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
+
+\Needspace{5\baselineskip}
+\begin{lstlisting}
+npm run storybook          # http://localhost:6006
+npm run build-storybook    # sitio estático de la documentación
+\end{lstlisting}
+
+\section{Pruebas automáticas}
+Una prueba automática es código que usa el sistema como lo haría una persona y verifica que el resultado sea el correcto. Se ejecutan con un comando y, si un cambio rompe algo, fallan antes de que llegue a producción.
+
+\begin{xltabular}{\textwidth}{L{2.8cm} Y L{3cm}}
+\cabecera \tth{Tipo} & \tth{Qué prueba} & \tth{Comando} \\
+\endfirsthead
+\cabecera \tth{Tipo} & \tth{Qué prueba} & \tth{Comando} \\
+\endhead
+\rowcolor{maxamFondo} Unitarias & Hooks, componentes y utilidades: topes del monto solicitado, estados del control diario, tipo de cambio, periodos y exportación a Excel. Cada archivo de prueba está junto a lo que prueba (\code{*.test.js}) & \code{npm test} \\
+De extremo a extremo & El sistema completo en un navegador real, en escritorio y celular: ingreso de cada rol, monto solicitado con tope, control diario con justificación, tipo de cambio automático y exportaciones del administrador (\code{e2e/}) & \code{npm run test:e2e} \\
+\end{xltabular}
+
+Ejemplo de prueba de extremo a extremo: el sistema rechaza un monto mayor al tope y luego guarda el viaje con el tope completo.
+
+\Needspace{12\baselineskip}
+\begin{lstlisting}[language=JavaScript]
+test('el empleado solicita un monto con referencia y tope', async ({page}) => {
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto('/dashboard/empleado/crear-viaje');
+  await expect(page.getByText('Tope a solicitar').first()).toBeVisible();
+  await page.locator('input[placeholder="0.00"]').last().fill('999999');
+  await page.getByRole('button', {name: 'Guardar Borrador'}).click();
+  await expect(page.getByText(/No puede superar/).first()).toBeVisible();
+});
+\end{lstlisting}
+
+Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 29 pruebas unitarias y 18 de extremo a extremo.
+
+\subsection{Integración continua}
+El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Actions en cada envío y en cada pull request: compila la aplicación y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base PostgreSQL temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña \emph{Actions}.
+
+\section{Compilación y despliegue}
+\begin{enumerate}
+  \item Definir \code{VITE_API_URL} con la dirección del backend de la etapa.
+  \item Verificar que \code{src/assets/foto-login.jpg} esté en el repositorio.
+  \item En Vercel: proyecto con Vite, comando \code{npm run build} y carpeta \code{dist}. Cada cambio de variable requiere volver a desplegar.
+  \item En un servidor propio: \code{npm run build} y servir \code{dist/} con Nginx, redirigiendo todas las rutas a \code{index.html}.
+  \item Agregar el dominio del cliente en \code{CORS_ORIGINS} del backend si no es el de Vercel.
+\end{enumerate}
+
+\section{Convenciones}
+\begin{itemize}
+  \item El código se escribe en inglés y los textos visibles en español.
+  \item Los componentes definen sus estilos en un objeto \code{styles} con clases de Tailwind y toman los colores de \code{COLORS}.
+  \item En el frontend no se agregan comentarios por función; el nombre y el contenido deben bastar. Solo se admite un comentario breve, de una línea, donde aclara algo no evidente.
+  \item Se prefieren bloques \code{if}/\code{else} explícitos; el operador ternario solo se usa en valores de estilo o del JSX.
+  \item Punto y coma al final de cada sentencia y literales de objeto sin espacios internos (\texttt{\{dato: valor\}}).
+  \item Los commits siguen Conventional Commits: \code{feat}, \code{fix}, \code{style}, \code{refactor}, \code{docs}, \code{test} y \code{chore}.
+\end{itemize}
+
+\end{document}
