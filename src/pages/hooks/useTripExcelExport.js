@@ -93,7 +93,7 @@ function buildTramosText(expense) {
   if (installments.length === 0) {
     return '';
   }
-  return installments.map((installment) => `${parseFloat(installment.monto_origen).toFixed(2)} ${installment.moneda} → ${parseFloat(installment.monto_usd).toFixed(2)} USD (T/C ${parseFloat(installment.tipo_cambio).toFixed(4)}${installment.tipo_cambio_manual ? ' manual' : ''})`).join(' | ');
+  return installments.map((installment) => `${parseFloat(installment.monto_origen).toFixed(2)} ${installment.moneda} → ${parseFloat(installment.monto_usd).toFixed(2)} USD`).join(' | ');
 }
 
 function buildOracleAccountOptions(expenses) {

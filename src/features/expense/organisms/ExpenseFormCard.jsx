@@ -4,7 +4,6 @@ import {COLORS} from '../../../constants';
 import ExpenseTypeToggle from '../atoms/ExpenseTypeToggle';
 import ExpenseField from '../atoms/ExpenseField';
 import CategorySelector from '../molecules/CategorySelector';
-import InstallmentRateField from '../molecules/InstallmentRateField';
 import CurrencySelector from '../molecules/CurrencySelector';
 import ReceiptUpload from './ReceiptUpload';
 
@@ -140,9 +139,10 @@ function ExpenseFormCard({
                     <input type="text" inputMode="decimal" placeholder="0.00" disabled={item.saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                       value={installment.originAmount} onChange={(event) => onInstallmentAmountChange(item.id, installment.id, event.target.value)} />
                   </ExpenseField>
-                  <InstallmentRateField currency={installment.currency} date={item.date} rateStatus={installment.rateStatus} exchangeRate={installment.exchangeRate}
-                    rateMessage={installment.rateMessage} error={item.installmentErrors[installment.id]?.exchangeRate} disabled={item.saved}
-                    onManualChange={(value) => onInstallmentExchangeRateChange(item.id, installment.id, value)} />
+                  <ExpenseField label={`Tipo de cambio (1 USD = cuántos ${installment.currency})`} suffix={installment.currency} error={item.installmentErrors[installment.id]?.exchangeRate}>
+                    <input type="text" inputMode="decimal" placeholder="0.0000" disabled={item.saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
+                      value={installment.exchangeRate} onChange={(event) => onInstallmentExchangeRateChange(item.id, installment.id, event.target.value)} />
+                  </ExpenseField>
                   {installment.originAmount && installment.exchangeRate && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0 && (
                     <p className={styles.installmentEquivalent} style={{color: COLORS.title}}>= {(parseFloat(installment.originAmount) / parseFloat(installment.exchangeRate)).toFixed(2)} USD</p>
                   )}

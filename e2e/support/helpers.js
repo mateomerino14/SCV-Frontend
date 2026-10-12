@@ -43,8 +43,8 @@ export const createFundedTrip = async (tripOverrides = {}) => {
     fecha_fin: boliviaDate(1),
     tipo: 'Nacional',
     transporte: 'Aéreo',
-    monto_solicitado: 2 * parseFloat(me.Cargo.monto_diario),
-    monto_solicitado_usd: isInternational ? 2 * parseFloat(me.Cargo.monto_diario_usd) : 0,
+    monto_asignado: 2 * parseFloat(me.Cargo.monto_diario),
+    monto_asignado_usd: isInternational ? 2 * parseFloat(me.Cargo.monto_diario_usd) : 0,
     ...tripOverrides,
   });
   const supervisor = await apiClient('maria.supervisora');

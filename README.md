@@ -198,17 +198,17 @@ Además, el revisor y el tesorero exportan con un botón las **planillas de todo
 
 El empleado descarga en cambio la planilla en **PDF** (no editable, generada por el backend) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos se generan a partir de los mismos valores de retención calculados y persistidos por el backend; no se recalculan al exportar.
 
-### Monto solicitado
+### Monto del viaje
 
-Al crear o editar un viaje, el empleado escribe el monto que solicita y un hospedaje estimado (en Bs y, si el viaje es internacional, también en USD). `RequestedAmountFields` muestra la referencia (*días × tarifa diaria del cargo + hospedaje*) como tope; un monto mayor no se puede guardar, y el botón "Solicitar el tope completo" lo completa solo. Tesorería ve lo solicitado y asigna el monto final.
+Al crear o editar un viaje, el sistema calcula el monto con las tarifas del cargo del empleado: en un viaje nacional, días × tarifa en Bs; en uno internacional, el día de salida y el de regreso con la tarifa en Bs y los días intermedios con la tarifa en USD. Tesorería ajusta el monto final al asignar los fondos.
 
 ### Control de gasto diario
 
 El presupuesto se controla día por día y por moneda: en un viaje nacional contra la tarifa diaria en Bs; en uno internacional, cada día con las dos tarifas por separado (Bs y USD), y se puede gastar en cualquiera de las dos monedas cualquier día. Los gastos de hotel quedan fuera de ese control y se comparan contra el total asignado. El **Control Diario** (`DailyBreakdownCard`) muestra una tarjeta por día con una barra por moneda y su estado (dentro del límite, cerca, excedido o justificado); lo ven el empleado y los revisores. Cuando un día (o el total de hoteles) excede la tarifa, `useTripDetail` exige una justificación por cada exceso antes de permitir el envío a revisión.
 
-### Tipo de cambio diario
+### Tipo de cambio
 
-En los tramos de otra moneda de un gasto internacional, el tipo de cambio se obtiene solo según la fecha del gasto (`useDailyExchangeRates`, `InstallmentRateField`): es uno por día y moneda, igual para todos los gastos de esa fecha. Si la API no responde, se habilita el campo para escribirlo a mano y el tramo queda marcado como ingresado manualmente.
+En los tramos de otra moneda de un gasto internacional, el empleado escribe el monto y el tipo de cambio que le aplicaron, y el formulario muestra el equivalente en USD.
 
 ### Revisión adicional por alcohol
 
@@ -256,8 +256,8 @@ npm run storybook
 
 | Tipo | Qué prueba | Comando | Dónde |
 |---|---|---|---|
-| Unitarias | Hooks, componentes y utilidades: topes del monto, control diario, tipo de cambio, periodos, Excel | `npm test` | Junto a cada archivo (`*.test.js`, `*.test.jsx`) |
-| De extremo a extremo | El sistema completo en un navegador real: ingreso por rol, monto solicitado, control diario, tipo de cambio y exportaciones | `npm run test:e2e` | `e2e/` |
+| Unitarias | Componentes y utilidades: estados del control diario, periodos, Excel | `npm test` | Junto a cada archivo (`*.test.js`, `*.test.jsx`) |
+| De extremo a extremo | El sistema completo en un navegador real: ingreso por rol, monto calculado del viaje, control diario, tipo de cambio de los tramos y exportaciones | `npm run test:e2e` | `e2e/` |
 
 Las pruebas unitarias no necesitan nada más. Las de extremo a extremo necesitan el backend y el frontend levantados con la base de prueba (organización de `testing_02_organizacion_prueba.sql`); `E2E_BASE_URL` y `E2E_API_URL` indican dónde están (por defecto `localhost:5173` y `localhost:5055`). La primera vez hay que instalar el navegador con `npx playwright install chromium`.
 

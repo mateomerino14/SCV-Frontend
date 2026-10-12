@@ -1,6 +1,5 @@
 import {useState, useEffect} from 'react';
 import {getTripDetail, editTrip} from '../../services/trip/tripService';
-import useRequestedAmounts from './useRequestedAmounts';
 
 const EDITABLE_STATUSES = ['BORRADOR', 'RECHAZADO'];
 
@@ -20,27 +19,6 @@ function useEditTrip(tripId, user) {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loadingLocation, setLoadingLocation] = useState(false);
-  const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
-  const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
-
-  const calculateDays = () => {
-    if (!startDate || !endDate) {
-      return 0;
-    }
-    const [y1, m1, d1] = startDate.split('-');
-    const [y2, m2, d2] = endDate.split('-');
-    const start = new Date(y1, m1 - 1, d1);
-    const end = new Date(y2, m2 - 1, d2);
-    const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
-    if (diff > 0) {
-      return diff + 1;
-    }
-    return 0;
-  };
-
-  const days = calculateDays();
-  const requestedAmounts = useRequestedAmounts({type, days, dailyRate, dailyRateUsd});
-  const {loadAmounts} = requestedAmounts;
 
   useEffect(() => {
     const load = async () => {
@@ -66,10 +44,12 @@ function useEditTrip(tripId, user) {
       setTransport(trip.transporte || 'Terrestre');
       setVehiclePlate(trip.placa_vehiculo || '');
       setOriginalStatus(trip.estado || null);
-      loadAmounts(trip);
     };
     load();
-  }, [tripId, loadAmounts]);
+  }, [tripId]);
+
+  const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
+  const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
 
   const handleTypeChange = (newType) => {
     setType(newType);
@@ -78,6 +58,31 @@ function useEditTrip(tripId, user) {
       setVehiclePlate('');
     }
   };
+
+  const calculateDays = () => {
+    if (!startDate || !endDate) {
+      return 0;
+    }
+    const [y1, m1, d1] = startDate.split('-');
+    const [y2, m2, d2] = endDate.split('-');
+    const start = new Date(y1, m1 - 1, d1);
+    const end = new Date(y2, m2 - 1, d2);
+    const diff = Math.round((end - start) / (1000 * 60 * 60 * 24));
+    if (diff > 0) {
+      return diff + 1;
+    }
+    return 0;
+  };
+
+  const days = calculateDays();
+  let nationalDays = days;
+  let internationalDays = 0;
+  if (type === 'Internacional') {
+    nationalDays = Math.min(days, 2);
+    internationalDays = Math.max(0, days - 2);
+  }
+  const totalAmount = nationalDays * dailyRate;
+  const totalAmountUsd = internationalDays * dailyRateUsd;
 
   const showError = (message) => {
     setError(message);
@@ -186,10 +191,6 @@ function useEditTrip(tripId, user) {
     if (transport === 'Vehículo de Empresa' && !vehiclePlate.trim()) {
       errors.vehiclePlate = 'La placa del vehículo es requerida';
     }
-    const amountErrors = requestedAmounts.validateAmounts();
-    if (Object.keys(amountErrors).length > 0) {
-      errors.amounts = 'Revisa el monto que solicitas';
-    }
     return errors;
   };
 
@@ -213,7 +214,8 @@ function useEditTrip(tripId, user) {
       tipo: type,
       transporte: transport,
       placa_vehiculo: transport === 'Vehículo de Empresa' ? vehiclePlate.trim() : null,
-      ...requestedAmounts.buildAmountsPayload(),
+      monto_asignado: totalAmount,
+      monto_asignado_usd: totalAmountUsd,
     });
     setLoading(false);
     if (data.error) {
@@ -231,7 +233,8 @@ function useEditTrip(tripId, user) {
     type, setType, handleTypeChange,
     transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
-    days, requestedAmounts,
+    days, nationalDays, internationalDays,
+    totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,
     originalStatus,
     loading, loadingData, loadError, error, fieldErrors,

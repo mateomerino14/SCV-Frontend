@@ -14,7 +14,6 @@ const styles = {
   amountDivider: "border-t border-white border-opacity-20 my-3",
   amountUsdLabel: "text-xs font-inter uppercase opacity-70 mb-1 text-center",
   amountUsd: "text-4xl font-bold font-inter text-center",
-  limitText: "text-xs font-inter opacity-70 text-center mt-1",
   infoBox: "rounded-xl p-3 flex gap-2 items-start mt-4",
   infoText: "text-xs font-inter opacity-80 mt-1",
   cityCard: "rounded-2xl overflow-hidden relative h-44",
@@ -24,18 +23,14 @@ const styles = {
   citySubtitle: "text-white font-inter text-xs opacity-70 uppercase",
 };
 
-function TripBudgetSummary({position, dailyRate, dailyRateUsd, days, type, transport, requestedAmount, requestedAmountUsd, limitBs, limitUsd}) {
+function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport}) {
   const isInternational = type === 'Internacional';
   const borderColor = 'rgba(255,255,255,0.2)';
-  let infoText = 'Indica cuánto necesitas: no puede superar los días por la tarifa diaria más el hospedaje. Tesorería asignará el monto final.';
-  if (isInternational) {
-    infoText = 'Puedes gastar en Bs o en USD cualquier día del viaje. Cada moneda tiene su propio límite diario y su propio tope a solicitar.';
-  }
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.card} style={{background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.title})`}}>
-        <p className={styles.presupuestoLabel}>Presupuesto Solicitado</p>
+        <p className={styles.presupuestoLabel}>Presupuesto Asignado</p>
         <p className={styles.title}>Resumen Corporativo</p>
         <TripBudgetRow label="Cargo" value={position?.toUpperCase() || '—'} borderColor={borderColor} />
         <TripBudgetRow label="Tarifa Diaria (Bs)" value={`${dailyRate.toFixed(2)} Bs`} borderColor={borderColor} />
@@ -43,21 +38,30 @@ function TripBudgetSummary({position, dailyRate, dailyRateUsd, days, type, trans
           <TripBudgetRow label="Tarifa Diaria (USD)" value={`${(dailyRateUsd || 0).toFixed(2)} USD`} borderColor={borderColor} />
         )}
         <TripBudgetRow label="Transporte" value={transport || '—'} borderColor={borderColor} />
-        <TripBudgetRow label="Días de viaje" value={`${days} día${days !== 1 ? 's' : ''}`} borderColor={borderColor} />
-        <p className={styles.amountLabel}>Monto Solicitado {isInternational && 'en Bs'}</p>
-        <p className={styles.amount}>{(parseFloat(requestedAmount) || 0).toFixed(2)} <span className={styles.amountSub}>Bs</span></p>
-        <p className={styles.limitText}>Tope: {(limitBs || 0).toFixed(2)} Bs</p>
-        {isInternational && (
+        {isInternational ? (
           <>
+            <TripBudgetRow label="Días nacionales (Bs)" value={`${nationalDays} día${nationalDays !== 1 ? 's' : ''}`} borderColor={borderColor} />
+            <TripBudgetRow label="Días internacionales (USD)" value={`${internationalDays} día${internationalDays !== 1 ? 's' : ''}`} borderColor={borderColor} />
+            <p className={styles.amountLabel}>Presupuesto Nacional</p>
+            <p className={styles.amount}>{totalAmount.toFixed(2)} <span className={styles.amountSub}>Bs</span></p>
             <div className={styles.amountDivider} />
-            <p className={styles.amountUsdLabel}>Monto Solicitado en USD</p>
-            <p className={styles.amountUsd}>{(parseFloat(requestedAmountUsd) || 0).toFixed(2)} <span className={styles.amountSub}>USD</span></p>
-            <p className={styles.limitText}>Tope: {(limitUsd || 0).toFixed(2)} USD</p>
+            <p className={styles.amountUsdLabel}>Presupuesto Internacional</p>
+            <p className={styles.amountUsd}>{(totalAmountUsd || 0).toFixed(2)} <span className={styles.amountSub}>USD</span></p>
+          </>
+        ) : (
+          <>
+            <TripBudgetRow label="Días de viaje" value={`${nationalDays} día${nationalDays !== 1 ? 's' : ''}`} borderColor={borderColor} />
+            <p className={styles.amountLabel}>Monto Total Estimado</p>
+            <p className={styles.amount}>{totalAmount.toFixed(2)} <span className={styles.amountSub}>Bs</span></p>
           </>
         )}
         <div className={styles.infoBox} style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
           <span style={{color: 'rgba(255,255,255,0.7)', fontSize: 16}}>ⓘ</span>
-          <p className={styles.infoText}>{infoText}</p>
+          <p className={styles.infoText}>
+            {isInternational
+              ? 'Para viajes internacionales, el primer y último día se calculan en Bs. Los días intermedios en USD.'
+              : 'El monto total se calcula automáticamente basado en su nivel jerárquico y la duración seleccionada.'}
+          </p>
         </div>
       </div>
       <div className={styles.cityCard}>

@@ -147,7 +147,7 @@ function ExpenseDetailPage() {
               renderRow={(installment) => (
                 <>
                   <span style={{color: COLORS.text}}>{parseFloat(installment.monto_origen).toFixed(2)} {installment.moneda}</span>
-                  <span style={{color: COLORS.labels}}>1 USD = {parseFloat(installment.tipo_cambio).toFixed(4)} {installment.moneda}{installment.tipo_cambio_manual && ' (ingresado a mano)'}</span>
+                  <span style={{color: COLORS.labels}}>1 USD = {parseFloat(installment.tipo_cambio).toFixed(4)} {installment.moneda}</span>
                   <span style={{color: COLORS.primary, fontWeight: 'bold'}}>{parseFloat(installment.monto_usd).toFixed(2)} USD</span>
                 </>
               )} />

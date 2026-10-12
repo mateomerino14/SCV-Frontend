@@ -12,12 +12,7 @@ const styles = {
   amountInput: 'w-full rounded-xl px-4 py-3 border text-lg font-bold font-inter outline-none',
   saveRow: 'flex gap-2 mt-2',
   saveBtn: 'flex-1 py-2 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center',
-  requestBox: 'rounded-xl p-3 mb-4 flex flex-col gap-1',
-  requestTitle: 'text-[11px] font-bold font-inter uppercase mb-1',
-  requestRow: 'flex justify-between gap-3 text-xs font-inter',
 };
-
-const formatRequest = (amount, lodging, currency) => `${parseFloat(amount || 0).toFixed(2)} ${currency} (hospedaje ${parseFloat(lodging || 0).toFixed(2)})`;
 
 function TreasurerAmountsCard({trip, isInternational, canEdit, editingAmounts, setEditingAmounts, assignedAmount, assignedAmountUsd, handleAssignedAmountChange, handleAssignedAmountUsdChange, savingAmounts, handleSaveAmounts}) {
   return (
@@ -28,19 +23,6 @@ function TreasurerAmountsCard({trip, isInternational, canEdit, editingAmounts, s
           <p className={styles.editBtn} style={{color: COLORS.secondary}} onClick={() => setEditingAmounts(true)}>
             <Pencil size={13} /> Editar
           </p>
-        )}
-      </div>
-      <div className={styles.requestBox} style={{backgroundColor: COLORS.backgroundHeader}}>
-        <p className={styles.requestTitle} style={{color: COLORS.labels}}>Solicitado por el empleado</p>
-        <div className={styles.requestRow} style={{color: COLORS.text}}>
-          <span>Bolivianos</span>
-          <span>{formatRequest(trip.monto_solicitado, trip.hospedaje_estimado, 'Bs')}</span>
-        </div>
-        {isInternational && (
-          <div className={styles.requestRow} style={{color: COLORS.text}}>
-            <span>Dólares</span>
-            <span>{formatRequest(trip.monto_solicitado_usd, trip.hospedaje_estimado_usd, 'USD')}</span>
-          </div>
         )}
       </div>
       {!editingAmounts ? (

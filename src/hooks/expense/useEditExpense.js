@@ -3,11 +3,10 @@ import {useSearchParams} from 'react-router-dom';
 import {getCategories, getExpenseDetail, updateExpense} from '../../services/expense/expenseService';
 import {compressImage} from '../../utils/imageCompressor';
 import {currencies} from '../../constants/currencies';
-import useDailyExchangeRates, {installmentRateError} from './useDailyExchangeRates';
 
 const maxAmount = 99999.99;
 const maxDescription = 1000;
-const maxExchangeRate = 99999.9999;
+const maxExchangeRate = 9999.9999;
 const maxSubitemDescription = 255;
 
 
@@ -71,7 +70,7 @@ function useEditExpense(expenseId) {
   const [tripId, setTripId] = useState(null);
   const [tripDateRange, setTripDateRange] = useState({start: null, end: null});
   const [usesOtherCurrency, setUsesOtherCurrency] = useState(false);
-  const [rawInstallments, setInstallments] = useState([newInstallment()]);
+  const [installments, setInstallments] = useState([newInstallment()]);
   const [installmentErrors, setInstallmentErrors] = useState({});
   const [usesSubitems, setUsesSubitems] = useState(false);
   const [subitems, setSubitems] = useState([newSubitem()]);
@@ -123,15 +122,6 @@ function useEditExpense(expenseId) {
     };
     load();
   }, [expenseId]);
-
-  const {requestRates, applyRates} = useDailyExchangeRates();
-  const installments = useMemo(() => applyRates(date, rawInstallments), [applyRates, date, rawInstallments]);
-
-  useEffect(() => {
-    if (usesOtherCurrency && date) {
-      requestRates(date, rawInstallments);
-    }
-  }, [usesOtherCurrency, date, rawInstallments, requestRates]);
 
   const validInstallments = useMemo(() => {
     return installments.filter((installment) => installment.currency && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0);
@@ -374,9 +364,8 @@ function useEditExpense(expenseId) {
         if (!installment.originAmount || parseFloat(installment.originAmount) <= 0) {
           errs.amount = 'El monto es requerido';
         }
-        const rateError = installmentRateError(installment);
-        if (rateError) {
-          errs.exchangeRate = rateError;
+        if (!installment.exchangeRate || parseFloat(installment.exchangeRate) <= 0) {
+          errs.exchangeRate = 'El tipo de cambio es requerido';
         }
         if (Object.keys(errs).length > 0) {
           currentInstallmentErrors[installment.id] = errs;
