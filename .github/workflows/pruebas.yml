@@ -53,7 +53,7 @@ jobs:
           for script in 01_schema 02_functions 03_seed 04_rls_hardening testing_02_organizacion_prueba; do
             psql -h localhost -U postgres -d scv_test -v ON_ERROR_STOP=1 -q -f backend/database/$script.sql
           done
-      - name: Levantar PostgREST, el backend y la API de tipo de cambio de prueba
+      - name: Levantar PostgREST y el backend
         env:
           PORT: 5055
           SUPABASE_URL: http://localhost:3998
@@ -62,12 +62,10 @@ jobs:
           JWT_REFRESH_SECRET: secreto-de-refresco-de-prueba
           CORS_ORIGINS: http://localhost:5173
           FRONTEND_URL: http://localhost:5173
-          EXCHANGE_RATE_API_URLS: http://localhost:5066/{fecha}/usd.json
         run: |
           curl -sSL https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz | tar -xJ
           printf 'db-uri = "postgres://postgres:test@localhost:5432/scv_test"\ndb-schemas = "public"\ndb-anon-role = "postgres"\nserver-port = 3999\n' > postgrest.conf
           ./postgrest postgrest.conf > postgrest.log 2>&1 &
-          node e2e/support/exchangeRateMock.js > exchange.log 2>&1 &
           cd backend && npm ci && (node tests/support/supabaseProxy.js > ../proxy.log 2>&1 &) && (node src/index.js > ../backend.log 2>&1 &)
           sleep 5
       - run: npm ci
