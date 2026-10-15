@@ -131,7 +131,7 @@
 \begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
-Versión: & 1.1 \\
+Versión: & 1.2 \\
 Fecha: & Octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -145,7 +145,7 @@ Fecha: & Octubre de 2026 \\
   \item El sistema contempla dos tipos de viaje según su alcance geográfico:
   \begin{itemize}
     \item \textbf{Nacional}: los gastos se registran íntegramente en bolivianos.
-    \item \textbf{Internacional}: cuenta además con un presupuesto en dólares. Cualquier día se puede gastar en bolivianos o en dólares, y los gastos pagados en otra moneda se anotan como tramos de conversión con el tipo de cambio del día, que el sistema obtiene automáticamente.
+    \item \textbf{Internacional}: cuenta además con un presupuesto en dólares. Cualquier día se puede gastar en bolivianos o en dólares, y los gastos pagados en otra moneda se anotan como tramos de conversión con el tipo de cambio que le aplicaron al empleado, quien lo escribe en cada tramo.
   \end{itemize}
   \item El medio de transporte se registra por viaje (terrestre, aéreo u otro), junto con la placa cuando se usa un vehículo de la empresa, y se muestra como distintivo en las vistas de revisión.
   \item La rendición de cada viaje reúne:
@@ -155,7 +155,7 @@ Fecha: & Octubre de 2026 \\
     \item El detalle de los gastos realizados, con su desglose en subgastos si aplica.
   \end{itemize}
   \item El sistema identifica automáticamente los gastos no permitidos, en particular las bebidas alcohólicas, a partir del detalle de productos facturados y de la descripción del gasto. Una rendición con alcohol pasa por una revisión adicional del aprobador.
-  \item Al registrar el viaje, el empleado indica el monto que solicita y un hospedaje estimado; el sistema muestra como referencia y tope los días del viaje por la tarifa diaria del cargo más el hospedaje.
+  \item Al registrar el viaje, el sistema calcula el monto con las tarifas diarias del cargo del empleado; tesorería lo revisa y lo ajusta al asignar los fondos.
   \item El presupuesto se controla día por día y por moneda contra las tarifas diarias del cargo: en un viaje nacional la tarifa en bolivianos; en uno internacional, las dos tarifas por separado. Los hoteles se comparan contra el total asignado. Cada día que excede la tarifa, y el exceso en hoteles, requiere una justificación, y el sistema calcula el saldo a devolver o el importe a reembolsar en cada moneda.
   \item Antes de aprobar o rechazar, los revisores ven la rendición completa: tablas separadas por tipo de gasto, barras de presupuesto, desglose diario y alertas.
   \item Las categorías de gasto incorporan la cuenta contable de Oracle en su nombre, de modo que la planilla exportada resulte directamente utilizable por el área contable.
@@ -215,11 +215,11 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
 \subsection{Primer flujo: autorización del viaje}
 \begin{enumerate}
   \item \textbf{Registro del viaje:} el empleado crea el viaje en estado \code{BORRADOR}, indicando motivo, origen, destino, fechas, tipo (nacional o internacional) y medio de transporte.
-  \item \textbf{Monto solicitado:} el empleado escribe el monto que solicita y su hospedaje estimado, en bolivianos y, si el viaje es internacional, también en dólares. El sistema muestra como referencia y tope los días del viaje por la tarifa diaria del cargo más el hospedaje, y no permite solicitar más.
+  \item \textbf{Monto del viaje:} el sistema lo calcula con las tarifas del cargo. En un viaje nacional es días × tarifa en bolivianos; en uno internacional, el día de salida y el de regreso se calculan con la tarifa en bolivianos y los días intermedios con la tarifa en dólares.
   \item \textbf{Envío a revisión:} el viaje pasa a \code{EN_REVISION_VIAJE}.
   \item \textbf{Revisión del supervisor:} el supervisor que corresponde por jerarquía toma el viaje, lo evalúa y lo aprueba o lo rechaza con observaciones. Si lo aprueba, pasa a \code{APROBADO_VIAJE}.
   \item \textbf{Aprobación y memorándum:} el aprobador confirma la solicitud y el sistema emite el memorándum del viaje, que detalla motivo, destino, fechas y transporte autorizado. El viaje pasa a \code{EN_REVISION_TESORERO}.
-  \item \textbf{Asignación de fondos:} el tesorero ve lo solicitado y asigna los montos finales en ambas monedas. Al aprobar, el empleado recibe la confirmación del fondo, el viaje pasa a \code{EN_CURSO} y queda habilitado el registro de gastos.
+  \item \textbf{Asignación de fondos:} el tesorero revisa el monto calculado y asigna los montos finales en ambas monedas. Al aprobar, el empleado recibe la confirmación del fondo, el viaje pasa a \code{EN_CURSO} y queda habilitado el registro de gastos.
 \end{enumerate}
 
 \subsection{Segundo flujo: rendición de gastos}
@@ -227,7 +227,7 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
   \item \textbf{Registro de gastos:} durante el viaje, el empleado (o su reemplazo aprobado) registra sus gastos en tres modalidades:
   \begin{itemize}
     \item Gastos sin factura, con cálculo automático de retenciones y emisión de recibo.
-    \item Gastos con factura, cargando la imagen del comprobante y revisando los datos extraídos automáticamente.
+    \item Gastos con factura o recibo, cargando la imagen del comprobante y revisando los datos extraídos automáticamente.
     \item Gastos internacionales en dólares, con el registro opcional de tramos de conversión.
   \end{itemize}
   \item \textbf{Validación de fechas:} la fecha de cada gasto debe estar dentro del período del viaje, y la carga debe hacerse dentro del plazo de tolerancia o de la ampliación autorizada.
@@ -251,7 +251,7 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
 En ambos flujos, el rechazo lleva el viaje al estado \code{RECHAZADO} e incrementa el ciclo de revisión, para que el empleado corrija y reenvíe. Un viaje rechazado antes de iniciarse se corrige editándolo; uno rechazado en la rendición se corrige en sus gastos y vuelve directamente a \code{EN_REVISION}. Las observaciones de ciclos anteriores se conservan como historial, pero solo se consideran las del ciclo vigente: para rechazar, cada revisor debe haber registrado al menos una observación propia en el ciclo actual.
 
 \subsection{Aprobación automática}
-Si el responsable de una etapa única (aprobador, tesorero o revisor) es el propio viajero, esa etapa se aprueba sola y los documentos lo indican como aprobación automática. En el caso del tesorero, el fondo queda con el monto que él mismo solicitó.
+Si el responsable de una etapa única (aprobador, tesorero o revisor) es el propio viajero, esa etapa se aprueba sola y los documentos lo indican como aprobación automática. En el caso del tesorero, el fondo queda con el monto calculado al registrar el viaje.
 
 \subsection{Estados del viaje}
 \begin{xltabular}{\textwidth}{L{4.6cm} L{3.6cm} Y}
@@ -300,13 +300,13 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 \endfirsthead
 \cabecera \tth{Código} & \tth{Tipo de comprobante} & \tth{Retenciones aplicadas} \\
 \endhead
-\rowcolor{maxamFondo} \code{F} & Compra de bien o servicio con factura & Ninguna; genera IVA crédito fiscal \\
-\code{R} & Documento sin IVA ni retención & Ninguna \\
+\rowcolor{maxamFondo} \code{F} & Compra de bien o servicio con factura & Ninguna; genera IVA crédito fiscal (13\% sobre el subtotal) \\
+\code{R} & Recibo: documento sin IVA ni retención & Ninguna; no lleva IVA \\
 \rowcolor{maxamFondo} \code{C} & Compra de bien sin factura & IUE 5\% e IT 3\% sobre base incrementada \\
 \code{S} & Servicio o alquiler sin factura & RC-IVA 13\% e IT 3\% sobre base incrementada \\
 \end{xltabular}
 
-Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas, el IVA crédito fiscal es la diferencia entre el total y el monto sin impuestos registrado.
+Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el total es el subtotal más el IVA del 13\%; ese IVA no se descuenta de lo que se reconoce al empleado, sino que figura aparte en la planilla como crédito fiscal de la empresa. Los recibos (\code{R}) no llevan IVA: el total es igual al subtotal y la planilla muestra IVA cero.
 
 \section{Categorías de gasto}
 Las categorías incorporan en su nombre el código de la cuenta contable de Oracle, lo que permite que la planilla exportada sea directamente utilizable por el área contable. Al agregar nuevas categorías debe conservarse ese formato.
@@ -505,7 +505,6 @@ Información confidencial, contenida en la documentación de Excel recibida. El 
   \item \textbf{Google Gemini}: extracción de datos de comprobantes y detección de bebidas alcohólicas.
   \item \textbf{Brevo}: envío de correo transaccional.
   \item \textbf{AbstractAPI}: verificación de correos antes de enviar códigos de recuperación.
-  \item \textbf{Currency API}: tipo de cambio diario de las monedas extranjeras (gratuita y sin clave).
 \end{itemize}
 
 \subsection{Herramientas}
@@ -521,8 +520,8 @@ Información confidencial, contenida en la documentación de Excel recibida. El 
 \section{Pruebas automáticas}
 El sistema cuenta con tres niveles de pruebas automáticas, que verifican su funcionamiento sin intervención manual:
 \begin{itemize}
-  \item \textbf{Unitarias}: comprueban reglas puntuales, como las retenciones, el control diario por moneda, los topes del monto solicitado y el tipo de cambio diario (Jest en el servidor y Vitest en el cliente).
-  \item \textbf{De la API}: ejecutan los servicios del servidor contra una base de prueba y comprueban permisos, topes y respuestas (Jest y Supertest).
+  \item \textbf{Unitarias}: comprueban reglas puntuales, como las retenciones, el control diario por moneda, el IVA de facturas y recibos y las cantidades con decimales del detalle (Jest en el servidor y Vitest en el cliente).
+  \item \textbf{De la API}: ejecutan los servicios del servidor contra una base de prueba y comprueban permisos, montos y respuestas (Jest y Supertest).
   \item \textbf{De extremo a extremo}: recorren el sistema en un navegador real, en escritorio y celular, como lo haría cada rol (Playwright).
 \end{itemize}
 Las pruebas se ejecutan automáticamente en GitHub Actions cada vez que se envían cambios al repositorio, sobre una base de datos temporal que se crea y se elimina en cada ejecución, sin tocar la base real.
@@ -532,8 +531,9 @@ Al cargar una factura, la imagen se envía al modelo de visión de Google Gemini
 
 \begin{enumerate}
   \item La llamada reintenta ante errores temporales y, si el modelo principal falla o agota su cuota, usa un modelo de respaldo.
-  \item Los datos que faltan se marcan como ``No Especificado'' y la fecha se valida; si no es válida, el campo queda editable.
-  \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar.
+  \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a dos decimales.
+  \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar, incluida la fecha de emisión por si se leyó mal. Al modificar después una factura ya guardada, la fecha queda bloqueada.
+  \item La cantidad de cada producto admite hasta dos decimales, por ejemplo 53.34 litros de combustible o 6 unidades.
   \item Una factura repetida (mismo número, fecha y proveedor) se rechaza.
 \end{enumerate}
 
@@ -600,7 +600,7 @@ El sistema utiliza \textbf{PostgreSQL}. Se aprovechan características propias d
 El uso de \texttt{TIMESTAMPTZ} en lugar de \texttt{TIMESTAMP} resultó determinante: con el tipo sin zona horaria, PostgreSQL descartaba el huso al guardar el valor y el cliente lo interpretaba después como hora local, desplazando las fechas cuatro horas respecto del horario de Bolivia.
 
 \subsection{Tablas del esquema}
-El esquema está compuesto por \textbf{25 tablas}, agrupadas según las entidades principales del dominio.
+El esquema está compuesto por \textbf{24 tablas}, agrupadas según las entidades principales del dominio.
 
 \begin{xltabular}{\textwidth}{L{3.2cm} Y}
 \cabecera \tth{Agrupación} & \tth{Tablas} \\
@@ -612,7 +612,7 @@ Usuarios & Usuario, Codigo\_Verificacion, Auditoria \\
 \rowcolor{maxamFondo} Viajes & Viaje, Solicitud\_Autorizacion\_Plazo, Solicitud\_Reemplazo, Revision\_Viaje \\
 Gastos & Gasto, Gasto\_Subitem, Gasto\_Tramo\_Moneda, Imagen \\
 \rowcolor{maxamFondo} Facturas & Factura, Detalle\_Factura, Factura\_Impuestos \\
-Transversal & Comentario, Correlativo\_Recibo, Recibo, Configuracion\_Recordatorio, Tipo\_Cambio\_Diario \\
+Transversal & Comentario, Correlativo\_Recibo, Recibo, Configuracion\_Recordatorio \\
 \end{xltabular}
 
 \subsubsection{Rol}
@@ -675,12 +675,8 @@ Entidad central del sistema. Su estado gobierna ambos flujos de aprobación.
   \campo{tipo}{Nacional o Internacional}{VARCHAR(15), CHECK}
   \campo{transporte}{Medio de transporte}{TEXT, Terrestre por defecto}
   \campo{placa_vehiculo}{Placa del vehículo de la empresa, opcional}{VARCHAR(20)}
-  \campo{monto_solicitado}{Monto que pidió el empleado en bolivianos}{NUMERIC(10,2)}
-  \campo{monto_solicitado_usd}{Monto que pidió el empleado en dólares}{NUMERIC(10,2)}
-  \campo{hospedaje_estimado}{Hospedaje estimado en bolivianos}{NUMERIC(10,2)}
-  \campo{hospedaje_estimado_usd}{Hospedaje estimado en dólares}{NUMERIC(10,2)}
-  \campo{monto_asignado}{Presupuesto asignado por tesorería en bolivianos}{DECIMAL(10,2)}
-  \campo{monto_asignado_usd}{Presupuesto asignado por tesorería en dólares}{NUMERIC(10,2)}
+  \campo{monto_asignado}{Presupuesto en bolivianos, calculado con las tarifas del cargo y ajustado por tesorería}{DECIMAL(10,2)}
+  \campo{monto_asignado_usd}{Presupuesto en dólares, calculado con las tarifas del cargo y ajustado por tesorería}{NUMERIC(10,2)}
   \campo{estado}{Uno de los diez estados definidos}{VARCHAR(25), CHECK}
   \campo{fue_iniciado}{Distingue un rechazo en la autorización de uno en la rendición}{BOOLEAN}
   \campo{ciclo_revision}{Contador de rondas de revisión}{INTEGER}
@@ -783,14 +779,13 @@ Desglose de un gasto en varios conceptos. Cuando existen, el monto total del gas
 \end{itemize}
 
 \subsubsection{Gasto\_Tramo\_Moneda}
-Tramos de conversión de moneda de un gasto internacional, como referencia del cálculo. El tipo de cambio es el del día del gasto, tomado de \code{Tipo_Cambio_Diario}.
+Tramos de conversión de moneda de un gasto internacional, como referencia del cálculo. El tipo de cambio lo escribe el empleado en cada tramo.
 \begin{itemize}
   \campo{id_tramo}{Identificador único}{SERIAL, clave primaria}
   \campo{id_gasto}{Gasto al que pertenece}{INTEGER, borrado en cascada}
   \campo{moneda}{Moneda de origen}{VARCHAR(10)}
   \campo{monto_origen}{Importe en la moneda de origen}{NUMERIC(12,2)}
-  \campo{tipo_cambio}{Tipo de cambio del día}{NUMERIC(12,4)}
-  \campo{tipo_cambio_manual}{Indica que se escribió a mano porque la API no respondió}{BOOLEAN}
+  \campo{tipo_cambio}{Tipo de cambio aplicado (unidades por 1 dólar)}{NUMERIC(12,4)}
   \campo{monto_usd}{Equivalente en dólares}{NUMERIC(12,2)}
 \end{itemize}
 
@@ -819,7 +814,7 @@ Productos o servicios incluidos en una factura.
 \begin{itemize}
   \campo{id_detalle}{Identificador único}{SERIAL, clave primaria}
   \campo{nombre_producto}{Nombre del ítem}{VARCHAR(255)}
-  \campo{cantidad}{Cantidad}{NUMERIC(10,2)}
+  \campo{cantidad}{Cantidad, con hasta dos decimales (litros, kilos o unidades)}{NUMERIC(10,2)}
   \campo{precio}{Precio unitario}{DECIMAL(10,2)}
   \campo{id_factura}{Factura a la que pertenece}{INTEGER}
 \end{itemize}
@@ -883,21 +878,11 @@ Tabla de una sola fila con los días y horas en que se envía el resumen de pend
   \campo{id_usuario_actualizacion}{Administrador que hizo el último cambio}{INTEGER}
 \end{itemize}
 
-\subsubsection{Tipo\_Cambio\_Diario}
-Tipo de cambio de cada moneda por día, consultado a la API la primera vez y guardado, para que todos los gastos de una misma fecha usen el mismo.
-\begin{itemize}
-  \campo{fecha}{Día del tipo de cambio}{DATE, clave primaria junto con moneda}
-  \campo{moneda}{Código de la moneda (EUR, PEN, ARS, BRL, CLP, COP, MXN)}{VARCHAR(10)}
-  \campo{tasa}{Unidades de la moneda por 1 dólar}{NUMERIC(18,6)}
-  \campo{fuente}{API de la que se obtuvo}{VARCHAR(50)}
-  \campo{fecha_consulta}{Momento de la consulta}{TIMESTAMPTZ}
-\end{itemize}
-
 \subsection{Índices}
 Se definieron índices sobre las columnas más usadas para filtrar o unir: las claves foráneas de las tablas dependientes, el estado del viaje, el supervisor asignado, el jefe directo y la sección del usuario, el estado de las solicitudes y el historial de revisión por persona y etapa.
 
 \subsection{Seguridad a nivel de fila}
-Se habilitó \textbf{Row Level Security} en las 25 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
+Se habilitó \textbf{Row Level Security} en las 24 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
 
 \subsection{Scripts de base de datos}
 El repositorio incluye los scripts para reconstruir el esquema desde cero, que se ejecutan en este orden:

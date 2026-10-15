@@ -92,7 +92,7 @@
   keepspaces=true,
   aboveskip=8pt,
   belowskip=8pt,
-  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1 {—}{{---}}1 {→}{{$\rightarrow$}}1 {├}{{|}}1 {└}{{`}}1 {│}{{|}}1 {─}{{-}}1
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1 {—}{{---}}1 {→}{{$\rightarrow$}}1 {├}{{|}}1 {└}{{`}}1 {│}{{|}}1 {─}{{-}}1
 }
 
 \hypersetup{pdftitle={Manual Técnico Frontend - Sistema de Control de Viáticos},pdfauthor={Mateo Alejandro Merino Vidal}}
@@ -132,8 +132,8 @@
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
 Componente: & Cliente web (React, Vite y Tailwind CSS) \\
-Versión: & 1.1 \\
-Fecha: & 9 de octubre de 2026 \\
+Versión: & 1.2 \\
+Fecha: & 15 de octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
 \end{titlepage}
@@ -256,7 +256,7 @@ src/
 ├── pages/               Páginas asociadas a rutas, y pages/hooks
 ├── services/            Acceso a la API por dominio y shared/apiClient.js
 ├── layouts/             Navbar, Footer y menús por rol
-├── utils/               Funciones puras (fechas, código de viaje, compresión de imágenes)
+├── utils/               Funciones puras (fechas, código de viaje, cantidades, compresión de imágenes)
 ├── constants/           Paleta, rutas, inicio por rol, monedas, nombres y colores de estado
 ├── test/setup.js        Configuración de las pruebas unitarias
 ├── App.jsx              Rutas y guardas de acceso
@@ -425,7 +425,7 @@ No se usa una biblioteca de estado global: el estado es local a cada pantalla y 
 \rowcolor{maxamFondo} \code{user/authService} & Ingreso, cierre de sesión, códigos de recuperación \\
 \code{user/userService} & Perfil, foto, contraseña, usuarios, empleados \\
 \rowcolor{maxamFondo} \code{trip/tripService} & Panel, historial, detalle, creación, edición, envío, finalización, planilla PDF y planillas de varios viajes para Excel \\
-\code{expense/expenseService} & Gastos, detalle, recibos y tipo de cambio del día \\
+\code{expense/expenseService} & Gastos, detalle y recibos \\
 \rowcolor{maxamFondo} \code{expense/invoiceService} & Extracción, registro y edición de facturas \\
 \code{approval/reviewService} & Revisión del supervisor (viajes y rendiciones) \\
 \rowcolor{maxamFondo} \code{approval/approverService} & Aprobación de viajes \\
@@ -443,8 +443,8 @@ No se usa una biblioteca de estado global: el estado es local a cada pantalla y 
 \endfirsthead
 \cabecera \tth{Dominio} & \tth{Hooks} \\
 \endhead
-\rowcolor{maxamFondo} trip & \code{useEmployeeDashboard}, \code{useCreateTrip}, \code{useEditTrip}, \code{useRequestedAmounts}, \code{useTripDetail}, \code{useTripHistory}, \code{useStatementPdfDownload} \\
-expense & \code{useRegisterExpense}, \code{useEditExpense}, \code{useDailyExchangeRates}, \code{useUploadInvoice}, \code{useEditInvoice}, \code{useInvoiceForm}, \code{useInvoiceDetailPanel} \\
+\rowcolor{maxamFondo} trip & \code{useEmployeeDashboard}, \code{useCreateTrip}, \code{useEditTrip}, \code{useTripDetail}, \code{useTripHistory}, \code{useStatementPdfDownload} \\
+expense & \code{useRegisterExpense}, \code{useEditExpense}, \code{useUploadInvoice}, \code{useEditInvoice}, \code{useInvoiceForm}, \code{useInvoiceDetailPanel} \\
 \rowcolor{maxamFondo} approval & Uno por bandeja y por detalle de cada revisor (\code{useSupervisorPendingTrips}, \code{useApproverReviews}, \code{useTreasurerReviews}, \code{useReviewerReviews}, \ldots), más \code{useDeadlineAuthorization}, \code{useSubstitutionRequest} y sus pares del revisor; \code{useStatementsExport} para exportar planillas en grupo \\
 admin & \code{useAdminDashboard}, \code{useUserManagement}, \code{usePositionManagement}, \code{useSectionManagement}, \code{useAuditLog}, \code{useReminderSettings}, \code{useAdminExcelExport} \\
 \rowcolor{maxamFondo} user & \code{useLogin}, \code{useProfile}, \code{useCurrentUser}, \code{useIsTreasurer}, \code{usePasswordExpiredCheck} \\
@@ -496,8 +496,8 @@ const handleRequestSubmitReview = () => {
 \endfirsthead
 \cabecera \tth{Dominio} & \tth{Organismos principales} \\
 \endhead
-\rowcolor{maxamFondo} trip & \code{TripActiveExpenseView}, \code{TripDraftView}, \code{TripFinalApprovedView}, \code{TripBudgetSummary}, \code{DailyBreakdownCard}, \code{RequestedAmountFields}, \code{TripHistoryFilter}, \code{SubstitutionRequestModal} \\
-expense & \code{InvoiceForm}, \code{InvoiceDropZone}, \code{InvoiceDetailPanel}, \code{ExpenseFormCard}, \code{InstallmentRateField}, \code{ExpenseWithholdingsCard}, \code{ReceiptSentModal} \\
+\rowcolor{maxamFondo} trip & \code{TripActiveExpenseView}, \code{TripDraftView}, \code{TripFinalApprovedView}, \code{TripBudgetSummary}, \code{DailyBreakdownCard}, \code{TripHistoryFilter}, \code{SubstitutionRequestModal} \\
+expense & \code{InvoiceForm}, \code{InvoiceDropZone}, \code{InvoiceDetailPanel}, \code{ExpenseFormCard}, \code{ExpenseWithholdingsCard}, \code{ReceiptSentModal} \\
 \rowcolor{maxamFondo} approval & \code{ReviewFilters}, \code{PendingTripItem}, \code{ExpenseInvoicedTable}, \code{ExpenseUninvoicedTable}, \code{ExpenseInternationalTable}, \code{SelectableObservationsList}, \code{TreasurerAmountsCard} \\
 admin & \code{UserFormModal}, \code{PositionFormModal}, \code{SectionFormModal}, \code{TripPhaseSection} \\
 \rowcolor{maxamFondo} user & \code{PasswordChangeGate}, \code{PasswordExpiredModal}, \code{SessionExpiredModal}, \code{VerificationCodeModal}, \code{TermsModal} \\
@@ -568,17 +568,17 @@ Se muestran en ventana, entre otros: los errores al finalizar un viaje, la devol
 \subsection{Planilla de rendición}
 \code{useTripExcelExport} construye la planilla oficial en Excel: logotipo, simbología, distinción entre gastos nacionales e internacionales, cuenta Oracle por categoría, tramos de cambio, totales por moneda, justificaciones de exceso y cinco bloques de firma. El revisor y el tesorero exportan además las planillas de todos los viajes de su lista, según el filtro aplicado, en un solo archivo: una hoja \emph{Resumen} con una fila por viaje y una hoja de planilla por viaje; el administrador puede exportar las del periodo elegido. El empleado descarga en cambio la planilla en PDF, generada por el backend, cuando el viaje está aprobado. Ambos formatos usan las retenciones persistidas por el backend.
 
-\subsection{Monto solicitado}
-Al crear o editar un viaje, el empleado escribe el monto que solicita y un hospedaje estimado, en bolivianos y, si el viaje es internacional, también en dólares. \code{RequestedAmountFields} muestra la referencia (\emph{días × tarifa diaria del cargo + hospedaje}) como tope; un monto mayor no se puede guardar y el enlace ``Solicitar el tope completo'' lo completa. Tesorería ve lo solicitado y asigna el monto final.
+\subsection{Monto del viaje}
+Al crear o editar un viaje, \code{useCreateTrip} y \code{useEditTrip} calculan el \emph{Monto Total Estimado} con las tarifas del cargo del empleado. En un viaje nacional es \emph{días × tarifa en Bs}. En uno internacional, el día de salida y el de regreso se calculan con la tarifa en Bs y los días intermedios con la tarifa en USD, y la pantalla lo explica en una nota. Tesorería revisa el monto y lo ajusta al asignar los fondos.
 
 \subsection{Control de gasto diario}
 El \emph{Control Diario} (\code{DailyBreakdownCard}) muestra una tarjeta por día con una barra por moneda y su estado: dentro del límite, cerca del límite, excedido o justificado. En un viaje nacional se controla la tarifa en bolivianos; en uno internacional, cada día con las dos tarifas por separado, y se puede gastar en cualquiera de las dos monedas cualquier día. Lo ven el empleado y los revisores. Cuando un día o el total de hoteles excede la tarifa, \code{useTripDetail} exige una justificación por cada exceso antes de permitir el envío a revisión.
 
-\subsection{Tipo de cambio diario}
-En los tramos de otra moneda de un gasto internacional, \code{useDailyExchangeRates} obtiene el tipo de cambio de la fecha del gasto y \code{InstallmentRateField} lo muestra como dato de solo lectura con su equivalente en dólares. Es uno por día y moneda. Si la API no responde, se habilita el campo para escribirlo a mano y el tramo queda marcado como ingresado manualmente.
+\subsection{Tipo de cambio}
+En los tramos de otra moneda de un gasto internacional (\code{ExpenseFormCard}), el empleado elige la moneda de la lista compartida (\code{constants/currencies.js}), escribe el monto y el tipo de cambio que le aplicaron (``1 USD = cuántos X'') y ve al momento el equivalente en dólares.
 
 \subsection{Digitalización de comprobantes}
-La carga de facturas presenta cada comprobante en tres columnas (imagen, formulario y detalle de productos) para corregir los datos extraídos antes de guardar. Cada factura tiene su propio estado: en extracción, con datos, con error o guardada. La fecha de emisión queda bloqueada si se extrajo con formato válido y editable si vino vacía o mal formada. Las imágenes se comprimen en el navegador antes de enviarse.
+La carga de facturas presenta cada comprobante en tres columnas (imagen, formulario y detalle de productos) para corregir los datos extraídos antes de guardar. Cada factura tiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir, por si la IA la leyó mal; al modificar una factura guardada (\code{EditInvoicePage}, que usa \code{InvoiceForm} con \code{lockDate}) queda bloqueada. Con Factura (F) el formulario suma el IVA del 13\% al subtotal; con Recibo (R) el IVA no aplica y el total es igual al subtotal, también en la planilla en Excel. En el detalle de productos (\code{InvoiceDetailPanel}) la cantidad admite hasta 2 decimales, por ejemplo 53.34 litros de combustible o 6 unidades, y se muestra sin ceros de más (\code{formatQuantity}). Las imágenes se comprimen en el navegador antes de enviarse.
 
 \subsection{Revisión y observaciones}
 Cada bandeja de revisión tiene las pestañas Pendientes, Aprobados y Rechazados, con filtros por fecha, empleado y sección, y muestra lo revisado más reciente primero, de 12 en 12. Para rechazar se seleccionan observaciones propias de la ronda actual; las de otros revisores se ven, pero no se pueden editar, borrar ni usar para rechazar. El supervisor y el aprobador pueden devolver una revisión tomada por error.
@@ -593,7 +593,7 @@ Resumen general con indicadores por fase y gráficos, con filtro de periodo (est
 Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora y los pendientes. Se puede desactivar en Ajustes de Cuenta y respeta la preferencia de reducir movimiento.
 
 \section{Documentación de componentes}
-Los componentes de \code{components/ui}, todos los átomos de \code{features} y las moléculas reutilizables están documentados en Storybook, con cada historia junto a su componente (128 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
+Los componentes de \code{components/ui}, todos los átomos de \code{features}, las moléculas reutilizables y los organismos de la carga de facturas (\code{InvoiceForm}, \code{InvoiceDetailPanel}) están documentados en Storybook, con cada historia junto a su componente (124 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
 
 \Needspace{5\baselineskip}
 \begin{lstlisting}
@@ -609,25 +609,30 @@ Una prueba automática es código que usa el sistema como lo haría una persona 
 \endfirsthead
 \cabecera \tth{Tipo} & \tth{Qué prueba} & \tth{Comando} \\
 \endhead
-\rowcolor{maxamFondo} Unitarias & Hooks, componentes y utilidades: topes del monto solicitado, estados del control diario, tipo de cambio, periodos y exportación a Excel. Cada archivo de prueba está junto a lo que prueba (\code{*.test.js}) & \code{npm test} \\
-De extremo a extremo & El sistema completo en un navegador real, en escritorio y celular: ingreso de cada rol, monto solicitado con tope, control diario con justificación, tipo de cambio automático y exportaciones del administrador (\code{e2e/}) & \code{npm run test:e2e} \\
+\rowcolor{maxamFondo} Unitarias & Hooks, componentes y utilidades: estados del control diario, cantidades con decimales del detalle de factura, periodos y exportación a Excel. Cada archivo de prueba está junto a lo que prueba (\code{*.test.js}) & \code{npm test} \\
+De extremo a extremo & El sistema completo en un navegador real, en escritorio y celular: ingreso de cada rol, monto calculado del viaje, control diario con justificación, tipo de cambio de los tramos y exportaciones del administrador (\code{e2e/}) & \code{npm run test:e2e} \\
 \end{xltabular}
 
-Ejemplo de prueba de extremo a extremo: el sistema rechaza un monto mayor al tope y luego guarda el viaje con el tope completo.
+Ejemplo de prueba de extremo a extremo: el sistema calcula el monto de un viaje de tres días con la tarifa del cargo y lo guarda como borrador.
 
-\Needspace{12\baselineskip}
+\Needspace{15\baselineskip}
 \begin{lstlisting}[language=JavaScript]
-test('el empleado solicita un monto con referencia y tope', async ({page}) => {
+test('el sistema calcula el monto del viaje con la tarifa del cargo', async ({page}) => {
   await loginInBrowser(page, 'juan.empleado');
   await page.goto('/dashboard/empleado/crear-viaje');
-  await expect(page.getByText('Tope a solicitar').first()).toBeVisible();
-  await page.locator('input[placeholder="0.00"]').last().fill('999999');
+  await page.getByPlaceholder('Inspección técnica y de producción...').fill('Prueba de monto');
+  await page.getByPlaceholder(/Ciudad de origen/).fill('La Paz');
+  await page.getByPlaceholder('¿A dónde se dirige?').fill('Santa Cruz');
+  const dates = page.locator('input[type=date]');
+  await dates.nth(0).fill(boliviaDate(5));
+  await dates.nth(1).fill(boliviaDate(7));
+  await expect(page.getByText(/900\.00/).first()).toBeVisible();
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
-  await expect(page.getByText(/No puede superar/).first()).toBeVisible();
+  await expect(page.getByText('Se registró el viaje correctamente')).toBeVisible();
 });
 \end{lstlisting}
 
-Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 29 pruebas unitarias y 18 de extremo a extremo.
+Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 18 pruebas unitarias y 18 de extremo a extremo.
 
 \subsection{Integración continua}
 El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Actions en cada envío y en cada pull request: compila la aplicación y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base PostgreSQL temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña \emph{Actions}.
