@@ -220,7 +220,7 @@ Un empleado puede solicitar desde su viaje que otra persona rinda los gastos en 
 
 ### Digitalización de comprobantes
 
-La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. El campo de fecha de emisión queda bloqueado si la IA la extrajo con formato válido, y editable si vino vacía o mal formada.
+La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir (por si la IA la leyó mal); al modificar una factura guardada (`EditInvoicePage`, `InvoiceForm` con `lockDate`) queda bloqueada. Con Factura (F) el formulario suma el IVA del 13 % al subtotal; con Recibo (R) el IVA no aplica y el total es el subtotal, también en la planilla en Excel. La cantidad del detalle (`InvoiceDetailPanel`) admite hasta 2 decimales (53.34 litros o 6 unidades) y se muestra sin ceros de más (`formatQuantity`).
 
 ### Control de plazos
 
@@ -256,7 +256,7 @@ npm run storybook
 
 | Tipo | Qué prueba | Comando | Dónde |
 |---|---|---|---|
-| Unitarias | Componentes y utilidades: estados del control diario, periodos, Excel | `npm test` | Junto a cada archivo (`*.test.js`, `*.test.jsx`) |
+| Unitarias | Componentes y utilidades: estados del control diario, periodos, Excel, cantidades con decimales del detalle de factura | `npm test` | Junto a cada archivo (`*.test.js`, `*.test.jsx`) |
 | De extremo a extremo | El sistema completo en un navegador real: ingreso por rol, monto calculado del viaje, control diario, tipo de cambio de los tramos y exportaciones | `npm run test:e2e` | `e2e/` |
 
 Las pruebas unitarias no necesitan nada más. Las de extremo a extremo necesitan el backend y el frontend levantados con la base de prueba (organización de `testing_02_organizacion_prueba.sql`); `E2E_BASE_URL` y `E2E_API_URL` indican dónde están (por defecto `localhost:5173` y `localhost:5055`). La primera vez hay que instalar el navegador con `npx playwright install chromium`.

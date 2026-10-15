@@ -3,6 +3,7 @@ import {saveAs} from 'file-saver';
 import {extractOracleAccount} from '../../utils/oracleAccount';
 import {toOracleExpenseType} from '../../utils/expenseTypeCode';
 import buildTripCode from '../../utils/tripCode';
+import {formatQuantity} from '../../utils/formatQuantity';
 import {MAXAM_LOGO} from '../../constants';
 
 const vatRate = 0.13;
@@ -60,6 +61,10 @@ function getExpenseTaxValues(expense) {
     return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
   }
   if (hasInvoice) {
+    // Solo la factura (F) genera crédito fiscal; el recibo (R) no lleva IVA
+    if (expense.tipo !== 'F') {
+      return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
+    }
     const partial = parseFloat(expense.Factura?.monto_parcial || 0);
     const vat = parseFloat((partial * vatRate).toFixed(2));
     return {vat, rcIva: 0, iue: 0, it: 0, cost: amount};
@@ -77,7 +82,7 @@ function getExpenseDescription(expense) {
   const hasInvoice = !!expense.Factura;
   if (hasInvoice) {
     const products = (expense.Factura?.Detalle_Factura || [])
-      .map((detail) => `${cleanValue(detail.nombre_producto)}${detail.cantidad ? ` x${detail.cantidad}` : ''}`)
+      .map((detail) => `${cleanValue(detail.nombre_producto)}${detail.cantidad ? ` x${formatQuantity(detail.cantidad)}` : ''}`)
       .join(', ');
     return (products || expense.descripcion || `Factura N° ${cleanValue(expense.Factura?.numero_factura)}`).toUpperCase();
   }

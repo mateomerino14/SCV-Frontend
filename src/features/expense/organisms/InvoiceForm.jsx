@@ -26,7 +26,7 @@ const fieldsConfig = [
   {key: 'monto', label: 'Monto', type: 'text', required: true},
 ];
 
-function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved = false, categories = []}) {
+function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved = false, categories = [], lockDate = false}) {
   const {totalAmount, vatPercentage, handleFieldChange, handleDocTypeChange} = useInvoiceForm(data, onChange, saved);
 
   return (
@@ -48,7 +48,7 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
       <CategorySelector categories={categories} categoryId={data.id_categoria_gasto} onChange={(id) => handleFieldChange('id_categoria_gasto', id)}
         error={fieldErrors.id_categoria_gasto} disabled={saved} />
       {fieldsConfig.map(({key, label, type, required}) => {
-        const isLockedDate = key === 'fecha_emision' && data.fecha_emision_valida;
+        const isLockedDate = key === 'fecha_emision' && lockDate;
         return (
           <ExpenseField key={key} label={`${label}${!required ? ' (Opcional)' : ''}`} error={fieldErrors[key]}>
             <input value={data[key] || ''} type={type} inputMode={key === 'monto' ? 'decimal' : 'text'} disabled={saved || isLockedDate}

@@ -8,6 +8,7 @@ import ReceiptSendingModal from '../../features/expense/organisms/ReceiptSending
 import ExpenseHeaderCard from '../../features/expense/molecules/ExpenseHeaderCard';
 import ExpenseSectionCard from '../../features/expense/molecules/ExpenseSectionCard';
 import ExpenseFieldRow from '../../features/expense/atoms/ExpenseFieldRow';
+import {formatQuantity} from '../../utils/formatQuantity';
 import ExpenseDataTable from '../../features/expense/molecules/ExpenseDataTable';
 import ExpenseWithholdingsCard from '../../features/expense/organisms/ExpenseWithholdingsCard';
 import SkeletonCard from '../../components/ui/SkeletonCard';
@@ -168,7 +169,7 @@ function ExpenseDetailPage() {
                   renderRow={(detail) => (
                     <>
                       <span className="px-2 text-left" style={{color: COLORS.text}}>{detail.nombre_producto}</span>
-                      <span style={{color: COLORS.text}}>{detail.cantidad}</span>
+                      <span style={{color: COLORS.text}}>{formatQuantity(detail.cantidad)}</span>
                       <span style={{color: COLORS.title, fontWeight: 'bold'}}>{parseFloat(detail.precio).toFixed(2)} {currency}</span>
                     </>
                   )} />

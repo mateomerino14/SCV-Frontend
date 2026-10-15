@@ -1,0 +1,37 @@
+import {useState} from 'react';
+import InvoiceForm from './InvoiceForm';
+
+const categories = [{id_categoria: 1, nombre: 'Alimentación'}, {id_categoria: 2, nombre: 'Combustible'}];
+
+const baseData = {proveedor: 'Surtidor El Alto', numero_factura: '15342', nit: '1020304', fecha_emision: '2026-10-14', monto: '100.00', iva: '13.00', monto_total: '113.00',
+  tipo_doc: 'F', id_categoria_gasto: 2, detalle: []};
+
+export default {
+  title: 'Expense/Organisms/InvoiceForm',
+  component: InvoiceForm,
+  parameters: {
+    docs: {
+      description: {
+        component: 'Formulario de una factura escaneada. Con Factura (F) suma el IVA del 13% al subtotal; con Recibo (R) el IVA no aplica. Al registrar la fecha de emisión se puede corregir; al modificar (lockDate) queda bloqueada.',
+      },
+    },
+  },
+  decorators: [(Story) => <div style={{width: 380}}><Story /></div>],
+};
+
+function InteractiveForm({initialData, lockDate}) {
+  const [data, setData] = useState(initialData);
+  return <InvoiceForm data={data} categories={categories} lockDate={lockDate} onChange={(field, value) => setData((prev) => ({...prev, [field]: value}))} />;
+}
+
+export const RegisterInvoice = {
+  render: () => <InteractiveForm initialData={baseData} />,
+};
+
+export const RegisterReceipt = {
+  render: () => <InteractiveForm initialData={{...baseData, tipo_doc: 'R', iva: '0.00', monto_total: '100.00'}} />,
+};
+
+export const EditWithLockedDate = {
+  render: () => <InteractiveForm initialData={baseData} lockDate />,
+};

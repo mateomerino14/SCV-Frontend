@@ -66,7 +66,6 @@ function useEditInvoice(expenseId) {
         tipo_doc: expenseData.tipo || 'F',
         detalle: invoice?.Detalle_Factura || [],
         id_categoria_gasto: expenseData.id_categoria || null,
-        fecha_emision_valida: !!invoice?.fecha_emision,
       });
       if (expenseData.Imagen?.url_archivo) {
         setExistingImage(expenseData.Imagen.url_archivo);

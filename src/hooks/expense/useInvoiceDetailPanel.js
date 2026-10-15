@@ -28,8 +28,16 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
       setItem((prev) => ({...prev, [key]: validDecimal}));
     }
     else if (key === 'cantidad') {
-      const onlyIntegers = value.replace(/[^0-9]/g, '');
-      setItem((prev) => ({...prev, [key]: onlyIntegers}));
+      // Admite decimales (litros, kilos) con un máximo de 2
+      const validQuantity = String(value).replace(',', '.').replace(/[^0-9.]/g, '');
+      const parts = validQuantity.split('.');
+      if (parts.length > 2) {
+        return;
+      }
+      if (parts.length === 2 && parts[1].length > 2) {
+        return;
+      }
+      setItem((prev) => ({...prev, [key]: validQuantity}));
     }
     else if (key === 'nombre_producto') {
       if (value.length > 50) {
@@ -51,7 +59,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     if (!item.precio || parseFloat(item.precio) <= 0) {
       errors.precio = 'El precio es requerido y debe ser mayor a 0';
     }
-    if (!item.cantidad || parseInt(item.cantidad) <= 0) {
+    if (!item.cantidad || !(parseFloat(item.cantidad) > 0)) {
       errors.cantidad = 'La cantidad debe ser mayor a 0';
     }
     return errors;
@@ -66,7 +74,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
       precio: parseFloat(parseFloat(item.precio).toFixed(2)),
-      cantidad: parseInt(item.cantidad),
+      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(2)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
     setSelectedIndex(null);
@@ -86,7 +94,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
       precio: parseFloat(parseFloat(item.precio).toFixed(2)),
-      cantidad: parseInt(item.cantidad),
+      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(2)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
     setSelectedIndex(null);

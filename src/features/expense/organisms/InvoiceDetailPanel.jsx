@@ -2,6 +2,7 @@ import {Trash2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseField from '../atoms/ExpenseField';
 import useInvoiceDetailPanel from '../../../hooks/expense/useInvoiceDetailPanel';
+import {formatQuantity} from '../../../utils/formatQuantity';
 
 const styles = {
   wrapper: "mt-4 shadow-md p-5 rounded-xl",
@@ -30,7 +31,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
     if (key === 'precio' && value !== '' && !/^\d{0,8}(\.\d{0,2})?$/.test(value)) {
       return;
     }
-    if (key === 'cantidad' && value !== '' && !/^\d{0,4}$/.test(value)) {
+    if (key === 'cantidad' && value !== '' && !/^\d{0,5}([.,]\d{0,2})?$/.test(value)) {
       return;
     }
     handleFieldChange(key, value);
@@ -52,7 +53,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
             <div key={index} className={styles.tableRow} onClick={() => !saved && handleSelectRow(index)}
               style={{borderColor: COLORS.dataFields, backgroundColor: selectedIndex === index ? COLORS.backgroundHeader : 'transparent', cursor: saved ? 'default' : 'pointer', ...gridColumns}}>
               <span className="px-1 text-left" style={{color: COLORS.text}}>{row.nombre_producto}</span>
-              <span style={{color: COLORS.text}}>{row.cantidad}</span>
+              <span style={{color: COLORS.text}}>{formatQuantity(row.cantidad)}</span>
               <span style={{color: COLORS.text}}>{parseFloat(row.precio).toFixed(2)} Bs</span>
               <div className={styles.iconWrapper}>
                 {!saved && <Trash2 size={14} style={{color: COLORS.secondary, cursor: 'pointer'}} onClick={(event) => {event.stopPropagation(); onRemove(index);}} />}
@@ -66,7 +67,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
           <div className="flex flex-col gap-3" style={{marginTop: hasManyItems ? '0.5rem' : '1.3rem'}}>
             {fields.map(({key, label, type}) => (
               <ExpenseField key={key} label={label} error={fieldErrors[key]}>
-                <input type={type === 'number' ? 'text' : type} inputMode={key === 'precio' ? 'decimal' : key === 'cantidad' ? 'numeric' : 'text'}
+                <input type={type === 'number' ? 'text' : type} inputMode={key === 'nombre_producto' ? 'text' : 'decimal'}
                   className="w-full bg-transparent outline-none font-inter text-xs" style={{color: COLORS.text}}
                   value={item[key]} maxLength={key === 'nombre_producto' ? 50 : undefined} onChange={(event) => handleInputChange(key, event.target.value)} />
               </ExpenseField>
