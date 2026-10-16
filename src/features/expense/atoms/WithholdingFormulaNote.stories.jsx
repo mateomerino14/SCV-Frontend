@@ -6,7 +6,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Nota bajo las retenciones de un gasto sin factura que explica la base incrementada: las alícuotas se aplican sobre la base imponible, no sobre el monto pagado.',
+        component: 'Nota bajo las retenciones de un gasto sin factura: las alícuotas se aplican sobre el total del documento y el importe a cancelar es el total menos las retenciones.',
       },
     },
   },

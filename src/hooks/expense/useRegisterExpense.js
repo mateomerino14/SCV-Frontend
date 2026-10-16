@@ -4,32 +4,12 @@ import {getCategories, registerExpense} from '../../services/expense/expenseServ
 import {getTripDetail} from '../../services/trip/tripService';
 import {compressImage} from '../../utils/imageCompressor';
 import {currencies} from '../../constants/currencies';
+import {calculateWithholdings} from '../../utils/withholdings';
 
 const maxAmount = 99999.99;
 const maxDescription = 1000;
 const maxExchangeRate = 9999.9999;
 const maxSubitemDescription = 255;
-
-
-function calculateWithholdings(amount, type, isInternational) {
-  const amountNum = parseFloat(amount) || 0;
-  if (isInternational || type === 'F' || type === 'R' || amountNum <= 0) {
-    return {base: amountNum, rcIva: 0, iue: 0, it: 0, cost: amountNum};
-  }
-  if (type === 'C') {
-    const base = parseFloat((amountNum / 0.92).toFixed(2));
-    const iue = parseFloat((base * 0.05).toFixed(2));
-    const it = parseFloat((base * 0.03).toFixed(2));
-    return {base, rcIva: 0, iue, it, cost: base};
-  }
-  if (type === 'S') {
-    const base = parseFloat((amountNum / 0.84).toFixed(2));
-    const rcIva = parseFloat((base * 0.13).toFixed(2));
-    const it = parseFloat((base * 0.03).toFixed(2));
-    return {base, rcIva, iue: 0, it, cost: base};
-  }
-  return {base: amountNum, rcIva: 0, iue: 0, it: 0, cost: amountNum};
-}
 
 let installmentCounter = 0;
 let subitemCounter = 0;
