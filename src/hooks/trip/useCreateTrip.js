@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {createTrip} from '../../services/trip/tripService';
+import {maxTripReasonLength} from '../../constants/tripLimits';
 
 function useCreateTrip(user) {
   const [reason, setReason] = useState('');
@@ -57,7 +58,7 @@ function useCreateTrip(user) {
   };
 
   const handleReasonChange = (value) => {
-    if (value.length > 100) {
+    if (value.length > maxTripReasonLength) {
       return;
     }
     setReason(value);

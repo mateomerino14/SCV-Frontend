@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {getTripDetail, editTrip} from '../../services/trip/tripService';
+import {maxTripReasonLength} from '../../constants/tripLimits';
 
 const EDITABLE_STATUSES = ['BORRADOR', 'RECHAZADO'];
 
@@ -90,7 +91,7 @@ function useEditTrip(tripId, user) {
   };
 
   const handleReasonChange = (value) => {
-    if (value.length > 100) {
+    if (value.length > maxTripReasonLength) {
       return;
     }
     setReason(value);

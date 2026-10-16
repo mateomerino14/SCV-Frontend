@@ -20,7 +20,7 @@ const statusPendingByField = {
 const styles = {
   container: "flex flex-col p-5 shadow-sm border mb-3 rounded-2xl gap-4",
   info: "flex flex-col min-w-0 gap-2",
-  reason: "text-sm font-bold font-inter leading-tight break-words",
+  reason: "text-sm font-bold font-inter leading-tight break-words line-clamp-3",
   dateRow: "flex items-center gap-1",
   dateText: "text-xs font-nunito",
   badgesRow: "flex gap-1 flex-wrap",

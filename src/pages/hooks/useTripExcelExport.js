@@ -311,7 +311,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   styleInfoLabel(sheet.getCell(5, infoStartCol + 4), 'DEP./SECCIÓN:');
   sheet.mergeCells(5, infoStartCol + 5, 5, infoEndCol);
   styleInfoValue(sheet.getCell(5, infoStartCol + 5), trip.Usuario?.Seccion?.nombre || '');
-  sheet.getRow(5).height = 22;
+  sheet.getRow(5).height = Math.max(22, Math.ceil((trip.motivo || '').length / 40) * 12);
   applyOuterBorder(sheet, 3, 5, infoStartCol, infoEndCol);
   const headers = ['N°', 'FECHA', 'CUENTA/ORACLE', 'D E T A L L E', 'TIPO GASTO', 'N° DOCUMENTO', 'NIT', 'IMPORTE FACT./REC.'];
   if (isInternationalTrip) {
@@ -589,7 +589,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   });
 }
 
-const fileSafeText = (text) => String(text || 'viaje').replace(/\s+/g, '_').replace(/[^\w-]/g, '');
+const fileSafeText = (text) => String(text || 'viaje').replace(/\s+/g, '_').replace(/[^\w-]/g, '').slice(0, 60);
 
 function useTripExcelExport() {
   const exportToExcel = async (trip, expenses, dayJustifications = []) => {

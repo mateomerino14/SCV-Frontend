@@ -14,6 +14,7 @@ import useCurrentUser from '../../hooks/user/useCurrentUser';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import {maxTripReasonLength} from '../../constants/tripLimits';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -77,10 +78,13 @@ function CreateTripPage() {
         </div>
         <div className={styles.grid}>
           <div className={styles.formCard} style={{backgroundColor: COLORS.background}}>
-            <InputField label="Motivo" icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
-              <input type="text" placeholder="Inspección técnica y de producción..." maxLength={100} className={styles.input} style={{color: COLORS.text}}
-                value={reason} onChange={(event) => handleReasonChange(event.target.value)} />
-            </InputField>
+            <div>
+              <InputField label="Motivo" icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
+                <textarea placeholder="Inspección técnica y de producción..." maxLength={maxTripReasonLength} rows={3} className={`${styles.input} resize-y`} style={{color: COLORS.text}}
+                  value={reason} onChange={(event) => handleReasonChange(event.target.value)} />
+              </InputField>
+              <p className="text-[11px] font-inter text-right mt-1" style={{color: COLORS.labels}}>{reason.length}/{maxTripReasonLength}</p>
+            </div>
             <InputField label="Origen" error={fieldErrors.origin}
               icon={
                 <button type="button" onClick={handleUseCurrentLocation} disabled={loadingLocation} title="Usar mi ubicación actual">
