@@ -220,6 +220,8 @@ Un empleado puede solicitar desde su viaje que otra persona rinda los gastos en 
 
 ### Digitalización de comprobantes
 
+Al crear o editar un viaje, el motivo admite hasta 500 caracteres (`constants/tripLimits.js`) en un campo de varias líneas con contador; en las listas se recorta a dos o tres líneas y en el detalle se ve completo.
+
 La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir (por si la IA la leyó mal); al modificar una factura guardada (`EditInvoicePage`, `InvoiceForm` con `lockDate`) queda bloqueada. Con Factura (F) el campo es el subtotal (sin IVA) y el formulario le suma el 13 %; con Recibo (R) el IVA no aplica y el monto es el total pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo «Número de Factura / Código» admite símbolos (`@`, `$`, `#`) para los códigos de recibos y boletos. La cantidad del detalle (`InvoiceDetailPanel`) admite hasta 3 decimales (53.345 litros o 6 unidades) y se muestra sin ceros de más (`formatQuantity`). En los gastos sin factura, la tarjeta de retenciones muestra el total del documento, el RC-IVA o IUE, el IT y el importe a cancelar (total menos retenciones), calculados en `utils/withholdings.js`; `WithholdingFormulaNote` lo explica.
 
 ### Control de plazos

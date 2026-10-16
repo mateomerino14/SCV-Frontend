@@ -667,7 +667,7 @@ Información de todos los usuarios registrados.
 Entidad central del sistema. Su estado gobierna ambos flujos de aprobación.
 \begin{itemize}
   \campo{id_viaje}{Identificador único}{SERIAL, clave primaria}
-  \campo{motivo}{Propósito del viaje}{VARCHAR(100)}
+  \campo{motivo}{Propósito del viaje, hasta 500 caracteres}{VARCHAR(500)}
   \campo{origen}{Localidad de partida, opcional}{TEXT}
   \campo{destino}{Localidad de destino}{VARCHAR(200)}
   \campo{fecha_inicio}{Fecha de inicio}{DATE}
