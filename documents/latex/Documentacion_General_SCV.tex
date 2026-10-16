@@ -306,7 +306,7 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 \code{S} & Servicio o alquiler sin factura & RC-IVA 13\% e IT 3\% sobre base incrementada \\
 \end{xltabular}
 
-Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el total es el subtotal más el IVA del 13\%; ese IVA no se descuenta de lo que se reconoce al empleado, sino que figura aparte en la planilla como crédito fiscal de la empresa. Los recibos (\code{R}) no llevan IVA: el total es igual al subtotal y la planilla muestra IVA cero.
+Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el total es el subtotal más el IVA del 13\%; ese IVA no se descuenta de lo que se reconoce al empleado, sino que figura aparte en la planilla como crédito fiscal de la empresa. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura la empresa asume los impuestos (base incrementada): la base imponible es el monto pagado $\div$ 0.84 en servicios (100\% $-$ 13\% $-$ 3\%) o $\div$ 0.92 en compras (100\% $-$ 5\% $-$ 3\%), y las alícuotas se aplican sobre esa base, no sobre el monto pagado. Por ejemplo, con 47.62 pagados la base es 56.69, el RC-IVA 7.37 y el IT 1.70, y 47.62 + 7.37 + 1.70 = 56.69.
 
 \section{Categorías de gasto}
 Las categorías incorporan en su nombre el código de la cuenta contable de Oracle, lo que permite que la planilla exportada sea directamente utilizable por el área contable. Al agregar nuevas categorías debe conservarse ese formato.
@@ -364,7 +364,7 @@ El servidor sigue una arquitectura en capas: la ruta declara el endpoint y encad
 \begin{itemize}
   \item La sesión usa un token de acceso de 15 minutos guardado en memoria y un token de renovación de 7 días en una cookie \code{httpOnly}. Cambiar el rol, suspender una cuenta o cambiar la contraseña cierra las demás sesiones al instante.
   \item Las contraseñas temporales (cuenta nueva, clave puesta por el administrador o ingreso con código de recuperación) deben cambiarse antes de usar el sistema, y toda contraseña vence a los 90 días.
-  \item Los intentos de ingreso, de recuperación y de lectura de facturas tienen un límite por periodo.
+  \item Los intentos de ingreso, de recuperación y de lectura de facturas tienen un límite por periodo. El de ingreso es por cuenta: si un usuario se equivoca muchas veces, solo su cuenta espera 15 minutos y los demás siguen entrando.
   \item Cada ingreso, salida y cambio de contraseña queda registrado en el historial de accesos.
 \end{itemize}
 
@@ -531,9 +531,9 @@ Al cargar una factura, la imagen se envía al modelo de visión de Google Gemini
 
 \begin{enumerate}
   \item La llamada reintenta ante errores temporales y, si el modelo principal falla o agota su cuota, usa un modelo de respaldo.
-  \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a dos decimales.
+  \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a tres decimales. En un recibo, el monto es el total pagado y no se descuenta IVA. Si un recibo o boleto no tiene número, se registra su código, que puede llevar símbolos como @ o \$.
   \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar, incluida la fecha de emisión por si se leyó mal. Al modificar después una factura ya guardada, la fecha queda bloqueada.
-  \item La cantidad de cada producto admite hasta dos decimales, por ejemplo 53.34 litros de combustible o 6 unidades.
+  \item La cantidad de cada producto admite hasta tres decimales, por ejemplo 53.345 litros de combustible o 6 unidades.
   \item Una factura repetida (mismo número, fecha y proveedor) se rechaza.
 \end{enumerate}
 
@@ -801,7 +801,7 @@ Comprobante adjunto a un gasto.
 Factura vinculada a un gasto, en relación uno a uno.
 \begin{itemize}
   \campo{id_factura}{Identificador único}{SERIAL, clave primaria}
-  \campo{numero_factura}{Número del comprobante}{VARCHAR(50)}
+  \campo{numero_factura}{Número del comprobante o, en recibos y boletos sin número, su código (admite símbolos)}{VARCHAR(50)}
   \campo{fecha_emision}{Fecha de emisión}{DATE}
   \campo{monto_parcial}{Importe sin impuestos}{DECIMAL(10,2)}
   \campo{id_gasto}{Gasto asociado}{INTEGER, único}
@@ -814,7 +814,7 @@ Productos o servicios incluidos en una factura.
 \begin{itemize}
   \campo{id_detalle}{Identificador único}{SERIAL, clave primaria}
   \campo{nombre_producto}{Nombre del ítem}{VARCHAR(255)}
-  \campo{cantidad}{Cantidad, con hasta dos decimales (litros, kilos o unidades)}{NUMERIC(10,2)}
+  \campo{cantidad}{Cantidad, con hasta tres decimales (litros, kilos o unidades)}{NUMERIC(12,3)}
   \campo{precio}{Precio unitario}{DECIMAL(10,2)}
   \campo{id_factura}{Factura a la que pertenece}{INTEGER}
 \end{itemize}
