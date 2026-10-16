@@ -2,7 +2,7 @@ import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 
 const styles = {
-  card: 'rounded-2xl p-5 mb-4',
+  card: 'rounded-2xl p-5 mt-4 mb-4',
   amount: 'text-2xl font-bold font-inter',
   label: 'text-sm font-inter mt-1',
   justificationBox: 'mt-2 p-3 rounded-xl text-xs font-inter',

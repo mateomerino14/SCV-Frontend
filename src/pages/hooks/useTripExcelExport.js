@@ -67,7 +67,8 @@ function getExpenseTaxValues(expense) {
     }
     const partial = parseFloat(expense.Factura?.monto_parcial || 0);
     const vat = parseFloat((partial * vatRate).toFixed(2));
-    return {vat, rcIva: 0, iue: 0, it: 0, cost: amount};
+    // El costo de una factura es el importe sin el IVA, que queda como crédito fiscal
+    return {vat, rcIva: 0, iue: 0, it: 0, cost: parseFloat((amount - vat).toFixed(2))};
   }
   return {
     vat: 0,
@@ -600,5 +601,5 @@ function useTripExcelExport() {
   return {exportToExcel};
 }
 
-export {addStatementSheet};
+export {addStatementSheet, getExpenseTaxValues};
 export default useTripExcelExport;
