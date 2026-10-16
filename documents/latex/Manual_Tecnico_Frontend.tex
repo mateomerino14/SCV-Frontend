@@ -578,7 +578,7 @@ El \emph{Control Diario} (\code{DailyBreakdownCard}) muestra una tarjeta por dí
 En los tramos de otra moneda de un gasto internacional (\code{ExpenseFormCard}), el empleado elige la moneda de la lista compartida (\code{constants/currencies.js}), escribe el monto y el tipo de cambio que le aplicaron (``1 USD = cuántos X'') y ve al momento el equivalente en dólares.
 
 \subsection{Retenciones de gastos sin factura}
-Bajo las retenciones de un gasto sin factura, \code{WithholdingFormulaNote} explica la base incrementada: la base imponible es el monto pagado $\div$ 0.84 en servicios o $\div$ 0.92 en compras, y el RC-IVA, el IUE y el IT se calculan sobre esa base, de modo que monto pagado + retenciones = base imponible.
+Bajo las retenciones de un gasto sin factura, la tarjeta muestra el total del documento, el RC-IVA o IUE, el IT y el importe a cancelar, calculados en \code{utils/withholdings.js}: las retenciones se aplican sobre el total y el importe a cancelar es el total menos las retenciones (por ejemplo, 47.62 $-$ 6.19 $-$ 1.43 = 40.00). \code{WithholdingFormulaNote} lo explica en pantalla.
 
 \subsection{Digitalización de comprobantes}
 La carga de facturas presenta cada comprobante en tres columnas (imagen, formulario y detalle de productos) para corregir los datos extraídos antes de guardar. Cada factura tiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir, por si la IA la leyó mal; al modificar una factura guardada (\code{EditInvoicePage}, que usa \code{InvoiceForm} con \code{lockDate}) queda bloqueada. Con Factura (F) el campo es el subtotal sin IVA y el formulario le suma el 13\%; con Recibo (R) el IVA no aplica y el monto es el total pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo ``Número de Factura / Código'' admite símbolos (\code{@}, \code{\$}, \code{\#}) para los códigos de recibos y boletos. En el detalle de productos (\code{InvoiceDetailPanel}) la cantidad admite hasta 3 decimales, por ejemplo 53.345 litros de combustible o 6 unidades, y se muestra sin ceros de más (\code{formatQuantity}). Las imágenes se comprimen en el navegador antes de enviarse.
@@ -635,7 +635,7 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo', async ({pa
 });
 \end{lstlisting}
 
-Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 20 pruebas unitarias y 18 de extremo a extremo.
+Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 23 pruebas unitarias y 18 de extremo a extremo.
 
 \subsection{Integración continua}
 El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Actions en cada envío y en cada pull request: compila la aplicación y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base PostgreSQL temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña \emph{Actions}.
