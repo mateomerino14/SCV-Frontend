@@ -635,7 +635,7 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo', async ({pa
 });
 \end{lstlisting}
 
-Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 23 pruebas unitarias y 18 de extremo a extremo.
+Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 26 pruebas unitarias y 18 de extremo a extremo.
 
 \subsection{Integración continua}
 El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Actions en cada envío y en cada pull request: compila la aplicación y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base PostgreSQL temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña \emph{Actions}.
