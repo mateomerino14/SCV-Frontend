@@ -31,7 +31,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
     if (key === 'precio' && value !== '' && !/^\d{0,8}(\.\d{0,2})?$/.test(value)) {
       return;
     }
-    if (key === 'cantidad' && value !== '' && !/^\d{0,5}([.,]\d{0,2})?$/.test(value)) {
+    if (key === 'cantidad' && value !== '' && !/^\d{0,6}([.,]\d{0,3})?$/.test(value)) {
       return;
     }
     handleFieldChange(key, value);

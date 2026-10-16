@@ -156,7 +156,7 @@ function ExpenseDetailPage() {
         )}
         {hasInvoice && (
           <ExpenseSectionCard icon={Receipt} title="Datos de la Factura">
-            <ExpenseFieldRow icon={FileText} label="Número de Factura" value={expense.Factura.numero_factura} />
+            <ExpenseFieldRow icon={FileText} label="Número de Factura / Código" value={expense.Factura.numero_factura} />
             <ExpenseFieldRow icon={Calendar} label="Fecha de Emisión" value={formatLongDate(expense.Factura.fecha_emision)} />
             <ExpenseFieldRow icon={DollarSign} label="Monto sin impuestos" value={`${parseFloat(expense.Factura.monto_parcial).toFixed(2)} ${currency}`}
               last={!vat && !(expense.Factura.Detalle_Factura?.length > 0)} />

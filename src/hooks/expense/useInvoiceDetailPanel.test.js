@@ -9,22 +9,22 @@ describe('useInvoiceDetailPanel', () => {
     act(() => {
       result.current.handleFieldChange('nombre_producto', 'Gasolina');
       result.current.handleFieldChange('precio', '3.74');
-      result.current.handleFieldChange('cantidad', '53,34');
+      result.current.handleFieldChange('cantidad', '53,345');
     });
     act(() => {
       result.current.handleAdd();
     });
-    expect(onAdd).toHaveBeenCalledWith({nombre_producto: 'Gasolina', precio: 3.74, cantidad: 53.34});
+    expect(onAdd).toHaveBeenCalledWith({nombre_producto: 'Gasolina', precio: 3.74, cantidad: 53.345});
   });
 
-  it('no deja escribir más de 2 decimales en la cantidad', () => {
+  it('no deja escribir más de 3 decimales en la cantidad', () => {
     const {result} = renderHook(() => useInvoiceDetailPanel([], vi.fn(), vi.fn()));
-    act(() => {
-      result.current.handleFieldChange('cantidad', '1.25');
-    });
     act(() => {
       result.current.handleFieldChange('cantidad', '1.255');
     });
-    expect(result.current.item.cantidad).toBe('1.25');
+    act(() => {
+      result.current.handleFieldChange('cantidad', '1.2555');
+    });
+    expect(result.current.item.cantidad).toBe('1.255');
   });
 });

@@ -1,6 +1,7 @@
 import {DollarSign} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseSectionCard from '../molecules/ExpenseSectionCard';
+import WithholdingFormulaNote from '../atoms/WithholdingFormulaNote';
 
 const styles = {
   row: 'flex justify-between items-center py-2 border-b',
@@ -47,6 +48,7 @@ function ExpenseWithholdingsCard({expense}) {
         <p className={styles.totalLabel} style={{color: COLORS.title}}>Importe Costo</p>
         <p className={styles.totalValue} style={{color: COLORS.title}}>Bs {parseFloat(expense.importe_costo || 0).toFixed(2)}</p>
       </div>
+      <WithholdingFormulaNote type={expense.tipo} />
     </ExpenseSectionCard>
   );
 }

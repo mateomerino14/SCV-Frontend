@@ -28,13 +28,13 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
       setItem((prev) => ({...prev, [key]: validDecimal}));
     }
     else if (key === 'cantidad') {
-      // Admite decimales (litros, kilos) con un máximo de 2
+      // Admite decimales (litros, kilos) con un máximo de 3
       const validQuantity = String(value).replace(',', '.').replace(/[^0-9.]/g, '');
       const parts = validQuantity.split('.');
       if (parts.length > 2) {
         return;
       }
-      if (parts.length === 2 && parts[1].length > 2) {
+      if (parts.length === 2 && parts[1].length > 3) {
         return;
       }
       setItem((prev) => ({...prev, [key]: validQuantity}));
@@ -74,7 +74,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
       precio: parseFloat(parseFloat(item.precio).toFixed(2)),
-      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(2)),
+      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(3)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
     setSelectedIndex(null);
@@ -94,7 +94,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
       precio: parseFloat(parseFloat(item.precio).toFixed(2)),
-      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(2)),
+      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(3)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
     setSelectedIndex(null);

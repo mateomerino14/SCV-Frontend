@@ -3,7 +3,7 @@ import InvoiceForm from './InvoiceForm';
 
 const categories = [{id_categoria: 1, nombre: 'Alimentación'}, {id_categoria: 2, nombre: 'Combustible'}];
 
-const baseData = {proveedor: 'Surtidor El Alto', numero_factura: '15342', nit: '1020304', fecha_emision: '2026-10-14', monto: '100.00', iva: '13.00', monto_total: '113.00',
+const baseData = {proveedor: 'Surtidor El Alto', numero_factura: 'BOL-$153@42', nit: '1020304', fecha_emision: '2026-10-14', monto: '100.00', iva: '13.00', monto_total: '113.00',
   tipo_doc: 'F', id_categoria_gasto: 2, detalle: []};
 
 export default {
@@ -12,7 +12,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Formulario de una factura escaneada. Con Factura (F) suma el IVA del 13% al subtotal; con Recibo (R) el IVA no aplica. Al registrar la fecha de emisión se puede corregir; al modificar (lockDate) queda bloqueada.',
+        component: 'Formulario de una factura escaneada. Con Factura (F) suma el IVA del 13% al subtotal; con Recibo (R) el IVA no aplica y el monto es el total pagado. Al cambiar de tipo se conserva el total pagado. El número admite códigos con símbolos (@, $, #) de recibos y boletos. Al registrar la fecha de emisión se puede corregir; al modificar (lockDate) queda bloqueada.',
       },
     },
   },

@@ -20,7 +20,7 @@ const styles = {
 
 const fieldsConfig = [
   {key: 'proveedor', label: 'Proveedor', type: 'text', required: true},
-  {key: 'numero_factura', label: 'Número de Factura', type: 'text', required: true},
+  {key: 'numero_factura', label: 'Número de Factura / Código', type: 'text', required: true},
   {key: 'nit', label: 'NIT / CI', type: 'text', required: false},
   {key: 'fecha_emision', label: 'Fecha de Emisión', type: 'date', required: true},
   {key: 'monto', label: 'Monto', type: 'text', required: true},
@@ -49,8 +49,12 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
         error={fieldErrors.id_categoria_gasto} disabled={saved} />
       {fieldsConfig.map(({key, label, type, required}) => {
         const isLockedDate = key === 'fecha_emision' && lockDate;
+        let fieldLabel = label;
+        if (key === 'monto' && data.tipo_doc === 'F') {
+          fieldLabel = 'Subtotal (sin IVA)';
+        }
         return (
-          <ExpenseField key={key} label={`${label}${!required ? ' (Opcional)' : ''}`} error={fieldErrors[key]}>
+          <ExpenseField key={key} label={`${fieldLabel}${!required ? ' (Opcional)' : ''}`} error={fieldErrors[key]}>
             <input value={data[key] || ''} type={type} inputMode={key === 'monto' ? 'decimal' : 'text'} disabled={saved || isLockedDate}
               className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, opacity: (saved || isLockedDate) ? 0.6 : 1}}
               onChange={(event) => handleFieldChange(key, event.target.value)} />

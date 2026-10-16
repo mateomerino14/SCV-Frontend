@@ -70,8 +70,9 @@ function useInvoiceForm(data, onChange, saved = false) {
     }
 
     if (field === 'numero_factura') {
-      const onlyAlphanumeric = value.replace(/[^a-zA-Z0-9\-\/]/g, '').slice(0, maxInvoiceNumber);
-      onChange(field, onlyAlphanumeric);
+      // Recibos y boletos traen códigos con símbolos (@, $, #); solo se quitan los saltos de línea y tabulaciones
+      const invoiceCode = value.replace(/[\u0000-\u001F\u007F]/g, '').slice(0, maxInvoiceNumber);
+      onChange(field, invoiceCode);
       return;
     }
 
@@ -85,15 +86,24 @@ function useInvoiceForm(data, onChange, saved = false) {
     onChange(field, value);
   };
 
+  // Al cambiar el tipo se conserva el total pagado: el recibo no lleva IVA y la factura lo separa del subtotal
   const handleDocTypeChange = (docType) => {
-    onChange('tipo_doc', docType);
-    const isInvoice = docType === 'F';
-    let newVat = 0;
-    if (isInvoice) {
-      newVat = parseFloat((amount * vatPercentage).toFixed(2));
+    if (docType === data.tipo_doc) {
+      return;
     }
+    onChange('tipo_doc', docType);
+    if (!(totalAmount > 0)) {
+      return;
+    }
+    let newAmount = totalAmount;
+    let newVat = 0;
+    if (docType === 'F') {
+      newAmount = parseFloat((totalAmount / (1 + vatPercentage)).toFixed(2));
+      newVat = parseFloat((newAmount * vatPercentage).toFixed(2));
+    }
+    onChange('monto', newAmount.toFixed(2), true);
     onChange('iva', newVat.toFixed(2), true);
-    onChange('monto_total', (amount + newVat).toFixed(2), true);
+    onChange('monto_total', (newAmount + newVat).toFixed(2), true);
   };
 
   return {

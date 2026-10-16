@@ -2,6 +2,7 @@ import {Globe, List} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseTypeToggle from '../atoms/ExpenseTypeToggle';
 import ExpenseField from '../atoms/ExpenseField';
+import WithholdingFormulaNote from '../atoms/WithholdingFormulaNote';
 import CategorySelector from '../molecules/CategorySelector';
 import CurrencySelector from '../molecules/CurrencySelector';
 import ReceiptUpload from './ReceiptUpload';
@@ -190,6 +191,7 @@ function ExpenseEditForm({
             <p className={styles.withholdingTotalLabel} style={{color: COLORS.title}}>Importe Costo</p>
             <p className={styles.withholdingTotalValue} style={{color: COLORS.title}}>Bs {withholdings.cost.toFixed(2)}</p>
           </div>
+          <WithholdingFormulaNote type={type} />
         </div>
       )}
       {!usesSubitems && (
