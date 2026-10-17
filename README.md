@@ -47,7 +47,7 @@ npm run test:e2e            # pruebas de extremo a extremo (Playwright; ver "Pru
 | ExcelJS + FileSaver | Generación y descarga de la planilla en Excel |
 | Lucide React | Iconografía |
 | jwt-decode | Lectura del rol desde el token |
-| Storybook | Documentación interactiva de `components/ui/` y de los átomos y moléculas de `features/` |
+| Storybook | Documentación interactiva de `components/ui/`, de los átomos y moléculas de `features/` y de los organismos de la carga de facturas |
 
 ## Arquitectura
 
@@ -98,8 +98,8 @@ src/
 │   └── shared/apiClient.js
 ├── layouts/             Navbar, Footer y menús por rol
 │   └── menu/
-├── utils/               Funciones auxiliares puras
-├── constants/           Paleta, rutas, inicio por rol, monedas, nombres y colores de estado
+├── utils/               Funciones auxiliares puras (fechas, cantidades, retenciones, IVA de facturas, Excel)
+├── constants/           Paleta, rutas, inicio por rol, monedas, límites de texto, nombres y colores de estado
 ├── test/setup.js        Configuración de las pruebas unitarias
 ├── App.jsx              Rutas y guardas de acceso
 └── main.jsx             Punto de entrada
@@ -248,7 +248,7 @@ Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora 
 
 ## Documentación de componentes
 
-Los componentes de `components/ui/`, todos los átomos de `features/` y las moléculas reutilizables están documentados con Storybook (cada historia junto a su componente). Cada historia describe el propósito del componente y sus variantes principales; los componentes con estado interno (dropdowns, diálogos) incluyen un wrapper interactivo para probarlos en vivo.
+Los componentes de `components/ui/`, todos los átomos de `features/`, las moléculas reutilizables y los organismos de la carga de facturas (`InvoiceForm`, `InvoiceDetailPanel`) están documentados con Storybook (cada historia junto a su componente). Cada historia describe el propósito del componente y sus variantes principales; los componentes con estado interno (dropdowns, diálogos) incluyen un wrapper interactivo para probarlos en vivo.
 
 ```bash
 npm run storybook
