@@ -12,7 +12,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Formulario de una factura escaneada. Con Factura (F) suma el IVA del 13% al subtotal; con Recibo (R) el IVA no aplica y el monto es el total pagado. Al cambiar de tipo se conserva el total pagado. El número admite códigos con símbolos (@, $, #) de recibos y boletos. Al registrar la fecha de emisión se puede corregir; al modificar (lockDate) queda bloqueada.',
+        component: 'Formulario de una factura escaneada. Se escribe el total que figura en el papel: con Factura (F) el IVA del 13% ya está incluido y se separa por dentro (subtotal + IVA = total); con Recibo (R) no hay IVA. Al cambiar de tipo se conserva el total. El número admite códigos con símbolos (@, $, #) de recibos y boletos. Al registrar la fecha de emisión se puede corregir; al modificar (lockDate) queda bloqueada.',
       },
     },
   },

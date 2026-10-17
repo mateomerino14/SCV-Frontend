@@ -116,7 +116,7 @@ function useUploadInvoice(tripId) {
         fecha_emision: '',
         monto: '',
         iva: '',
-        monto_total: 0,
+        monto_total: '',
         tipo_doc: 'F',
         detalle: [],
         id_categoria_gasto: null,
@@ -272,8 +272,8 @@ function useUploadInvoice(tripId) {
     if (!invoice.data.fecha_emision) {
       errors.fecha_emision = 'La fecha de emisión es requerida';
     }
-    if (!invoice.data.monto || parseFloat(invoice.data.monto) <= 0) {
-      errors.monto = 'El monto es requerido y debe ser mayor a 0';
+    if (!invoice.data.monto_total || parseFloat(invoice.data.monto_total) <= 0) {
+      errors.monto_total = 'El total de la factura es requerido y debe ser mayor a 0';
     }
     if (!invoice.data.id_categoria_gasto) {
       errors.id_categoria_gasto = 'La categoría es requerida';

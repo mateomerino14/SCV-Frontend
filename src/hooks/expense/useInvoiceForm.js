@@ -1,34 +1,23 @@
-import {useEffect} from 'react';
+import {splitInvoiceTotal} from '../../utils/invoiceAmounts';
 
 const maxSupplier = 50;
 const maxInvoiceNumber = 50;
 const maxTaxId = 10;
 const maxAmount = 99999.99;
-const vatPercentage = 0.13;
 
-function useInvoiceForm(data, onChange, saved = false) {
-  const amount = parseFloat(data.monto || 0);
-  const vat = parseFloat(data.iva || 0);
-  const totalAmount = amount + vat;
+function useInvoiceForm(data, onChange) {
+  const totalAmount = parseFloat(data.monto_total || 0);
   let vatPercentageDisplay = 0;
   if (data.tipo_doc === 'F') {
     vatPercentageDisplay = 13;
   }
-  useEffect(() => {
-    if (saved) {
-      return;
-    }
-    const isInvoice = data.tipo_doc === 'F';
-    let calculatedVat = 0;
-    if (isInvoice) {
-      calculatedVat = parseFloat((amount * vatPercentage).toFixed(2));
-    }
-    const currentVat = parseFloat(data.iva || 0);
-    if (Math.abs(calculatedVat - currentVat) > 0.001) {
-      onChange('iva', calculatedVat.toFixed(2), true);
-      onChange('monto_total', (amount + calculatedVat).toFixed(2), true);
-    }
-  }, [amount, data.tipo_doc, saved]);
+
+  // El empleado escribe el total del papel; subtotal e IVA se calculan por dentro
+  const applyTotal = (total, docType) => {
+    const {subtotal, vat} = splitInvoiceTotal(total, docType);
+    onChange('monto', subtotal.toFixed(2), true);
+    onChange('iva', vat.toFixed(2), true);
+  };
 
   const validateDecimal = (value) => {
     const validDecimal = value.replace(',', '.').replace(/[^0-9.]/g, '');
@@ -43,7 +32,7 @@ function useInvoiceForm(data, onChange, saved = false) {
   };
 
   const handleFieldChange = (field, value) => {
-    if (field === 'monto') {
+    if (field === 'monto_total') {
       const validatedValue = validateDecimal(value);
       if (validatedValue === null) {
         return;
@@ -52,14 +41,7 @@ function useInvoiceForm(data, onChange, saved = false) {
         return;
       }
       onChange(field, validatedValue);
-      const newAmount = parseFloat(validatedValue || 0);
-      const isInvoice = data.tipo_doc === 'F';
-      let newVat = 0;
-      if (isInvoice) {
-        newVat = parseFloat((newAmount * vatPercentage).toFixed(2));
-      }
-      onChange('iva', newVat.toFixed(2), true);
-      onChange('monto_total', (newAmount + newVat).toFixed(2), true);
+      applyTotal(validatedValue, data.tipo_doc);
       return;
     }
 
@@ -86,24 +68,13 @@ function useInvoiceForm(data, onChange, saved = false) {
     onChange(field, value);
   };
 
-  // Al cambiar el tipo se conserva el total pagado: el recibo no lleva IVA y la factura lo separa del subtotal
+  // Al cambiar el tipo se conserva el total: el recibo no lleva IVA y la factura lo separa por dentro
   const handleDocTypeChange = (docType) => {
     if (docType === data.tipo_doc) {
       return;
     }
     onChange('tipo_doc', docType);
-    if (!(totalAmount > 0)) {
-      return;
-    }
-    let newAmount = totalAmount;
-    let newVat = 0;
-    if (docType === 'F') {
-      newAmount = parseFloat((totalAmount / (1 + vatPercentage)).toFixed(2));
-      newVat = parseFloat((newAmount * vatPercentage).toFixed(2));
-    }
-    onChange('monto', newAmount.toFixed(2), true);
-    onChange('iva', newVat.toFixed(2), true);
-    onChange('monto_total', (newAmount + newVat).toFixed(2), true);
+    applyTotal(totalAmount, docType);
   };
 
   return {

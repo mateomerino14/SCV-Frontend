@@ -131,8 +131,8 @@ function useEditInvoice(expenseId) {
     if (!data?.fecha_emision) {
       errors.fecha_emision = 'La fecha de emisión es requerida';
     }
-    if (!data?.monto || parseFloat(data.monto) <= 0) {
-      errors.monto = 'El monto es requerido y debe ser mayor a 0';
+    if (!data?.monto_total || parseFloat(data.monto_total) <= 0) {
+      errors.monto_total = 'El total de la factura es requerido y debe ser mayor a 0';
     }
     if (!data?.id_categoria_gasto) {
       errors.id_categoria_gasto = 'La categoría es requerida';
@@ -154,9 +154,9 @@ function useEditInvoice(expenseId) {
     }
     setFieldErrors({});
     setLoading(true);
+    const totalAmount = parseFloat(data.monto_total || 0);
     const amount = parseFloat(data.monto || 0);
-    const vat = parseFloat(data.iva || 0);
-    const totalAmount = parseFloat((amount + vat).toFixed(2));
+    const vat = parseFloat((totalAmount - amount).toFixed(2));
     const payload = {
       ...data,
       monto: amount,
