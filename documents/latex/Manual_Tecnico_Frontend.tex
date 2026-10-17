@@ -132,8 +132,8 @@
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
 Componente: & Cliente web (React, Vite y Tailwind CSS) \\
-Versión: & 1.2 \\
-Fecha: & 15 de octubre de 2026 \\
+Versión: & 1.3 \\
+Fecha: & 17 de octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
 \end{titlepage}
@@ -179,7 +179,7 @@ Axios & Cliente HTTP con interceptores de sesión \\
 ExcelJS y FileSaver & Planilla de rendición y exportaciones a Excel \\
 \rowcolor{maxamFondo} Lucide React & Iconografía \\
 jwt-decode & Lectura del rol y del motivo de cambio de contraseña desde el token \\
-\rowcolor{maxamFondo} Storybook & Documentación interactiva de \code{components/ui} y de los átomos y moléculas de \code{features} \\
+\rowcolor{maxamFondo} Storybook & Documentación interactiva de \code{components/ui}, de los átomos y moléculas de \code{features} y de los organismos de la carga de facturas \\
 ESLint & Análisis estático del código \\
 \rowcolor{maxamFondo} Vitest y Testing Library & Pruebas unitarias de hooks, componentes y utilidades \\
 Playwright & Pruebas de extremo a extremo en un navegador real \\
@@ -236,7 +236,7 @@ export const getTripHistory = async (page, limit, filter) => {
 \endfirsthead
 \cabecera \tth{Nivel} & \tth{Definición} & \tth{Ejemplos} \\
 \endhead
-\rowcolor{maxamFondo} Átomo & Elemento indivisible sin lógica de negocio & \code{TripRoute}, \code{StatusBadge}, \code{ExpenseObsButton} \\
+\rowcolor{maxamFondo} Átomo & Elemento indivisible sin lógica de negocio & \code{TripRoute}, \code{TripStatusBadge}, \code{ExpenseObsButton} \\
 Molécula & Composición que resuelve una unidad funcional & \code{ExpenseBudgetBar}, \code{DateRangeFilter}, \code{ReturnReviewButton} \\
 \rowcolor{maxamFondo} Organismo & Bloque autónomo y complejo & \code{ExpenseInvoicedTable}, \code{ReviewFilters}, \code{UserFormModal} \\
 \end{xltabular}
@@ -256,7 +256,8 @@ src/
 ├── pages/               Páginas asociadas a rutas, y pages/hooks
 ├── services/            Acceso a la API por dominio y shared/apiClient.js
 ├── layouts/             Navbar, Footer y menús por rol
-├── utils/               Funciones puras (fechas, código de viaje, cantidades, compresión de imágenes)
+├── utils/               Funciones puras (fechas, código de viaje, cantidades, retenciones,
+│                        IVA de facturas, compresión de imágenes)
 ├── constants/           Paleta, rutas, inicio por rol, monedas, nombres y colores de estado
 ├── test/setup.js        Configuración de las pruebas unitarias
 ├── App.jsx              Rutas y guardas de acceso
@@ -444,7 +445,7 @@ No se usa una biblioteca de estado global: el estado es local a cada pantalla y 
 \cabecera \tth{Dominio} & \tth{Hooks} \\
 \endhead
 \rowcolor{maxamFondo} trip & \code{useEmployeeDashboard}, \code{useCreateTrip}, \code{useEditTrip}, \code{useTripDetail}, \code{useTripHistory}, \code{useStatementPdfDownload} \\
-expense & \code{useRegisterExpense}, \code{useEditExpense}, \code{useUploadInvoice}, \code{useEditInvoice}, \code{useInvoiceForm}, \code{useInvoiceDetailPanel} \\
+expense & \code{useRegisterExpense}, \code{useEditExpense}, \code{useUploadInvoice}, \code{useEditInvoice}, \code{useInvoiceForm}, \code{useInvoiceDetailPanel}, \code{useExpenseDetail} \\
 \rowcolor{maxamFondo} approval & Uno por bandeja y por detalle de cada revisor (\code{useSupervisorPendingTrips}, \code{useApproverReviews}, \code{useTreasurerReviews}, \code{useReviewerReviews}, \ldots), más \code{useDeadlineAuthorization}, \code{useSubstitutionRequest} y sus pares del revisor; \code{useStatementsExport} para exportar planillas en grupo \\
 admin & \code{useAdminDashboard}, \code{useUserManagement}, \code{usePositionManagement}, \code{useSectionManagement}, \code{useAuditLog}, \code{useReminderSettings}, \code{useAdminExcelExport} \\
 \rowcolor{maxamFondo} user & \code{useLogin}, \code{useProfile}, \code{useCurrentUser}, \code{useIsTreasurer}, \code{usePasswordExpiredCheck} \\
@@ -566,7 +567,10 @@ Se muestran en ventana, entre otros: los errores al finalizar un viaje, la devol
 \section{Funcionalidades destacadas}
 
 \subsection{Planilla de rendición}
-\code{useTripExcelExport} construye la planilla oficial en Excel: logotipo, simbología, distinción entre gastos nacionales e internacionales, cuenta Oracle por categoría, tramos de cambio, totales por moneda, justificaciones de exceso y cinco bloques de firma. El revisor y el tesorero exportan además las planillas de todos los viajes de su lista, según el filtro aplicado, en un solo archivo: una hoja \emph{Resumen} con una fila por viaje y una hoja de planilla por viaje; el administrador puede exportar las del periodo elegido. El empleado descarga en cambio la planilla en PDF, generada por el backend, cuando el viaje está aprobado. Ambos formatos usan las retenciones persistidas por el backend.
+\code{useTripExcelExport} construye la planilla oficial en Excel: logotipo, simbología, distinción entre gastos nacionales e internacionales, cuenta Oracle por categoría, tramos de cambio, totales por moneda, justificaciones de exceso y cinco bloques de firma. El revisor y el tesorero exportan además las planillas de todos los viajes de su lista, según el filtro aplicado, en un solo archivo: una hoja \emph{Resumen} con una fila por viaje y una hoja de planilla por viaje; el administrador puede exportar las del periodo elegido. El empleado descarga en cambio la planilla en PDF, generada por el backend, cuando el viaje está aprobado. Ambos formatos usan las retenciones persistidas por el backend. En las facturas, el IVA va en su columna y el importe costo/gasto es el total menos el IVA; en recibos, gastos sin factura y gastos con alcohol, el costo es el total.
+
+\subsection{Motivo del viaje}
+El motivo admite hasta 500 caracteres (\code{constants/tripLimits.js}). Se escribe en \code{AutoResizeTextarea}, dentro de \code{InputField} con \code{alignTop}: empieza en una línea, como los demás campos, crece al escribir hasta seis líneas y muestra un contador. En las listas se recorta a dos o tres líneas.
 
 \subsection{Monto del viaje}
 Al crear o editar un viaje, \code{useCreateTrip} y \code{useEditTrip} calculan el \emph{Monto Total Estimado} con las tarifas del cargo del empleado. En un viaje nacional es \emph{días × tarifa en Bs}. En uno internacional, el día de salida y el de regreso se calculan con la tarifa en Bs y los días intermedios con la tarifa en USD, y la pantalla lo explica en una nota. Tesorería revisa el monto y lo ajusta al asignar los fondos.

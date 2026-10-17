@@ -131,7 +131,7 @@
 \begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
-Versión: & 1.2 \\
+Versión: & 1.3 \\
 Fecha: & Octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -534,6 +534,7 @@ Al cargar una factura, la imagen se envía al modelo de visión de Google Gemini
   \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a tres decimales. En un recibo, el monto es el total pagado y no se descuenta IVA. Si un recibo o boleto no tiene número, se registra su código, que puede llevar símbolos como @ o \$.
   \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar, incluida la fecha de emisión por si se leyó mal. Al modificar después una factura ya guardada, la fecha queda bloqueada.
   \item La cantidad de cada producto admite hasta tres decimales, por ejemplo 53.345 litros de combustible o 6 unidades.
+  \item En el formulario, tanto al escanear como al cargar una factura a mano, se registra el total que figura en el papel: en una factura el sistema separa por dentro el subtotal y el IVA sin cambiar el total; en un recibo no hay IVA.
   \item Una factura repetida (mismo número, fecha y proveedor) se rechaza.
 \end{enumerate}
 
