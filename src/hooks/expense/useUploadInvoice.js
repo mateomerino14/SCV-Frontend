@@ -350,7 +350,10 @@ function useUploadInvoice(tripId) {
     setSaveSummary({saved: totalSaved, failed: totalFailed});
   };
 
-  const currentInvoice = currentIndex !== null ? invoices[currentIndex] : null;
+  let currentInvoice = null;
+  if (currentIndex !== null) {
+    currentInvoice = invoices[currentIndex];
+  }
   const hasInvoicesWithError = invoices.some((invoice) => invoice.saveError);
   const hasRequiresAuthorization = invoices.some((invoice) => invoice.requiresAuthorization);
   const allSaved = invoices.length > 0 && invoices.every((invoice) => invoice.saved || invoice.loading || invoice.error);

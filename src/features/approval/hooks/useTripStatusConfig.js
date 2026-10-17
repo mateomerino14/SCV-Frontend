@@ -21,5 +21,3 @@ export const alertConfig = {
   EXCESO_PRESUPUESTO: {label: 'Exceso Detectado', color: '#856404', bg: '#fef3cd'},
   ALCOHOL: {label: 'Alcohol', color: '#721c24', bg: '#f8d7da'},
 };
-
-export const expenseTypeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};

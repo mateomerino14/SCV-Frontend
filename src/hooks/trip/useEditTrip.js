@@ -206,6 +206,10 @@ function useEditTrip(tripId, user) {
     }
     setFieldErrors({});
     setLoading(true);
+    let plate = null;
+    if (transport === 'Vehículo de Empresa') {
+      plate = vehiclePlate.trim();
+    }
     const data = await editTrip(tripId, {
       motivo: reason.trim(),
       origen: origin.trim(),
@@ -214,7 +218,7 @@ function useEditTrip(tripId, user) {
       fecha_fin: endDate,
       tipo: type,
       transporte: transport,
-      placa_vehiculo: transport === 'Vehículo de Empresa' ? vehiclePlate.trim() : null,
+      placa_vehiculo: plate,
       monto_asignado: totalAmount,
       monto_asignado_usd: totalAmountUsd,
     });

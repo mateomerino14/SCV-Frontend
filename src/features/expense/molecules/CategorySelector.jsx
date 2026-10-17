@@ -1,4 +1,3 @@
-import {motion, AnimatePresence} from 'framer-motion';
 import InlineDropdown from '../../../components/ui/InlineDropdown';
 import {COLORS} from '../../../constants';
 import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';

@@ -1,6 +1,6 @@
 import {CheckCircle2, AlertTriangle, XCircle, ShieldCheck} from 'lucide-react';
 
-export const nearLimitRatio = 0.8;
+const nearLimitRatio = 0.8;
 
 export const dailyLimitStatus = {
   OK: {label: 'Dentro del límite', color: '#2d7a3a', bg: '#e3f2e6', icon: CheckCircle2},

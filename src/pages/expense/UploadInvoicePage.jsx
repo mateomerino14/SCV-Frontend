@@ -41,7 +41,7 @@ function UploadInvoicePage() {
     handleAddFiles, handleAddManual, handleSelectInvoice, handleRequestDelete, handleConfirmDelete, handleCancelDelete,
     handleFieldChange, handleManualImageChange, handleAddDetail, handleRemoveDetail, handleSave,
   } = useUploadInvoice(id);
-  const {isPending, isRejected, canRequest, showModal: showDeadlineModal, setShowModal: setShowDeadlineModal, submitting: submittingDeadline, error: deadlineError, handleRequest} = useDeadlineAuthorization(id, fechaFin);
+  const {isPending, isRejected, canRequest, showModal: showDeadlineModal, setShowModal: setShowDeadlineModal, submitting: submittingDeadline, modalError: deadlineError, handleRequest} = useDeadlineAuthorization(id, fechaFin);
   const pendingCount = invoices.filter((invoice) => invoice.data && !invoice.loading && !invoice.saved).length;
 
   return (

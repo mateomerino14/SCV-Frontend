@@ -29,7 +29,6 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
   const [request, setRequest] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
   const [modalError, setModalError] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showExpiredNotice, setShowExpiredNotice] = useState(false);
@@ -66,7 +65,10 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
     return () => clearInterval(interval);
   }, [waitingResponse, tripId]);
 
-  const deadlineExpired = fechaFin ? isDeadlineExpired(fechaFin) : true;
+  let deadlineExpired = true;
+  if (fechaFin) {
+    deadlineExpired = isDeadlineExpired(fechaFin);
+  }
   const isPending = request?.estado === 'PENDIENTE';
   // Una solicitud cerrada por el sistema (sin revisor) no se muestra como rechazada
   const isClosed = request?.estado === 'RECHAZADA';
@@ -84,11 +86,6 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
       setNoticeShown(true);
     }
   }, [loading, deadlineExpired, isPending, isApprovedActive, fechaFin, tripInProgress, noticeShown]);
-
-  const showError = (message) => {
-    setError(message);
-    setTimeout(() => setError(''), 4000);
-  };
 
   const showModalError = (message) => {
     setModalError(message);
@@ -115,7 +112,7 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
   const closeExpiredNotice = () => setShowExpiredNotice(false);
 
   return {
-    request, loading, submitting, error, modalError,
+    request, loading, submitting, modalError,
     showModal, setShowModal,
     showExpiredNotice, closeExpiredNotice,
     isPending, isApproved: isApprovedActive, isRejected, isApprovedExpired,

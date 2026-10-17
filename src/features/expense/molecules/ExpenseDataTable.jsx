@@ -7,7 +7,7 @@ const styles = {
   total: 'flex justify-between items-center px-3 py-3',
 };
 
-function ExpenseDataTable({columns, gridTemplate, rows, renderRow, totalLabel, totalValue, headerBg = COLORS.title, scroll}) {
+function ExpenseDataTable({columns, gridTemplate, rows, renderRow, totalLabel = 'Total', totalValue, headerBg = COLORS.title, scroll}) {
   return (
     <div className={styles.wrapper} style={{borderColor: COLORS.dataFields}}>
       <div className={styles.header} style={{color: COLORS.background, backgroundColor: headerBg, gridTemplateColumns: gridTemplate}}>
@@ -21,7 +21,7 @@ function ExpenseDataTable({columns, gridTemplate, rows, renderRow, totalLabel, t
         ))}
       </div>
       <div className={styles.total} style={{backgroundColor: headerBg}}>
-        <span className="text-xs font-bold font-inter uppercase" style={{color: COLORS.background}}>Total</span>
+        <span className="text-xs font-bold font-inter uppercase" style={{color: COLORS.background}}>{totalLabel}</span>
         <span className="text-sm font-bold font-inter" style={{color: COLORS.background}}>{totalValue}</span>
       </div>
     </div>

@@ -1,6 +1,5 @@
 import {motion} from 'framer-motion';
 import {AlertTriangle, CheckCircle, Globe, MapPin} from 'lucide-react';
-import {useNavigate} from 'react-router-dom';
 import {COLORS} from '../../../constants';
 import {formatDateRange} from '../../../utils/dateFormatter';
 import {alertConfig, tripStatusConfig} from '../hooks/useTripStatusConfig';
@@ -42,7 +41,6 @@ const styles = {
 };
 
 function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, taking}) {
-  const navigate = useNavigate();
   const isObserved = trip.estadoRevision === 'OBSERVADO';
   const isInternational = trip.tipo === 'Internacional';
   const statusConfig = tripStatusConfig[trip.estado];

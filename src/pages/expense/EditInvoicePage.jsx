@@ -35,7 +35,7 @@ function EditInvoicePage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    data, categories, imagePreview, existingImage, loading, loadingData, error, fieldErrors, saved, manuallyModified, tripId,
+    data, categories, imagePreview, loading, loadingData, error, fieldErrors, saved, manuallyModified, tripId,
     handleFieldChange, handleAddDetail, handleRemoveDetail, handleImageChange, handleRemoveImage, handleSave,
   } = useEditInvoice(id);
 

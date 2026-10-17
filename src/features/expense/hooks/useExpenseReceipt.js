@@ -3,7 +3,10 @@ import {sendIndividualReceipt} from '../../../services/expense/expenseService';
 
 // Mensaje de confirmacion: indica el numero y si fue un reenvio del mismo recibo
 export function buildReceiptSentMessage(data) {
-  const number = data?.numeroRecibo ? ` Nº ${data.numeroRecibo}` : '';
+  let number = '';
+  if (data?.numeroRecibo) {
+    number = ` Nº ${data.numeroRecibo}`;
+  }
   if (data?.reenvio) {
     return `Se reenvió a tu correo el recibo${number}. Conserva el mismo número que el envío anterior.`;
   }

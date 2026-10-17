@@ -13,7 +13,7 @@ export function isMascotEnabled() {
 
 export function setMascotEnabled(enabled) {
   try {
-    localStorage.setItem(enabledKey, enabled ? 'true' : 'false');
+    localStorage.setItem(enabledKey, String(!!enabled));
   }
   catch {
     // sin almacenamiento disponible: la preferencia dura solo esta sesion

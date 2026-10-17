@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {Globe, MapPin, Calendar, AlertTriangle, CheckCircle2} from 'lucide-react';
+import {Calendar, AlertTriangle, CheckCircle2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateRange} from '../../../utils/dateFormatter';
 import {tripStatusConfig, reviewStatusConfig} from '../hooks/useTripStatusConfig';

@@ -55,7 +55,6 @@ function useRegisterExpense(tripId) {
   const [categories, setCategories] = useState([]);
   const [isInternational, setIsInternational] = useState(false);
   const [savingAll, setSavingAll] = useState(false);
-  const [error, setError] = useState('');
   const [saveSummary, setSaveSummary] = useState(null);
 
   useEffect(() => {
@@ -77,11 +76,6 @@ function useRegisterExpense(tripId) {
     };
     loadTrip();
   }, [tripId]);
-
-  const showError = (message) => {
-    setError(message);
-    setTimeout(() => setError(''), 4000);
-  };
 
   const validInstallmentsOf = (item) => {
     return item.installments.filter((installment) => installment.currency && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0);
@@ -124,12 +118,17 @@ function useRegisterExpense(tripId) {
     if (!original) {
       return;
     }
+    // Con subgastos la descripción la arma cada subgasto, así que la copia empieza vacía
+    let description = original.description;
+    if (original.usesSubitems) {
+      description = '';
+    }
     const copy = {
       ...newItem(),
       type: original.type,
       date: original.date,
       supplier: original.supplier,
-      description: original.usesSubitems ? '' : original.description,
+      description,
       categoryId: original.categoryId,
     };
     setItems((prev) => {
@@ -571,7 +570,6 @@ function useRegisterExpense(tripId) {
     isInternational,
     isInternationalExpense,
     savingAll,
-    error,
     saveSummary,
     hasRequiresAuthorization,
     allSaved,

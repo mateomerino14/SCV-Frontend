@@ -13,7 +13,10 @@ function AutoResizeTextarea({value, onChange, placeholder, maxLength, maxRows = 
     textarea.style.height = 'auto';
     const maxHeight = lineHeight * maxRows;
     textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
-    textarea.style.overflowY = textarea.scrollHeight > maxHeight ? 'auto' : 'hidden';
+    textarea.style.overflowY = 'hidden';
+    if (textarea.scrollHeight > maxHeight) {
+      textarea.style.overflowY = 'auto';
+    }
   }, [value, maxRows]);
 
   return (

@@ -31,7 +31,7 @@ function RegisterExpensePage() {
   const fechaFin = location.state?.fechaFin;
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    items, expandedId, categories, isInternationalExpense, savingAll, error, saveSummary,
+    items, expandedId, categories, isInternationalExpense, savingAll, saveSummary,
     hasRequiresAuthorization, allSaved, pendingToSave, currencies,
     finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
@@ -41,7 +41,7 @@ function RegisterExpensePage() {
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
   } = useRegisterExpense(id);
-  const {isPending, isRejected, canRequest, showModal: showDeadlineModal, setShowModal: setShowDeadlineModal, submitting: submittingDeadline, error: deadlineError, handleRequest} = useDeadlineAuthorization(id, fechaFin);
+  const {isPending, isRejected, canRequest, showModal: showDeadlineModal, setShowModal: setShowDeadlineModal, submitting: submittingDeadline, modalError: deadlineError, handleRequest} = useDeadlineAuthorization(id, fechaFin);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -90,7 +90,6 @@ function RegisterExpensePage() {
             )}
           </div>
         )}
-        {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {hasRequiresAuthorization && canRequest && !isPending && (
           <button className={styles.solicitudBtn} style={{backgroundColor: COLORS.secondary, color: COLORS.background}} onClick={() => setShowDeadlineModal(true)}>
             <AlertTriangle size={16} />
