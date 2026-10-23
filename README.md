@@ -196,7 +196,7 @@ Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
 Además, el revisor y el tesorero exportan con un botón las **planillas de todos los viajes de su lista** (según el filtro aplicado) en un solo archivo: una hoja *Resumen* con una fila por viaje y una hoja de planilla por viaje. El administrador puede exportar las planillas del periodo elegido en el Resumen General.
 
-El empleado descarga en cambio la planilla en **PDF** (no editable, generada por el backend) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos se generan a partir de los mismos valores de retención calculados y persistidos por el backend; no se recalculan al exportar.
+El empleado descarga en cambio la planilla en **PDF** (no editable, generada por el backend) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos calculan las retenciones de la misma forma, desde el total de cada gasto (`utils/withholdings.js`), así que un gasto guardado con un cálculo anterior se muestra con el actual. Los gastos de cada viaje se muestran ordenados por fecha (y por orden de registro dentro del mismo día), tanto al empleado como a los revisores.
 
 ### Monto del viaje
 

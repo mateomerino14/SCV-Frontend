@@ -132,7 +132,7 @@
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
 Componente: & Cliente web (React, Vite y Tailwind CSS) \\
-Versión: & 1.6 \\
+Versión: & 1.7 \\
 Fecha: & 23 de octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -567,7 +567,7 @@ Se muestran en ventana, entre otros: los errores al finalizar un viaje, la devol
 \section{Funcionalidades destacadas}
 
 \subsection{Planilla de rendición}
-\code{useTripExcelExport} construye la planilla oficial en Excel: logotipo, simbología, distinción entre gastos nacionales e internacionales, cuenta Oracle por categoría, tramos de cambio, totales por moneda, justificaciones de exceso y cinco bloques de firma. El revisor y el tesorero exportan además las planillas de todos los viajes de su lista, según el filtro aplicado, en un solo archivo: una hoja \emph{Resumen} con una fila por viaje y una hoja de planilla por viaje; el administrador puede exportar las del periodo elegido. El empleado descarga en cambio la planilla en PDF, generada por el backend, cuando el viaje está aprobado. Ambos formatos usan las retenciones persistidas por el backend. En las facturas, el IVA va en su columna y el importe costo/gasto es el total menos el IVA; en recibos, gastos sin factura y gastos con alcohol, el costo es el total.
+\code{useTripExcelExport} construye la planilla oficial en Excel: logotipo, simbología, distinción entre gastos nacionales e internacionales, cuenta Oracle por categoría, tramos de cambio, totales por moneda, justificaciones de exceso y cinco bloques de firma. El revisor y el tesorero exportan además las planillas de todos los viajes de su lista, según el filtro aplicado, en un solo archivo: una hoja \emph{Resumen} con una fila por viaje y una hoja de planilla por viaje; el administrador puede exportar las del periodo elegido. El empleado descarga en cambio la planilla en PDF, generada por el backend, cuando el viaje está aprobado. Ambos formatos calculan las retenciones desde el total de cada gasto (\code{utils/withholdings.js} y su equivalente del backend), igual que la tabla de revisión y el detalle del gasto. Los gastos se listan ordenados por fecha. En las facturas, el IVA va en su columna y el importe costo/gasto es el total menos el IVA; en recibos, gastos sin factura y gastos con alcohol, el costo es el total.
 
 \subsection{Categorías de gasto}
 La categoría se elige entre el plan de cuentas de la empresa (112 cuentas de la planilla de Castro más ``OTROS'') con \code{CategorySelector}, que usa el selector con buscador \code{SearchableSelector} de \code{components/ui}: se puede buscar por número de cuenta, nombre o nota de uso. Las cuentas con nota de la planilla de Castro la muestran en la lista (\code{DropdownListItem} con \code{description}) y debajo de la categoría elegida, para no confundir, por ejemplo, Taxis (viaje) con Taxis gestión oficina. La planilla en Excel ofrece la misma lista en la columna CUENTA/ORACLE (\code{constants/oracleAccounts.js}).
@@ -642,7 +642,7 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo', async ({pa
 });
 \end{lstlisting}
 
-Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 32 pruebas unitarias y 18 de extremo a extremo.
+Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 35 pruebas unitarias y 18 de extremo a extremo.
 
 \subsection{Integración continua}
 El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Actions en cada envío y en cada pull request: compila la aplicación y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base PostgreSQL temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña \emph{Actions}.
