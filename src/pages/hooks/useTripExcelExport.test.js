@@ -17,8 +17,8 @@ describe('getExpenseTaxValues', () => {
     expect(getExpenseTaxValues(expense).cost).toBe(113);
   });
 
-  it('en un gasto sin factura calcula las retenciones desde el total y el costo es el total', () => {
-    const oldService = {tipo: 'S', monto_total: '47.62', retencion_rc_iva: '7.37', retencion_it: '1.70', importe_costo: '56.69'};
-    expect(getExpenseTaxValues(oldService)).toEqual({vat: 0, rcIva: 6.19, iue: 0, it: 1.43, cost: 47.62});
+  it('en un gasto sin factura suma las retenciones a lo pagado: el costo es la base incrementada', () => {
+    const service = {tipo: 'S', monto_total: '40.00'};
+    expect(getExpenseTaxValues(service)).toEqual({vat: 0, rcIva: 6.19, iue: 0, it: 1.43, cost: 47.62});
   });
 });

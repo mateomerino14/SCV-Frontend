@@ -6,7 +6,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Nota bajo las retenciones de un gasto sin factura: las alícuotas se aplican sobre el total del documento y el importe a cancelar es el total menos las retenciones.',
+        component: 'Nota bajo las retenciones de un gasto sin factura: la empresa asume los impuestos, así que lo pagado se incrementa (÷ 0.84 en servicios, ÷ 0.92 en compras) y las alícuotas se aplican sobre ese importe costo.',
       },
     },
   },

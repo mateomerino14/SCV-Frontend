@@ -1,24 +1,28 @@
-// Retenciones sobre el total del documento; al proveedor se le cancela el total menos las retenciones
+// La empresa asume los impuestos: lo pagado se incrementa a una base de la que salen las retenciones
 export function calculateWithholdings(amount, type, isInternational) {
-  const amountNum = parseFloat(amount) || 0;
-  const none = {base: amountNum, rcIva: 0, iue: 0, it: 0, cost: amountNum, toPay: amountNum};
-  if (isInternational || !['C', 'S'].includes(type) || amountNum <= 0) {
+  const paid = parseFloat(amount) || 0;
+  const none = {base: paid, rcIva: 0, iue: 0, it: 0, cost: paid, toPay: paid};
+  if (isInternational || !['C', 'S'].includes(type) || paid <= 0) {
     return none;
   }
-  const it = parseFloat((amountNum * 0.03).toFixed(2));
-  let rcIva = 0;
+  let mainRate = 0.13;
+  if (type === 'C') {
+    mainRate = 0.05;
+  }
+  const base = parseFloat((paid / (1 - mainRate - 0.03)).toFixed(2));
+  const mainWithholding = parseFloat((base * mainRate).toFixed(2));
+  // El IT cierra la cuenta para que pagado + retenciones sea exactamente la base
+  const it = parseFloat((base - paid - mainWithholding).toFixed(2));
+  let rcIva = mainWithholding;
   let iue = 0;
   if (type === 'C') {
-    iue = parseFloat((amountNum * 0.05).toFixed(2));
+    rcIva = 0;
+    iue = mainWithholding;
   }
-  else {
-    rcIva = parseFloat((amountNum * 0.13).toFixed(2));
-  }
-  const toPay = parseFloat((amountNum - rcIva - iue - it).toFixed(2));
-  return {...none, rcIva, iue, it, toPay};
+  return {base, rcIva, iue, it, cost: base, toPay: paid};
 }
 
-// Un gasto registrado se calcula siempre desde su total, para no mostrar cálculos guardados con la fórmula anterior
+// Un gasto registrado se calcula siempre desde lo pagado, para no mostrar cálculos guardados con otra fórmula
 export function getExpenseWithholdings(expense) {
   if (expense?.tiene_alcohol) {
     return calculateWithholdings(expense.monto_total, 'R', false);

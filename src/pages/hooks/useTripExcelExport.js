@@ -58,7 +58,7 @@ function getExpenseTaxValues(expense) {
     return {vat, rcIva: 0, iue: 0, it: 0, cost: parseFloat((amount - vat).toFixed(2))};
   }
   const withholdings = getExpenseWithholdings(expense);
-  return {vat: 0, rcIva: withholdings.rcIva, iue: withholdings.iue, it: withholdings.it, cost: amount};
+  return {vat: 0, rcIva: withholdings.rcIva, iue: withholdings.iue, it: withholdings.it, cost: withholdings.cost};
 }
 
 function getExpenseDescription(expense) {

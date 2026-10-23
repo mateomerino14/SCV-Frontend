@@ -201,7 +201,7 @@ function ExpenseFormCard({
             <div className={styles.withholdingCard} style={{backgroundColor: COLORS.backgroundHeader}}>
               <p className={styles.withholdingTitle} style={{color: COLORS.environmentTypesText}}>Retenciones — {typeLabel}</p>
               <div className={styles.withholdingRow} style={{borderColor: COLORS.dataFields}}>
-                <p className={styles.withholdingLabel} style={{color: COLORS.labels}}>Total del documento</p>
+                <p className={styles.withholdingLabel} style={{color: COLORS.labels}}>Monto pagado</p>
                 <p className={styles.withholdingValue} style={{color: COLORS.text}}>Bs {finalAmount.toFixed(2)}</p>
               </div>
               {item.type === 'S' && (
@@ -221,8 +221,8 @@ function ExpenseFormCard({
                 <p className={styles.withholdingValue} style={{color: COLORS.secondary}}>Bs {withholdings.it.toFixed(2)}</p>
               </div>
               <div className={styles.withholdingTotal}>
-                <p className={styles.withholdingTotalLabel} style={{color: COLORS.title}}>Importe a cancelar</p>
-                <p className={styles.withholdingTotalValue} style={{color: COLORS.title}}>Bs {withholdings.toPay.toFixed(2)}</p>
+                <p className={styles.withholdingTotalLabel} style={{color: COLORS.title}}>Importe costo</p>
+                <p className={styles.withholdingTotalValue} style={{color: COLORS.title}}>Bs {withholdings.cost.toFixed(2)}</p>
               </div>
               <WithholdingFormulaNote type={item.type} />
             </div>

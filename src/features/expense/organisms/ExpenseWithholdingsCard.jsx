@@ -18,11 +18,11 @@ const typeLabel = {C: 'Compra sin Factura', S: 'Servicio sin Factura'};
 
 function ExpenseWithholdingsCard({expense}) {
   const total = parseFloat(expense.monto_total || 0);
-  const {rcIva, iue, it, toPay} = getExpenseWithholdings(expense);
+  const {rcIva, iue, it, cost} = getExpenseWithholdings(expense);
   return (
     <ExpenseSectionCard icon={DollarSign} title={`Retenciones — ${typeLabel[expense.tipo]}`}>
       <div className={styles.row} style={{borderColor: COLORS.dataFields}}>
-        <p className={styles.label} style={{color: COLORS.labels}}>Total del documento</p>
+        <p className={styles.label} style={{color: COLORS.labels}}>Monto pagado</p>
         <p className={styles.value} style={{color: COLORS.text}}>Bs {total.toFixed(2)}</p>
       </div>
       {rcIva > 0 && (
@@ -44,8 +44,8 @@ function ExpenseWithholdingsCard({expense}) {
         </div>
       )}
       <div className={styles.total} style={{borderColor: COLORS.dataFields}}>
-        <p className={styles.totalLabel} style={{color: COLORS.title}}>Importe a cancelar</p>
-        <p className={styles.totalValue} style={{color: COLORS.title}}>Bs {toPay.toFixed(2)}</p>
+        <p className={styles.totalLabel} style={{color: COLORS.title}}>Importe costo</p>
+        <p className={styles.totalValue} style={{color: COLORS.title}}>Bs {cost.toFixed(2)}</p>
       </div>
       <WithholdingFormulaNote type={expense.tipo} />
     </ExpenseSectionCard>
