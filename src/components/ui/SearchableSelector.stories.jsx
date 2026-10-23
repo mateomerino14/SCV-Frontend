@@ -2,12 +2,12 @@ import {useState} from 'react';
 import SearchableSelector from './SearchableSelector';
 
 export default {
-  title: 'Admin/Molecules/SearchableSelector',
+  title: 'UI/SearchableSelector',
   component: SearchableSelector,
   parameters: {
     docs: {
       description: {
-        component: 'Selector con buscador para listas largas (cargos, secciones, jefes); permite una opción "sin asignar".',
+        component: 'Selector con buscador para listas largas (cargos, secciones, jefes y categorías de gasto); permite una opción "sin asignar".',
       },
     },
   },

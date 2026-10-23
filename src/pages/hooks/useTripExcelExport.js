@@ -5,6 +5,7 @@ import {toOracleExpenseType} from '../../utils/expenseTypeCode';
 import buildTripCode from '../../utils/tripCode';
 import {formatQuantity} from '../../utils/formatQuantity';
 import {calculateInvoiceVat} from '../../utils/invoiceAmounts';
+import {oracleAccounts} from '../../constants/oracleAccounts';
 import {MAXAM_LOGO} from '../../constants';
 
 const headerFill = 'FF4A90D9';
@@ -28,20 +29,6 @@ const thinBorder = {
   left: {style: 'thin', color: {argb: thinBorderColor}},
   right: {style: 'thin', color: {argb: thinBorderColor}},
 };
-
-const oracleAccounts = [
-  '626000 BILLETES (VIAJE)',
-  '626010 TAXIS (VIAJE)',
-  '626020 COCHE PROPIO-KMS (VIAJE)',
-  '626030 HOTELES (VIAJE)',
-  '626040 MANUTENCION (VIAJE)',
-  '626050 VEHICULOS DE ALQUILER (VIAJE)',
-  '626060 PEAJE AUTOPISTAS (VIAJE)',
-  '626070 APARCAMIENTO Y OTROS GASTOS (VIAJE)',
-  '626100 REUN.SINDIC.MANUTENCION/AT.TERCEROS (VIAJE)',
-  'OTROS',
-];
-
 
 const symbologyRows = [
   ['F', 'Compra Bien/Servicio c/factura'],

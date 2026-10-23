@@ -1,4 +1,4 @@
-import SearchableSelector from './SearchableSelector';
+import SearchableSelector from '../../../components/ui/SearchableSelector';
 
 function PositionSelector({positions, positionId, onChange, error}) {
   const options = positions

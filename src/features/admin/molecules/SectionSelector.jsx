@@ -1,4 +1,4 @@
-import SearchableSelector from './SearchableSelector';
+import SearchableSelector from '../../../components/ui/SearchableSelector';
 
 const noSection = {value: '', label: 'Sin sección asignada'};
 

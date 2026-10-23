@@ -1,10 +1,10 @@
 import {createPortal} from 'react-dom';
 import {motion, AnimatePresence} from 'framer-motion';
-import DropdownTrigger from '../../../components/ui/DropdownTrigger';
-import DropdownSearchInput from '../../../components/ui/DropdownSearchInput';
-import DropdownListItem from '../../../components/ui/DropdownListItem';
-import {COLORS} from '../../../constants';
-import useSearchableSelector from '../hooks/useSearchableSelector';
+import DropdownTrigger from './DropdownTrigger';
+import DropdownSearchInput from './DropdownSearchInput';
+import DropdownListItem from './DropdownListItem';
+import {COLORS} from '../../constants';
+import useSearchableSelector from '../../hooks/shared/useSearchableSelector';
 
 const styles = {
   wrapper: 'relative',

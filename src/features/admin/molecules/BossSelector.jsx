@@ -1,4 +1,4 @@
-import SearchableSelector from './SearchableSelector';
+import SearchableSelector from '../../../components/ui/SearchableSelector';
 
 const noBoss = {value: '', label: 'Sin jefe directo asignado'};
 

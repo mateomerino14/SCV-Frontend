@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import {getSections, createSection, updateSection, suspendSection, activateSection} from '../../services/admin/adminService';
-import {normalizeSearchText} from '../../features/admin/hooks/useSearchableSelector';
+import {normalizeSearchText} from '../shared/useSearchableSelector';
 
 const maxName = 100;
 
