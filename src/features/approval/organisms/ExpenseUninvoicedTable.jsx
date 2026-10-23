@@ -2,6 +2,7 @@ import {Eye, MapPin} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseObsButton from '../atoms/ExpenseObsButton';
+import {getExpenseWithholdings} from '../../../utils/withholdings';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -22,10 +23,11 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
   }
   const cell = (extra = {}) => ({...extra, borderColor: COLORS.dataFields});
   const totalAmount = expenses.reduce((sum, expense) => sum + parseFloat(expense.monto_total || 0), 0);
-  const totalRcIva = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_rc_iva || 0), 0);
-  const totalIue = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_iue || 0), 0);
-  const totalIt = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_it || 0), 0);
-  const totalCost = expenses.reduce((sum, expense) => sum + parseFloat(expense.importe_costo || expense.monto_total || 0), 0);
+  const withholdingList = expenses.map((expense) => getExpenseWithholdings(expense));
+  const totalRcIva = withholdingList.reduce((sum, item) => sum + item.rcIva, 0);
+  const totalIue = withholdingList.reduce((sum, item) => sum + item.iue, 0);
+  const totalIt = withholdingList.reduce((sum, item) => sum + item.it, 0);
+  const totalCost = totalAmount;
   const hasAlcohol = expenses.some((expense) => expense.tiene_alcohol);
 
   return (
@@ -50,10 +52,8 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
           <tbody>
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
-              const rcIva = parseFloat(expense.retencion_rc_iva || 0);
-              const iue = parseFloat(expense.retencion_iue || 0);
-              const itTax = parseFloat(expense.retencion_it || 0);
-              const cost = parseFloat(expense.importe_costo || amount);
+              const {rcIva, iue, it: itTax} = withholdingList[index];
+              const cost = amount;
               const bg = expense.tiene_alcohol ? '#fef3cd' : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
               const subitems = expense.Gasto_Subitem || [];
               let description = expense.descripcion || '—';

@@ -18,6 +18,7 @@ import useExpenseDetail from '../hooks/useExpenseDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {tripPath} from '../../constants/routes';
+import {getExpenseWithholdings} from '../../utils/withholdings';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -80,7 +81,8 @@ function ExpenseDetailPage() {
   const originPath = location.state?.from || '';
   const isReviewContext = originPath.includes('/supervisor/') || originPath.includes('/revisor/') || originPath.includes('/aprobador/');
   const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && !isReviewContext && expense.Viaje?.estado === 'APROBADO_FINAL';
-  const hasWithholdings = !isInternational && (expense.tipo === 'C' || expense.tipo === 'S') && (parseFloat(expense.retencion_rc_iva || 0) > 0 || parseFloat(expense.retencion_iue || 0) > 0 || parseFloat(expense.retencion_it || 0) > 0);
+  const expenseWithholdings = getExpenseWithholdings(expense);
+  const hasWithholdings = expenseWithholdings.rcIva > 0 || expenseWithholdings.iue > 0 || expenseWithholdings.it > 0;
   let vat = null;
   if (hasInvoice && expense.tipo === 'F') {
     const invoiceVat = calculateInvoiceVat(expense.monto_total);

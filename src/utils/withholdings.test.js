@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {calculateWithholdings} from './withholdings';
+import {calculateWithholdings, getExpenseWithholdings} from './withholdings';
 
 describe('calculateWithholdings', () => {
   it('servicio: RC-IVA 13% e IT 3% sobre el total y se cancela el resto', () => {
@@ -12,5 +12,14 @@ describe('calculateWithholdings', () => {
 
   it('sin retenciones en gastos internacionales', () => {
     expect(calculateWithholdings(80, 'S', true).toPay).toBe(80);
+  });
+
+  it('un gasto guardado con el cálculo anterior se recalcula desde su total', () => {
+    const oldExpense = {tipo: 'S', monto_total: '47.62', retencion_rc_iva: '7.37', retencion_it: '1.70', importe_costo: '56.69'};
+    expect(getExpenseWithholdings(oldExpense)).toMatchObject({rcIva: 6.19, it: 1.43, cost: 47.62, toPay: 40});
+  });
+
+  it('un gasto con alcohol no lleva retenciones', () => {
+    expect(getExpenseWithholdings({tipo: 'C', monto_total: '100', tiene_alcohol: true}).toPay).toBe(100);
   });
 });

@@ -17,3 +17,11 @@ export function calculateWithholdings(amount, type, isInternational) {
   const toPay = parseFloat((amountNum - rcIva - iue - it).toFixed(2));
   return {...none, rcIva, iue, it, toPay};
 }
+
+// Un gasto registrado se calcula siempre desde su total, para no mostrar cálculos guardados con la fórmula anterior
+export function getExpenseWithholdings(expense) {
+  if (expense?.tiene_alcohol) {
+    return calculateWithholdings(expense.monto_total, 'R', false);
+  }
+  return calculateWithholdings(expense?.monto_total, expense?.tipo, !!expense?.es_gasto_internacional);
+}

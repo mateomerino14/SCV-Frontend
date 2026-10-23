@@ -2,6 +2,7 @@ import {DollarSign} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseSectionCard from '../molecules/ExpenseSectionCard';
 import WithholdingFormulaNote from '../atoms/WithholdingFormulaNote';
+import {getExpenseWithholdings} from '../../../utils/withholdings';
 
 const styles = {
   row: 'flex justify-between items-center py-2 border-b',
@@ -17,30 +18,29 @@ const typeLabel = {C: 'Compra sin Factura', S: 'Servicio sin Factura'};
 
 function ExpenseWithholdingsCard({expense}) {
   const total = parseFloat(expense.monto_total || 0);
-  const retentions = parseFloat(expense.retencion_rc_iva || 0) + parseFloat(expense.retencion_iue || 0) + parseFloat(expense.retencion_it || 0);
-  const toPay = total - retentions;
+  const {rcIva, iue, it, toPay} = getExpenseWithholdings(expense);
   return (
     <ExpenseSectionCard icon={DollarSign} title={`Retenciones — ${typeLabel[expense.tipo]}`}>
       <div className={styles.row} style={{borderColor: COLORS.dataFields}}>
         <p className={styles.label} style={{color: COLORS.labels}}>Total del documento</p>
         <p className={styles.value} style={{color: COLORS.text}}>Bs {total.toFixed(2)}</p>
       </div>
-      {expense.tipo === 'S' && parseFloat(expense.retencion_rc_iva || 0) > 0 && (
+      {rcIva > 0 && (
         <div className={styles.row} style={{borderColor: COLORS.dataFields}}>
           <p className={styles.label} style={{color: COLORS.labels}}>RC-IVA 13%</p>
-          <p className={styles.value} style={{color: COLORS.secondary}}>Bs {parseFloat(expense.retencion_rc_iva).toFixed(2)}</p>
+          <p className={styles.value} style={{color: COLORS.secondary}}>Bs {rcIva.toFixed(2)}</p>
         </div>
       )}
-      {expense.tipo === 'C' && parseFloat(expense.retencion_iue || 0) > 0 && (
+      {iue > 0 && (
         <div className={styles.row} style={{borderColor: COLORS.dataFields}}>
           <p className={styles.label} style={{color: COLORS.labels}}>IUE 5%</p>
-          <p className={styles.value} style={{color: COLORS.secondary}}>Bs {parseFloat(expense.retencion_iue).toFixed(2)}</p>
+          <p className={styles.value} style={{color: COLORS.secondary}}>Bs {iue.toFixed(2)}</p>
         </div>
       )}
-      {parseFloat(expense.retencion_it || 0) > 0 && (
+      {it > 0 && (
         <div className={styles.rowLast}>
           <p className={styles.label} style={{color: COLORS.labels}}>IT 3%</p>
-          <p className={styles.value} style={{color: COLORS.secondary}}>Bs {parseFloat(expense.retencion_it).toFixed(2)}</p>
+          <p className={styles.value} style={{color: COLORS.secondary}}>Bs {it.toFixed(2)}</p>
         </div>
       )}
       <div className={styles.total} style={{borderColor: COLORS.dataFields}}>

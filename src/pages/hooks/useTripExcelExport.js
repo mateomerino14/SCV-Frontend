@@ -7,6 +7,7 @@ import {formatQuantity} from '../../utils/formatQuantity';
 import {calculateInvoiceVat} from '../../utils/invoiceAmounts';
 import {oracleAccounts} from '../../constants/oracleAccounts';
 import {MAXAM_LOGO} from '../../constants';
+import {getExpenseWithholdings} from '../../utils/withholdings';
 
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
@@ -56,13 +57,8 @@ function getExpenseTaxValues(expense) {
     const vat = calculateInvoiceVat(amount);
     return {vat, rcIva: 0, iue: 0, it: 0, cost: parseFloat((amount - vat).toFixed(2))};
   }
-  return {
-    vat: 0,
-    rcIva: parseFloat(expense.retencion_rc_iva || 0),
-    iue: parseFloat(expense.retencion_iue || 0),
-    it: parseFloat(expense.retencion_it || 0),
-    cost: parseFloat(expense.importe_costo || amount),
-  };
+  const withholdings = getExpenseWithholdings(expense);
+  return {vat: 0, rcIva: withholdings.rcIva, iue: withholdings.iue, it: withholdings.it, cost: amount};
 }
 
 function getExpenseDescription(expense) {
