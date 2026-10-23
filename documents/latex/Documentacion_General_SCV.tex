@@ -131,7 +131,7 @@
 \begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
-Versión: & 1.4 \\
+Versión: & 1.5 \\
 Fecha: & Octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -309,23 +309,126 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura, las retenciones se calculan sobre el total del documento y al proveedor se le cancela el total menos las retenciones. Por ejemplo, en un servicio de 47.62 el RC-IVA es 6.19, el IT 1.43 y el importe a cancelar 40.00. El total cuenta para el presupuesto y como costo en la planilla.
 
 \section{Categorías de gasto}
-Las categorías incorporan en su nombre el código de la cuenta contable de Oracle, lo que permite que la planilla exportada sea directamente utilizable por el área contable. Al agregar nuevas categorías debe conservarse ese formato.
+Las categorías son el plan de cuentas de gastos de la empresa (planilla de Castro): 112 cuentas contables de Oracle más ``OTROS''. Cada nombre empieza con el código de la cuenta, lo que permite que la planilla exportada sea directamente utilizable por el área contable; al agregar nuevas categorías debe conservarse ese formato. Al registrar un gasto, la categoría se elige con un buscador por número de cuenta o nombre, y en el Excel de la planilla la columna de cuenta ofrece la misma lista.
 
-\begin{xltabular}{\textwidth}{Y}
-\cabecera \tth{Categoría} \\
+\begin{xltabular}{\textwidth}{L{5.2cm} Y}
+\cabecera \tth{Grupo} & \tth{Cuenta} \\
 \endfirsthead
-\cabecera \tth{Categoría} \\
+\cabecera \tth{Grupo} & \tth{Cuenta} \\
 \endhead
-\rowcolor{maxamFondo} 626000 BILLETES (VIAJE) \\
-626010 TAXIS (VIAJE) --- no requiere comprobante \\
-\rowcolor{maxamFondo} 626020 COCHE PROPIO-KMS (VIAJE) \\
-626030 HOTELES (VIAJE) \\
-\rowcolor{maxamFondo} 626040 MANUTENCION (VIAJE) \\
-626050 VEHICULOS DE ALQUILER (VIAJE) \\
-\rowcolor{maxamFondo} 626060 PEAJE AUTOPISTAS (VIAJE) \\
-626070 APARCAMIENTO Y OTROS GASTOS (VIAJE) \\
-\rowcolor{maxamFondo} 626100 REUN.SINDIC.MANUTENCION/AT.TERCEROS (VIAJE) \\
-OTROS \\
+\rowcolor{maxamFondo} Gastos de personal & 649001 SEGUROS ACCIDENTES PERSONAL \\
+Gastos de personal & 649200 ALIMENTACION (PERSONAL) \\
+\rowcolor{maxamFondo} Gastos de personal & 649300 TRANSPORTE PERSONAL \\
+Otros tributos & 631006 PATENTES \\
+\rowcolor{maxamFondo} Otros tributos & 631020 IMPUESTO A LA PROPIEDAD DE INMU \\
+Otros tributos & 631040 IMPUESTO A LOS VEHICULOS AUTOMO \\
+\rowcolor{maxamFondo} Otros tributos & 631070 IMPUESTO A LAS TRANSACCIONES FINANCIERAS \\
+Otros tributos & 631210 OTROS IMPUESTOS Y TASAS \\
+\rowcolor{maxamFondo} Otros tributos & 631213 MULTAS SIN \\
+Arrendamientos & 621010 ALQUILER EDIF. ADMINISTRATIVOS Y CO \\
+\rowcolor{maxamFondo} Arrendamientos & 621020 ALQUILER ALMACENES \\
+Arrendamientos & 621030 ALQUILER EDIF. SOCIALES Y VIVIENDAS \\
+\rowcolor{maxamFondo} Arrendamientos & 621050 ALQUILER MAQUINARIA \\
+Arrendamientos & 621060 ALQUILER UTILLAJE \\
+\rowcolor{maxamFondo} Arrendamientos & 621070 ALQUILER OTRAS INSTALACIONES \\
+Arrendamientos & 621080 ALQUILER MOBILIARIO \\
+\rowcolor{maxamFondo} Arrendamientos & 621090 ALQUILER EQUIP. INFORMATICOS \\
+Arrendamientos & 621100 ALQUILER ELEMEMTOS TRANSPORTE \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622010 MANTENIMIENTO EDIF. INDUSTRIALES \\
+Reparaciones y conservación & 622020 MANTENIMIENTO EDIF. ADMINISTRATIVOS \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622030 MANTENIMIENTO ALMACENES \\
+Reparaciones y conservación & 622040 MANTENIMIENTO EDIF. SOCIALES Y VIVIENDAS \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622050 MANTENIMIENTO VIAS Y CARRETERAS \\
+Reparaciones y conservación & 622060 MANTENIMIENTO INSTALACIONES TECNICAS \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622070 MANTENIMIENTO MAQUINARIA \\
+Reparaciones y conservación & 622080 MANTENIMIENTO UTILLAJE \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622090 MANTENIMIENTO OTRAS INSTALACIONES \\
+Reparaciones y conservación & 622100 MANTENIMIENTO MOBILIARIO \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622110 MANTENIMIENTO EQUIP. INFORMATICOS \\
+Reparaciones y conservación & 622120 MANTENIMIENTO ELEM. TRANSPORTE \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622121 MANTENIMIENTO VEHICULOS \\
+Reparaciones y conservación & 622130 MANTENIMIENTO INST. SEGURIDAD \\
+\rowcolor{maxamFondo} Servicios profesionales independientes & 623000 SERVICIOS DE LIMPIEZA \\
+Servicios profesionales independientes & 623040 GESTION DE RESIDUOS \\
+\rowcolor{maxamFondo} Servicios profesionales independientes & 623080 ANALISIS DE LABORATORIO \\
+Seguridad y vigilancia & 623010 SERV. SEGURIDAD Y VIGILANCIA \\
+\rowcolor{maxamFondo} Gastos Comerciales & 623160 GARANTIAS COMERCIALES \\
+Auditores y consultores & 623200 AUDITORES \\
+\rowcolor{maxamFondo} Auditores y consultores & 623220 CONSULTORIA LEGAL \\
+Auditores y consultores & 623230 CONSULTORIA TECNICA \\
+\rowcolor{maxamFondo} Auditores y consultores & 623231 GASTOS ASESORAMIENTO SEGURIDAD \\
+Auditores y consultores & 623240 CONSULTORIA COMERCIAL \\
+\rowcolor{maxamFondo} Auditores y consultores & 623250 CONSULTORIA DE GESTION \\
+Capacitación & 623800 TRAINING \\
+\rowcolor{maxamFondo} Primas de seguros & 625010 SEGURO DE PROD. TERMINADOS \\
+Primas de seguros & 625070 PRIMAS DE SEGURO \\
+\rowcolor{maxamFondo} Servicios bancarios y similares & 629320 SERVICIOS BANCARIOS \\
+Servicios bancarios y similares & 629330 COMISIONES AVALES \\
+\rowcolor{maxamFondo} Publicidad y Relaciones Públicas & 627000 PUBLICIDAD Y PROPAGANDA \\
+Publicidad y Relaciones Públicas & 627001 PUBLICACIONES \\
+\rowcolor{maxamFondo} Publicidad y Relaciones Públicas & 627010 JORNADAS TECNICAS \\
+Publicidad y Relaciones Públicas & 627020 FERIAS Y EXPOSICIONES \\
+\rowcolor{maxamFondo} Publicidad y Relaciones Públicas & 627030 GASTOS DE REPRESENTACION \\
+Publicidad y Relaciones Públicas & 627050 REUNIONES \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626000 BILLETES (VIAJE) \\
+Gastos de Viaje & 626010 TAXIS (VIAJE) --- no requiere comprobante \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626020 COCHE PROPIO-KMS (VIAJE) \\
+Gastos de Viaje & 626030 HOTELES (VIAJE) \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626040 MANUTENCION (VIAJE) \\
+Gastos de Viaje & 626050 VEHICULOS DE ALQUILER (VIAJE) \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626060 PEAJE AUTOPISTAS (VIAJE) \\
+Gastos de Viaje & 626070 APARCAMIENTO Y OTROS GASTOS (VIAJE) \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626100 REUN.SINDIC.MANUTENCION/AT.TERCEROS (VIAJE) \\
+Suministros & 628000 ENERGÍA ELÉCTRICA \\
+\rowcolor{maxamFondo} Suministros & 628010 AGUA \\
+Suministros & 628020 GAS / FUEL \\
+\rowcolor{maxamFondo} Suministros & 628021 GASOLINA \\
+Suministros & 628022 GASOLEO (DIESEL) \\
+\rowcolor{maxamFondo} Suministros & 628045 OTROS FLUIDOS \\
+Suministros & 628040 SUMINISTRO MATERIALES AUXILIARE \\
+\rowcolor{maxamFondo} Otros gastos generales & 629000 TELEFONOS \\
+Otros gastos generales & 629010 FRANQUEO CORRESPONDENCIA \\
+\rowcolor{maxamFondo} Otros gastos generales & 629020 TELETRANSMISION \\
+Otros gastos generales & 629030 TELEGRAMAS Y TELETIPOS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629040 SERVICIO DE MENSAJERIA \\
+Otros gastos generales & 629060 TAXIS GESTION OFICINA (BOLIVIA) \\
+\rowcolor{maxamFondo} Otros gastos generales & 629100 SUCRIPCION PRENSA, LIBROS Y REV \\
+Otros gastos generales & 629110 CUOTAS DE ASOCIACION \\
+\rowcolor{maxamFondo} Otros gastos generales & 629130 DONACIONES-OBSEQUIOS \\
+Otros gastos generales & 629200 MATERIAL DE OFICINA \\
+\rowcolor{maxamFondo} Otros gastos generales & 629210 IMPRENTA Y FOTOCOPIAS \\
+Otros gastos generales & 629220 TRAMITES Y PERMISOS MIN. DEFENS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629300 OTROS GASTOS SERVICIOS GENERALES \\
+Otros gastos generales & 629301 MATERIAL DE ASEO Y LIMPIEZA \\
+\rowcolor{maxamFondo} Otros gastos generales & 629302 TRANSPORTE DE MATERIALES VARIOS \\
+Otros gastos generales & 629303 OTROS SERVICIOS GENERALES- MEDICAMENTOS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629304 OTROS SERVICIOS GENERALES- PERIODICOS \\
+Otros gastos generales & 629305 MATERIAL DE SEGURIDAD INDUSTRIAL \\
+\rowcolor{maxamFondo} Otros gastos generales & 629306 TRAMITES Y GASTOS LEGALES \\
+Otros gastos generales & 629307 OTROS SERVICIOS GENERALES- WORK (ROPA DE TRABAJO) \\
+\rowcolor{maxamFondo} Otros gastos generales & 629310 ATENC, CONSEJO ADMINISTRACION \\
+Otros gastos generales & 629400 MUESTRAS DE PRODUCTOS PARA PRUEBAS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629401 CONTROL DE CALIDAD (BOLIVIA) \\
+Otros gastos generales & 629500 MUESTRA DE MATERIALES PARA PRUEBA CLIENTES \\
+\rowcolor{maxamFondo} Otros gastos generales & 623500 MULTAS Y PENALIZACIONES \\
+Otros gastos generales & 629350 HERRAMIENTAS Y OTROS DE RAPIDO DESGASTE \\
+\rowcolor{maxamFondo} Transporte nacional capilar (Clientes) & 624000 TRANSPORTE DE PROD. TERMINADOS (CLIENTE) \\
+Transporte nacional capilar (Clientes) & 624001 ESCOLTAS PROD. TERMINADO (CLIENTE) \\
+\rowcolor{maxamFondo} Transporte nacional capilar (Clientes) & 624002 CARGUÍOS Y DESCARGUÍOS PT (CLIENTE) \\
+Transporte nacional troncal (CD) & 624100 TRANSPORTE PROD. TERMINADO (RED COMERCIAL) \\
+\rowcolor{maxamFondo} Transporte nacional troncal (CD) & 624101 ESCOLTAS RED COMERCIAL \\
+Transporte nacional troncal (CD) & 624102 CARGUÍOS Y DESCARGUÍOS RED COMERCIAL \\
+\rowcolor{maxamFondo} Transporte internacional troncal (Grupo) & 624200 TRANSPORTE PROD. TERMINADO EXPORT GRUPO \\
+Transporte internacional troncal (Grupo) & 624201 ESCOLTAS EXPORT GRUPO \\
+\rowcolor{maxamFondo} Transporte internacional troncal (Grupo) & 624202 CARGUÍOS Y DESCARGUÍOS GRUPO \\
+Transporte internacional capilar (Resto) & 624300 TRANSPORTE PROD. TERMINADO EXPORT RESTO \\
+\rowcolor{maxamFondo} Transporte internacional capilar (Resto) & 624301 ESCOLTAS EXPORT RESTO \\
+Transporte internacional capilar (Resto) & 624302 CARGUÍOS Y DESCARGUÍOS RESTO \\
+\rowcolor{maxamFondo} Transporte compras & 600040 TRANSPORTE S/COMPRA MERCADERIAS \\
+Transporte compras & 601040 TRANSPORTE S/COMPRAS MMPP \\
+\rowcolor{maxamFondo} Comisiones y otros directos & 623120 COMISIONES SOBRE VENTA \\
+--- & 440230 OPERACIONES PENDIENTES MN \\
+\rowcolor{maxamFondo} Sin cuenta específica & OTROS \\
 \end{xltabular}
 
 \section{Notificaciones}
@@ -733,7 +836,7 @@ Historial de aprobaciones y rechazos, usado en las pestañas ``Aprobados'' y ``R
 Clasifica los gastos por concepto, con la cuenta contable de Oracle en el nombre.
 \begin{itemize}
   \campo{id_categoria}{Identificador único}{SERIAL, clave primaria}
-  \campo{nombre}{Denominación con código contable}{VARCHAR(50), único}
+  \campo{nombre}{Denominación con código contable}{VARCHAR(100), único}
   \campo{requiere_comprobante}{Indica si la categoría exige comprobante}{BOOLEAN}
 \end{itemize}
 
