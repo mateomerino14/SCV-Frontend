@@ -2,6 +2,7 @@ import {Eye, MapPin} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseObsButton from '../atoms/ExpenseObsButton';
+import {getExpenseInvoiceVat} from '../../../utils/invoiceAmounts';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -46,7 +47,7 @@ function ExpenseInvoicedTable({expenses, onViewExpense, countObservations, onOpe
           <tbody>
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
-              const vat = Math.max(0, amount - parseFloat(expense.Factura?.monto_parcial || 0));
+              const vat = getExpenseInvoiceVat(expense);
               const bg = expense.tiene_alcohol ? '#fef3cd' : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
               return (
                 <tr key={expense.id_gasto} style={{backgroundColor: bg}}>

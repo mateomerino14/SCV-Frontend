@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import {getExpenseDetail, getCategories} from '../../services/expense/expenseService';
 import {updateInvoice} from '../../services/expense/invoiceService';
 import {compressImage} from '../../utils/imageCompressor';
+import {splitInvoiceTotal} from '../../utils/invoiceAmounts';
 
 function useEditInvoice(expenseId) {
   const [data, setData] = useState(null);
@@ -38,11 +39,8 @@ function useEditInvoice(expenseId) {
       setTripId(expenseData.id_viaje || null);
       setManuallyModified(expenseData.modificado || false);
       const invoice = expenseData.Factura;
-      const amount = parseFloat(invoice?.monto_parcial || 0);
-      const tax = invoice?.Factura_Impuestos?.[0]?.Impuesto;
-      const percentage = tax?.porcentaje || 0;
-      const vat = parseFloat(((amount * percentage) / 100).toFixed(2));
       const totalAmount = parseFloat(expenseData.monto_total || 0);
+      const {subtotal: amount, vat} = splitInvoiceTotal(totalAmount, expenseData.tipo || 'F');
       let amountText = '';
       if (amount > 0) {
         amountText = amount.toString();

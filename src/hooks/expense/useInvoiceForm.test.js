@@ -5,15 +5,15 @@ import useInvoiceForm from './useInvoiceForm';
 const invoiceData = {tipo_doc: 'F', monto: '100.00', iva: '13.00', monto_total: '113.00'};
 
 describe('useInvoiceForm', () => {
-  it('con el total de una factura separa el IVA por dentro', () => {
+  it('con el total de una factura resta el IVA del 13% del total', () => {
     const onChange = vi.fn();
     const {result} = renderHook(() => useInvoiceForm({...invoiceData, monto_total: ''}, onChange));
     act(() => {
       result.current.handleFieldChange('monto_total', '305');
     });
     expect(onChange).toHaveBeenCalledWith('monto_total', '305');
-    expect(onChange).toHaveBeenCalledWith('monto', '269.91', true);
-    expect(onChange).toHaveBeenCalledWith('iva', '35.09', true);
+    expect(onChange).toHaveBeenCalledWith('monto', '265.35', true);
+    expect(onChange).toHaveBeenCalledWith('iva', '39.65', true);
   });
 
   it('al pasar a recibo conserva el total pagado sin IVA', () => {

@@ -4,9 +4,9 @@ import {extractOracleAccount} from '../../utils/oracleAccount';
 import {toOracleExpenseType} from '../../utils/expenseTypeCode';
 import buildTripCode from '../../utils/tripCode';
 import {formatQuantity} from '../../utils/formatQuantity';
+import {calculateInvoiceVat} from '../../utils/invoiceAmounts';
 import {MAXAM_LOGO} from '../../constants';
 
-const vatRate = 0.13;
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
 const infoFill = 'FFEAF3FB';
@@ -65,9 +65,8 @@ function getExpenseTaxValues(expense) {
     if (expense.tipo !== 'F') {
       return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
     }
-    const partial = parseFloat(expense.Factura?.monto_parcial || 0);
-    const vat = parseFloat((partial * vatRate).toFixed(2));
-    // El costo de una factura es el importe sin el IVA, que queda como crédito fiscal
+    // El IVA es el 13% del total y se resta del costo, porque queda como crédito fiscal
+    const vat = calculateInvoiceVat(amount);
     return {vat, rcIva: 0, iue: 0, it: 0, cost: parseFloat((amount - vat).toFixed(2))};
   }
   return {

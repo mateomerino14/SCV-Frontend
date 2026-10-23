@@ -2,9 +2,9 @@ import {describe, it, expect} from 'vitest';
 import {getExpenseTaxValues} from './useTripExcelExport';
 
 describe('getExpenseTaxValues', () => {
-  it('en una factura el costo es el importe menos el IVA', () => {
-    const expense = {tipo: 'F', monto_total: '305.00', Factura: {monto_parcial: '269.91'}};
-    expect(getExpenseTaxValues(expense)).toEqual({vat: 35.09, rcIva: 0, iue: 0, it: 0, cost: 269.91});
+  it('en una factura el IVA es el 13% del total y el costo es el total menos el IVA', () => {
+    const expense = {tipo: 'F', monto_total: '305.00', Factura: {monto_parcial: '265.35'}};
+    expect(getExpenseTaxValues(expense)).toEqual({vat: 39.65, rcIva: 0, iue: 0, it: 0, cost: 265.35});
   });
 
   it('en un recibo no hay IVA y el costo es el importe', () => {

@@ -9,6 +9,7 @@ import ExpenseHeaderCard from '../../features/expense/molecules/ExpenseHeaderCar
 import ExpenseSectionCard from '../../features/expense/molecules/ExpenseSectionCard';
 import ExpenseFieldRow from '../../features/expense/atoms/ExpenseFieldRow';
 import {formatQuantity} from '../../utils/formatQuantity';
+import {calculateInvoiceVat} from '../../utils/invoiceAmounts';
 import ExpenseDataTable from '../../features/expense/molecules/ExpenseDataTable';
 import ExpenseWithholdingsCard from '../../features/expense/organisms/ExpenseWithholdingsCard';
 import SkeletonCard from '../../components/ui/SkeletonCard';
@@ -81,25 +82,10 @@ function ExpenseDetailPage() {
   const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && !isReviewContext && expense.Viaje?.estado === 'APROBADO_FINAL';
   const hasWithholdings = !isInternational && (expense.tipo === 'C' || expense.tipo === 'S') && (parseFloat(expense.retencion_rc_iva || 0) > 0 || parseFloat(expense.retencion_iue || 0) > 0 || parseFloat(expense.retencion_it || 0) > 0);
   let vat = null;
-  if (hasInvoice) {
-    const taxRecords = expense.Factura.Factura_Impuestos || [];
-    if (taxRecords.length > 0) {
-      const partial = parseFloat(expense.Factura.monto_parcial || 0);
-      vat = taxRecords.reduce((sum, record) => {
-        const percentage = parseFloat(record.Impuesto?.porcentaje || 0);
-        return sum + (partial * percentage / 100);
-      }, 0);
-      if (vat <= 0) {
-        vat = null;
-      }
-    }
-    else {
-      const partial = parseFloat(expense.Factura.monto_parcial || 0);
-      const total = parseFloat(expense.monto_total || 0);
-      const calculated = total - partial;
-      if (calculated > 0) {
-        vat = calculated;
-      }
+  if (hasInvoice && expense.tipo === 'F') {
+    const invoiceVat = calculateInvoiceVat(expense.monto_total);
+    if (invoiceVat > 0) {
+      vat = invoiceVat;
     }
   }
 
@@ -158,7 +144,7 @@ function ExpenseDetailPage() {
           <ExpenseSectionCard icon={Receipt} title="Datos de la Factura">
             <ExpenseFieldRow icon={FileText} label="Número de Factura / Código" value={expense.Factura.numero_factura} />
             <ExpenseFieldRow icon={Calendar} label="Fecha de Emisión" value={formatLongDate(expense.Factura.fecha_emision)} />
-            <ExpenseFieldRow icon={DollarSign} label="Monto sin impuestos" value={`${parseFloat(expense.Factura.monto_parcial).toFixed(2)} ${currency}`}
+            <ExpenseFieldRow icon={DollarSign} label="Monto sin impuestos" value={`${(parseFloat(expense.monto_total || 0) - (vat || 0)).toFixed(2)} ${currency}`}
               last={!vat && !(expense.Factura.Detalle_Factura?.length > 0)} />
             {vat && <ExpenseFieldRow icon={DollarSign} label="IVA" value={`${vat.toFixed(2)} ${currency}`} last={!(expense.Factura.Detalle_Factura?.length > 0)} />}
             {expense.Factura.Detalle_Factura?.length > 0 && (

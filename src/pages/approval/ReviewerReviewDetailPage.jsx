@@ -27,6 +27,7 @@ import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {reviewerExpenseDetailPath, reviewerReviewPath} from '../../constants/routes';
 import {getStatusColors} from '../../constants/tripStatusColors';
+import {getExpenseInvoiceVat} from '../../utils/invoiceAmounts';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -111,7 +112,7 @@ function ReviewerReviewDetailPage() {
   const uninvoicedExpenses = nationalExpenses.filter((expense) => !expense.Factura);
 
   const totalVat = invoicedExpenses.reduce((sum, expense) => {
-    return sum + Math.max(0, parseFloat(expense.monto_total || 0) - parseFloat(expense.Factura?.monto_parcial || 0));
+    return sum + getExpenseInvoiceVat(expense);
   }, 0);
 
   const isPending = trip.estado === 'APROBADO_SUPERVISOR';

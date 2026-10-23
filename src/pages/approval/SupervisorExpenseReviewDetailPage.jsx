@@ -30,6 +30,7 @@ import {COLORS} from '../../constants';
 import {supervisorExpenseDetailPath, supervisorTripReviewPath} from '../../constants/routes';
 import {getStatusColors} from '../../constants/tripStatusColors';
 import ReturnReviewButton from '../../features/approval/molecules/ReturnReviewButton';
+import {getExpenseInvoiceVat} from '../../utils/invoiceAmounts';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -112,7 +113,7 @@ function SupervisorExpenseReviewDetailPage() {
   const invoicedExpenses = nationalExpenses.filter((expense) => !!expense.Factura);
   const uninvoicedExpenses = nationalExpenses.filter((expense) => !expense.Factura);
   const totalVat = invoicedExpenses.reduce((sum, expense) => {
-    return sum + Math.max(0, parseFloat(expense.monto_total || 0) - parseFloat(expense.Factura?.monto_parcial || 0));
+    return sum + getExpenseInvoiceVat(expense);
   }, 0);
 
   const currentUserId = getCurrentUserId();

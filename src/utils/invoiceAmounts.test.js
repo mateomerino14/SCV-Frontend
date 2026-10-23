@@ -1,10 +1,14 @@
 import {describe, it, expect} from 'vitest';
-import {splitInvoiceTotal} from './invoiceAmounts';
+import {splitInvoiceTotal, calculateInvoiceVat, getExpenseInvoiceVat} from './invoiceAmounts';
 
 describe('splitInvoiceTotal', () => {
-  it('en una factura saca el IVA por dentro sin cambiar el total', () => {
-    expect(splitInvoiceTotal('305', 'F')).toEqual({subtotal: 269.91, vat: 35.09, total: 305});
-    expect(splitInvoiceTotal(113, 'F')).toEqual({subtotal: 100, vat: 13, total: 113});
+  it('en una factura el IVA es el 13% del total y se resta de él', () => {
+    expect(splitInvoiceTotal('305', 'F')).toEqual({subtotal: 265.35, vat: 39.65, total: 305});
+    expect(splitInvoiceTotal(100, 'F')).toEqual({subtotal: 87, vat: 13, total: 100});
+  });
+
+  it('calcula el IVA como el 13% del total', () => {
+    expect(calculateInvoiceVat('47.75')).toBe(6.21);
   });
 
   it('en un recibo el total es el monto y no hay IVA', () => {
@@ -13,5 +17,10 @@ describe('splitInvoiceTotal', () => {
 
   it('sin total devuelve ceros', () => {
     expect(splitInvoiceTotal('', 'F')).toEqual({subtotal: 0, vat: 0, total: 0});
+  });
+
+  it('solo las facturas tienen IVA en las revisiones', () => {
+    expect(getExpenseInvoiceVat({tipo: 'F', monto_total: '305'})).toBe(39.65);
+    expect(getExpenseInvoiceVat({tipo: 'R', monto_total: '305'})).toBe(0);
   });
 });
