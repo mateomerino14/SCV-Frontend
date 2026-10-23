@@ -132,8 +132,8 @@
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
 Componente: & Cliente web (React, Vite y Tailwind CSS) \\
-Versión: & 1.3 \\
-Fecha: & 17 de octubre de 2026 \\
+Versión: & 1.4 \\
+Fecha: & 23 de octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
 \end{titlepage}
@@ -585,7 +585,7 @@ En los tramos de otra moneda de un gasto internacional (\code{ExpenseFormCard}),
 Bajo las retenciones de un gasto sin factura, la tarjeta muestra el total del documento, el RC-IVA o IUE, el IT y el importe a cancelar, calculados en \code{utils/withholdings.js}: las retenciones se aplican sobre el total y el importe a cancelar es el total menos las retenciones (por ejemplo, 47.62 $-$ 6.19 $-$ 1.43 = 40.00). \code{WithholdingFormulaNote} lo explica en pantalla.
 
 \subsection{Digitalización de comprobantes}
-La carga de facturas presenta cada comprobante en tres columnas (imagen, formulario y detalle de productos) para corregir los datos extraídos antes de guardar. Cada factura tiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir, por si la IA la leyó mal; al modificar una factura guardada (\code{EditInvoicePage}, que usa \code{InvoiceForm} con \code{lockDate}) queda bloqueada. El empleado escribe el total que figura en el papel (``Total de la factura''): con Factura (F) el IVA del 13\% ya está incluido y se separa por dentro (\code{utils/invoiceAmounts.js}: subtotal = total $\div$ 1.13 e IVA = total $-$ subtotal), y el formulario muestra ambos; con Recibo (R) no hay IVA y el total es lo pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo ``Número de Factura / Código'' admite símbolos (\code{@}, \code{\$}, \code{\#}) para los códigos de recibos y boletos. En el detalle de productos (\code{InvoiceDetailPanel}) la cantidad admite hasta 3 decimales, por ejemplo 53.345 litros de combustible o 6 unidades, y se muestra sin ceros de más (\code{formatQuantity}). Las imágenes se comprimen en el navegador antes de enviarse.
+La carga de facturas presenta cada comprobante en tres columnas (imagen, formulario y detalle de productos) para corregir los datos extraídos antes de guardar. Cada factura tiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir, por si la IA la leyó mal; al modificar una factura guardada (\code{EditInvoicePage}, que usa \code{InvoiceForm} con \code{lockDate}) queda bloqueada. El empleado escribe el total que figura en el papel (``Total de la factura''): con Factura (F) el IVA es el 13\% del total y se resta de él (\code{utils/invoiceAmounts.js}: IVA = total $\times$ 0.13 y subtotal = total $-$ IVA), y el formulario muestra ambos; con Recibo (R) no hay IVA y el total es lo pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo ``Número de Factura / Código'' admite símbolos (\code{@}, \code{\$}, \code{\#}) para los códigos de recibos y boletos. En el detalle de productos (\code{InvoiceDetailPanel}) la cantidad admite hasta 3 decimales, por ejemplo 53.345 litros de combustible o 6 unidades, y se muestra sin ceros de más (\code{formatQuantity}). Las imágenes se comprimen en el navegador antes de enviarse.
 
 \subsection{Revisión y observaciones}
 Cada bandeja de revisión tiene las pestañas Pendientes, Aprobados y Rechazados, con filtros por fecha, empleado y sección, y muestra lo revisado más reciente primero, de 12 en 12. Para rechazar se seleccionan observaciones propias de la ronda actual; las de otros revisores se ven, pero no se pueden editar, borrar ni usar para rechazar. El supervisor y el aprobador pueden devolver una revisión tomada por error.
@@ -639,7 +639,7 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo', async ({pa
 });
 \end{lstlisting}
 
-Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 30 pruebas unitarias y 18 de extremo a extremo.
+Las pruebas de extremo a extremo necesitan el backend y el frontend levantados sobre la base de prueba; \code{E2E_BASE_URL} y \code{E2E_API_URL} indican dónde están. En el estado actual pasan 32 pruebas unitarias y 18 de extremo a extremo.
 
 \subsection{Integración continua}
 El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Actions en cada envío y en cada pull request: compila la aplicación y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base PostgreSQL temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña \emph{Actions}.

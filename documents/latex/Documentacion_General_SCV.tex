@@ -131,7 +131,7 @@
 \begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
-Versión: & 1.3 \\
+Versión: & 1.4 \\
 Fecha: & Octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -300,13 +300,13 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 \endfirsthead
 \cabecera \tth{Código} & \tth{Tipo de comprobante} & \tth{Retenciones aplicadas} \\
 \endhead
-\rowcolor{maxamFondo} \code{F} & Compra de bien o servicio con factura & Ninguna; genera IVA crédito fiscal (13\% sobre el subtotal) \\
+\rowcolor{maxamFondo} \code{F} & Compra de bien o servicio con factura & Ninguna; genera IVA crédito fiscal (13\% del total) \\
 \code{R} & Recibo: documento sin IVA ni retención & Ninguna; no lleva IVA \\
 \rowcolor{maxamFondo} \code{C} & Compra de bien sin factura & IUE 5\% e IT 3\% sobre el total \\
 \code{S} & Servicio o alquiler sin factura & RC-IVA 13\% e IT 3\% sobre el total \\
 \end{xltabular}
 
-Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el total es el subtotal más el IVA del 13\%; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura, las retenciones se calculan sobre el total del documento y al proveedor se le cancela el total menos las retenciones. Por ejemplo, en un servicio de 47.62 el RC-IVA es 6.19, el IT 1.43 y el importe a cancelar 40.00. El total cuenta para el presupuesto y como costo en la planilla.
+Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura, las retenciones se calculan sobre el total del documento y al proveedor se le cancela el total menos las retenciones. Por ejemplo, en un servicio de 47.62 el RC-IVA es 6.19, el IT 1.43 y el importe a cancelar 40.00. El total cuenta para el presupuesto y como costo en la planilla.
 
 \section{Categorías de gasto}
 Las categorías incorporan en su nombre el código de la cuenta contable de Oracle, lo que permite que la planilla exportada sea directamente utilizable por el área contable. Al agregar nuevas categorías debe conservarse ese formato.
@@ -534,7 +534,7 @@ Al cargar una factura, la imagen se envía al modelo de visión de Google Gemini
   \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a tres decimales. En un recibo, el monto es el total pagado y no se descuenta IVA. Si un recibo o boleto no tiene número, se registra su código, que puede llevar símbolos como @ o \$.
   \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar, incluida la fecha de emisión por si se leyó mal. Al modificar después una factura ya guardada, la fecha queda bloqueada.
   \item La cantidad de cada producto admite hasta tres decimales, por ejemplo 53.345 litros de combustible o 6 unidades.
-  \item En el formulario, tanto al escanear como al cargar una factura a mano, se registra el total que figura en el papel: en una factura el sistema separa por dentro el subtotal y el IVA sin cambiar el total; en un recibo no hay IVA.
+  \item En el formulario, tanto al escanear como al cargar una factura a mano, se registra el total que figura en el papel: en una factura el IVA es el 13\% del total y el sistema lo resta para obtener el subtotal, sin cambiar el total; en un recibo no hay IVA.
   \item Una factura repetida (mismo número, fecha y proveedor) se rechaza.
 \end{enumerate}
 
