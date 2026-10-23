@@ -131,7 +131,7 @@
 \begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
-Versión: & 1.7 \\
+Versión: & 1.8 \\
 Fecha: & Octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -293,7 +293,7 @@ La ampliación extiende el margen para \textit{cargar} gastos, no el rango de fe
 Mientras el viaje está en curso o rechazado en la rendición, el empleado puede pedir que otra persona activa de su sección rinda los gastos en su nombre. El revisor aprueba o rechaza la solicitud; con la aprobación se avisa al titular y al reemplazo, y el viaje aparece en el panel del reemplazo como ``Rendición de [nombre]''. El titular conserva siempre el acceso a su viaje, y los documentos oficiales llevan su nombre.
 
 \section{Retenciones impositivas}
-El sistema calcula automáticamente las retenciones según el tipo de comprobante, conforme a la normativa boliviana. Las retenciones y el costo se calculan siempre desde el total del gasto, de modo que todos los gastos, incluidos los registrados antes de un ajuste del cálculo, se muestran con la misma regla.
+El sistema calcula automáticamente las retenciones según el tipo de comprobante, conforme a la normativa boliviana. Las retenciones y el costo se calculan siempre desde lo pagado, de modo que todos los gastos, incluidos los registrados antes de un ajuste del cálculo, se muestran con la misma regla.
 
 \begin{xltabular}{\textwidth}{L{1.6cm} L{5.4cm} Y}
 \cabecera \tth{Código} & \tth{Tipo de comprobante} & \tth{Retenciones aplicadas} \\
@@ -302,11 +302,11 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 \endhead
 \rowcolor{maxamFondo} \code{F} & Compra de bien o servicio con factura & Ninguna; genera IVA crédito fiscal (13\% del total) \\
 \code{R} & Recibo: documento sin IVA ni retención & Ninguna; no lleva IVA \\
-\rowcolor{maxamFondo} \code{C} & Compra de bien sin factura & IUE 5\% e IT 3\% sobre el total \\
-\code{S} & Servicio o alquiler sin factura & RC-IVA 13\% e IT 3\% sobre el total \\
+\rowcolor{maxamFondo} \code{C} & Compra de bien sin factura & IUE 5\% e IT 3\% sobre la base incrementada \\
+\code{S} & Servicio o alquiler sin factura & RC-IVA 13\% e IT 3\% sobre la base incrementada \\
 \end{xltabular}
 
-Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura, las retenciones se calculan sobre el total del documento y al proveedor se le cancela el total menos las retenciones. Por ejemplo, en un servicio de 47.62 el RC-IVA es 6.19, el IT 1.43 y el importe a cancelar 40.00. El total cuenta para el presupuesto y como costo en la planilla.
+Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura la empresa asume los impuestos (base incrementada): el empleado registra lo que pagó, la base es lo pagado $\div$ 0.84 en servicios ($\div$ 0.92 en compras) y de ella salen el RC-IVA o IUE y el IT, de modo que pagado + retenciones = base. Por ejemplo, con 40.00 pagados en un servicio la base es 47.62, el RC-IVA 6.19 y el IT 1.43. Lo pagado cuenta para el presupuesto y la base es el importe costo/gasto de la planilla.
 
 \section{Categorías de gasto}
 Las categorías son el plan de cuentas de gastos de la empresa (planilla de Castro): 112 cuentas contables de Oracle más ``OTROS''. Cada nombre empieza con el código de la cuenta, lo que permite que la planilla exportada sea directamente utilizable por el área contable; al agregar nuevas categorías debe conservarse ese formato. Al registrar un gasto, la categoría se elige con un buscador por número de cuenta, nombre o nota de uso; las cuentas que en la planilla de Castro traen una nota de cuándo usarlas (por ejemplo, Manutención (viaje): alimentación cuando el personal está de viaje) la muestran como ayuda, y en el Excel de la planilla la columna de cuenta ofrece la misma lista.
