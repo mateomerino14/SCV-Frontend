@@ -131,7 +131,7 @@
 \begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
-Versión: & 1.5 \\
+Versión: & 1.6 \\
 Fecha: & Octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -309,7 +309,7 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura, las retenciones se calculan sobre el total del documento y al proveedor se le cancela el total menos las retenciones. Por ejemplo, en un servicio de 47.62 el RC-IVA es 6.19, el IT 1.43 y el importe a cancelar 40.00. El total cuenta para el presupuesto y como costo en la planilla.
 
 \section{Categorías de gasto}
-Las categorías son el plan de cuentas de gastos de la empresa (planilla de Castro): 112 cuentas contables de Oracle más ``OTROS''. Cada nombre empieza con el código de la cuenta, lo que permite que la planilla exportada sea directamente utilizable por el área contable; al agregar nuevas categorías debe conservarse ese formato. Al registrar un gasto, la categoría se elige con un buscador por número de cuenta o nombre, y en el Excel de la planilla la columna de cuenta ofrece la misma lista.
+Las categorías son el plan de cuentas de gastos de la empresa (planilla de Castro): 112 cuentas contables de Oracle más ``OTROS''. Cada nombre empieza con el código de la cuenta, lo que permite que la planilla exportada sea directamente utilizable por el área contable; al agregar nuevas categorías debe conservarse ese formato. Al registrar un gasto, la categoría se elige con un buscador por número de cuenta, nombre o nota de uso; las cuentas que en la planilla de Castro traen una nota de cuándo usarlas (por ejemplo, Manutención (viaje): alimentación cuando el personal está de viaje) la muestran como ayuda, y en el Excel de la planilla la columna de cuenta ofrece la misma lista.
 
 \begin{xltabular}{\textwidth}{L{5.2cm} Y}
 \cabecera \tth{Grupo} & \tth{Cuenta} \\
@@ -837,6 +837,7 @@ Clasifica los gastos por concepto, con la cuenta contable de Oracle en el nombre
 \begin{itemize}
   \campo{id_categoria}{Identificador único}{SERIAL, clave primaria}
   \campo{nombre}{Denominación con código contable}{VARCHAR(100), único}
+  \campo{descripcion}{Nota de cuándo usar la cuenta, de la planilla de Castro}{TEXT}
   \campo{requiere_comprobante}{Indica si la categoría exige comprobante}{BOOLEAN}
 \end{itemize}
 

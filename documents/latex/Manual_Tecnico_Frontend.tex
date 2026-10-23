@@ -132,7 +132,7 @@
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
 Componente: & Cliente web (React, Vite y Tailwind CSS) \\
-Versión: & 1.5 \\
+Versión: & 1.6 \\
 Fecha: & 23 de octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -570,7 +570,7 @@ Se muestran en ventana, entre otros: los errores al finalizar un viaje, la devol
 \code{useTripExcelExport} construye la planilla oficial en Excel: logotipo, simbología, distinción entre gastos nacionales e internacionales, cuenta Oracle por categoría, tramos de cambio, totales por moneda, justificaciones de exceso y cinco bloques de firma. El revisor y el tesorero exportan además las planillas de todos los viajes de su lista, según el filtro aplicado, en un solo archivo: una hoja \emph{Resumen} con una fila por viaje y una hoja de planilla por viaje; el administrador puede exportar las del periodo elegido. El empleado descarga en cambio la planilla en PDF, generada por el backend, cuando el viaje está aprobado. Ambos formatos usan las retenciones persistidas por el backend. En las facturas, el IVA va en su columna y el importe costo/gasto es el total menos el IVA; en recibos, gastos sin factura y gastos con alcohol, el costo es el total.
 
 \subsection{Categorías de gasto}
-La categoría se elige entre el plan de cuentas de la empresa (112 cuentas de la planilla de Castro más ``OTROS'') con \code{CategorySelector}, que usa el selector con buscador \code{SearchableSelector} de \code{components/ui}: se puede buscar por número de cuenta o por nombre. La planilla en Excel ofrece la misma lista en la columna CUENTA/ORACLE (\code{constants/oracleAccounts.js}).
+La categoría se elige entre el plan de cuentas de la empresa (112 cuentas de la planilla de Castro más ``OTROS'') con \code{CategorySelector}, que usa el selector con buscador \code{SearchableSelector} de \code{components/ui}: se puede buscar por número de cuenta, nombre o nota de uso. Las cuentas con nota de la planilla de Castro la muestran en la lista (\code{DropdownListItem} con \code{description}) y debajo de la categoría elegida, para no confundir, por ejemplo, Taxis (viaje) con Taxis gestión oficina. La planilla en Excel ofrece la misma lista en la columna CUENTA/ORACLE (\code{constants/oracleAccounts.js}).
 
 \subsection{Motivo del viaje}
 El motivo admite hasta 500 caracteres (\code{constants/tripLimits.js}). Se escribe en \code{AutoResizeTextarea}, dentro de \code{InputField} con \code{alignTop}: empieza en una línea, como los demás campos, crece al escribir hasta seis líneas y muestra un contador. En las listas se recorta a dos o tres líneas.
@@ -603,7 +603,7 @@ Resumen general con indicadores por fase y gráficos, con filtro de periodo (est
 Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora y los pendientes. Se puede desactivar en Ajustes de Cuenta y respeta la preferencia de reducir movimiento.
 
 \section{Documentación de componentes}
-Los componentes de \code{components/ui}, todos los átomos de \code{features}, las moléculas reutilizables y los organismos de la carga de facturas (\code{InvoiceForm}, \code{InvoiceDetailPanel}) están documentados en Storybook, con cada historia junto a su componente (129 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
+Los componentes de \code{components/ui}, todos los átomos de \code{features}, las moléculas reutilizables y los organismos de la carga de facturas (\code{InvoiceForm}, \code{InvoiceDetailPanel}) están documentados en Storybook, con cada historia junto a su componente (131 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
 
 \Needspace{5\baselineskip}
 \begin{lstlisting}
