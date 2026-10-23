@@ -1,3 +1,4 @@
+import {Info} from 'lucide-react';
 import SearchableSelector from '../../../components/ui/SearchableSelector';
 import {COLORS} from '../../../constants';
 
@@ -7,11 +8,15 @@ const styles = {
   disabledWrapper: "rounded-xl px-4 py-3 border flex items-center justify-between",
   disabledText: "text-sm font-inter",
   disabledIcon: "text-xs font-inter",
+  help: "flex gap-1.5 text-[11px] font-inter leading-snug mt-1",
 };
 
 function CategorySelector({categories, categoryId, onChange, error, disabled}) {
   const selectedCategory = categories.find((category) => category.id_categoria === categoryId);
-  const options = categories.map((category) => ({value: category.id_categoria, label: category.nombre}));
+  const options = categories.map((category) => ({
+    value: category.id_categoria, label: category.nombre, description: category.descripcion,
+    searchText: `${category.nombre} ${category.descripcion || ''}`,
+  }));
   if (disabled) {
     return (
       <div className={styles.wrapper}>
@@ -24,8 +29,16 @@ function CategorySelector({categories, categoryId, onChange, error, disabled}) {
     );
   }
   return (
-    <SearchableSelector label="Categoría" options={options} value={categoryId ?? ''} onChange={onChange} error={error}
-      placeholder="Seleccione una Categoría" searchPlaceholder="Busca por número de cuenta o nombre..." />
+    <div className={styles.wrapper}>
+      <SearchableSelector label="Categoría" options={options} value={categoryId ?? ''} onChange={onChange} error={error}
+        placeholder="Seleccione una Categoría" searchPlaceholder="Busca por cuenta, nombre o para qué se usa..." />
+      {selectedCategory?.descripcion && (
+        <p className={styles.help} style={{color: COLORS.labels}}>
+          <Info size={12} className="shrink-0 mt-0.5" style={{color: COLORS.primary}} />
+          <span>{selectedCategory.descripcion}</span>
+        </p>
+      )}
+    </div>
   );
 }
 

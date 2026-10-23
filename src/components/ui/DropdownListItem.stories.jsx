@@ -7,7 +7,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Ítem individual dentro de una lista desplegable (usado por InlineDropdown y EmployeeDropdown). Muestra un check cuando está seleccionado.',
+        component: 'Ítem individual dentro de una lista desplegable (usado por InlineDropdown y EmployeeDropdown). Muestra un check cuando está seleccionado y, opcionalmente, una nota debajo de la etiqueta.',
       },
     },
   },
@@ -19,6 +19,11 @@ export const Unselected = {
 
 export const Selected = {
   args: {label: 'Aéreo', selected: true},
+};
+
+export const WithDescription = {
+  args: {label: '626040 MANUTENCION (VIAJE)', description: 'Alimentación cuando el personal está de viaje', selected: false},
+  decorators: [(Story) => <div style={{width: 320}}><Story /></div>],
 };
 
 export const Interactive = {

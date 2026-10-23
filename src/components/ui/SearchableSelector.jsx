@@ -49,7 +49,7 @@ function SearchableSelector({label, options, value, onChange, placeholder, searc
                   <p className={styles.empty} style={{color: COLORS.labels}}>Sin resultados</p>
                 ) : (
                   filteredOptions.map((option) => (
-                    <DropdownListItem key={String(option.value)} label={option.label}
+                    <DropdownListItem key={String(option.value)} label={option.label} description={option.description}
                       selected={String(value ?? '') === String(option.value)} onClick={() => handleSelect(option)} />
                   ))
                 )}
