@@ -20,70 +20,70 @@ const pendingNotes = {
 const autoLineNote = 'Oracle crea esta línea al validar la factura: es solo de referencia, no se carga';
 
 export const invoiceColumns = [
-  {key: 'tipo', kind: 'fixed', header: 'Tipo', width: 12, list: 'invoiceTypes'},
-  {key: 'justificante', kind: 'oracle', header: 'Nº Justificante', width: 14},
-  {key: 'proveedor', kind: 'system', header: 'Proveedor', width: 34},
-  {key: 'numeroProveedor', kind: 'oracle', header: 'Nº Proveedor', width: 13},
-  {key: 'direccion', kind: 'oracle', header: 'Dirección', width: 16},
-  {key: 'fechaFactura', kind: 'system', header: 'Fecha de la Factura', width: 12},
-  {key: 'numeroFactura', kind: 'system', header: 'Nº Factura', width: 14},
-  {key: 'divisaFactura', kind: 'system', header: 'Div. Factura', width: 9, list: 'currencies'},
-  {key: 'importeFactura', kind: 'system', header: 'Importe de Factura', width: 13, amount: true},
-  {key: 'flexfield', kind: 'system', header: '[ ]', width: 44},
-  {key: 'fechaContable', kind: 'oracle', header: 'Fecha Contable', width: 12},
-  {key: 'codigoImpuesto', kind: 'system', header: 'Código de Impuesto', width: 14, list: 'taxCodes'},
-  {key: 'grupoRetencion', kind: 'system', header: 'Grupo de Retención de Impuestos', width: 24, list: 'withholdingGroups'},
-  {key: 'importeRetenido', kind: 'oracle', header: 'Importe Retenido', width: 12, amount: true},
-  {key: 'descripcion', kind: 'system', header: 'Descripción', width: 60},
-  {key: 'condiciones', kind: 'system', header: 'Condiciones', width: 10, list: 'terms'},
-  {key: 'grupoPago', kind: 'system', header: 'Grupo de Pago', width: 18, list: 'paymentGroups'},
-  {key: 'divisaPago', kind: 'system', header: 'Div. Pago', width: 9, list: 'currencies'},
-  {key: 'importeDescuento', kind: 'oracle', header: 'Importe del Descuento', width: 13, amount: true},
-  {key: 'cuentaPasivo', kind: 'fixed', header: 'Cuenta de Pasivo', width: 34},
-  {key: 'descripcionPasivo', kind: 'oracle', header: 'Descripción de Pasivo', width: 44},
-  {key: 'fechaTcPago', kind: 'oracle', header: 'Fecha T. C. Pago', width: 12},
-  {key: 'divisaFuncional', kind: 'fixed', header: 'Divisa Funcional', width: 9, list: 'currencies'},
-  {key: 'metodoPago', kind: 'fixed', header: 'Método de Pago', width: 12, list: 'paymentMethods'},
-  {key: 'nivelCalculo', kind: 'fixed', header: 'Nivel de Cálculo de Impuestos', width: 12},
-  {key: 'categoriaDocumento', kind: 'fixed', header: 'Nombre de Categoría de Documento', width: 18},
-  {key: 'secuenciaDocumento', kind: 'fixed', header: 'Nombre Secuencia Documento', width: 14},
-  {key: 'importeAprobado', kind: 'oracle', header: 'Importe Aprobado', width: 13, amount: true},
-  {key: 'fechaCambio', kind: 'oracle', header: 'Fecha de Cambio', width: 12},
-  {key: 'claseTipoCambio', kind: 'oracle', header: 'Clase Tipo Cambio', width: 12},
-  {key: 'juegoDistribucion', kind: 'oracle', header: 'Juego Distribución', width: 12},
-  {key: 'tipoCambio', kind: 'oracle', header: 'Tipo de Cambio', width: 10},
-  {key: 'fechaPlazo', kind: 'oracle', header: 'Fecha Plazo', width: 12},
-  {key: 'tipoAnticipo', kind: 'oracle', header: 'Tipo de Anticipo', width: 10},
-  {key: 'fechaLiquidacion', kind: 'oracle', header: 'Fecha de Liquidación', width: 12},
-  {key: 'importeImpuesto', kind: 'oracle', header: 'Importe del Impuesto', width: 12, amount: true},
+  {key: 'tipo', kind: 'fixed', header: 'Tipo', list: 'invoiceTypes'},
+  {key: 'justificante', kind: 'oracle', header: 'Nº Justificante'},
+  {key: 'proveedor', kind: 'system', header: 'Proveedor'},
+  {key: 'numeroProveedor', kind: 'oracle', header: 'Nº Proveedor'},
+  {key: 'direccion', kind: 'oracle', header: 'Dirección'},
+  {key: 'fechaFactura', kind: 'system', header: 'Fecha de la Factura'},
+  {key: 'numeroFactura', kind: 'system', header: 'Nº Factura'},
+  {key: 'divisaFactura', kind: 'system', header: 'Div. Factura', list: 'currencies'},
+  {key: 'importeFactura', kind: 'system', header: 'Importe de Factura', amount: true},
+  {key: 'flexfield', kind: 'system', header: '[ ]'},
+  {key: 'fechaContable', kind: 'oracle', header: 'Fecha Contable'},
+  {key: 'codigoImpuesto', kind: 'system', header: 'Código de Impuesto', list: 'taxCodes'},
+  {key: 'grupoRetencion', kind: 'system', header: 'Grupo de Retención de Impuestos', list: 'withholdingGroups'},
+  {key: 'importeRetenido', kind: 'oracle', header: 'Importe Retenido', amount: true},
+  {key: 'descripcion', kind: 'system', header: 'Descripción'},
+  {key: 'condiciones', kind: 'system', header: 'Condiciones', list: 'terms'},
+  {key: 'grupoPago', kind: 'system', header: 'Grupo de Pago', list: 'paymentGroups'},
+  {key: 'divisaPago', kind: 'system', header: 'Div. Pago', list: 'currencies'},
+  {key: 'importeDescuento', kind: 'oracle', header: 'Importe del Descuento', amount: true},
+  {key: 'cuentaPasivo', kind: 'fixed', header: 'Cuenta de Pasivo'},
+  {key: 'descripcionPasivo', kind: 'oracle', header: 'Descripción de Pasivo'},
+  {key: 'fechaTcPago', kind: 'oracle', header: 'Fecha T. C. Pago'},
+  {key: 'divisaFuncional', kind: 'fixed', header: 'Divisa Funcional', list: 'currencies'},
+  {key: 'metodoPago', kind: 'fixed', header: 'Método de Pago', list: 'paymentMethods'},
+  {key: 'nivelCalculo', kind: 'fixed', header: 'Nivel de Cálculo de Impuestos'},
+  {key: 'categoriaDocumento', kind: 'fixed', header: 'Nombre de Categoría de Documento'},
+  {key: 'secuenciaDocumento', kind: 'fixed', header: 'Nombre Secuencia Documento'},
+  {key: 'importeAprobado', kind: 'oracle', header: 'Importe Aprobado', amount: true},
+  {key: 'fechaCambio', kind: 'oracle', header: 'Fecha de Cambio'},
+  {key: 'claseTipoCambio', kind: 'oracle', header: 'Clase Tipo Cambio'},
+  {key: 'juegoDistribucion', kind: 'oracle', header: 'Juego Distribución'},
+  {key: 'tipoCambio', kind: 'oracle', header: 'Tipo de Cambio'},
+  {key: 'fechaPlazo', kind: 'oracle', header: 'Fecha Plazo'},
+  {key: 'tipoAnticipo', kind: 'oracle', header: 'Tipo de Anticipo'},
+  {key: 'fechaLiquidacion', kind: 'oracle', header: 'Fecha de Liquidación'},
+  {key: 'importeImpuesto', kind: 'oracle', header: 'Importe del Impuesto', amount: true},
 ];
 
 export const lineColumns = [
-  {key: 'numero', kind: 'system', header: 'Nº', width: 5},
-  {key: 'tipo', kind: 'system', header: 'Tipo', width: 20, list: 'lineTypes'},
-  {key: 'importe', kind: 'system', header: 'Importe', width: 12, amount: true},
-  {key: 'codigoImpuesto', kind: 'system', header: 'Cód. Impuesto', width: 14, list: 'lineTaxCodes'},
-  {key: 'fechaContable', kind: 'oracle', header: 'Fecha Contable', width: 12},
-  {key: 'cuenta', kind: 'system', header: 'Cuenta', width: 34},
-  {key: 'incluyeImpuestos', kind: 'oracle', header: 'Incluye Impuestos', width: 10},
-  {key: 'activoFijo', kind: 'oracle', header: 'Activo Fijo', width: 10},
-  {key: 'grupoRetencion', kind: 'system', header: 'Grupo Retención Impuestos', width: 24, list: 'withholdingGroups'},
-  {key: 'descripcion', kind: 'system', header: 'Descripción', width: 60},
-  {key: 'tipoCreacion', kind: 'oracle', header: 'Tipo Creación Retención Impuestos', width: 14},
-  {key: 'claseRenta', kind: 'oracle', header: 'Clase Impuesto Renta', width: 10},
-  {key: 'regionFiscal', kind: 'oracle', header: 'Región Fiscal', width: 10},
-  {key: 'confrontacionFinal', kind: 'fixed', header: 'Confrontación Final', width: 10},
-  {key: 'cantidadConfrontada', kind: 'oracle', header: 'Cantidad Confrontada', width: 10},
-  {key: 'precio', kind: 'oracle', header: 'Precio', width: 10},
-  {key: 'pedido', kind: 'oracle', header: 'Nº Pedido', width: 10},
-  {key: 'unidadMedida', kind: 'oracle', header: 'Unidad de Medida', width: 10},
-  {key: 'cantidadEstadistica', kind: 'oracle', header: 'Cantidad Estadística', width: 10},
-  {key: 'estado', kind: 'oracle', header: 'Estado', width: 12},
-  {key: 'contabilizada', kind: 'oracle', header: 'Contabilizada', width: 10},
-  {key: 'codigoTransaccion', kind: 'oracle', header: 'Cód. Transacción', width: 10},
-  {key: 'flexfield', kind: 'fixed', header: '[ ]', width: 12},
-  {key: 'filaFactura', kind: 'reference', header: 'Fila en FACTURAS', width: 10},
-  {key: 'viaje', kind: 'reference', header: 'Viaje', width: 14},
+  {key: 'numero', kind: 'system', header: 'Nº'},
+  {key: 'tipo', kind: 'system', header: 'Tipo', list: 'lineTypes'},
+  {key: 'importe', kind: 'system', header: 'Importe', amount: true},
+  {key: 'codigoImpuesto', kind: 'system', header: 'Cód. Impuesto', list: 'lineTaxCodes'},
+  {key: 'fechaContable', kind: 'oracle', header: 'Fecha Contable'},
+  {key: 'cuenta', kind: 'system', header: 'Cuenta'},
+  {key: 'incluyeImpuestos', kind: 'oracle', header: 'Incluye Impuestos'},
+  {key: 'activoFijo', kind: 'oracle', header: 'Activo Fijo'},
+  {key: 'grupoRetencion', kind: 'system', header: 'Grupo Retención Impuestos', list: 'withholdingGroups'},
+  {key: 'descripcion', kind: 'system', header: 'Descripción'},
+  {key: 'tipoCreacion', kind: 'oracle', header: 'Tipo Creación Retención Impuestos'},
+  {key: 'claseRenta', kind: 'oracle', header: 'Clase Impuesto Renta'},
+  {key: 'regionFiscal', kind: 'oracle', header: 'Región Fiscal'},
+  {key: 'confrontacionFinal', kind: 'fixed', header: 'Confrontación Final'},
+  {key: 'cantidadConfrontada', kind: 'oracle', header: 'Cantidad Confrontada'},
+  {key: 'precio', kind: 'oracle', header: 'Precio'},
+  {key: 'pedido', kind: 'oracle', header: 'Nº Pedido'},
+  {key: 'unidadMedida', kind: 'oracle', header: 'Unidad de Medida'},
+  {key: 'cantidadEstadistica', kind: 'oracle', header: 'Cantidad Estadística'},
+  {key: 'estado', kind: 'oracle', header: 'Estado'},
+  {key: 'contabilizada', kind: 'oracle', header: 'Contabilizada'},
+  {key: 'codigoTransaccion', kind: 'oracle', header: 'Cód. Transacción'},
+  {key: 'flexfield', kind: 'fixed', header: '[ ]'},
+  {key: 'filaFactura', kind: 'reference', header: 'Fila en FACTURAS'},
+  {key: 'viaje', kind: 'reference', header: 'Viaje'},
 ];
 
 const listValues = {...oracleLists, lineTaxCodes: [...oracleLists.taxCodes, ...oracleLists.withholdingGroups]};
@@ -130,7 +130,7 @@ export function documentMonth(expense) {
 export function buildOracleDescription(trip, expense) {
   const user = trip.Usuario || {};
   const fullName = `${user.nombre || ''} ${user.apellido_paterno || ''}`.trim();
-  const code = `${toOracleExpenseType(expense.tipo)} ${documentMonth(expense)}-${monthNumberPlaceholder}`;
+  const code = `${toOracleExpenseType(expense.tipo)} ${documentMonth(expense)}-${trip.numero_rendicion || monthNumberPlaceholder}`;
   return `${code}  ${fullName} , ${trip.motivo || ''} , ${categoryConcept(expense)}`.toUpperCase().slice(0, maxDescription);
 }
 
@@ -195,7 +195,7 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
   };
   const taxLine = oracleTaxLines[taxCode];
   const lines = [
-    {values: article, missing: [...missingIfEmpty(article.cuenta, 'cuenta'), 'descripcion']},
+    {values: article, missing: [...missingIfEmpty(article.cuenta, 'cuenta'), ...missingIfEmpty(trip.numero_rendicion, 'descripcion')]},
     {values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true},
   ];
   if (withholding) {
@@ -264,7 +264,7 @@ export function buildOracleInvoice(trip, expense) {
     categoriaDocumento: oracleDefaults.documentCategory,
     secuenciaDocumento: oracleDefaults.documentSequence,
   };
-  const missing = ['descripcion'];
+  const missing = missingIfEmpty(trip.numero_rendicion, 'descripcion');
   const overrides = [];
   if (!documentNumber) {
     missing.push('numeroFactura');
@@ -313,7 +313,7 @@ const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thin
 const styleHeader = (sheet, columns) => {
   const header = sheet.getRow(1);
   header.font = {bold: true};
-  header.alignment = {vertical: 'middle', wrapText: true};
+  header.alignment = {horizontal: 'center', vertical: 'middle', wrapText: true};
   header.height = 32;
   columns.forEach((column, index) => {
     const cell = header.getCell(index + 1);
@@ -345,9 +345,35 @@ const styleCell = (cell, column, row) => {
   }
 };
 
+const minColumnWidth = 6;
+const maxColumnWidth = 110;
+
+const textWidth = (value, column) => {
+  if (value === null || value === undefined || value === '') {
+    return 0;
+  }
+  if (column.amount) {
+    return (parseFloat(value) || 0).toFixed(2).length;
+  }
+  return Math.max(...String(value).split('\n').map((line) => line.length));
+};
+
+const fitColumnWidths = (sheet, columns, rows) => {
+  columns.forEach((column, index) => {
+    const headerWidth = Math.max(...column.header.split(' ').map((word) => word.length));
+    const contentWidth = Math.max(0, ...rows.map((row) => {
+      if (column.kind === 'oracle' && !(row.overrides || []).includes(column.key)) {
+        return 0;
+      }
+      return textWidth(row.values[column.key], column);
+    }));
+    sheet.getColumn(index + 1).width = Math.min(maxColumnWidth, Math.max(minColumnWidth, headerWidth, contentWidth) + 2);
+  });
+};
+
 const writeSheet = (workbook, name, columns, rows, ranges) => {
   const sheet = workbook.addWorksheet(name);
-  sheet.columns = columns.map((column) => ({header: column.header, key: column.key, width: column.width}));
+  sheet.columns = columns.map((column) => ({header: column.header, key: column.key}));
   styleHeader(sheet, columns);
   rows.forEach((rowData) => {
     const row = sheet.addRow(rowData.values);
@@ -374,6 +400,7 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
       row.font = {italic: true, color: {argb: 'FF595959'}};
     }
   });
+  fitColumnWidths(sheet, columns, rows);
   sheet.views = [{state: 'frozen', ySplit: 1}];
   return sheet;
 };
@@ -391,6 +418,7 @@ const addLegendSheet = (workbook) => {
   const sheet = workbook.addWorksheet('LEYENDA ORACLE');
   sheet.columns = [{header: 'Color', key: 'color', width: 32}, {header: 'Significado', key: 'meaning', width: 110}];
   sheet.getRow(1).font = {bold: true};
+  sheet.getRow(1).alignment = {horizontal: 'center', vertical: 'middle'};
   sheet.getRow(1).eachCell((cell) => {
     cell.border = cellBorder;
   });

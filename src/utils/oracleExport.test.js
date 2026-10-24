@@ -2,7 +2,7 @@ import {describe, it, expect} from 'vitest';
 import {buildOracleInvoice, buildOracleRows, formatOracleDate, buildSupplierName} from './oracleExport';
 
 const trip = {
-  id_viaje: 40, fecha_inicio: '2026-10-20', motivo: 'Viaje a SCZ por transporte de producto terminado',
+  id_viaje: 40, numero_rendicion: 40, fecha_inicio: '2026-10-20', motivo: 'Viaje a SCZ por transporte de producto terminado',
   Usuario: {nombre: 'Jhimy Wilfredo', apellido_paterno: 'Terrazas', apellido_materno: null},
   Recibo: [{numero: 46870, tipo: 'S', es_gasto_internacional: false, id_gasto: null}],
 };
@@ -29,7 +29,7 @@ describe('Excel para Oracle', () => {
       flexfield: 'Lote de Facturas: 900\nCUF: DD5F2336313F\nCódigo Control: 0\nTipo Factura: 1', cuentaPasivo: '76.8.900.466100.000000.000.000.000', fechaFactura: '21-oct-26',
     });
     expect(lines.map((line) => [line.values.tipo, line.values.importe])).toEqual([['Artículo', 126.13], ['Impuesto', 18.85]]);
-    expect(missing).toEqual(['descripcion']);
+    expect(missing).toEqual([]);
     expect(lines.map((line) => !!line.auto)).toEqual([false, true]);
   });
 
@@ -45,7 +45,7 @@ describe('Excel para Oracle', () => {
       ['Retención de Impuestos', -27.86, '13 RCIVA RET', '76.8.900.475196.000000.000.000.000'],
       ['Retención de Impuestos', -6.43, '3 IT RET', '76.8.900.475195.000000.000.000.000'],
     ]);
-    expect(values.descripcion).toBe('A 10-___  JHIMY WILFREDO TERRAZAS , VIAJE A SCZ POR TRANSPORTE DE PRODUCTO TERMINADO , HOTELES');
+    expect(values.descripcion).toBe('A 10-40  JHIMY WILFREDO TERRAZAS , VIAJE A SCZ POR TRANSPORTE DE PRODUCTO TERMINADO , HOTELES');
   });
 
   it('marca para completar la cuenta del IUE y el tipo de cambio del gasto internacional', () => {
@@ -56,7 +56,7 @@ describe('Excel para Oracle', () => {
     expect(buildOracleInvoice(trip, {...lodging, numero_recibo: '0003431'}).values.numeroFactura).toBe('0003431');
     const international = buildOracleInvoice(trip, {...lodging, es_gasto_internacional: true, monto_total: 50});
     expect(international.values).toMatchObject({divisaFactura: 'USD', importeFactura: 50, grupoRetencion: ''});
-    expect(international.missing).toEqual(['descripcion', 'numeroFactura', 'claseTipoCambio', 'tipoCambio']);
+    expect(international.missing).toEqual(['numeroFactura', 'claseTipoCambio', 'tipoCambio']);
     expect(international.overrides).toEqual(['fechaCambio']);
     expect(international.lines).toHaveLength(2);
   });
@@ -65,6 +65,9 @@ describe('Excel para Oracle', () => {
     const {invoices, lines} = buildOracleRows([{trip, expenses: [fuelInvoice, lodging]}]);
     expect(invoices).toHaveLength(2);
     expect(lines.map((line) => line.values.filaFactura)).toEqual([2, 2, 3, 3, 3, 3]);
-    expect(invoices.map((invoice) => invoice.values.descripcion.slice(0, 8))).toEqual(['F 10-___', 'A 10-___']);
+    expect(invoices.map((invoice) => invoice.values.descripcion.slice(0, 7))).toEqual(['F 10-40', 'A 10-40']);
+    const pending = buildOracleInvoice({...trip, numero_rendicion: null}, lodging);
+    expect(pending.values.descripcion.startsWith('A 10-___')).toBe(true);
+    expect(pending.missing).toContain('descripcion');
   });
 });
