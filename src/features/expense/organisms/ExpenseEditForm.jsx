@@ -6,6 +6,7 @@ import WithholdingSummary from '../molecules/WithholdingSummary';
 import CategorySelector from '../molecules/CategorySelector';
 import CurrencySelector from '../molecules/CurrencySelector';
 import ReceiptUpload from './ReceiptUpload';
+import BackupImagesUpload from '../molecules/BackupImagesUpload';
 
 const styles = {
   toggle: "w-12 h-6 rounded-full relative cursor-pointer transition-colors shrink-0",
@@ -52,11 +53,11 @@ function AccordionSection({active, onToggleActive, icon: Icon, iconColor, label,
 }
 
 function ExpenseEditForm({
-  type, date, supplier, amount, description, categoryId, categories, imagePreview, fieldErrors, saved,
+  type, date, supplier, amount, description, categoryId, categories, imagePreview, backups, fieldErrors, saved,
   isInternationalExpense, usesOtherCurrency, setUsesOtherCurrency, installments, validInstallments, installmentErrors,
   usesSubitems, subitems, validSubitems, subitemErrors, currencies, withholdings, hasWithholdings, finalAmount,
   handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange, handleDescriptionChange, handleCategoryChange,
-  handleImageChange, handleRemoveImage,
+  handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
   handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
   handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
 }) {
@@ -166,6 +167,7 @@ function ExpenseEditForm({
       <CategorySelector categories={categories} categoryId={categoryId} onChange={handleCategoryChange} error={fieldErrors.category} />
       <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image}
         required={categories.find((category) => category.id_categoria === categoryId)?.requiere_comprobante !== false} />
+      <BackupImagesUpload images={backups} onAdd={handleAddBackup} onRemove={handleRemoveBackup} disabled={saved} />
     </>
   );
 }

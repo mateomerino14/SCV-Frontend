@@ -7,6 +7,7 @@ import WithholdingSummary from '../molecules/WithholdingSummary';
 import CategorySelector from '../molecules/CategorySelector';
 import CurrencySelector from '../molecules/CurrencySelector';
 import ReceiptUpload from './ReceiptUpload';
+import BackupImagesUpload from '../molecules/BackupImagesUpload';
 
 const typeLabels = {C: 'Compra sin Factura', S: 'Servicio sin Factura', F: 'Factura', R: 'Recibo'};
 
@@ -66,7 +67,7 @@ function ExpenseFormCard({
   item, index, expanded, onSelect, onRemove, onDuplicate, canRemove, categories, isInternationalExpense, currencies,
   finalAmount, withholdings, hasWithholdings,
   onTypeChange, onDateChange, onSupplierChange, onAmountChange, onDescriptionChange, onCategoryChange,
-  onImageChange, onRemoveImage,
+  onImageChange, onRemoveImage, onAddBackup, onRemoveBackup,
   onToggleOtherCurrency, onAddInstallment, onRemoveInstallment, onInstallmentCurrencyChange, onInstallmentAmountChange, onInstallmentExchangeRateChange,
   onToggleSubitems, onAddSubitem, onRemoveSubitem, onSubitemDescriptionChange, onSubitemAmountChange,
 }) {
@@ -204,6 +205,7 @@ function ExpenseFormCard({
             error={item.fieldErrors.category} disabled={item.saved} />
           <ReceiptUpload previewImage={item.imagePreview} onChange={(file) => onImageChange(item.id, file)}
             onRemove={() => onRemoveImage(item.id)} error={item.fieldErrors.image} disabled={item.saved} required={receiptRequired} />
+          <BackupImagesUpload images={item.backups} onAdd={(file) => onAddBackup(item.id, file)} onRemove={(backupId) => onRemoveBackup(item.id, backupId)} disabled={item.saved} />
         </div>
       )}
     </div>

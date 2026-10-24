@@ -36,7 +36,7 @@ function RegisterExpensePage() {
     finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
     handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange,
-    handleDescriptionChange, handleCategoryChange, handleImageChange, handleRemoveImage,
+    handleDescriptionChange, handleCategoryChange, handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
     handleToggleOtherCurrency, handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
@@ -67,6 +67,7 @@ function RegisterExpensePage() {
             isInternationalExpense={isInternationalExpense} currencies={currencies} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
             onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onAmountChange={handleAmountChange}
             onDescriptionChange={handleDescriptionChange} onCategoryChange={handleCategoryChange} onImageChange={handleImageChange} onRemoveImage={handleRemoveImage}
+            onAddBackup={handleAddBackup} onRemoveBackup={handleRemoveBackup}
             onToggleOtherCurrency={handleToggleOtherCurrency} onAddInstallment={handleAddInstallment} onRemoveInstallment={handleRemoveInstallment}
             onInstallmentCurrencyChange={handleInstallmentCurrencyChange} onInstallmentAmountChange={handleInstallmentAmountChange} onInstallmentExchangeRateChange={handleInstallmentExchangeRateChange}
             onToggleSubitems={handleToggleSubitems} onAddSubitem={handleAddSubitem} onRemoveSubitem={handleRemoveSubitem}

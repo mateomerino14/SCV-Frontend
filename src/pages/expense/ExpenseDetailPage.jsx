@@ -70,6 +70,7 @@ function ExpenseDetailPage() {
   const typeInfo = typeConfig[expense.tipo] || typeConfig.S;
   const hasInvoice = !!expense.Factura;
   const hasImage = expense.Imagen && expense.Imagen.url_archivo;
+  const backups = expense.Imagen_Respaldo || [];
   const receiptRequired = expense.Categoria_Gasto?.requiere_comprobante !== false;
   const isInternational = !!expense.es_gasto_internacional;
   const currency = isInternational ? 'USD' : 'Bs';
@@ -145,6 +146,7 @@ function ExpenseDetailPage() {
         {hasInvoice && (
           <ExpenseSectionCard icon={Receipt} title="Datos de la Factura">
             <ExpenseFieldRow icon={FileText} label="Número de Factura / Código" value={expense.Factura.numero_factura} />
+            {expense.Factura.cuf && <ExpenseFieldRow icon={FileText} label="CUF / Código de Autorización" value={expense.Factura.cuf} />}
             <ExpenseFieldRow icon={Calendar} label="Fecha de Emisión" value={formatLongDate(expense.Factura.fecha_emision)} />
             <ExpenseFieldRow icon={DollarSign} label="Monto sin impuestos" value={`${(parseFloat(expense.monto_total || 0) - (vat || 0)).toFixed(2)} ${currency}`}
               last={!vat && !(expense.Factura.Detalle_Factura?.length > 0)} />
@@ -171,6 +173,15 @@ function ExpenseDetailPage() {
             <div className={styles.imageWrapper} style={{borderColor: COLORS.dataFields}}>
               <img src={expense.Imagen.url_archivo} alt="comprobante" className={styles.image} style={{maxHeight: 450, backgroundColor: COLORS.backgroundHeader}} />
             </div>
+          </ExpenseSectionCard>
+        )}
+        {backups.length > 0 && (
+          <ExpenseSectionCard icon={FileText} title="Respaldos">
+            {backups.map((backup, index) => (
+              <a key={backup.id_respaldo} href={backup.url_archivo} target="_blank" rel="noreferrer" className={`block ${styles.imageWrapper}`} style={{borderColor: COLORS.dataFields}}>
+                <img src={backup.url_archivo} alt={`respaldo ${index + 1}`} className={styles.image} style={{maxHeight: 450, backgroundColor: COLORS.backgroundHeader}} />
+              </a>
+            ))}
           </ExpenseSectionCard>
         )}
       </div>

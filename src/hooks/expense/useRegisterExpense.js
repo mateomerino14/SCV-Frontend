@@ -14,6 +14,8 @@ const maxSubitemDescription = 255;
 let installmentCounter = 0;
 let subitemCounter = 0;
 let itemCounter = 0;
+let backupCounter = 0;
+const maxBackups = 2;
 
 function newInstallment() {
   return {id: `t${++installmentCounter}`, currency: 'EUR', originAmount: '', exchangeRate: ''};
@@ -34,6 +36,7 @@ function newItem() {
     categoryId: null,
     image: null,
     imagePreview: null,
+    backups: [],
     usesOtherCurrency: false,
     installments: [newInstallment()],
     usesSubitems: false,
@@ -149,6 +152,7 @@ function useRegisterExpense(tripId) {
       if (item?.imagePreview) {
         URL.revokeObjectURL(item.imagePreview);
       }
+      item?.backups.forEach((backup) => URL.revokeObjectURL(backup.preview));
       return prev.filter((current) => current.id !== itemId);
     });
   };
@@ -250,6 +254,32 @@ function useRegisterExpense(tripId) {
         URL.revokeObjectURL(item.imagePreview);
       }
       return {...item, image: null, imagePreview: null};
+    }));
+  };
+
+  const handleAddBackup = async (itemId, file) => {
+    if (!file) {
+      return;
+    }
+    const compressed = await compressImage(file);
+    setItems((prev) => prev.map((item) => {
+      if (item.id !== itemId || item.backups.length >= maxBackups) {
+        return item;
+      }
+      return {...item, backups: [...item.backups, {id: `r${++backupCounter}`, file: compressed, preview: URL.createObjectURL(compressed)}]};
+    }));
+  };
+
+  const handleRemoveBackup = (itemId, backupId) => {
+    setItems((prev) => prev.map((item) => {
+      if (item.id !== itemId) {
+        return item;
+      }
+      const removed = item.backups.find((backup) => backup.id === backupId);
+      if (removed) {
+        URL.revokeObjectURL(removed.preview);
+      }
+      return {...item, backups: item.backups.filter((backup) => backup.id !== backupId)};
     }));
   };
 
@@ -535,7 +565,7 @@ function useRegisterExpense(tripId) {
           monto: parseFloat(subitem.amount),
         }));
       }
-      const data = await registerExpense(payload, item.image);
+      const data = await registerExpense(payload, item.image, item.backups.map((backup) => backup.file));
       if (data.error) {
         failed++;
         setItems((prev) => prev.map((current) => {
@@ -579,7 +609,7 @@ function useRegisterExpense(tripId) {
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
     handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange,
-    handleImageChange, handleRemoveImage,
+    handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
     handleToggleOtherCurrency,
     handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,

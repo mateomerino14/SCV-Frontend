@@ -20,6 +20,8 @@ function formatDateToDMY(dateStr) {
 
 let installmentCounter = 0;
 let subitemCounter = 0;
+let backupCounter = 0;
+const maxBackups = 2;
 
 function newInstallment(currency = 'EUR', originAmount = '', exchangeRate = '') {
   return {id: `t${++installmentCounter}`, currency, originAmount, exchangeRate};
@@ -42,6 +44,7 @@ function useEditExpense(expenseId) {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
+  const [backups, setBackups] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState('');
@@ -96,6 +99,7 @@ function useEditExpense(expenseId) {
         setExistingImage(expenseData.Imagen.url_archivo);
         setImagePreview(expenseData.Imagen.url_archivo);
       }
+      setBackups((expenseData.Imagen_Respaldo || []).map((backup) => ({id: `r${++backupCounter}`, file: null, preview: backup.url_archivo, url: backup.url_archivo})));
       if (!categoriesData.error) {
         setCategories(categoriesData);
       }
@@ -150,6 +154,23 @@ function useEditExpense(expenseId) {
     setImage(null);
     setImagePreview(null);
     setExistingImage(null);
+  };
+
+  const handleAddBackup = async (file) => {
+    if (!file || backups.length >= maxBackups) {
+      return;
+    }
+    const compressed = await compressImage(file);
+    setBackups((prev) => [...prev, {id: `r${++backupCounter}`, file: compressed, preview: URL.createObjectURL(compressed), url: null}].slice(0, maxBackups));
+  };
+
+  const handleRemoveBackup = (backupId) => {
+    setBackups((prev) => prev.filter((backup) => {
+      if (backup.id === backupId && backup.file) {
+        URL.revokeObjectURL(backup.preview);
+      }
+      return backup.id !== backupId;
+    }));
   };
 
   const handleAmountChange = (value) => {
@@ -392,6 +413,7 @@ function useEditExpense(expenseId) {
       descripcion: description.trim(),
       id_categoria_gasto: categoryId,
       mantener_imagen: !!existingImage,
+      respaldos_conservados: backups.filter((backup) => backup.url).map((backup) => backup.url),
       es_gasto_internacional: isInternationalExpense,
     };
     if (usesOtherCurrency && validInstallments.length > 0) {
@@ -415,7 +437,8 @@ function useEditExpense(expenseId) {
         monto: parseFloat(subitem.amount),
       }));
     }
-    const data = await updateExpense(expenseId, payload, image);
+    const newBackupFiles = backups.filter((backup) => backup.file).map((backup) => backup.file);
+    const data = await updateExpense(expenseId, payload, image, newBackupFiles);
     setLoading(false);
     if (data.error) {
       showError(data.error);
@@ -428,7 +451,7 @@ function useEditExpense(expenseId) {
     type, setType,
     date, supplier, amount, description,
     categoryId, categories,
-    imagePreview, loading, loadingData,
+    imagePreview, backups, loading, loadingData,
     error, fieldErrors, saved, tripId,
     isInternationalExpense,
     usesOtherCurrency, setUsesOtherCurrency,
@@ -437,7 +460,7 @@ function useEditExpense(expenseId) {
     usesSubitems, subitems, validSubitems, subitemErrors,
     currencies,
     withholdings, hasWithholdings,
-    handleImageChange, handleRemoveImage,
+    handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
     handleAmountChange,
     handleAddInstallment, handleRemoveInstallment,
     handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
