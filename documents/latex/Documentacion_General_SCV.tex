@@ -973,7 +973,7 @@ Eventos de acceso y de seguridad, con fines de trazabilidad.
 \end{itemize}
 
 \subsubsection{Correlativo\_Recibo y Recibo}
-\code{Correlativo_Recibo} es una tabla de una sola fila con el último número de recibo emitido. Su incremento lo hace una función almacenada que actualiza y devuelve el nuevo valor en una sola operación, evitando que dos emisiones simultáneas obtengan el mismo número. \code{Recibo} guarda el número asignado a cada recibo individual o agrupado, para reutilizarlo cuando se vuelve a enviar.
+\code{Correlativo_Recibo} es una tabla de una sola fila con el último número de recibo emitido. Su incremento lo hace una función almacenada que actualiza y devuelve el nuevo valor en una sola operación, evitando que dos emisiones simultáneas obtengan el mismo número. \code{Correlativo_Rendicion} guarda el último número de rendición de cada mes: cuando una rendición queda aprobada del todo, un trigger le asigna el siguiente número del mes de sus comprobantes, que aparece en la descripción del Excel para Oracle (por ejemplo ``F 10-41''). \code{Recibo} guarda el número asignado a cada recibo individual o agrupado, para reutilizarlo cuando se vuelve a enviar.
 \begin{itemize}
   \campo{id_recibo}{Identificador único}{SERIAL, clave primaria}
   \campo{numero}{Número del recibo}{INTEGER, único}
