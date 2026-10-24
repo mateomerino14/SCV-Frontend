@@ -9,6 +9,7 @@ const maxAmount = 99999.99;
 const maxDescription = 1000;
 const maxExchangeRate = 9999.9999;
 const maxSubitemDescription = 255;
+const maxReceiptNumber = 50;
 
 function formatDateToDMY(dateStr) {
   if (!dateStr) {
@@ -37,6 +38,7 @@ function useEditExpense(expenseId) {
   const [type, setType] = useState('C');
   const [date, setDate] = useState('');
   const [supplier, setSupplier] = useState('');
+  const [receiptNumber, setReceiptNumber] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState(null);
@@ -73,6 +75,7 @@ function useEditExpense(expenseId) {
       setType(expenseData.tipo || 'C');
       setDate(expenseData.fecha_gasto?.split('T')[0] || '');
       setSupplier(expenseData.Proveedor?.nombre || '');
+      setReceiptNumber(expenseData.numero_recibo || '');
       setDescription(expenseData.descripcion || '');
       setCategoryId(expenseData.id_categoria || null);
       setTripId(expenseData.id_viaje || null);
@@ -308,6 +311,10 @@ function useEditExpense(expenseId) {
     setSubitemErrors((prev) => ({...prev, [subitemId]: {...prev[subitemId], amount: undefined}}));
   };
 
+  const handleReceiptNumberChange = (value) => {
+    setReceiptNumber(value.replace(/[\u0000-\u001F\u007F]/g, '').slice(0, maxReceiptNumber));
+  };
+
   const handleSupplierChange = (value) => {
     if (value.length > 50) {
       return;
@@ -409,6 +416,7 @@ function useEditExpense(expenseId) {
       tipo: type,
       fecha_gasto: date,
       proveedor: supplier.trim() || null,
+      numero_recibo: receiptNumber.trim() || null,
       monto_total: finalAmount,
       descripcion: description.trim(),
       id_categoria_gasto: categoryId,
@@ -449,7 +457,7 @@ function useEditExpense(expenseId) {
 
   return {
     type, setType,
-    date, supplier, amount, description,
+    date, supplier, receiptNumber, amount, description,
     categoryId, categories,
     imagePreview, backups, loading, loadingData,
     error, fieldErrors, saved, tripId,
@@ -466,7 +474,7 @@ function useEditExpense(expenseId) {
     handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem,
     handleSubitemDescriptionChange, handleSubitemAmountChange,
-    handleSupplierChange,
+    handleSupplierChange, handleReceiptNumberChange,
     handleDescriptionChange, handleDateChange,
     handleCategoryChange, handleSave,
   };

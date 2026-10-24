@@ -66,7 +66,7 @@ function AccordionSection({active, expanded, onToggleActive, onToggleExpanded, i
 function ExpenseFormCard({
   item, index, expanded, onSelect, onRemove, onDuplicate, canRemove, categories, isInternationalExpense, currencies,
   finalAmount, withholdings, hasWithholdings,
-  onTypeChange, onDateChange, onSupplierChange, onAmountChange, onDescriptionChange, onCategoryChange,
+  onTypeChange, onDateChange, onSupplierChange, onReceiptNumberChange, onAmountChange, onDescriptionChange, onCategoryChange,
   onImageChange, onRemoveImage, onAddBackup, onRemoveBackup,
   onToggleOtherCurrency, onAddInstallment, onRemoveInstallment, onInstallmentCurrencyChange, onInstallmentAmountChange, onInstallmentExchangeRateChange,
   onToggleSubitems, onAddSubitem, onRemoveSubitem, onSubitemDescriptionChange, onSubitemAmountChange,
@@ -109,6 +109,11 @@ function ExpenseFormCard({
             <input type="text" placeholder="Nombre del proveedor" maxLength={50} disabled={item.saved}
               className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
               value={item.supplier} onChange={(event) => onSupplierChange(item.id, event.target.value)} />
+          </ExpenseField>
+          <ExpenseField label="N° de Recibo (Opcional)">
+            <input type="text" placeholder="Número impreso en el recibo, si tiene" maxLength={50} disabled={item.saved}
+              className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
+              value={item.receiptNumber} onChange={(event) => onReceiptNumberChange(item.id, event.target.value)} />
           </ExpenseField>
           <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} suffix={isInternationalExpense ? 'USD' : 'Bs'} error={item.fieldErrors.amount}>
             <input type="text" inputMode="decimal" placeholder="0.00" disabled={item.saved || automaticAmount}

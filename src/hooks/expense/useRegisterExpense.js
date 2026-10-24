@@ -10,6 +10,7 @@ const maxAmount = 99999.99;
 const maxDescription = 1000;
 const maxExchangeRate = 9999.9999;
 const maxSubitemDescription = 255;
+const maxReceiptNumber = 50;
 
 let installmentCounter = 0;
 let subitemCounter = 0;
@@ -31,6 +32,7 @@ function newItem() {
     type: 'C',
     date: '',
     supplier: '',
+    receiptNumber: '',
     amount: '',
     description: '',
     categoryId: null,
@@ -182,6 +184,10 @@ function useRegisterExpense(tripId) {
       return;
     }
     updateItem(itemId, {supplier: value});
+  };
+
+  const handleReceiptNumberChange = (itemId, value) => {
+    updateItem(itemId, {receiptNumber: value.replace(/[\u0000-\u001F\u007F]/g, '').slice(0, maxReceiptNumber)});
   };
 
   const handleAmountChange = (itemId, value) => {
@@ -539,6 +545,7 @@ function useRegisterExpense(tripId) {
         tipo: item.type,
         fecha_gasto: item.date,
         proveedor: item.supplier.trim() || null,
+        numero_recibo: item.receiptNumber.trim() || null,
         monto_total: finalAmount,
         descripcion: item.description.trim(),
         id_categoria_gasto: item.categoryId,
@@ -607,7 +614,7 @@ function useRegisterExpense(tripId) {
     currencies,
     validInstallmentsOf, validSubitemsOf, finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
-    handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange,
+    handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange,
     handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
     handleToggleOtherCurrency,

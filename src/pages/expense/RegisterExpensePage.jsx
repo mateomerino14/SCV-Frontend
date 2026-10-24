@@ -35,7 +35,7 @@ function RegisterExpensePage() {
     hasRequiresAuthorization, allSaved, pendingToSave, currencies,
     finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
-    handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange,
+    handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange, handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
     handleToggleOtherCurrency, handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
@@ -65,7 +65,7 @@ function RegisterExpensePage() {
           <ExpenseFormCard key={item.id} item={item} index={index} expanded={expandedId === item.id} onSelect={handleSelectItem}
             onRemove={handleRemoveItem} onDuplicate={handleDuplicateItem} canRemove={items.length > 1} categories={categories}
             isInternationalExpense={isInternationalExpense} currencies={currencies} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
-            onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onAmountChange={handleAmountChange}
+            onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onReceiptNumberChange={handleReceiptNumberChange} onAmountChange={handleAmountChange}
             onDescriptionChange={handleDescriptionChange} onCategoryChange={handleCategoryChange} onImageChange={handleImageChange} onRemoveImage={handleRemoveImage}
             onAddBackup={handleAddBackup} onRemoveBackup={handleRemoveBackup}
             onToggleOtherCurrency={handleToggleOtherCurrency} onAddInstallment={handleAddInstallment} onRemoveInstallment={handleRemoveInstallment}

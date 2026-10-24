@@ -109,6 +109,7 @@ function ExpenseDetailPage() {
           <ExpenseFieldRow icon={Calendar} label="Fecha del Gasto" value={formatLongDate(expense.fecha_gasto)} />
           {expense.Categoria_Gasto && <ExpenseFieldRow icon={Tag} label="Categoría" value={expense.Categoria_Gasto.nombre} />}
           {expense.Proveedor && <ExpenseFieldRow icon={User} label="Proveedor" value={expense.Proveedor.nombre} />}
+          {expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo" value={expense.numero_recibo} />}
           {expense.Proveedor?.numero_doc_fiscal && (
             <ExpenseFieldRow icon={FileText} label={expense.Proveedor.tipo_doc_fiscal || 'Documento'} value={expense.Proveedor.numero_doc_fiscal} />
           )}

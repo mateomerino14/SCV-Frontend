@@ -53,10 +53,10 @@ function AccordionSection({active, onToggleActive, icon: Icon, iconColor, label,
 }
 
 function ExpenseEditForm({
-  type, date, supplier, amount, description, categoryId, categories, imagePreview, backups, fieldErrors, saved,
+  type, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, fieldErrors, saved,
   isInternationalExpense, usesOtherCurrency, setUsesOtherCurrency, installments, validInstallments, installmentErrors,
   usesSubitems, subitems, validSubitems, subitemErrors, currencies, withholdings, hasWithholdings, finalAmount,
-  handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange, handleDescriptionChange, handleCategoryChange,
+  handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange, handleDescriptionChange, handleCategoryChange,
   handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
   handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
   handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
@@ -73,6 +73,11 @@ function ExpenseEditForm({
         <input type="text" placeholder="Nombre del proveedor" maxLength={50} disabled={saved}
           className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
           value={supplier} onChange={(event) => handleSupplierChange(event.target.value)} />
+      </ExpenseField>
+      <ExpenseField label="N° de Recibo (Opcional)">
+        <input type="text" placeholder="Número impreso en el recibo, si tiene" maxLength={50} disabled={saved}
+          className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
+          value={receiptNumber} onChange={(event) => handleReceiptNumberChange(event.target.value)} />
       </ExpenseField>
       <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} suffix={isInternationalExpense ? 'USD' : 'Bs'} error={fieldErrors.amount}>
         <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved || automaticAmount}

@@ -13,6 +13,10 @@ const kindStyles = {
 };
 const pendingFill = 'FFFFE699';
 const pendingNote = 'Completar antes de subir a Oracle';
+const monthNumberPlaceholder = '___';
+const pendingNotes = {
+  descripcion: 'Reemplazar ___ por el número de rendición del mes que lleva contabilidad',
+};
 const autoLineNote = 'Oracle crea esta línea al validar la factura: es solo de referencia, no se carga';
 
 export const invoiceColumns = [
@@ -123,10 +127,10 @@ export function documentMonth(expense) {
   return parseInt(documentDate(expense).slice(5, 7), 10) || '';
 }
 
-export function buildOracleDescription(trip, expense, sequence = 1) {
+export function buildOracleDescription(trip, expense) {
   const user = trip.Usuario || {};
   const fullName = `${user.nombre || ''} ${user.apellido_paterno || ''}`.trim();
-  const code = `${toOracleExpenseType(expense.tipo)} ${documentMonth(expense)}-${sequence}`;
+  const code = `${toOracleExpenseType(expense.tipo)} ${documentMonth(expense)}-${monthNumberPlaceholder}`;
   return `${code}  ${fullName} , ${trip.motivo || ''} , ${categoryConcept(expense)}`.toUpperCase().slice(0, maxDescription);
 }
 
@@ -160,6 +164,9 @@ const getDocumentNumber = (trip, expense) => {
     }
     return invoiceNumber;
   }
+  if (expense.numero_recibo) {
+    return expense.numero_recibo;
+  }
   return findReceiptNumber(trip, expense);
 };
 
@@ -188,7 +195,7 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
   };
   const taxLine = oracleTaxLines[taxCode];
   const lines = [
-    {values: article, missing: missingIfEmpty(article.cuenta, 'cuenta')},
+    {values: article, missing: [...missingIfEmpty(article.cuenta, 'cuenta'), 'descripcion']},
     {values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true},
   ];
   if (withholding) {
@@ -208,7 +215,7 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
   return lines.map((line, index) => ({...line, values: {...line.values, numero: index + 1}}));
 };
 
-export function buildOracleInvoice(trip, expense, sequence = 1) {
+export function buildOracleInvoice(trip, expense) {
   const tax = getExpenseTaxValues(expense);
   const isInternational = !!expense.es_gasto_internacional;
   const paid = roundAmount(expense.monto_total);
@@ -225,7 +232,7 @@ export function buildOracleInvoice(trip, expense, sequence = 1) {
     taxCode = oracleTaxCodes.invoiceVat;
   }
   let payment = oraclePaymentTerms.noInvoice;
-  if (expense.Factura) {
+  if (expense.Factura && expense.tipo === 'F') {
     payment = oraclePaymentTerms.invoice;
   }
   let currency = oracleDefaults.functionalCurrency;
@@ -233,7 +240,7 @@ export function buildOracleInvoice(trip, expense, sequence = 1) {
     currency = 'USD';
   }
   const invoiceDate = formatOracleDate(documentDate(expense));
-  const description = buildOracleDescription(trip, expense, sequence);
+  const description = buildOracleDescription(trip, expense);
   const documentNumber = getDocumentNumber(trip, expense);
   const values = {
     ...emptyRow(invoiceColumns),
@@ -257,7 +264,7 @@ export function buildOracleInvoice(trip, expense, sequence = 1) {
     categoriaDocumento: oracleDefaults.documentCategory,
     secuenciaDocumento: oracleDefaults.documentSequence,
   };
-  const missing = [];
+  const missing = ['descripcion'];
   const overrides = [];
   if (!documentNumber) {
     missing.push('numeroFactura');
@@ -319,7 +326,7 @@ const styleHeader = (sheet, columns) => {
 const styleCell = (cell, column, row) => {
   if (row.missing.includes(column.key)) {
     cell.fill = solidFill(pendingFill);
-    cell.note = pendingNote;
+    cell.note = pendingNotes[column.key] || pendingNote;
     return;
   }
   if ((row.overrides || []).includes(column.key)) {
@@ -404,11 +411,8 @@ export function buildOracleRows(statements) {
   const invoices = [];
   const lines = [];
   statements.forEach(({trip, expenses}) => {
-    const monthCounters = {};
     expenses.forEach((expense) => {
-      const month = documentMonth(expense);
-      monthCounters[month] = (monthCounters[month] || 0) + 1;
-      const invoice = buildOracleInvoice(trip, expense, monthCounters[month]);
+      const invoice = buildOracleInvoice(trip, expense);
       invoices.push({values: invoice.values, missing: invoice.missing, overrides: invoice.overrides});
       const invoiceRow = invoices.length + 1;
       invoice.lines.forEach((line) => lines.push({...line, values: {...line.values, filaFactura: invoiceRow}}));
