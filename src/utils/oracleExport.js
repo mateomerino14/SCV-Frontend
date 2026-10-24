@@ -1,4 +1,5 @@
 import buildTripCode from './tripCode';
+import {toOracleExpenseType} from './expenseTypeCode';
 import {getExpenseTaxValues} from './expenseTaxValues';
 import {oracleDefaults, oracleTaxCodes, oracleTaxLines, oracleWithholdings, oraclePaymentTerms, oracleLists} from '../constants/oracleLists';
 
@@ -116,10 +117,17 @@ const categoryConcept = (expense) => {
   return expense.descripcion || '';
 };
 
-export function buildOracleDescription(trip, expense) {
+const documentDate = (expense) => String(expense.Factura?.fecha_emision || expense.fecha_gasto || '').slice(0, 10);
+
+export function documentMonth(expense) {
+  return parseInt(documentDate(expense).slice(5, 7), 10) || '';
+}
+
+export function buildOracleDescription(trip, expense, sequence = 1) {
   const user = trip.Usuario || {};
   const fullName = `${user.nombre || ''} ${user.apellido_paterno || ''}`.trim();
-  return `RC ${buildTripCode(trip)}  ${fullName} , ${trip.motivo || ''} , ${categoryConcept(expense)}`.toUpperCase().slice(0, maxDescription);
+  const code = `${toOracleExpenseType(expense.tipo)} ${documentMonth(expense)}-${sequence}`;
+  return `${code}  ${fullName} , ${trip.motivo || ''} , ${categoryConcept(expense)}`.toUpperCase().slice(0, maxDescription);
 }
 
 const getWithholdingType = (expense) => {
@@ -158,9 +166,9 @@ const getDocumentNumber = (trip, expense) => {
 const buildFlexfield = (isVatInvoice, cuf) => {
   const {invoiceBatch, context, controlCode, bolInvoiceType} = oracleDefaults;
   if (isVatInvoice) {
-    return [invoiceBatch, '', '', '', context, '', '', cuf || '', controlCode, '', bolInvoiceType, '', ''].join('.');
+    return [`Lote de Facturas: ${invoiceBatch}`, `CUF: ${cuf || ''}`, `Código Control: ${controlCode}`, `Tipo Factura: ${bolInvoiceType}`].join('\n');
   }
-  return [invoiceBatch, '', '', '', context, '', '', '', '', '', '', '', ''].join('.');
+  return [`Lote de Facturas: ${invoiceBatch}`, `Contexto: ${context}`].join('\n');
 };
 
 const missingIfEmpty = (value, key) => {
@@ -200,7 +208,7 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
   return lines.map((line, index) => ({...line, values: {...line.values, numero: index + 1}}));
 };
 
-export function buildOracleInvoice(trip, expense) {
+export function buildOracleInvoice(trip, expense, sequence = 1) {
   const tax = getExpenseTaxValues(expense);
   const isInternational = !!expense.es_gasto_internacional;
   const paid = roundAmount(expense.monto_total);
@@ -224,8 +232,8 @@ export function buildOracleInvoice(trip, expense) {
   if (isInternational) {
     currency = 'USD';
   }
-  const invoiceDate = formatOracleDate(expense.Factura?.fecha_emision || expense.fecha_gasto);
-  const description = buildOracleDescription(trip, expense);
+  const invoiceDate = formatOracleDate(documentDate(expense));
+  const description = buildOracleDescription(trip, expense, sequence);
   const documentNumber = getDocumentNumber(trip, expense);
   const values = {
     ...emptyRow(invoiceColumns),
@@ -338,11 +346,18 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
       if (column.amount) {
         cell.numFmt = '0.00';
       }
+      if (column.key === 'flexfield') {
+        cell.alignment = {wrapText: true, vertical: 'top'};
+      }
       if (column.list && column.kind !== 'oracle') {
         cell.dataValidation = {type: 'list', allowBlank: true, formulae: [ranges[column.list]]};
       }
       styleCell(cell, column, rowData);
     });
+    const flexLines = String(rowData.values.flexfield || '').split('\n').length;
+    if (flexLines > 1) {
+      row.height = flexLines * 15;
+    }
     if (rowData.auto) {
       row.getCell(2).note = autoLineNote;
       row.font = {italic: true, color: {argb: 'FF595959'}};
@@ -380,8 +395,11 @@ export function buildOracleRows(statements) {
   const invoices = [];
   const lines = [];
   statements.forEach(({trip, expenses}) => {
+    const monthCounters = {};
     expenses.forEach((expense) => {
-      const invoice = buildOracleInvoice(trip, expense);
+      const month = documentMonth(expense);
+      monthCounters[month] = (monthCounters[month] || 0) + 1;
+      const invoice = buildOracleInvoice(trip, expense, monthCounters[month]);
       invoices.push({values: invoice.values, missing: invoice.missing, overrides: invoice.overrides});
       const invoiceRow = invoices.length + 1;
       invoice.lines.forEach((line) => lines.push({...line, values: {...line.values, filaFactura: invoiceRow}}));

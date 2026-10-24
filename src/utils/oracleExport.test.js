@@ -26,7 +26,7 @@ describe('Excel para Oracle', () => {
     const {values, lines, missing} = buildOracleInvoice(trip, fuelInvoice);
     expect(values).toMatchObject({
       importeFactura: 144.98, codigoImpuesto: '13-IVA', condiciones: '0D', grupoPago: 'M-CENTRO', importeDescuento: '', numeroProveedor: '',
-      flexfield: '900....Factura Estándar...DD5F2336313F.0..1..', cuentaPasivo: '76.8.900.466100.000000.000.000.000', fechaFactura: '21-oct-26',
+      flexfield: 'Lote de Facturas: 900\nCUF: DD5F2336313F\nCódigo Control: 0\nTipo Factura: 1', cuentaPasivo: '76.8.900.466100.000000.000.000.000', fechaFactura: '21-oct-26',
     });
     expect(lines.map((line) => [line.values.tipo, line.values.importe])).toEqual([['Artículo', 126.13], ['Impuesto', 18.85]]);
     expect(missing).toEqual([]);
@@ -37,7 +37,7 @@ describe('Excel para Oracle', () => {
     const {values, lines} = buildOracleInvoice(trip, lodging);
     expect(values).toMatchObject({
       numeroFactura: '46870', importeFactura: 214.29, codigoImpuesto: 'EMP-SIN-IVA', grupoRetencion: 'SERVICIOS Y ALQUILERES', importeRetenido: '',
-      condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', flexfield: '900....Factura Estándar........',
+      condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', flexfield: 'Lote de Facturas: 900\nContexto: Factura Estándar',
     });
     expect(lines.map((line) => [line.values.tipo, line.values.importe, line.values.codigoImpuesto, line.values.cuenta])).toEqual([
       ['Artículo', 214.29, 'EMP-SIN-IVA', '76.8.900.626030.000000.000.000.000'],
@@ -45,7 +45,7 @@ describe('Excel para Oracle', () => {
       ['Retención de Impuestos', -27.86, '13 RCIVA RET', '76.8.900.475196.000000.000.000.000'],
       ['Retención de Impuestos', -6.43, '3 IT RET', '76.8.900.475195.000000.000.000.000'],
     ]);
-    expect(values.descripcion).toBe('RC VIA-40/2026  JHIMY WILFREDO TERRAZAS , VIAJE A SCZ POR TRANSPORTE DE PRODUCTO TERMINADO , HOTELES');
+    expect(values.descripcion).toBe('A 10-1  JHIMY WILFREDO TERRAZAS , VIAJE A SCZ POR TRANSPORTE DE PRODUCTO TERMINADO , HOTELES');
   });
 
   it('marca para completar la cuenta del IUE y el tipo de cambio del gasto internacional', () => {
@@ -63,5 +63,6 @@ describe('Excel para Oracle', () => {
     const {invoices, lines} = buildOracleRows([{trip, expenses: [fuelInvoice, lodging]}]);
     expect(invoices).toHaveLength(2);
     expect(lines.map((line) => line.values.filaFactura)).toEqual([2, 2, 3, 3, 3, 3]);
+    expect(invoices.map((invoice) => invoice.values.descripcion.slice(0, 7))).toEqual(['F 10-1 ', 'A 10-2 ']);
   });
 });
