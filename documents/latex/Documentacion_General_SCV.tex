@@ -131,7 +131,7 @@
 \begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
-Versión: & 2.0 \\
+Versión: & 2.1 \\
 Fecha: & Octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -162,7 +162,8 @@ Fecha: & Octubre de 2026 \\
   \item Se aplican retenciones impositivas automáticas según el tipo de comprobante, conforme a la normativa tributaria boliviana.
   \item Existe un plazo de tolerancia de cuatro días posteriores a la finalización del viaje para completar la carga de gastos. Vencido ese plazo, se debe solicitar una ampliación al revisor.
   \item El empleado puede pedir que otra persona de su sección rinda los gastos de su viaje en su nombre.
-  \item El sistema exporta la rendición en Excel, replicando el formato institucional de la planilla de rendición de cuentas, también de varios viajes a la vez para el revisor, el tesorero y el administrador; genera en PDF el memorándum, la confirmación de fondos, los recibos y la rendición final. El administrador puede exportar además a Excel el resumen general, los usuarios, los cargos y las secciones.
+  \item En los gastos sin factura, nacionales o internacionales, se pueden adjuntar hasta dos respaldos además del comprobante, por ejemplo el comprobante del cambio de moneda; los revisores los ven en el detalle del gasto.
+  \item El sistema exporta la rendición en Excel, replicando el formato institucional de la planilla de rendición de cuentas y, en el mismo archivo, las hojas FACTURAS y LINEAS con el formato que contabilidad sube a Oracle, también de varios viajes a la vez para el revisor, el tesorero y el administrador; genera en PDF el memorándum, la confirmación de fondos, los recibos y la rendición final. El administrador puede exportar además a Excel el resumen general, los usuarios, los cargos y las secciones.
 \end{enumerate}
 
 \section{Roles del sistema}
@@ -572,7 +573,7 @@ En las pantallas del empleado, ``En Curso'' usa el rojo institucional porque mar
 \end{itemize}
 
 \section{Planillas}
-Información confidencial, contenida en la documentación de Excel recibida. El formato definitivo de la planilla lo proporcionará la empresa y se incorporará cuando se reciba. El sistema replica el formato institucional al exportar la rendición, incorporando el logotipo, la tabla de simbología de comprobantes, la distinción por color entre gastos nacionales e internacionales, las listas desplegables de cuenta contable, las justificaciones de exceso y los bloques de firma de cada instancia de aprobación. El empleado descarga además su planilla en PDF una vez aprobado el viaje.
+Información confidencial, contenida en la documentación de Excel recibida. El formato definitivo de la planilla lo proporcionará la empresa y se incorporará cuando se reciba. El sistema replica el formato institucional al exportar la rendición, incorporando el logotipo, la tabla de simbología de comprobantes, la distinción por color entre gastos nacionales e internacionales, las listas desplegables de cuenta contable, las justificaciones de exceso y los bloques de firma de cada instancia de aprobación. El mismo archivo incluye las hojas FACTURAS y LINEAS, con las columnas de la factura y de sus líneas de distribución tal como las usa Oracle: los valores fijos (lote 900, cuenta de pasivo 466100, método de pago, categoría y secuencia del documento) se completan solos, los campos que en Oracle son listas de valores se eligen de una lista desplegable y lo que el sistema no conoce (número de proveedor y dirección del empleado, entre otros) queda resaltado en amarillo para completarlo. El empleado descarga además su planilla en PDF una vez aprobado el viaje.
 
 \section{Stack tecnológico}
 
@@ -637,6 +638,7 @@ Al cargar una factura, la imagen se envía al modelo de visión de Google Gemini
   \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a tres decimales. En un recibo, el monto es el total pagado y no se descuenta IVA. Si un recibo o boleto no tiene número, se registra su código, que puede llevar símbolos como @ o \$.
   \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar, incluida la fecha de emisión por si se leyó mal. Al modificar después una factura ya guardada, la fecha queda bloqueada.
   \item La cantidad de cada producto admite hasta tres decimales, por ejemplo 53.345 litros de combustible o 6 unidades.
+  \item Se lee también el CUF (código de autorización) de la factura, que el empleado puede corregir y que se usa en las hojas para Oracle.
   \item En el formulario, tanto al escanear como al cargar una factura a mano, se registra el total que figura en el papel: en una factura el IVA es el 13\% del total y el sistema lo resta para obtener el subtotal, sin cambiar el total; en un recibo no hay IVA.
   \item Una factura repetida (mismo número, fecha y proveedor) se rechaza.
 \end{enumerate}
@@ -714,7 +716,7 @@ El esquema está compuesto por \textbf{24 tablas}, agrupadas según las entidade
 \rowcolor{maxamFondo} Catálogo & Rol, Cargo, Seccion, Categoria\_Gasto, Impuesto, Proveedor \\
 Usuarios & Usuario, Codigo\_Verificacion, Auditoria \\
 \rowcolor{maxamFondo} Viajes & Viaje, Solicitud\_Autorizacion\_Plazo, Solicitud\_Reemplazo, Revision\_Viaje \\
-Gastos & Gasto, Gasto\_Subitem, Gasto\_Tramo\_Moneda, Imagen \\
+Gastos & Gasto, Gasto\_Subitem, Gasto\_Tramo\_Moneda, Imagen, Imagen\_Respaldo \\
 \rowcolor{maxamFondo} Facturas & Factura, Detalle\_Factura, Factura\_Impuestos \\
 Transversal & Comentario, Correlativo\_Recibo, Recibo, Configuracion\_Recordatorio \\
 \end{xltabular}
@@ -902,6 +904,14 @@ Comprobante adjunto a un gasto.
   \campo{id_gasto}{Gasto al que pertenece}{INTEGER, único}
 \end{itemize}
 
+\subsubsection{Imagen\_Respaldo}
+Respaldos extra de un gasto sin factura (hasta 2), por ejemplo el comprobante del cambio de moneda.
+\begin{itemize}
+  \campo{id_respaldo}{Identificador único}{SERIAL, clave primaria}
+  \campo{url_archivo}{URL del archivo}{TEXT}
+  \campo{id_gasto}{Gasto al que pertenece; se borra con él}{INTEGER}
+\end{itemize}
+
 \subsubsection{Factura}
 Factura vinculada a un gasto, en relación uno a uno.
 \begin{itemize}
@@ -909,6 +919,7 @@ Factura vinculada a un gasto, en relación uno a uno.
   \campo{numero_factura}{Número del comprobante o, en recibos y boletos sin número, su código (admite símbolos)}{VARCHAR(50)}
   \campo{fecha_emision}{Fecha de emisión}{DATE}
   \campo{monto_parcial}{Importe sin impuestos}{DECIMAL(10,2)}
+  \campo{cuf}{Código de autorización (CUF) de la factura, para Oracle}{VARCHAR(100)}
   \campo{id_gasto}{Gasto asociado}{INTEGER, único}
   \campo{id_proveedor}{Proveedor emisor}{INTEGER}
   \item Unicidad sobre \code{(numero_factura, fecha_emision, id_proveedor)} para evitar duplicados.
