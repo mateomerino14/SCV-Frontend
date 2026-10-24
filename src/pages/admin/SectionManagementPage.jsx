@@ -29,6 +29,7 @@ const styles = {
   cardIcon: 'w-12 h-12 rounded-full flex items-center justify-center shrink-0',
   cardInfo: 'flex flex-col flex-1 min-w-0',
   cardName: 'text-sm font-bold font-inter',
+  cardCodes: 'text-xs font-inter',
   actionsRow: 'flex items-center gap-2 shrink-0',
   actionBtn: 'w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer',
   fab: 'fixed bottom-24 right-5 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer z-10',
@@ -74,6 +75,7 @@ function SectionManagementPage() {
             </div>
             <div className={styles.cardInfo}>
               <p className={styles.cardName} style={{color: COLORS.text}}>{section.nombre}</p>
+              {section.codigo_dependencia && <p className={styles.cardCodes} style={{color: COLORS.labels}}>Oracle: {section.codigo_dependencia} / {section.codigo_seccion || '000'}</p>}
             </div>
             <div className={styles.actionsRow}>
               <div className={styles.actionBtn} style={{backgroundColor: section.activo ? '#d4edda' : COLORS.error}}>
@@ -115,7 +117,7 @@ function SectionManagementPage() {
         btnLabel="Registrar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <SectionFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
-        title="Editar Sección" subtitle="Actualice el nombre de la sección seleccionada."
+        title="Editar Sección" subtitle="Actualice el nombre y los códigos de Oracle de la sección."
         btnLabel="Actualizar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <ConfirmDialog isOpen={showSuspend} icon={selectedSection?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}

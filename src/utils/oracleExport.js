@@ -17,6 +17,7 @@ const pendingNote = 'Completar antes de subir a Oracle';
 const monthNumberPlaceholder = '___';
 const pendingNotes = {
   descripcion: 'Reemplazar ___ por el número de rendición del mes que lleva contabilidad',
+  cuenta: 'Revisar la cuenta: falta el código de Oracle de la sección del empleado (Administración > Secciones) o la cuenta de la retención',
 };
 const autoLineNote = 'Oracle crea esta línea al validar la factura: es solo de referencia, no se carga';
 
@@ -99,11 +100,13 @@ export function formatOracleDate(value) {
   return `${day}-${monthNames[parseInt(month, 10) - 1]}-${year.slice(2)}`;
 }
 
-export function buildOracleAccount(account) {
+export function buildOracleAccount(account, sectionCodes = {}) {
   if (!account) {
     return '';
   }
-  const {company, businessUnit, dependency, subaccount, section, product, complement} = oracleDefaults;
+  const {company, businessUnit, subaccount, product, complement} = oracleDefaults;
+  const dependency = sectionCodes.dependency || oracleDefaults.dependency;
+  const section = sectionCodes.section || oracleDefaults.section;
   return [company, businessUnit, dependency, account, subaccount, section, product, complement].join('.');
 }
 
@@ -190,13 +193,15 @@ const emptyRow = (columns) => Object.fromEntries(columns.map((column) => [column
 
 const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, withholding, tax}) => {
   const base = {...emptyRow(lineColumns), flexfield: '..........', viaje: buildTripCode(trip)};
+  const employeeSection = trip.Usuario?.Seccion || {};
+  const sectionCodes = {dependency: employeeSection.codigo_dependencia, section: employeeSection.codigo_seccion};
   const article = {
-    ...base, tipo: 'Artículo', importe: articleAmount, codigoImpuesto: taxCode, cuenta: buildOracleAccount(categoryCode(expense)),
+    ...base, tipo: 'Artículo', importe: articleAmount, codigoImpuesto: taxCode, cuenta: buildOracleAccount(categoryCode(expense), sectionCodes),
     grupoRetencion: withholding?.group || '', descripcion: description, confrontacionFinal: 'No',
   };
   const taxLine = oracleTaxLines[taxCode];
   const lines = [
-    {values: article, missing: [...missingIfEmpty(article.cuenta, 'cuenta'), ...missingIfEmpty(trip.numero_rendicion, 'descripcion')]},
+    {values: article, missing: [...missingIfEmpty(article.cuenta && sectionCodes.dependency, 'cuenta'), ...missingIfEmpty(trip.numero_rendicion, 'descripcion')]},
     {values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true},
   ];
   if (withholding) {
@@ -400,7 +405,7 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
 const legendRows = [
   ['Blanco', 'Datos listos para Oracle: los pone el sistema o son valores fijos. La nota de cada encabezado dice cuál.', plainHeader, null],
   ['Celeste', 'Lo llena Oracle al subir la factura, así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.header, kindStyles.oracle.cell],
-  ['Amarillo', 'Falta un dato que el sistema no tiene (CUF, número de recibo, cuenta del IUE, número de rendición). Completar antes de subir.', pendingFill, pendingFill],
+  ['Amarillo', 'Falta un dato que el sistema no tiene (CUF, número de recibo, códigos de Oracle de la sección, cuenta del IUE, número de rendición). Completar antes de subir.', pendingFill, pendingFill],
 ];
 
 const addLegendSheet = (workbook) => {

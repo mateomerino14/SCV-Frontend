@@ -3,7 +3,7 @@ import {buildOracleInvoice, buildOracleRows, formatOracleDate, buildSupplierName
 
 const trip = {
   id_viaje: 40, numero_rendicion: 40, fecha_inicio: '2026-10-20', motivo: 'Viaje a SCZ por transporte de producto terminado',
-  Usuario: {nombre: 'Jhimy Wilfredo', apellido_paterno: 'Terrazas', apellido_materno: null},
+  Usuario: {nombre: 'Jhimy Wilfredo', apellido_paterno: 'Terrazas', apellido_materno: null, Seccion: {codigo_dependencia: '421', codigo_seccion: '200'}},
   Recibo: [{numero: 46870, tipo: 'S', es_gasto_internacional: false, id_gasto: null}],
 };
 const fuelInvoice = {
@@ -40,7 +40,7 @@ describe('Excel para Oracle', () => {
       condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', flexfield: 'Lote de Facturas: 900\nContexto: Factura Estándar',
     });
     expect(lines.map((line) => [line.values.tipo, line.values.importe, line.values.codigoImpuesto, line.values.cuenta])).toEqual([
-      ['Artículo', 214.29, 'EMP-SIN-IVA', '76.8.900.626030.000000.000.000.000'],
+      ['Artículo', 214.29, 'EMP-SIN-IVA', '76.8.421.626030.000000.200.000.000'],
       ['Impuesto', 0, 'EMP-SIN-IVA', '76.8.900.472000.000000.000.000.000'],
       ['Retención de Impuestos', -27.86, '13 RCIVA RET', '76.8.900.475196.000000.000.000.000'],
       ['Retención de Impuestos', -6.43, '3 IT RET', '76.8.900.475195.000000.000.000.000'],
@@ -65,6 +65,9 @@ describe('Excel para Oracle', () => {
     const {invoices, lines} = buildOracleRows([{trip, expenses: [fuelInvoice, lodging]}]);
     expect(invoices).toHaveLength(2);
     expect(lines.map((line) => line.values.filaFactura)).toEqual([2, 2, 3, 3, 3, 3]);
+    const noCodes = buildOracleInvoice({...trip, Usuario: {...trip.Usuario, Seccion: {}}}, lodging);
+    expect(noCodes.lines[0].values.cuenta).toBe('76.8.900.626030.000000.000.000.000');
+    expect(noCodes.lines[0].missing).toContain('cuenta');
     expect(invoices.map((invoice) => invoice.values.descripcion.slice(0, 7))).toEqual(['F 10-40', 'A 10-40']);
     const pending = buildOracleInvoice({...trip, numero_rendicion: null}, lodging);
     expect(pending.values.descripcion.startsWith('A 10-___')).toBe(true);
