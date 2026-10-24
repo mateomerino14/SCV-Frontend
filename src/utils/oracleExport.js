@@ -265,20 +265,14 @@ export function buildOracleInvoice(trip, expense) {
     secuenciaDocumento: oracleDefaults.documentSequence,
   };
   const missing = missingIfEmpty(trip.numero_rendicion, 'descripcion');
-  const overrides = [];
   if (!documentNumber) {
     missing.push('numeroFactura');
   }
   if (isVatInvoice && !expense.Factura?.cuf) {
     missing.push('flexfield');
   }
-  if (isInternational) {
-    values.fechaCambio = invoiceDate;
-    overrides.push('fechaCambio');
-    missing.push('claseTipoCambio', 'tipoCambio');
-  }
   const lines = buildLines({trip, expense, description, taxCode, articleAmount: roundAmount(invoiceAmount - vat), vat, withholding, tax});
-  return {values, missing, overrides, lines};
+  return {values, missing, lines};
 }
 
 const columnLetter = (index) => {
@@ -329,9 +323,6 @@ const styleCell = (cell, column, row) => {
     cell.note = pendingNotes[column.key] || pendingNote;
     return;
   }
-  if ((row.overrides || []).includes(column.key)) {
-    return;
-  }
   const fill = kindStyles[column.kind].cell;
   if (row.auto && column.kind === 'system') {
     cell.fill = solidFill(kindStyles.oracle.cell);
@@ -362,7 +353,7 @@ const fitColumnWidths = (sheet, columns, rows) => {
   columns.forEach((column, index) => {
     const headerWidth = Math.max(...column.header.split(' ').map((word) => word.length));
     const contentWidth = Math.max(0, ...rows.map((row) => {
-      if (column.kind === 'oracle' && !(row.overrides || []).includes(column.key)) {
+      if (column.kind === 'oracle') {
         return 0;
       }
       return textWidth(row.values[column.key], column);
@@ -410,7 +401,7 @@ const legendRows = [
   ['Gris', 'Valor por defecto que no cambia (tipo Estándar, cuenta de pasivo, Cheque, BOB, Línea, Facturas estándar, AP.F.BOL, etc.).', kindStyles.fixed.header, kindStyles.fixed.cell],
   ['Celeste, en blanco', 'Lo llena Oracle al subir la factura (Nº justificante, Nº proveedor, dirección, fechas, importes calculados, estado). No tocar.', kindStyles.oracle.header, kindStyles.oracle.cell],
   ['Fila celeste en cursiva (LINEAS)', 'Línea de impuesto o retención que Oracle crea solo al validar. Está para revisar los montos; no se carga.', kindStyles.oracle.header, kindStyles.oracle.cell],
-  ['Amarillo', 'Falta un dato que el sistema no tiene (CUF, número de recibo, cuenta del IUE, tipo de cambio en USD). Completar antes de subir.', pendingFill, pendingFill],
+  ['Amarillo', 'Falta un dato que el sistema no tiene (CUF, número de recibo, cuenta del IUE, número de rendición). Completar antes de subir.', pendingFill, pendingFill],
   ['Lila', 'Columnas de referencia del sistema (fila de la factura y viaje). No son de Oracle.', kindStyles.reference.header, kindStyles.reference.cell],
 ];
 
@@ -441,7 +432,7 @@ export function buildOracleRows(statements) {
   statements.forEach(({trip, expenses}) => {
     expenses.forEach((expense) => {
       const invoice = buildOracleInvoice(trip, expense);
-      invoices.push({values: invoice.values, missing: invoice.missing, overrides: invoice.overrides});
+      invoices.push({values: invoice.values, missing: invoice.missing});
       const invoiceRow = invoices.length + 1;
       invoice.lines.forEach((line) => lines.push({...line, values: {...line.values, filaFactura: invoiceRow}}));
     });
