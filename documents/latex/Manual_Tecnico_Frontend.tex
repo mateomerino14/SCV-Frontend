@@ -132,7 +132,7 @@
 Autor: & Mateo Alejandro Merino Vidal \\
 Empresa: & MAXAM FANEXA \\
 Componente: & Cliente web (React, Vite y Tailwind CSS) \\
-Versión: & 1.8 \\
+Versión: & 2.0 \\
 Fecha: & 23 de octubre de 2026 \\
 \end{tabular}
 \vspace{1.8cm}
@@ -272,7 +272,7 @@ Todas las páginas, salvo la de ingreso, se cargan con \code{React.lazy}: cada r
 
 \subsection{Requisitos}
 \begin{itemize}
-  \item Node.js 22 o superior y npm.
+  \item Node.js 22.22 o superior y npm (las herramientas de pruebas lo piden; la aplicación funciona desde 22.12).
   \item El backend en ejecución y accesible desde el navegador.
 \end{itemize}
 
@@ -585,7 +585,7 @@ El \emph{Control Diario} (\code{DailyBreakdownCard}) muestra una tarjeta por dí
 En los tramos de otra moneda de un gasto internacional (\code{ExpenseFormCard}), el empleado elige la moneda de la lista compartida (\code{constants/currencies.js}), escribe el monto y el tipo de cambio que le aplicaron (``1 USD = cuántos X'') y ve al momento el equivalente en dólares.
 
 \subsection{Retenciones de gastos sin factura}
-Bajo las retenciones de un gasto sin factura, la tarjeta muestra el monto pagado, el RC-IVA o IUE, el IT y el importe costo, calculados en \code{utils/withholdings.js} con base incrementada: el importe costo es lo pagado $\div$ 0.84 en servicios ($\div$ 0.92 en compras) y de él salen las retenciones, de modo que pagado + retenciones = importe costo (por ejemplo, 40.00 + 6.19 + 1.43 = 47.62). \code{WithholdingFormulaNote} lo explica en pantalla.
+Bajo las retenciones de un gasto sin factura, la tarjeta \code{WithholdingSummary} (la misma en el registro y la edición) muestra el monto pagado, el RC-IVA o IUE, el IT y el importe costo, calculados en \code{utils/withholdings.js} con base incrementada: el importe costo es lo pagado $\div$ 0.84 en servicios ($\div$ 0.92 en compras) y de él salen las retenciones, de modo que pagado + retenciones = importe costo (por ejemplo, 40.00 + 6.19 + 1.43 = 47.62). \code{WithholdingFormulaNote} lo explica en pantalla.
 
 \subsection{Digitalización de comprobantes}
 La carga de facturas presenta cada comprobante en tres columnas (imagen, formulario y detalle de productos) para corregir los datos extraídos antes de guardar. Cada factura tiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir, por si la IA la leyó mal; al modificar una factura guardada (\code{EditInvoicePage}, que usa \code{InvoiceForm} con \code{lockDate}) queda bloqueada. El empleado escribe el total que figura en el papel (``Total de la factura''): con Factura (F) el IVA es el 13\% del total y se resta de él (\code{utils/invoiceAmounts.js}: IVA = total $\times$ 0.13 y subtotal = total $-$ IVA), y el formulario muestra ambos; con Recibo (R) no hay IVA y el total es lo pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo ``Número de Factura / Código'' admite símbolos (\code{@}, \code{\$}, \code{\#}) para los códigos de recibos y boletos. En el detalle de productos (\code{InvoiceDetailPanel}) la cantidad admite hasta 3 decimales, por ejemplo 53.345 litros de combustible o 6 unidades, y se muestra sin ceros de más (\code{formatQuantity}). Las imágenes se comprimen en el navegador antes de enviarse.
@@ -603,13 +603,16 @@ Resumen general con indicadores por fase y gráficos, con filtro de periodo (est
 Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora y los pendientes. Se puede desactivar en Ajustes de Cuenta y respeta la preferencia de reducir movimiento.
 
 \section{Documentación de componentes}
-Los componentes de \code{components/ui}, todos los átomos de \code{features}, las moléculas reutilizables y los organismos de la carga de facturas (\code{InvoiceForm}, \code{InvoiceDetailPanel}) están documentados en Storybook, con cada historia junto a su componente (131 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
+Los componentes de \code{components/ui}, todos los átomos de \code{features}, las moléculas reutilizables y los organismos de la carga de facturas (\code{InvoiceForm}, \code{InvoiceDetailPanel}) están documentados en Storybook, con cada historia junto a su componente (133 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
 
 \Needspace{5\baselineskip}
 \begin{lstlisting}
 npm run storybook          # http://localhost:6006
 npm run build-storybook    # sitio estático de la documentación
 \end{lstlisting}
+
+\section{Dependencias y seguridad}
+\code{npm audit} no reporta vulnerabilidades. \code{package.json} fuerza (\code{overrides}) la versión 11 de \code{uuid} para ExcelJS, que solo usa su función \code{v4}; el navegador usa la versión empaquetada de ExcelJS, por lo que el Excel sale igual.
 
 \section{Pruebas automáticas}
 Una prueba automática es código que usa el sistema como lo haría una persona y verifica que el resultado sea el correcto. Se ejecutan con un comando y, si un cambio rompe algo, fallan antes de que llegue a producción.

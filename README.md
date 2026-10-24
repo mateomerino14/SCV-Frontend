@@ -4,7 +4,7 @@ Cliente web del sistema de gestión de viajes corporativos y rendición de gasto
 
 ## Requisitos
 
-- Node.js 22 o superior
+- Node.js 22.22 o superior (lo piden las herramientas de pruebas; la app funciona desde 22.12)
 - Una instancia del backend en ejecución
 
 ## Instalación
@@ -122,7 +122,7 @@ e2e/                     Pruebas de extremo a extremo (Playwright) y sus ayudas
 | Nivel | Definición | Ejemplos |
 |---|---|---|
 | Átomo | Elemento indivisible sin lógica de negocio | `TripRoute`, `ExpenseObsButton`, `TripStatusBadge` |
-| Molécula | Composición que resuelve una unidad funcional | `ExpenseBudgetBar`, `ExpenseSettlementCard`, `CategorySelector` (plan de cuentas con buscador) |
+| Molécula | Composición que resuelve una unidad funcional | `ExpenseBudgetBar`, `ExpenseSettlementCard`, `CategorySelector` (plan de cuentas con buscador), `WithholdingSummary` |
 | Organismo | Bloque autónomo y complejo | `ExpenseInvoicedTable`, `ExpenseTripInfoCard`, `UserFormModal` |
 
 ## Roles y rutas
@@ -224,7 +224,7 @@ Al crear o editar un viaje, el motivo admite hasta 500 caracteres (`constants/tr
 
 La categoría de un gasto se elige entre el plan de cuentas de la empresa (112 cuentas de la planilla de Castro más «OTROS») con un buscador por número de cuenta, nombre o nota de uso (`CategorySelector`, que usa `SearchableSelector` de `components/ui/`). Las cuentas con nota de la planilla de Castro (por ejemplo, Taxis (viaje) frente a Taxis gestión oficina) la muestran en la lista y debajo de la categoría elegida; la planilla en Excel ofrece la misma lista en la columna CUENTA/ORACLE (`constants/oracleAccounts.js`).
 
-La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir (por si la IA la leyó mal); al modificar una factura guardada (`EditInvoicePage`, `InvoiceForm` con `lockDate`) queda bloqueada. El empleado escribe el **total que figura en el papel** («Total de la factura»): con Factura (F) el IVA es el 13 % del total y se resta de él (`utils/invoiceAmounts.js`: IVA = total × 0.13 y subtotal = total − IVA; con 305 queda 265.35 + 39.65), y el formulario muestra ambos; con Recibo (R) no hay IVA y el total es lo pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo «Número de Factura / Código» admite símbolos (`@`, `$`, `#`) para los códigos de recibos y boletos. La cantidad del detalle (`InvoiceDetailPanel`) admite hasta 3 decimales (53.345 litros o 6 unidades) y se muestra sin ceros de más (`formatQuantity`). En los gastos sin factura, la tarjeta de retenciones muestra el monto pagado, el RC-IVA o IUE, el IT y el importe costo (pagado ÷ 0.84 en servicios, ÷ 0.92 en compras), calculados en `utils/withholdings.js`; `WithholdingFormulaNote` lo explica.
+La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir (por si la IA la leyó mal); al modificar una factura guardada (`EditInvoicePage`, `InvoiceForm` con `lockDate`) queda bloqueada. El empleado escribe el **total que figura en el papel** («Total de la factura»): con Factura (F) el IVA es el 13 % del total y se resta de él (`utils/invoiceAmounts.js`: IVA = total × 0.13 y subtotal = total − IVA; con 305 queda 265.35 + 39.65), y el formulario muestra ambos; con Recibo (R) no hay IVA y el total es lo pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo «Número de Factura / Código» admite símbolos (`@`, `$`, `#`) para los códigos de recibos y boletos. La cantidad del detalle (`InvoiceDetailPanel`) admite hasta 3 decimales (53.345 litros o 6 unidades) y se muestra sin ceros de más (`formatQuantity`). En los gastos sin factura, la tarjeta de retenciones (`WithholdingSummary`, compartida por el registro y la edición) muestra el monto pagado, el RC-IVA o IUE, el IT y el importe costo (pagado ÷ 0.84 en servicios, ÷ 0.92 en compras), calculados en `utils/withholdings.js`; `WithholdingFormulaNote` lo explica.
 
 ### Control de plazos
 
@@ -266,6 +266,10 @@ npm run storybook
 Las pruebas unitarias no necesitan nada más. Las de extremo a extremo necesitan el backend y el frontend levantados con la base de prueba (organización de `testing_02_organizacion_prueba.sql`); `E2E_BASE_URL` y `E2E_API_URL` indican dónde están (por defecto `localhost:5173` y `localhost:5055`). La primera vez hay que instalar el navegador con `npx playwright install chromium`.
 
 En GitHub las pruebas se ejecutan solas en cada `push` y pull request (`.github/workflows/pruebas.yml`): compila el proyecto y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña **Actions**.
+
+## Dependencias y seguridad
+
+`npm audit` no reporta vulnerabilidades. `package.json` fuerza (`overrides`) la versión 11 de `uuid` para ExcelJS, que solo usa su función `v4`; el navegador usa la versión empaquetada de ExcelJS, así que el Excel sale igual. No hace falta `npm audit fix --force`.
 
 ## Convenciones
 
