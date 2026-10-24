@@ -743,6 +743,8 @@ Secciones de la empresa. Se usan como respaldo en la asignación del supervisor 
 \begin{itemize}
   \campo{id_seccion}{Identificador único}{SERIAL, clave primaria}
   \campo{nombre}{Nombre de la sección}{VARCHAR(100), único}
+  \campo{codigo_dependencia}{Dependencia (centro de costo) en la cuenta de Oracle, por ejemplo 421}{VARCHAR(3)}
+  \campo{codigo_seccion}{Sección en la cuenta de Oracle, por ejemplo 200}{VARCHAR(3)}
   \campo{activo}{Indica si la sección está habilitada}{BOOLEAN}
 \end{itemize}
 
