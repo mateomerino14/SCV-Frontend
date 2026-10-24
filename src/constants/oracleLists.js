@@ -7,7 +7,6 @@ export const oracleDefaults = {
   product: '000',
   complement: '000',
   liabilityAccount: '466100',
-  liabilityDescription: 'BOL.INT\\. .SEDE.PROVEEDORES - EMPLEADOS.0.0.0.0',
   invoiceBatch: '900',
   context: 'Factura Estándar',
   controlCode: '0',
@@ -19,7 +18,6 @@ export const oracleDefaults = {
   documentCategory: 'Facturas estándar',
   documentSequence: 'AP.F.BOL',
   supplierSuffix: '(BOL)',
-  lineStatus: 'Validadas',
 };
 
 export const oracleTaxCodes = {
