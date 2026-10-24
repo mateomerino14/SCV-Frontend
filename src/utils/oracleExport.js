@@ -300,6 +300,8 @@ const addListsSheet = (workbook) => {
 };
 
 const solidFill = (argb) => ({type: 'pattern', pattern: 'solid', fgColor: {argb}});
+const thinLine = {style: 'thin', color: {argb: 'FF8C8C8C'}};
+const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
 
 const styleHeader = (sheet, columns) => {
   const header = sheet.getRow(1);
@@ -310,6 +312,7 @@ const styleHeader = (sheet, columns) => {
     const cell = header.getCell(index + 1);
     cell.fill = solidFill(kindStyles[column.kind].header);
     cell.note = kindStyles[column.kind].note;
+    cell.border = cellBorder;
   });
 };
 
@@ -343,6 +346,7 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
     const row = sheet.addRow(rowData.values);
     columns.forEach((column, index) => {
       const cell = row.getCell(index + 1);
+      cell.border = cellBorder;
       if (column.amount) {
         cell.numFmt = '0.00';
       }
@@ -380,8 +384,13 @@ const addLegendSheet = (workbook) => {
   const sheet = workbook.addWorksheet('LEYENDA ORACLE');
   sheet.columns = [{header: 'Color', key: 'color', width: 32}, {header: 'Significado', key: 'meaning', width: 110}];
   sheet.getRow(1).font = {bold: true};
+  sheet.getRow(1).eachCell((cell) => {
+    cell.border = cellBorder;
+  });
   legendRows.forEach(([label, meaning, colorFill, cellFill]) => {
     const row = sheet.addRow({color: label, meaning});
+    row.getCell(1).border = cellBorder;
+    row.getCell(2).border = cellBorder;
     row.getCell(1).fill = solidFill(colorFill);
     if (cellFill) {
       row.getCell(2).fill = solidFill(cellFill);
