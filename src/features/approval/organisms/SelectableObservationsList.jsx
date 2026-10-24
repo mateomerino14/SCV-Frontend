@@ -48,7 +48,6 @@ function SelectableObservationsList({observations, canManage, currentUserId, onA
     return null;
   }
 
-  // Solo se pueden seleccionar (para editar o borrar) las observaciones propias
   const isOwn = (observation) => !currentUserId || observation.id_usuario === currentUserId;
 
   const handleSelect = (observation) => {
@@ -61,7 +60,6 @@ function SelectableObservationsList({observations, canManage, currentUserId, onA
     }
     setSelected(observation);
   };
-
 
   let editDeleteOpacity = 0.5;
   let editDeleteBackground = COLORS.dataFields;

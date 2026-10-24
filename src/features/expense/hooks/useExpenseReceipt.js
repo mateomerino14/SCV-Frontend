@@ -1,7 +1,6 @@
 import {useState} from 'react';
 import {sendIndividualReceipt} from '../../../services/expense/expenseService';
 
-// Mensaje de confirmacion: indica el numero y si fue un reenvio del mismo recibo
 export function buildReceiptSentMessage(data) {
   let number = '';
   if (data?.numeroRecibo) {

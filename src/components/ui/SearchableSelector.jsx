@@ -20,7 +20,6 @@ const dropdownVariants = {
   visible: {opacity: 1, y: 0, scaleY: 1},
 };
 
-// Selector con buscador; emptyOption agrega una opcion sin asignar arriba de la lista
 function SearchableSelector({label, options, value, onChange, placeholder, searchPlaceholder, emptyOption, error}) {
   const allOptions = emptyOption ? [emptyOption, ...options] : options;
   const {

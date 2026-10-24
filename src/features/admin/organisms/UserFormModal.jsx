@@ -10,7 +10,6 @@ import {COLORS} from '../../../constants';
 import useUserFormModal from '../hooks/useUserFormModal';
 import {avatarDefault} from '../../../constants/defaultImages';
 
-
 const styles = {
   overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
   scrollWrapper: 'w-full max-w-sm md:max-w-2xl mx-4 max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl',

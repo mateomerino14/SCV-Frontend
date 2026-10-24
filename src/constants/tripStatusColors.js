@@ -1,4 +1,3 @@
-// Colores por estado de viaje, iguales en todas las pantallas y roles
 const pendingReview = {bg: '#e8d5ff', color: '#5b00a0'};
 const waitingApprover = {bg: '#ffd700aa', color: '#7a5900'};
 const waitingFunds = {bg: '#ffd8a8aa', color: '#8a4b00'};

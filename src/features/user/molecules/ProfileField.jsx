@@ -13,7 +13,6 @@ const styles = {
   actionsRow: 'flex items-center gap-1.5 shrink-0',
 };
 
-// En un correo, el salto de linea se permite en la arroba y no en medio del nombre
 function renderValue(value, inputType) {
   if (!value) {
     return '—';

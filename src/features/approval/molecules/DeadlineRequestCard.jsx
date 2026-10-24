@@ -5,7 +5,6 @@ import {formatDateTime, formatDateRange} from '../../../utils/dateFormatter';
 import TripRoute from '../../trip/atoms/TripRoute';
 import {avatarDefault} from '../../../constants/defaultImages';
 
-
 const styles = {
   card: "rounded-2xl p-4 shadow-sm flex flex-col h-full",
   headerRow: "flex items-start gap-3 mb-3",

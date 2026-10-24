@@ -43,7 +43,6 @@ function ProfilePage() {
   } = useProfile();
   const {showModal: showPhotoModal, open: openPhotoModal, close: closePhotoModal, handleNewPhoto, handleRemovePhoto: handleRemovePhotoModal} =
     usePhotoModal(handleChangePhoto, handleRemovePhoto, loadUser);
-  // Cierra la sesion en el servidor antes de volver al ingreso
   const handleLogout = async () => {
     await logout();
     navigate(routes.login);

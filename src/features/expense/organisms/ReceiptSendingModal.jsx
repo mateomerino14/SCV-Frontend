@@ -10,7 +10,6 @@ const styles = {
   message: 'font-inter text-center text-sm m-3',
 };
 
-// Aviso mientras se genera el recibo y se envia al correo del empleado
 function ReceiptSendingModal({isOpen}) {
   return (
     <AnimatePresence>

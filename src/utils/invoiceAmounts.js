@@ -1,12 +1,10 @@
 const vatRate = 0.13;
 
-// En Bolivia el crédito fiscal es el 13% del total de la factura
 export function calculateInvoiceVat(total) {
   const totalAmount = parseFloat(total) || 0;
   return parseFloat((totalAmount * vatRate).toFixed(2));
 }
 
-// El IVA se resta del total, igual que las retenciones: subtotal = total - IVA y el total no cambia
 export function splitInvoiceTotal(total, docType) {
   const totalAmount = parseFloat(total) || 0;
   if (docType !== 'F' || totalAmount <= 0) {

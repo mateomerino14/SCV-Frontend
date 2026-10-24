@@ -13,7 +13,6 @@ const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
 const infoFill = 'FFEAF3FB';
 
-// Blanquea el placeholder que usa la IA cuando no logra extraer un dato
 function cleanValue(value) {
   return value === 'No Especificado' ? '' : (value || '');
 }
@@ -49,11 +48,9 @@ function getExpenseTaxValues(expense) {
     return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
   }
   if (hasInvoice) {
-    // Solo la factura (F) genera crédito fiscal; el recibo (R) no lleva IVA
     if (expense.tipo !== 'F') {
       return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
     }
-    // El IVA es el 13% del total y se resta del costo, porque queda como crédito fiscal
     const vat = calculateInvoiceVat(amount);
     return {vat, rcIva: 0, iue: 0, it: 0, cost: parseFloat((amount - vat).toFixed(2))};
   }
@@ -109,7 +106,6 @@ function estimateRowHeight(entries) {
   return Math.max(20, maxLines * 14);
 }
 
-// Convierte una fecha YYYY-MM-DD al formato dd/mm/aaaa
 function formatJustificationDate(value) {
   const [year, month, day] = String(value).split('-');
   if (!year || !month || !day) {
@@ -174,7 +170,6 @@ function styleInfoValue(cell, value) {
 
 let logoPromise = null;
 
-// Descarga el logo una sola vez por sesion para todas las planillas
 function getLogoBase64() {
   if (!logoPromise) {
     logoPromise = fetchImageAsBase64(MAXAM_LOGO);
@@ -184,7 +179,6 @@ function getLogoBase64() {
 
 async function addStatementSheet(workbook, trip, expenses, dayJustifications = [], sheetName = 'RENDICION', listSheetName = 'Listas') {
   const sheet = workbook.addWorksheet(sheetName);
-  // En viajes nacionales la planilla va solo en bolivianos, sin tramos
   const isInternationalTrip = trip.tipo === 'Internacional';
   const col = {
     number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8,

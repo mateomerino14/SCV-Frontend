@@ -55,7 +55,6 @@ function renderPieLabel({cx, cy, midAngle, innerRadius, outerRadius, percent}) {
 
 const roleColors = [COLORS.primary, '#4a7fd4', '#2d7a3a', COLORS.secondary, COLORS.title];
 
-// Tooltip del grafico por seccion: viajes, monto en Bs y, si hay viajes internacionales, en USD
 function SectionTooltip({active, payload, label}) {
   if (!active || !payload?.length) {
     return null;

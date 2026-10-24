@@ -28,7 +28,6 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
       setItem((prev) => ({...prev, [key]: validDecimal}));
     }
     else if (key === 'cantidad') {
-      // Admite decimales (litros, kilos) con un máximo de 3
       const validQuantity = String(value).replace(',', '.').replace(/[^0-9.]/g, '');
       const parts = validQuantity.split('.');
       if (parts.length > 2) {

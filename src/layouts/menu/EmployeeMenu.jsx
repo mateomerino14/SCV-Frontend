@@ -24,7 +24,6 @@ const styles = {
   finalDivider: 'border-t',
 };
 
-
 const mainSection = [
   {path: routes.employeeDashboard, label: 'Mis Viajes', icon: Briefcase},
   {path: routes.employeeHistory, label: 'Historial de Mis Viajes', icon: Plane},

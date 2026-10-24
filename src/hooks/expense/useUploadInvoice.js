@@ -5,7 +5,6 @@ import {compressImage} from '../../utils/imageCompressor';
 
 const validationSaveError = 'Completa los campos requeridos';
 
-// Quita los errores de esos campos y, si no queda ninguno, el aviso general
 const clearFieldErrors = (invoice, fields) => {
   const fieldErrors = {...invoice.fieldErrors};
   fields.forEach((field) => {

@@ -3,7 +3,6 @@ import {changePassword} from '../../../services/user/userService';
 import {setToken} from '../../../services/shared/tokenStore';
 
 const maxLength = 255;
-// Mismo minimo que exige el servidor
 const minLength = 8;
 
 function useChangePasswordModal(onClose) {

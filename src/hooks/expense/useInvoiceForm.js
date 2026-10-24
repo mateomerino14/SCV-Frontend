@@ -12,7 +12,6 @@ function useInvoiceForm(data, onChange) {
     vatPercentageDisplay = 13;
   }
 
-  // El empleado escribe el total del papel; subtotal e IVA se calculan por dentro
   const applyTotal = (total, docType) => {
     const {subtotal, vat} = splitInvoiceTotal(total, docType);
     onChange('monto', subtotal.toFixed(2), true);
@@ -68,7 +67,6 @@ function useInvoiceForm(data, onChange) {
     onChange(field, value);
   };
 
-  // Al cambiar el tipo se conserva el total: el recibo no lleva IVA y la factura lo separa por dentro
   const handleDocTypeChange = (docType) => {
     if (docType === data.tipo_doc) {
       return;

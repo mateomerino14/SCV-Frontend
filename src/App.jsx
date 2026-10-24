@@ -73,7 +73,6 @@ function ProtectedRoute({allowedRoles, children}) {
   return children;
 }
 
-// Pantallas de tesoreria: solo para quien tiene el cargo de tesorero
 function TreasurerRoute({children}) {
   const {isTreasurer, loading} = useIsTreasurer();
   if (loading) {
@@ -85,7 +84,6 @@ function TreasurerRoute({children}) {
   return children;
 }
 
-// La pantalla de ingreso redirige a la de inicio si ya hay una sesion activa
 function LoginRoute({children}) {
   if (getToken()) {
     return <Navigate to={getHomeRoute(getRoleFromToken())} replace />;

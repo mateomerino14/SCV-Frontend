@@ -1,6 +1,5 @@
 import {useState} from 'react';
 
-// Paginacion Cargar mas para listas en memoria; resetKey vuelve a la primera pagina
 function useClientPagination(items, pageSize = 15, resetKey = '') {
   const [visibleCount, setVisibleCount] = useState(pageSize);
   const [lastResetKey, setLastResetKey] = useState(resetKey);

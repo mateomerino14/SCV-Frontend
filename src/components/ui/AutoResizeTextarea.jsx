@@ -8,7 +8,6 @@ function AutoResizeTextarea({value, onChange, placeholder, maxLength, maxRows = 
     if (!textarea) {
       return;
     }
-    // Crece con el contenido hasta maxRows líneas; desde ahí aparece el scroll
     const lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight) || 20;
     textarea.style.height = 'auto';
     const maxHeight = lineHeight * maxRows;

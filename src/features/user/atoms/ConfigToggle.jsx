@@ -10,7 +10,6 @@ const styles = {
   toggleCircle: "absolute top-1 w-4 h-4 rounded-full bg-white transition-all",
 };
 
-// Opcion de ajustes con interruptor de encendido / apagado
 function ConfigToggle({icon: Icon, label, description, checked, onChange}) {
   return (
     <div className={styles.wrapper} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>

@@ -2,7 +2,6 @@ import {Menu} from 'lucide-react';
 import {COLORS} from '../constants';
 import {avatarDefault} from '../constants/defaultImages';
 
-
 const styles = {
   navbar: "flex items-center justify-between px-5 py-3 border-b sticky top-0 z-10",
   title: "font-bold font-inter text-lg",

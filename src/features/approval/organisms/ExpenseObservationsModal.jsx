@@ -22,7 +22,6 @@ const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
 function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, canEdit, currentUserId, newText, setNewText, onAdd, onEdit, onDelete, loading, error}) {
-  // Solo se pueden editar o borrar las observaciones propias
   const canManage = (observation) => canEdit && (!currentUserId || observation.id_usuario === currentUserId);
   const {maxLength, exceedsLimit} = useCommentTextarea(newText);
   const handleAdd = () => {

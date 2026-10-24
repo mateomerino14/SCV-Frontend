@@ -1,4 +1,3 @@
-// Preferencias de la mascota en el navegador; si no hay almacenamiento se usan las de defecto
 const enabledKey = 'scv_mascota_activa';
 const seenPrefix = 'scv_mascota_vista_';
 
@@ -20,7 +19,6 @@ export function setMascotEnabled(enabled) {
   }
 }
 
-// Cada pantalla saluda una sola vez por sesion
 export function wasMascotSeen(pageKey) {
   try {
     return sessionStorage.getItem(seenPrefix + pageKey) === '1';
@@ -39,7 +37,6 @@ export function markMascotSeen(pageKey) {
   }
 }
 
-// Saludo segun la hora del dia
 export function greetingFor(name) {
   const hour = new Date().getHours();
   let greeting = 'Buenas noches';
@@ -52,7 +49,6 @@ export function greetingFor(name) {
   return name ? `¡${greeting}, ${name}!` : `¡${greeting}!`;
 }
 
-// Mensaje para listas de pendientes: cuantas cosas esperan al usuario
 export function pendingMessage(name, count, singular, plural) {
   if (count > 0) {
     return `${greetingFor(name)} Tienes ${count} ${count === 1 ? singular : plural}.`;
@@ -60,7 +56,6 @@ export function pendingMessage(name, count, singular, plural) {
   return `${greetingFor(name)} No tienes pendientes aquí por ahora. ¡Todo al día!`;
 }
 
-// Olvida que pantallas ya saludo, para saludar de nuevo en el proximo ingreso
 export function resetMascotSeen() {
   try {
     Object.keys(sessionStorage)

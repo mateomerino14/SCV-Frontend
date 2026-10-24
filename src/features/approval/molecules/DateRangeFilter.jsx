@@ -9,7 +9,6 @@ const styles = {
   hint: "text-xs font-inter mt-1",
 };
 
-// El calendario no deja elegir un "Hasta" anterior al "Desde"; si se escribe a mano, se avisa
 function DateRangeFilter({startDate, endDate, onStartDateChange, onEndDateChange}) {
   const invertedRange = startDate && endDate && startDate > endDate;
   return (

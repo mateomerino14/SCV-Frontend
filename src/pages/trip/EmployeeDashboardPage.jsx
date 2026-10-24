@@ -31,7 +31,6 @@ const styles = {
   scrollRow: "flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory items-stretch",
 };
 
-// Mensaje de Casquito en Mis Viajes, segun lo que el empleado tiene pendiente
 function buildDashboardMessage(name, inProgressCount, draftCount) {
   if (inProgressCount > 0) {
     return `${greetingFor(name)} Tienes ${inProgressCount} ${inProgressCount === 1 ? 'viaje en curso' : 'viajes en curso'}: registra tus gastos a tiempo.`;

@@ -10,7 +10,6 @@ import TripActionButtons from '../molecules/TripActionButtons';
 import {avatarDefault} from '../../../constants/defaultImages';
 import {getStatusBadge} from '../../../constants/tripStatusLabels';
 
-
 const statusPendingByField = {
   id_supervisor_asignado: 'EN_REVISION_VIAJE',
   id_aprobador_asignado: 'APROBADO_VIAJE',

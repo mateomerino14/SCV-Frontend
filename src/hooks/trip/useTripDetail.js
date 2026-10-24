@@ -29,7 +29,6 @@ function useTripDetail(tripId) {
   const [totalExceeds, setTotalExceeds] = useState(false);
   const [totalExceedsUsd, setTotalExceedsUsd] = useState(false);
 
-  // Aplica la respuesta del servidor; los totales se calculan en el backend
   const applyDetail = useCallback((data) => {
     if (data.error) {
       const isSessionError = data.error.includes('Token inválido') || data.error.includes('token no proporcionado') || data.error.includes('suspendida');

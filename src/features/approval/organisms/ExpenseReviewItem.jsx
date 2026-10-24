@@ -8,7 +8,6 @@ import TransportIcon from '../atoms/TransportIcon';
 import TripActionButtons from '../molecules/TripActionButtons';
 import {avatarDefault} from '../../../constants/defaultImages';
 
-
 const styles = {
   card: 'rounded-2xl shadow-sm overflow-hidden flex flex-col',
   cardContent: 'p-4 flex flex-col flex-1',

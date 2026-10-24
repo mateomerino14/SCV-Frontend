@@ -32,7 +32,6 @@ function useSubstitutionRequest(tripId) {
     load();
   }, [tripId]);
 
-  // Mientras espera respuesta del revisor se consulta cada 30 segundos
   const waitingResponse = request?.estado === 'PENDIENTE';
   useEffect(() => {
     if (!waitingResponse) {

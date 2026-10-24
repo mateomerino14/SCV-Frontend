@@ -1,4 +1,3 @@
-// La empresa asume los impuestos: lo pagado se incrementa a una base de la que salen las retenciones
 export function calculateWithholdings(amount, type, isInternational) {
   const paid = parseFloat(amount) || 0;
   const none = {base: paid, rcIva: 0, iue: 0, it: 0, cost: paid, toPay: paid};
@@ -22,7 +21,6 @@ export function calculateWithholdings(amount, type, isInternational) {
   return {base, rcIva, iue, it, cost: base, toPay: paid};
 }
 
-// Un gasto registrado se calcula siempre desde lo pagado, para no mostrar cálculos guardados con otra fórmula
 export function getExpenseWithholdings(expense) {
   if (expense?.tiene_alcohol) {
     return calculateWithholdings(expense.monto_total, 'R', false);

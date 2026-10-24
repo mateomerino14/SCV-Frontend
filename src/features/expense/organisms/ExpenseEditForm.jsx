@@ -2,7 +2,7 @@ import {Globe, List} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseTypeToggle from '../atoms/ExpenseTypeToggle';
 import ExpenseField from '../atoms/ExpenseField';
-import WithholdingFormulaNote from '../atoms/WithholdingFormulaNote';
+import WithholdingSummary from '../molecules/WithholdingSummary';
 import CategorySelector from '../molecules/CategorySelector';
 import CurrencySelector from '../molecules/CurrencySelector';
 import ReceiptUpload from './ReceiptUpload';
@@ -30,15 +30,6 @@ const styles = {
   subitemTitle: "text-xs font-bold font-inter",
   subitemRemove: "text-xs font-bold font-inter cursor-pointer",
   addSubitemBtn: "w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border",
-  withholdingCard: "rounded-xl p-4",
-  withholdingTitle: "text-xs font-bold font-inter uppercase mb-3",
-  withholdingRow: "flex justify-between items-center py-1.5 border-b",
-  withholdingRowLast: "flex justify-between items-center py-1.5",
-  withholdingLabel: "text-xs font-inter",
-  withholdingValue: "text-xs font-bold font-inter",
-  withholdingTotal: "flex justify-between items-center pt-2 mt-1",
-  withholdingTotalLabel: "text-sm font-bold font-inter",
-  withholdingTotalValue: "text-sm font-bold font-inter",
   charCount: "text-xs font-inter text-right mt-1",
 };
 
@@ -161,34 +152,7 @@ function ExpenseEditForm({
         )}
       </AccordionSection>
       {hasWithholdings && (
-        <div className={styles.withholdingCard} style={{backgroundColor: COLORS.backgroundHeader}}>
-          <p className={styles.withholdingTitle} style={{color: COLORS.environmentTypesText}}>Retenciones</p>
-          <div className={styles.withholdingRow} style={{borderColor: COLORS.dataFields}}>
-            <p className={styles.withholdingLabel} style={{color: COLORS.labels}}>Monto pagado</p>
-            <p className={styles.withholdingValue} style={{color: COLORS.text}}>Bs {finalAmount.toFixed(2)}</p>
-          </div>
-          {type === 'S' && (
-            <div className={styles.withholdingRow} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.withholdingLabel} style={{color: COLORS.labels}}>RC-IVA 13%</p>
-              <p className={styles.withholdingValue} style={{color: COLORS.secondary}}>Bs {withholdings.rcIva.toFixed(2)}</p>
-            </div>
-          )}
-          {type === 'C' && (
-            <div className={styles.withholdingRow} style={{borderColor: COLORS.dataFields}}>
-              <p className={styles.withholdingLabel} style={{color: COLORS.labels}}>IUE 5%</p>
-              <p className={styles.withholdingValue} style={{color: COLORS.secondary}}>Bs {withholdings.iue.toFixed(2)}</p>
-            </div>
-          )}
-          <div className={styles.withholdingRowLast}>
-            <p className={styles.withholdingLabel} style={{color: COLORS.labels}}>IT 3%</p>
-            <p className={styles.withholdingValue} style={{color: COLORS.secondary}}>Bs {withholdings.it.toFixed(2)}</p>
-          </div>
-          <div className={styles.withholdingTotal}>
-            <p className={styles.withholdingTotalLabel} style={{color: COLORS.title}}>Importe costo</p>
-            <p className={styles.withholdingTotalValue} style={{color: COLORS.title}}>Bs {withholdings.cost.toFixed(2)}</p>
-          </div>
-          <WithholdingFormulaNote type={type} />
-        </div>
+        <WithholdingSummary title="Retenciones" type={type} paid={finalAmount} withholdings={withholdings} />
       )}
       {!usesSubitems && (
         <div>

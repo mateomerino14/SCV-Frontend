@@ -7,7 +7,6 @@ const stripeFill = 'FFF3F6FF';
 
 export const todayFileSuffix = () => toDateText(new Date());
 
-// Hoja con encabezado rojo MAXAM, filas alternadas y filtro en el encabezado
 export const addTableSheet = (workbook, name, columns, rows) => {
   const sheet = workbook.addWorksheet(name);
   sheet.columns = columns.map((column) => ({header: column.header, key: column.key, width: column.width || 18}));

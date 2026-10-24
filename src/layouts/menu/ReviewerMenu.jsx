@@ -8,7 +8,6 @@ import MenuOption from './MenuOption';
 import MenuShell, {listVariants} from './MenuShell';
 import {avatarDefault} from '../../constants/defaultImages';
 
-
 const styles = {
   header: 'flex items-center gap-3 p-5 border-b shrink-0',
   avatar: 'w-12 h-12 rounded-full object-cover',
