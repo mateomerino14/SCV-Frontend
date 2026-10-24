@@ -18,6 +18,7 @@ const fieldsConfig = [
   {key: 'proveedor', label: 'Proveedor', type: 'text', required: true},
   {key: 'numero_factura', label: 'Número de Factura / Código', type: 'text', required: true},
   {key: 'nit', label: 'NIT / CI', type: 'text', required: false},
+  {key: 'cuf', label: 'CUF / Código de Autorización', type: 'text', required: false, invoiceOnly: true},
   {key: 'fecha_emision', label: 'Fecha de Emisión', type: 'date', required: true},
   {key: 'monto_total', label: 'Total de la factura', type: 'text', required: true},
 ];
@@ -44,7 +45,7 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
       </div>
       <CategorySelector categories={categories} categoryId={data.id_categoria_gasto} onChange={(id) => handleFieldChange('id_categoria_gasto', id)}
         error={fieldErrors.id_categoria_gasto} disabled={saved} />
-      {fieldsConfig.map(({key, label, type, required}) => {
+      {fieldsConfig.filter((field) => isInvoice || !field.invoiceOnly).map(({key, label, type, required}) => {
         const isLockedDate = key === 'fecha_emision' && lockDate;
         let fieldLabel = label;
         if (key === 'monto_total' && !isInvoice) {

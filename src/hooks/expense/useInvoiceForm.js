@@ -3,6 +3,7 @@ import {splitInvoiceTotal} from '../../utils/invoiceAmounts';
 const maxSupplier = 50;
 const maxInvoiceNumber = 50;
 const maxTaxId = 10;
+const maxCuf = 100;
 const maxAmount = 99999.99;
 
 function useInvoiceForm(data, onChange) {
@@ -47,6 +48,11 @@ function useInvoiceForm(data, onChange) {
     if (field === 'nit') {
       const onlyNumbers = value.replace(/[^0-9]/g, '').slice(0, maxTaxId);
       onChange(field, onlyNumbers);
+      return;
+    }
+
+    if (field === 'cuf') {
+      onChange(field, value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, maxCuf));
       return;
     }
 

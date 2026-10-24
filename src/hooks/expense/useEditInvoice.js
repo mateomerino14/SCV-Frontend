@@ -57,6 +57,7 @@ function useEditInvoice(expenseId) {
         proveedor: expenseData.Proveedor?.nombre || '',
         numero_factura: invoice?.numero_factura || '',
         nit: expenseData.Proveedor?.numero_doc_fiscal || '',
+        cuf: invoice?.cuf || '',
         fecha_emision: invoice?.fecha_emision || '',
         monto: amountText,
         iva: vatText,

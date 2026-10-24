@@ -112,6 +112,7 @@ function useUploadInvoice(tripId) {
         proveedor: '',
         numero_factura: '',
         nit: '',
+        cuf: '',
         fecha_emision: '',
         monto: '',
         iva: '',
