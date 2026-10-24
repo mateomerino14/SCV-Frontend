@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {getExpenseTaxValues} from './useTripExcelExport';
+import {getExpenseTaxValues} from './expenseTaxValues';
 
 describe('getExpenseTaxValues', () => {
   it('en una factura el IVA es el 13% del total y el costo es el total menos el IVA', () => {

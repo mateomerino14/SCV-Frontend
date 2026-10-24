@@ -2,6 +2,7 @@ import {useState} from 'react';
 import ExcelJS from 'exceljs';
 import {getStatementsForExport} from '../../services/trip/tripService';
 import {addStatementSheet} from '../../pages/hooks/useTripExcelExport';
+import {addOracleSheets} from '../../utils/oracleExport';
 import {addTableSheet, saveWorkbook, todayFileSuffix, amountFormat} from '../../utils/excelExport';
 import {buildDayJustifications} from '../../utils/dayJustifications';
 import {getStatusLabel} from '../../constants/tripStatusLabels';
@@ -78,6 +79,7 @@ function useStatementsExport() {
       const {list} = buildDayJustifications(statement.comentarios);
       await addStatementSheet(workbook, statement.viaje, statement.gastos, list, `VIA-${statement.viaje.id_viaje}`, `Listas${index + 1}`);
     }
+    addOracleSheets(workbook, statements.map((statement) => ({trip: statement.viaje, expenses: statement.gastos})));
     await saveWorkbook(workbook, `${fileLabel}_${todayFileSuffix()}.xlsx`);
     setExporting(false);
   };

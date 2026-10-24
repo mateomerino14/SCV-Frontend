@@ -4,10 +4,10 @@ import {extractOracleAccount} from '../../utils/oracleAccount';
 import {toOracleExpenseType} from '../../utils/expenseTypeCode';
 import buildTripCode from '../../utils/tripCode';
 import {formatQuantity} from '../../utils/formatQuantity';
-import {calculateInvoiceVat} from '../../utils/invoiceAmounts';
 import {oracleAccounts} from '../../constants/oracleAccounts';
 import {MAXAM_LOGO} from '../../constants';
-import {getExpenseWithholdings} from '../../utils/withholdings';
+import {getExpenseTaxValues} from '../../utils/expenseTaxValues';
+import {addOracleSheets} from '../../utils/oracleExport';
 
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
@@ -36,27 +36,6 @@ const symbologyRows = [
   ['A', 'Servicio, Alquiler sin factura'],
   ['R', 'Docto. sin IVA, sin Retencion'],
 ];
-
-function getExpenseTaxValues(expense) {
-  const isInternational = !!expense.es_gasto_internacional;
-  const amount = parseFloat(expense.monto_total) || 0;
-  const hasInvoice = !!expense.Factura;
-  if (isInternational) {
-    return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
-  }
-  if (expense.tiene_alcohol) {
-    return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
-  }
-  if (hasInvoice) {
-    if (expense.tipo !== 'F') {
-      return {vat: 0, rcIva: 0, iue: 0, it: 0, cost: amount};
-    }
-    const vat = calculateInvoiceVat(amount);
-    return {vat, rcIva: 0, iue: 0, it: 0, cost: parseFloat((amount - vat).toFixed(2))};
-  }
-  const withholdings = getExpenseWithholdings(expense);
-  return {vat: 0, rcIva: withholdings.rcIva, iue: withholdings.iue, it: withholdings.it, cost: withholdings.cost};
-}
 
 function getExpenseDescription(expense) {
   const hasInvoice = !!expense.Factura;
@@ -571,11 +550,12 @@ function useTripExcelExport() {
   const exportToExcel = async (trip, expenses, dayJustifications = []) => {
     const workbook = new ExcelJS.Workbook();
     await addStatementSheet(workbook, trip, expenses, dayJustifications);
+    addOracleSheets(workbook, [{trip, expenses}]);
     const buffer = await workbook.xlsx.writeBuffer();
     saveAs(new Blob([buffer], {type: 'application/octet-stream'}), `RENDICION_${trip.id_viaje}_${fileSafeText(trip.motivo)}.xlsx`);
   };
   return {exportToExcel};
 }
 
-export {addStatementSheet, getExpenseTaxValues};
+export {addStatementSheet};
 export default useTripExcelExport;
