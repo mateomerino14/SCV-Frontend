@@ -5,11 +5,12 @@ import {oracleDefaults, oracleTaxCodes, oracleTaxLines, oracleWithholdings, orac
 
 const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const maxDescription = 240;
+const plainHeader = 'FFD9D9D9';
 const kindStyles = {
-  system: {header: 'FFE2EFDA', note: 'Lo llena el sistema con los datos del gasto'},
-  fixed: {header: 'FFD9D9D9', cell: 'FFEDEDED', note: 'Valor por defecto: siempre es el mismo'},
+  system: {header: plainHeader, note: 'Lo llena el sistema con los datos del gasto'},
+  fixed: {header: plainHeader, note: 'Valor por defecto: siempre es el mismo'},
   oracle: {header: 'FFBDD7EE', cell: 'FFDDEBF7', note: 'Lo llena Oracle al subir la factura: dejar en blanco, no tocar'},
-  reference: {header: 'FFE4DFEC', cell: 'FFF2EFF7', note: 'Referencia del sistema: no es una columna de Oracle'},
+  reference: {header: plainHeader, note: 'Referencia del sistema: no es una columna de Oracle'},
 };
 const pendingFill = 'FFFFE699';
 const pendingNote = 'Completar antes de subir a Oracle';
@@ -397,12 +398,9 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
 };
 
 const legendRows = [
-  ['Encabezado verde, celda blanca', 'Lo llena el sistema con los datos de cada gasto. Se puede corregir si hace falta.', kindStyles.system.header, null],
-  ['Gris', 'Valor por defecto que no cambia (tipo Estándar, cuenta de pasivo, Cheque, BOB, Línea, Facturas estándar, AP.F.BOL, etc.).', kindStyles.fixed.header, kindStyles.fixed.cell],
-  ['Celeste, en blanco', 'Lo llena Oracle al subir la factura (Nº justificante, Nº proveedor, dirección, fechas, importes calculados, estado). No tocar.', kindStyles.oracle.header, kindStyles.oracle.cell],
-  ['Fila celeste en cursiva (LINEAS)', 'Línea de impuesto o retención que Oracle crea solo al validar. Está para revisar los montos; no se carga.', kindStyles.oracle.header, kindStyles.oracle.cell],
+  ['Blanco', 'Datos listos para Oracle: los pone el sistema o son valores fijos. La nota de cada encabezado dice cuál.', plainHeader, null],
+  ['Celeste', 'Lo llena Oracle al subir la factura, así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.header, kindStyles.oracle.cell],
   ['Amarillo', 'Falta un dato que el sistema no tiene (CUF, número de recibo, cuenta del IUE, número de rendición). Completar antes de subir.', pendingFill, pendingFill],
-  ['Lila', 'Columnas de referencia del sistema (fila de la factura y viaje). No son de Oracle.', kindStyles.reference.header, kindStyles.reference.cell],
 ];
 
 const addLegendSheet = (workbook) => {
