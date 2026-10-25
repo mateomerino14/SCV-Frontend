@@ -743,7 +743,6 @@ Secciones de la empresa. Se usan como respaldo en la asignación del supervisor 
 \begin{itemize}
   \campo{id_seccion}{Identificador único}{SERIAL, clave primaria}
   \campo{nombre}{Nombre de la sección}{VARCHAR(100), único}
-  \campo{codigo_dependencia}{Dependencia (centro de costo) en la cuenta de Oracle, por ejemplo 421}{VARCHAR(3)}
   \campo{codigo_seccion}{Sección en la cuenta de Oracle, por ejemplo 200}{VARCHAR(3)}
   \campo{activo}{Indica si la sección está habilitada}{BOOLEAN}
 \end{itemize}
@@ -758,6 +757,7 @@ Información de todos los usuarios registrados.
   \campo{apellido_materno}{Segundo apellido, opcional}{VARCHAR(30)}
   \campo{telefono}{Teléfono de 7 u 8 dígitos, opcional}{VARCHAR(8)}
   \campo{carnet_identidad}{Cédula de identidad}{VARCHAR(15)}
+  \campo{codigo_dependencia}{Dependencia de Oracle de los gastos de quienes lo tienen como jefe directo (y los suyos si no tiene jefe), por ejemplo 421}{VARCHAR(3)}
   \campo{activo}{Indica si el usuario está habilitado}{BOOLEAN}
   \campo{contrasenia}{Hash de la contraseña}{TEXT}
   \campo{foto_perfil}{URL de la fotografía, opcional}{TEXT}
