@@ -20,6 +20,8 @@ import {COLORS} from '../../constants';
 import {tripPath} from '../../constants/routes';
 import {getExpenseWithholdings} from '../../utils/withholdings';
 
+const imageMaxHeight = 720;
+
 const styles = {
   page: "min-h-screen flex flex-col",
   content: "flex-1 px-5 py-6 w-full",
@@ -172,7 +174,9 @@ function ExpenseDetailPage() {
         {hasImage && (
           <ExpenseSectionCard icon={FileText} title="Comprobante">
             <div className={styles.imageWrapper} style={{borderColor: COLORS.dataFields}}>
-              <img src={expense.Imagen.url_archivo} alt="comprobante" className={styles.image} style={{maxHeight: 450, backgroundColor: COLORS.backgroundHeader}} />
+              <a href={expense.Imagen.url_archivo} target="_blank" rel="noreferrer" className="block" title="Abrir en tamaño completo">
+                <img src={expense.Imagen.url_archivo} alt="comprobante" className={styles.image} style={{maxHeight: imageMaxHeight, backgroundColor: COLORS.backgroundHeader}} />
+              </a>
             </div>
           </ExpenseSectionCard>
         )}
@@ -180,7 +184,7 @@ function ExpenseDetailPage() {
           <ExpenseSectionCard icon={FileText} title="Respaldos">
             {backups.map((backup, index) => (
               <a key={backup.id_respaldo} href={backup.url_archivo} target="_blank" rel="noreferrer" className={`block ${styles.imageWrapper}`} style={{borderColor: COLORS.dataFields}}>
-                <img src={backup.url_archivo} alt={`respaldo ${index + 1}`} className={styles.image} style={{maxHeight: 450, backgroundColor: COLORS.backgroundHeader}} />
+                <img src={backup.url_archivo} alt={`respaldo ${index + 1}`} className={styles.image} style={{maxHeight: imageMaxHeight, backgroundColor: COLORS.backgroundHeader}} />
               </a>
             ))}
           </ExpenseSectionCard>

@@ -10,7 +10,9 @@ const styles = {
   dropLabel: "text-sm font-bold font-inter text-center",
   dropSub: "text-xs font-inter text-center",
   previewWrapper: "rounded-xl overflow-hidden border flex flex-col",
-  previewImg: "w-full object-contain",
+  previewLink: "block",
+  previewImg: "w-full object-contain h-[440px] sm:h-[620px]",
+  previewHint: "text-[11px] font-inter text-center py-1.5",
   removeBtn: "w-full py-2.5 font-bold font-nunito text-sm flex items-center justify-center gap-2 border-t",
   fieldError: "text-xs font-inter mt-1",
 };
@@ -31,7 +33,10 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
       <div className={styles.wrapper}>
         {!hideLabel && <FieldLabel text="Comprobante" required={required} className={styles.label} />}
         <div className={styles.previewWrapper} style={{borderColor: COLORS.dataFields}}>
-          <img src={previewImage} alt="comprobante" className={styles.previewImg} style={{height: '350px', backgroundColor: COLORS.backgroundHeader}} />
+          <a href={previewImage} target="_blank" rel="noreferrer" className={styles.previewLink} title="Abrir en tamaño completo">
+            <img src={previewImage} alt="comprobante" className={styles.previewImg} style={{backgroundColor: COLORS.backgroundHeader}} />
+          </a>
+          <p className={styles.previewHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
           {!disabled && (
             <button className={styles.removeBtn} style={{borderColor: COLORS.dataFields, color: COLORS.secondary, backgroundColor: COLORS.background, cursor: 'pointer'}} onClick={onRemove}>
               <Trash2 size={14} />

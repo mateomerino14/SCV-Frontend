@@ -7,9 +7,10 @@ const styles = {
   hint: "text-xs font-inter",
   grid: "grid grid-cols-2 gap-2",
   thumb: "relative rounded-xl overflow-hidden border",
-  thumbImg: "w-full h-32 object-contain",
+  thumbLink: "block",
+  thumbImg: "w-full h-56 sm:h-80 object-contain",
   removeBtn: "absolute top-1 right-1 rounded-full p-1 shadow",
-  addBox: "border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1 h-32 cursor-pointer",
+  addBox: "border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1 h-56 sm:h-80 cursor-pointer",
   addLabel: "text-xs font-bold font-inter text-center px-2",
 };
 
@@ -32,7 +33,9 @@ function BackupImagesUpload({images, onAdd, onRemove, max = 2, disabled = false}
       <div className={styles.grid}>
         {images.map((image, index) => (
           <div key={image.id} className={styles.thumb} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.backgroundHeader}}>
-            <img src={image.preview} alt={`respaldo ${index + 1}`} className={styles.thumbImg} />
+            <a href={image.preview} target="_blank" rel="noreferrer" className={styles.thumbLink} title="Abrir en tamaño completo">
+              <img src={image.preview} alt={`respaldo ${index + 1}`} className={styles.thumbImg} />
+            </a>
             {!disabled && (
               <button type="button" aria-label={`Quitar respaldo ${index + 1}`} className={styles.removeBtn} style={{backgroundColor: COLORS.background, color: COLORS.secondary}} onClick={() => onRemove(image.id)}>
                 <X size={14} />
