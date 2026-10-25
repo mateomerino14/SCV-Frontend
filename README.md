@@ -98,7 +98,7 @@ src/
 │   └── shared/apiClient.js
 ├── layouts/             Navbar, Footer y menús por rol
 │   └── menu/
-├── utils/               Funciones auxiliares puras (fechas, cantidades, retenciones, IVA de facturas, Excel)
+├── utils/               Funciones auxiliares puras (fechas, cantidades, retenciones, IVA de facturas, Excel, hojas para Oracle, plantilla de usuarios)
 ├── constants/           Paleta, rutas, inicio por rol, monedas, límites de texto, nombres y colores de estado
 ├── test/setup.js        Configuración de las pruebas unitarias
 ├── App.jsx              Rutas y guardas de acceso
@@ -199,7 +199,7 @@ Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
 ### Planilla de rendición
 
-`useTripExcelExport` construye la planilla oficial en Excel con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda, la justificación de cada día que excedió la cuota diaria, y cinco bloques de firma.
+`useTripExcelExport` construye la planilla oficial en Excel con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda, la justificación de cada día que excedió la cuota diaria, y cinco bloques de firma. La columna de cuenta Oracle y la de detalle son anchas para que no se corte el texto; el bloque de fondo recibido, saldo, importe a devolver e importe a reembolsar ocupa un ancho continuo (el reembolso pendiente sale en rojo); la hoja se imprime horizontal en una página de ancho, centrada, con el pie «Sistema de Control de Viáticos» y el número de página.
 
 El mismo archivo trae dos hojas con el **formato que contabilidad sube a Oracle** (`utils/oracleExport.js`):
 

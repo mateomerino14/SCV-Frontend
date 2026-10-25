@@ -174,7 +174,7 @@ El sistema contempla cinco roles y un perfil adicional que se determina por el c
 \endfirsthead
 \cabecera \tth{ID} & \tth{Rol} & \tth{Atribuciones} \\
 \endhead
-\rowcolor{maxamFondo} 1 & ADMINISTRADOR & Gestión de usuarios, cargos y secciones; historial de accesos; panel de indicadores filtrable por periodo; exportación a Excel de sus pantallas y de las planillas; días y horas de los recordatorios de pendientes. \\
+\rowcolor{maxamFondo} 1 & ADMINISTRADOR & Gestión de usuarios (uno por uno o importados desde Excel), cargos y secciones; historial de accesos; panel de indicadores filtrable por periodo; exportación a Excel de sus pantallas y de las planillas; días y horas de los recordatorios de pendientes. \\
 2 & SUPERVISOR & Revisión previa del viaje y revisión de la rendición de gastos de los empleados a su cargo. \\
 \rowcolor{maxamFondo} 3 & EMPLEADO & Creación de viajes, registro de gastos y facturas, solicitudes de ampliación de plazo y de reemplazo. \\
 4 & REVISOR & Revisión final de la rendición, resolución de las solicitudes de plazo y de reemplazo y exportación de planillas en grupo. \\
@@ -309,6 +309,22 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 
 Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura la empresa asume los impuestos (base incrementada): el empleado registra lo que pagó; el RC-IVA o IUE y el IT se calculan cada uno con su porcentaje sobre lo pagado $\div$ 0.84 en servicios ($\div$ 0.92 en compras), sin redondear esa división, y cada retención se redondea a centavos; la base es pagado + retenciones, como lo calcula contabilidad. Por ejemplo, con 50.00 pagados en un servicio el RC-IVA es 7.74, el IT 1.79 y la base 59.53. Si el gasto tiene subgastos, cada uno se calcula aparte y se suman, como en el recibo de papel. Lo pagado cuenta para el presupuesto y la base es el importe costo/gasto de la planilla.
 
+Todos los importes se redondean a centavos, y los medios centavos suben (1.005 se redondea a 1.01). Por ejemplo, un recibo de servicios con cuatro taxis pagados en total 240 Bs se calcula así:
+
+\begin{xltabular}{\textwidth}{Y L{1.8cm} L{1.8cm} L{2cm} L{1.6cm}}
+\cabecera \tth{Subgasto} & \tth{Pagado} & \tth{Importe} & \tth{RC-IVA 13\%} & \tth{IT 3\%} \\
+\endfirsthead
+\cabecera \tth{Subgasto} & \tth{Pagado} & \tth{Importe} & \tth{RC-IVA 13\%} & \tth{IT 3\%} \\
+\endhead
+\rowcolor{maxamFondo} Taxi domicilio -- aeropuerto & 50.00 & 59.53 & 7.74 & 1.79 \\
+Taxi aeropuerto -- centro & 80.00 & 95.24 & 12.38 & 2.86 \\
+\rowcolor{maxamFondo} Taxi centro -- aeropuerto & 60.00 & 71.43 & 9.29 & 2.14 \\
+Taxi aeropuerto -- domicilio & 50.00 & 59.53 & 7.74 & 1.79 \\
+\rowcolor{maxamFondo} \textbf{Total} & \textbf{240.00} & \textbf{285.73} & \textbf{37.15} & \textbf{8.58} \\
+\end{xltabular}
+
+Calcular sobre el total de 240 de una vez daría 285.71, que no coincide con la suma de las líneas; por eso el sistema calcula cada línea por separado, igual que contabilidad.
+
 \section{Categorías de gasto}
 Las categorías son el plan de cuentas de gastos de la empresa (planilla de Castro): 112 cuentas contables de Oracle más ``OTROS''. Cada nombre empieza con el código de la cuenta, lo que permite que la planilla exportada sea directamente utilizable por el área contable; al agregar nuevas categorías debe conservarse ese formato. Al registrar un gasto, la categoría se elige con un buscador por número de cuenta, nombre o nota de uso; las cuentas que en la planilla de Castro traen una nota de cuándo usarlas (por ejemplo, Manutención (viaje): alimentación cuando el personal está de viaje) la muestran como ayuda, y en el Excel de la planilla la columna de cuenta ofrece la misma lista.
 
@@ -432,6 +448,29 @@ Transporte compras & 601040 TRANSPORTE S/COMPRAS MMPP \\
 \rowcolor{maxamFondo} Sin cuenta específica & OTROS \\
 \end{xltabular}
 
+\section{Importación de usuarios}
+El administrador puede dar de alta a varias personas a la vez desde Excel, en la pantalla de usuarios:
+\begin{enumerate}
+  \item \textbf{Descargar plantilla}: baja un Excel vacío con las columnas, una fila de ejemplo, instrucciones y listas para elegir el cargo, la sección y el rol entre los que ya existen en el sistema. Las columnas obligatorias (nombre, apellido paterno, correo corporativo y cargo) van en rojo.
+  \item \textbf{Llenar y subir el archivo}: hasta 500 personas. El jefe directo se indica con su correo y puede ser alguien que ya está en el sistema o alguien del mismo archivo.
+  \item \textbf{Revisar}: antes de crear nada, el sistema muestra cuántas filas están listas y cuáles tienen errores, con el motivo de cada una.
+  \item \textbf{Crear}: se crean solo las filas correctas, primero los jefes y después sus subordinados. Cada persona recibe por correo una contraseña temporal y la cambia al ingresar por primera vez.
+\end{enumerate}
+
+Una fila no se crea cuando falta un dato obligatorio o tiene un formato incorrecto, cuando el cargo o la sección no existen, cuando pide un rol o cargo que solo puede tener una persona y ya está ocupado, o cuando no se encuentra a su jefe directo. Los repetidos se tratan así:
+
+\begin{xltabular}{\textwidth}{L{4.6cm} Y}
+\cabecera \tth{Caso} & \tth{Qué hace el sistema} \\
+\endfirsthead
+\cabecera \tth{Caso} & \tth{Qué hace el sistema} \\
+\endhead
+\rowcolor{maxamFondo} Correo o CI que ya existe en el sistema & No crea la fila y no modifica al usuario que ya existe: nunca sobrescribe ni duplica a nadie. \\
+Correo o CI repetido dentro del archivo & Marca todas las filas repetidas, porque no puede saber cuál es la correcta; el administrador decide cuál corregir. \\
+\rowcolor{maxamFondo} Archivo subido dos veces & La segunda vez, las personas ya creadas salen como ``ya existe'' y no se crean de nuevo. \\
+\end{xltabular}
+
+El administrador puede crear en el momento las filas correctas y subir después las demás, ya corregidas. La importación es distinta de ``Exportar a Excel'': exportar descarga la lista de los usuarios que ya están, como reporte, y ese archivo no sirve para importar.
+
 \section{Notificaciones}
 \begin{itemize}
   \item \textbf{Avisos inmediatos:} el empleado recibe el memorándum, la confirmación del fondo, el resultado de su rendición, los recibos y la respuesta a sus solicitudes; el revisor recibe las nuevas solicitudes de plazo y de reemplazo; el reemplazo recibe el aviso de la rendición asignada.
@@ -470,6 +509,8 @@ El servidor sigue una arquitectura en capas: la ruta declara el endpoint y encad
   \item Las contraseñas temporales (cuenta nueva, clave puesta por el administrador o ingreso con código de recuperación) deben cambiarse antes de usar el sistema, y toda contraseña vence a los 90 días.
   \item Los intentos de ingreso, de recuperación y de lectura de facturas tienen un límite por periodo. El de ingreso es por cuenta: si un usuario se equivoca muchas veces, solo su cuenta espera 15 minutos y los demás siguen entrando.
   \item Cada ingreso, salida y cambio de contraseña queda registrado en el historial de accesos.
+  \item Los comprobantes, respaldos y fotos de perfil se guardan en un bucket público de Supabase Storage sin políticas de acceso: solo el servidor sube y borra archivos, con su clave de servicio, y los archivos que dejan de usarse se eliminan.
+  \item La importación de usuarios desde Excel es solo para el administrador, y el servidor vuelve a revisar cada fila aunque el navegador ya haya mostrado la vista previa.
 \end{itemize}
 
 \section{Diseño de interfaz}
@@ -524,6 +565,11 @@ La paleta se centraliza en un único archivo de constantes del cual todos los co
 \muestra{DEE2F0} & \code{dataFields} & \texttt{\#DEE2F0} & Bordes y separadores. \\
 \muestra{C2C6D4} & \code{fields} & \texttt{\#C2C6D4} & Controles deshabilitados. \\
 \muestra{FDE9E9} & \code{error} & \texttt{\#FDE9E9} & Fondo de mensajes de error. \\
+\muestra{EF4444} & \code{fieldError} & \texttt{\#EF4444} & Texto de error bajo un campo. \\
+\muestra{F87171} & \code{fieldErrorBorder} & \texttt{\#F87171} & Borde de un campo con error. \\
+\muestra{155724} & \code{success} & \texttt{\#155724} & Texto de confirmación. \\
+\muestra{D4EDDA} & \code{successBackground} & \texttt{\#D4EDDA} & Fondo de confirmación. \\
+\muestra{666666} & \code{overlay} & Negro 40\% & Fondo oscuro detrás de ventanas y menú. \\
 \muestra{F2D9C5} & \code{travelTypes} & \texttt{\#F2D9C5} & Fondo del distintivo de tipo de viaje. \\
 \muestra{A45718} & \code{travelTypesText} & \texttt{\#A45718} & Texto del distintivo de tipo de viaje. \\
 \muestra{A69896} & \code{environmentTypes} & \texttt{\#A69896} & Fondo del distintivo de transporte. \\
@@ -569,12 +615,13 @@ En las pantallas del empleado, ``En Curso'' usa el rojo institucional porque mar
   \item \textbf{Consistencia}: los mismos colores, tipografías, contadores (``Mostrando X de Y'') y ventanas en todas las pantallas.
   \item \textbf{Adaptabilidad}: interfaz adaptable a escritorio y celular.
   \item \textbf{Campos obligatorios}: se marcan con un asterisco rojo junto a la etiqueta; los opcionales van sin marca.
+  \item \textbf{Comprobantes}: el comprobante, los respaldos y las fotos de facturas se muestran grandes, con la misma tarjeta y el botón para quitarlos debajo; al tocarlos se abren en tamaño completo, en todas las pantallas y roles.
   \item \textbf{Legibilidad}: tipografías y contrastes elegidos para facilitar la lectura.
   \item \textbf{Experiencia de usuario}: navegación intuitiva, actualización automática de las bandejas cada 30 segundos, respuesta inmediata a cada acción y transiciones animadas entre pantallas y ventanas.
 \end{itemize}
 
 \section{Planillas}
-Información confidencial, contenida en la documentación de Excel recibida. El formato definitivo de la planilla lo proporcionará la empresa y se incorporará cuando se reciba. El sistema replica el formato institucional al exportar la rendición, incorporando el logotipo, la tabla de simbología de comprobantes, la distinción por color entre gastos nacionales e internacionales, las listas desplegables de cuenta contable, las justificaciones de exceso y los bloques de firma de cada instancia de aprobación. El mismo archivo incluye las hojas FACTURAS y LINEAS, con las columnas de la factura y de sus líneas de distribución tal como las usa Oracle: los valores fijos (lote 900, cuenta de pasivo 466100, método de pago, categoría y secuencia del documento) se completan solos, los campos que en Oracle son listas de valores se eligen de una lista desplegable, los que Oracle llena al subir la factura quedan en blanco y en celeste para no tocarlos, y lo que el sistema no conoce queda en rojo (o como XXX) para completarlo; la hoja LEYENDA ORACLE explica los colores y lista, con un enlace a cada celda, los datos que faltan completar. El empleado descarga además su planilla en PDF una vez aprobado el viaje.
+Información confidencial, contenida en la documentación de Excel recibida. El formato definitivo de la planilla lo proporcionará la empresa y se incorporará cuando se reciba. El sistema replica el formato institucional al exportar la rendición, incorporando el logotipo, la tabla de simbología de comprobantes, la distinción por color entre gastos nacionales e internacionales, las listas desplegables de cuenta contable, las justificaciones de exceso y los bloques de firma de cada instancia de aprobación. El mismo archivo incluye las hojas FACTURAS y LINEAS, con las columnas de la factura y de sus líneas de distribución tal como las usa Oracle: los valores fijos (lote 900, cuenta de pasivo 466100, método de pago, categoría y secuencia del documento) se completan solos, los campos que en Oracle son listas de valores se eligen de una lista desplegable, los que Oracle llena al subir la factura quedan en blanco y en celeste para no tocarlos, y lo que el sistema no conoce queda en rojo (o como XXX) para completarlo; la hoja LEYENDA ORACLE explica los colores, indica cuántas facturas y líneas trae el archivo y lista, con un enlace a cada celda, los datos que faltan completar. Las hojas tienen filtros, dejan fijos los títulos al desplazarse y se imprimen en una página de ancho. Al exportar varios viajes a la vez, una hoja Resumen muestra una fila por viaje y una fila de totales de lo asignado, gastado y el saldo en cada moneda. El empleado descarga además su planilla en PDF una vez aprobado el viaje.
 
 \section{Stack tecnológico}
 
@@ -625,9 +672,9 @@ Información confidencial, contenida en la documentación de Excel recibida. El 
 \section{Pruebas automáticas}
 El sistema cuenta con tres niveles de pruebas automáticas, que verifican su funcionamiento sin intervención manual:
 \begin{itemize}
-  \item \textbf{Unitarias}: comprueban reglas puntuales, como las retenciones, el control diario por moneda, el IVA de facturas y recibos y las cantidades con decimales del detalle (Jest en el servidor y Vitest en el cliente).
+  \item \textbf{Unitarias}: comprueban reglas puntuales, como las retenciones (también por subgasto), el control diario por moneda, el IVA de facturas y recibos, las cantidades con decimales del detalle, las hojas para Oracle y la revisión de la importación de usuarios (Jest en el servidor y Vitest en el cliente).
   \item \textbf{De la API}: ejecutan los servicios del servidor contra una base de prueba y comprueban permisos, montos y respuestas (Jest y Supertest).
-  \item \textbf{De extremo a extremo}: recorren el sistema en un navegador real, en escritorio y celular, como lo haría cada rol (Playwright).
+  \item \textbf{De extremo a extremo}: recorren el sistema en un navegador real, en escritorio y celular, como lo haría cada rol, incluida la importación de usuarios desde Excel (Playwright).
 \end{itemize}
 Las pruebas se ejecutan automáticamente en GitHub Actions cada vez que se envían cambios al repositorio, sobre una base de datos temporal que se crea y se elimina en cada ejecución, sin tocar la base real.
 
