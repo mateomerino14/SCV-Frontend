@@ -18,7 +18,7 @@ export const loginInBrowser = async (page, user) => {
   await expect(page).toHaveURL(/\/dashboard\//);
 };
 
-export const apiClient = async (user) => {
+const apiClient = async (user) => {
   const context = await request.newContext({baseURL: apiUrl});
   const response = await context.post('/auth', {data: {email_corporativo: `${user}@maxam.com`, contrasenia: testPassword}});
   const {token} = await response.json();
