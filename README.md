@@ -185,6 +185,11 @@ La paleta se centraliza en `constants/index.js`. Ningún componente define color
 | `dataFields` | `#DEE2F0` | Bordes y separadores |
 | `fields` | `#C2C6D4` | Controles deshabilitados |
 | `error` | `#fde9e9` | Fondo de mensajes de error |
+| `fieldError` | `#ef4444` | Texto de error bajo un campo |
+| `fieldErrorBorder` | `#f87171` | Borde de un campo con error |
+| `success` | `#155724` | Texto de confirmación (filas listas al importar usuarios) |
+| `successBackground` | `#d4edda` | Fondo de confirmación |
+| `overlay` | `rgba(0,0,0,0.4)` | Fondo oscuro detrás de ventanas y menú |
 
 Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
