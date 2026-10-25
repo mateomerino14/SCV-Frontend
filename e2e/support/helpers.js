@@ -18,7 +18,7 @@ export const loginInBrowser = async (page, user) => {
   await expect(page).toHaveURL(/\/dashboard\//);
 };
 
-const apiClient = async (user) => {
+export const apiClient = async (user) => {
   const context = await request.newContext({baseURL: apiUrl});
   const response = await context.post('/auth', {data: {email_corporativo: `${user}@maxam.com`, contrasenia: testPassword}});
   const {token} = await response.json();
@@ -27,6 +27,7 @@ const apiClient = async (user) => {
     get: async (path) => (await context.get(path, {headers})).json(),
     post: async (path, data = {}) => (await context.post(path, {headers, data})).json(),
     put: async (path, data = {}) => (await context.put(path, {headers, data})).json(),
+    del: async (path) => (await context.delete(path, {headers})).json(),
     postForm: async (path, data) => (await context.post(path, {headers, multipart: {datos: JSON.stringify(data)}})).json(),
   };
 };
