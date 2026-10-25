@@ -27,7 +27,7 @@ function BackupImagesUpload({images, onAdd, onRemove, max = 2, disabled = false}
   }
   return (
     <div className={styles.wrapper}>
-      <p className={styles.label} style={{color: COLORS.labels}}>Respaldos (Opcional, máx. {max})</p>
+      <p className={styles.label} style={{color: COLORS.labels}}>Respaldos (máx. {max})</p>
       <p className={styles.hint} style={{color: COLORS.labels}}>Por ejemplo, el comprobante del cambio de moneda.</p>
       <div className={styles.grid}>
         {images.map((image, index) => (

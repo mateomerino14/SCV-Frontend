@@ -66,7 +66,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
         <>
           <div className="flex flex-col gap-3" style={{marginTop: hasManyItems ? '0.5rem' : '1.3rem'}}>
             {fields.map(({key, label, type}) => (
-              <ExpenseField key={key} label={label} error={fieldErrors[key]}>
+              <ExpenseField key={key} label={label} required error={fieldErrors[key]}>
                 <input type={type === 'number' ? 'text' : type} inputMode={key === 'nombre_producto' ? 'text' : 'decimal'}
                   className="w-full bg-transparent outline-none font-inter text-xs" style={{color: COLORS.text}}
                   value={item[key]} maxLength={key === 'nombre_producto' ? 50 : undefined} onChange={(event) => handleInputChange(key, event.target.value)} />

@@ -48,7 +48,7 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
               <p className={styles.title} style={{color: COLORS.text}}>{title}</p>
               <p className={styles.subtitle} style={{color: COLORS.labels}}>{subtitle}</p>
               <div>
-                <FormField label="Nombre de la Sección" placeholder="Ej: Ventas" maxLength={100}
+                <FormField label="Nombre de la Sección" required placeholder="Ej: Ventas" maxLength={100}
                   value={formData.nombre} onChange={handleNameChange} error={fieldErrors.nombre}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
                 {showSuggestions && suggestions.length > 0 && (
@@ -56,7 +56,7 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
                     onSelect={handleSelectSuggestion} />
                 )}
               </div>
-              <FormField label="Sección Oracle (Opcional)" placeholder="Ej: 200" inputMode="numeric" maxLength={3}
+              <FormField label="Sección Oracle" placeholder="Ej: 200" inputMode="numeric" maxLength={3}
                 value={formData.codigo_seccion || ''} onChange={handleSectionCodeChange} />
               <p className={styles.hint} style={{color: COLORS.labels}}>Va en la cuenta del gasto para Oracle: 76.8.dependencia.cuenta.000000.sección.000.000</p>
               {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

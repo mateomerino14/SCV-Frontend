@@ -65,21 +65,21 @@ function ExpenseEditForm({
   return (
     <>
       <ExpenseTypeToggle type={type} onChange={(newType) => !saved && handleTypeChange(newType)} />
-      <ExpenseField label="Fecha del Gasto" error={fieldErrors.date}>
+      <ExpenseField label="Fecha del Gasto" required error={fieldErrors.date}>
         <input type="date" className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}} disabled={saved}
           value={date} onChange={(event) => handleDateChange(event.target.value)} />
       </ExpenseField>
-      <ExpenseField label="Proveedor (Opcional)">
+      <ExpenseField label="Proveedor">
         <input type="text" placeholder="Nombre del proveedor" maxLength={50} disabled={saved}
           className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
           value={supplier} onChange={(event) => handleSupplierChange(event.target.value)} />
       </ExpenseField>
-      <ExpenseField label="N° de Recibo (Opcional)">
+      <ExpenseField label="N° de Recibo">
         <input type="text" placeholder="Número impreso en el recibo, si tiene" maxLength={50} disabled={saved}
           className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
           value={receiptNumber} onChange={(event) => handleReceiptNumberChange(event.target.value)} />
       </ExpenseField>
-      <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} suffix={isInternationalExpense ? 'USD' : 'Bs'} error={fieldErrors.amount}>
+      <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} required={!automaticAmount} suffix={isInternationalExpense ? 'USD' : 'Bs'} error={fieldErrors.amount}>
         <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved || automaticAmount}
           className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
           value={automaticAmount ? finalAmount.toFixed(2) : amount} onChange={(event) => handleAmountChange(event.target.value)} />
@@ -97,11 +97,11 @@ function ExpenseEditForm({
                 )}
               </div>
               <CurrencySelector currencies={currencies} currency={installment.currency} onChange={(value) => handleInstallmentCurrencyChange(installment.id, value)} />
-              <ExpenseField label={`Monto en ${installment.currency}`} suffix={installment.currency} error={installmentErrors[installment.id]?.amount}>
+              <ExpenseField label={`Monto en ${installment.currency}`} required suffix={installment.currency} error={installmentErrors[installment.id]?.amount}>
                 <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                   value={installment.originAmount} onChange={(event) => handleInstallmentAmountChange(installment.id, event.target.value)} />
               </ExpenseField>
-              <ExpenseField label={`Tipo de cambio (1 USD = cuántos ${installment.currency})`} suffix={installment.currency} error={installmentErrors[installment.id]?.exchangeRate}>
+              <ExpenseField label={`Tipo de cambio (1 USD = cuántos ${installment.currency})`} required suffix={installment.currency} error={installmentErrors[installment.id]?.exchangeRate}>
                 <input type="text" inputMode="decimal" placeholder="0.0000" disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                   value={installment.exchangeRate} onChange={(event) => handleInstallmentExchangeRateChange(installment.id, event.target.value)} />
               </ExpenseField>
@@ -135,11 +135,11 @@ function ExpenseEditForm({
                 <p className={styles.subitemRemove} style={{color: COLORS.secondary}} onClick={() => handleRemoveSubitem(subitem.id)}>Quitar</p>
               )}
             </div>
-            <ExpenseField label="Descripción" error={subitemErrors[subitem.id]?.description}>
+            <ExpenseField label="Descripción" required error={subitemErrors[subitem.id]?.description}>
               <input type="text" placeholder="Ej: Almuerzo" maxLength={255} disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                 value={subitem.description} onChange={(event) => handleSubitemDescriptionChange(subitem.id, event.target.value)} />
             </ExpenseField>
-            <ExpenseField label="Monto" suffix={isInternationalExpense ? 'USD' : 'Bs'} error={subitemErrors[subitem.id]?.amount}>
+            <ExpenseField label="Monto" required suffix={isInternationalExpense ? 'USD' : 'Bs'} error={subitemErrors[subitem.id]?.amount}>
               <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                 value={subitem.amount} onChange={(event) => handleSubitemAmountChange(subitem.id, event.target.value)} />
             </ExpenseField>
@@ -162,7 +162,7 @@ function ExpenseEditForm({
       )}
       {!usesSubitems && (
         <div>
-          <ExpenseField label="Descripción" error={fieldErrors.description}>
+          <ExpenseField label="Descripción" required error={fieldErrors.description}>
             <textarea className="w-full bg-transparent outline-none font-inter text-sm resize-none" style={{color: COLORS.text}} rows={4} maxLength={1000} disabled={saved}
               placeholder="Detalle el motivo del gasto..." value={description} onChange={(event) => handleDescriptionChange(event.target.value)} />
           </ExpenseField>

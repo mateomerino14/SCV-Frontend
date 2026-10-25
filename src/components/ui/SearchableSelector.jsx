@@ -5,6 +5,7 @@ import DropdownSearchInput from './DropdownSearchInput';
 import DropdownListItem from './DropdownListItem';
 import {COLORS} from '../../constants';
 import useSearchableSelector from '../../hooks/shared/useSearchableSelector';
+import FieldLabel from './FieldLabel';
 
 const styles = {
   wrapper: 'relative',
@@ -20,8 +21,11 @@ const dropdownVariants = {
   visible: {opacity: 1, y: 0, scaleY: 1},
 };
 
-function SearchableSelector({label, options, value, onChange, placeholder, searchPlaceholder, emptyOption, error}) {
-  const allOptions = emptyOption ? [emptyOption, ...options] : options;
+function SearchableSelector({label, required = false, options, value, onChange, placeholder, searchPlaceholder, emptyOption, error}) {
+  let allOptions = options;
+  if (emptyOption) {
+    allOptions = [emptyOption, ...options];
+  }
   const {
     open, search, setSearch, menuPosition, wrapperRef, triggerRef, menuRef, inputRef, selectedOption,
     filteredOptions, handleToggle, handleSelect,
@@ -29,7 +33,7 @@ function SearchableSelector({label, options, value, onChange, placeholder, searc
   const hasValue = !!selectedOption && selectedOption !== emptyOption && selectedOption.value !== '';
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
-      <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>
+      <FieldLabel text={label} required={required} className={styles.label} />
       <DropdownTrigger triggerRef={triggerRef} open={open} onClick={handleToggle} error={error}
         hasValue={hasValue} label={selectedOption ? selectedOption.label : placeholder} />
       {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}

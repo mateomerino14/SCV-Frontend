@@ -1,4 +1,5 @@
 import {COLORS} from '../../../constants';
+import FieldLabel from '../../../components/ui/FieldLabel';
 
 const styles = {
   wrapper: "flex flex-col gap-1",
@@ -9,10 +10,10 @@ const styles = {
   fieldError: "text-xs font-inter mt-1",
 };
 
-function ExpenseField({label, children, suffix, error}) {
+function ExpenseField({label, required = false, children, suffix, error}) {
   return (
     <div className={styles.wrapper}>
-      <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>
+      <FieldLabel text={label} required={required} className={styles.label} />
       <div className={styles.inputBox} style={{borderColor: error ? '#f87171' : COLORS.dataFields, borderWidth: error ? '1.5px' : '1px'}}>
         <div className={styles.inputRow}>
           {children}

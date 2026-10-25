@@ -1,5 +1,5 @@
 import InlineDropdown from '../../../components/ui/InlineDropdown';
-import {COLORS} from '../../../constants';
+import FieldLabel from '../../../components/ui/FieldLabel';
 import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
 
 const styles = {
@@ -14,7 +14,7 @@ function CurrencySelector({currencies, currency, onChange, error}) {
   const options = currencies.map((item) => ({value: item.codigo, label: `${item.codigo} — ${item.nombre}`}));
   return (
     <div className={styles.wrapper}>
-      <p className={styles.label} style={{color: COLORS.labels}}>Moneda</p>
+      <FieldLabel text="Moneda" required className={styles.label} />
       <InlineDropdown wrapperRef={wrapperRef} triggerRef={triggerRef} open={open} opensUpward={opensUpward} onToggle={toggle}
         label={selectedCurrency ? `${selectedCurrency.codigo} — ${selectedCurrency.nombre}` : 'Seleccione una moneda'} options={options} selectedValue={currency}
         onSelect={(value) => {onChange(value); close();}} />

@@ -1,5 +1,6 @@
 import {Camera, Trash2} from 'lucide-react';
 import {COLORS} from '../../../constants';
+import FieldLabel from '../../../components/ui/FieldLabel';
 
 const styles = {
   wrapper: "flex flex-col gap-1",
@@ -15,7 +16,6 @@ const styles = {
 };
 
 function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, required = true, hideLabel = false}) {
-  const label = `Comprobante${required ? '' : ' (Opcional)'}`;
   const handleInput = (event) => {
     if (disabled) {
       return;
@@ -29,7 +29,7 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
   if (previewImage) {
     return (
       <div className={styles.wrapper}>
-        {!hideLabel && <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>}
+        {!hideLabel && <FieldLabel text="Comprobante" required={required} className={styles.label} />}
         <div className={styles.previewWrapper} style={{borderColor: COLORS.dataFields}}>
           <img src={previewImage} alt="comprobante" className={styles.previewImg} style={{height: '350px', backgroundColor: COLORS.backgroundHeader}} />
           {!disabled && (
@@ -45,10 +45,10 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
 
   return (
     <div className={styles.wrapper}>
-      {!hideLabel && <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>}
+      {!hideLabel && <FieldLabel text="Comprobante" required={required} className={styles.label} />}
       <label className={styles.dropZone} style={{
         borderColor: error ? '#f87171' : COLORS.dataFields,
-        backgroundColor: disabled ? COLORS.backgroundHeader : COLORS.backgroundHeader,
+        backgroundColor: COLORS.backgroundHeader,
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.6 : 1,
       }}>

@@ -34,15 +34,15 @@ function ChangePasswordModal({isOpen, onClose}) {
               variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
               <p className={styles.title} style={{color: COLORS.text}}>Cambiar Contraseña</p>
               <p className={styles.subtitle} style={{color: COLORS.labels}}>Asegúrate de que tu nueva contraseña sea única y robusta.</p>
-              <PasswordField label="Contraseña Actual" value={currentPassword} maxLength={maxLength}
+              <PasswordField required label="Contraseña Actual" value={currentPassword} maxLength={maxLength}
                 onChange={(event) => setCurrentPassword(event.target.value)} />
               <div>
-                <PasswordField label="Nueva Contraseña" value={newPassword} maxLength={maxLength}
+                <PasswordField required label="Nueva Contraseña" value={newPassword} maxLength={maxLength}
                   onChange={(event) => setNewPassword(event.target.value)} />
                 {fieldErrors.newPassword && <p className={styles.fieldError} style={{color: COLORS.secondary}}>{fieldErrors.newPassword}</p>}
               </div>
               <div>
-                <PasswordField label="Confirmar Nueva Contraseña" value={confirmPassword} maxLength={maxLength}
+                <PasswordField required label="Confirmar Nueva Contraseña" value={confirmPassword} maxLength={maxLength}
                   onChange={(event) => setConfirmPassword(event.target.value)} />
                 {fieldErrors.confirmPassword && <p className={styles.fieldError} style={{color: COLORS.secondary}}>{fieldErrors.confirmPassword}</p>}
                 {confirmPassword && newPassword && !fieldErrors.confirmPassword && (

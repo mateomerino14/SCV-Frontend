@@ -52,7 +52,7 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
           fieldLabel = 'Total del recibo';
         }
         return (
-          <ExpenseField key={key} label={`${fieldLabel}${!required ? ' (Opcional)' : ''}`} error={fieldErrors[key]}>
+          <ExpenseField key={key} label={fieldLabel} required={required} error={fieldErrors[key]}>
             <input value={data[key] || ''} type={type} inputMode={key === 'monto_total' ? 'decimal' : 'text'} disabled={saved || isLockedDate}
               className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, opacity: (saved || isLockedDate) ? 0.6 : 1}}
               onChange={(event) => handleFieldChange(key, event.target.value)} />

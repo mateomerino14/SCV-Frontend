@@ -80,13 +80,13 @@ function CreateTripPage() {
         <div className={styles.grid}>
           <div className={styles.formCard} style={{backgroundColor: COLORS.background}}>
             <div>
-              <InputField label="Motivo" alignTop icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
+              <InputField label="Motivo" required alignTop icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
                 <AutoResizeTextarea placeholder="Inspección técnica y de producción..." maxLength={maxTripReasonLength} style={{color: COLORS.text}}
                   value={reason} onChange={(event) => handleReasonChange(event.target.value)} />
               </InputField>
               <p className="text-[11px] font-inter text-right mt-1" style={{color: COLORS.labels}}>{reason.length}/{maxTripReasonLength}</p>
             </div>
-            <InputField label="Origen" error={fieldErrors.origin}
+            <InputField label="Origen" required error={fieldErrors.origin}
               icon={
                 <button type="button" onClick={handleUseCurrentLocation} disabled={loadingLocation} title="Usar mi ubicación actual">
                   <LocateFixed size={16} style={{color: loadingLocation ? COLORS.labels : COLORS.primary, cursor: loadingLocation ? 'default' : 'pointer'}} />
@@ -95,15 +95,15 @@ function CreateTripPage() {
               <input type="text" placeholder={loadingLocation ? 'Obteniendo ubicación...' : 'Ciudad de origen...'} maxLength={200}
                 className={styles.input} style={{color: COLORS.text}} value={origin} onChange={(event) => handleOriginChange(event.target.value)} />
             </InputField>
-            <InputField label="Destino" icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
+            <InputField label="Destino" required icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
               <input type="text" placeholder="¿A dónde se dirige?" maxLength={200} className={styles.input} style={{color: COLORS.text}}
                 value={destination} onChange={(event) => handleDestinationChange(event.target.value)} />
             </InputField>
             <div className={styles.dateRow}>
-              <InputField label="Fecha Inicio" error={fieldErrors.startDate}>
+              <InputField label="Fecha Inicio" required error={fieldErrors.startDate}>
                 <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={startDate} onChange={(event) => handleStartDateChange(event.target.value)} />
               </InputField>
-              <InputField label="Fecha Fin" error={fieldErrors.endDate}>
+              <InputField label="Fecha Fin" required error={fieldErrors.endDate}>
                 <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={endDate} onChange={(event) => handleEndDateChange(event.target.value)} />
               </InputField>
             </div>
@@ -132,7 +132,7 @@ function CreateTripPage() {
               </div>
             </div>
             {transport === 'Vehículo de Empresa' && (
-              <InputField label="Placa del Vehículo" error={fieldErrors.vehiclePlate}>
+              <InputField label="Placa del Vehículo" required error={fieldErrors.vehiclePlate}>
                 <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
                   value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
               </InputField>

@@ -8,7 +8,7 @@ function SectionSelector({sections, sectionId, onChange, error}) {
     .sort((first, second) => first.nombre.localeCompare(second.nombre))
     .map((section) => ({value: section.id_seccion, label: section.nombre}));
   return (
-    <SearchableSelector label="Sección (opcional)" options={options} value={sectionId ?? ''} onChange={onChange} error={error}
+    <SearchableSelector label="Sección" options={options} value={sectionId ?? ''} onChange={onChange} error={error}
       placeholder={noSection.label} searchPlaceholder="Buscar sección..." emptyOption={noSection} />
   );
 }

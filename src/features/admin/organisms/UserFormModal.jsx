@@ -58,24 +58,24 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   triggerRef={roleTriggerRef} menuRef={roleMenuRef} onToggle={handleToggleRoleMenu} onSelect={handleSelectRole} />
               </div>
               <div className={styles.fieldsGrid}>
-                <FormField label="Nombre" placeholder="Juan" maxLength={30} value={formData.nombre} error={fieldErrors.nombre}
+                <FormField label="Nombre" required placeholder="Juan" maxLength={30} value={formData.nombre} error={fieldErrors.nombre}
                   onChange={(event) => handleChange('nombre', event.target.value, onlyLettersRegex, 30)} />
-                <FormField label="Apellido Paterno" placeholder="García" maxLength={30} value={formData.apellido_paterno} error={fieldErrors.apellido_paterno}
+                <FormField label="Apellido Paterno" required placeholder="García" maxLength={30} value={formData.apellido_paterno} error={fieldErrors.apellido_paterno}
                   onChange={(event) => handleChange('apellido_paterno', event.target.value, onlyLettersRegex, 30)} />
-                <FormField label="Apellido Materno (opcional)" placeholder="López" maxLength={30} value={formData.apellido_materno} error={fieldErrors.apellido_materno}
+                <FormField label="Apellido Materno" placeholder="López" maxLength={30} value={formData.apellido_materno} error={fieldErrors.apellido_materno}
                   onChange={(event) => handleChange('apellido_materno', event.target.value, onlyLettersRegex, 30)} />
-                <FormField label="Correo Corporativo" type="email" placeholder="juan@empresa.com" maxLength={100}
+                <FormField label="Correo Corporativo" required type="email" placeholder="juan@empresa.com" maxLength={100}
                   value={formData.email_corporativo} error={fieldErrors.email_corporativo}
                   onChange={(event) => handleChange('email_corporativo', event.target.value, null, 100)} />
-                <FormField label="Teléfono (opcional)" placeholder="71234567" maxLength={8} value={formData.telefono} error={fieldErrors.telefono}
+                <FormField label="Teléfono" placeholder="71234567" maxLength={8} value={formData.telefono} error={fieldErrors.telefono}
                   onChange={(event) => handleChange('telefono', event.target.value, onlyNumbersRegex, 8)} />
                 <BossSelector users={allUsers.filter((user) => user.id_usuario !== selectedUser?.id_usuario)} bossId={formData.id_jefe_directo}
                   error={fieldErrors.id_jefe_directo} onChange={(id) => handleChange('id_jefe_directo', id)} />
                 <SectionSelector sections={sections} sectionId={formData.id_seccion}
                   onChange={(value) => handleChange('id_seccion', value)} error={fieldErrors.id_seccion} />
-                <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={15} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
+                <FormField label="Carnet de Identidad" placeholder="Ej: 1234567 LP" maxLength={15} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
                   onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 15)} />
-                <FormField label="Dependencia Oracle (opcional)" placeholder="Ej: 421" inputMode="numeric" maxLength={3} value={formData.codigo_dependencia} error={fieldErrors.codigo_dependencia}
+                <FormField label="Dependencia Oracle" placeholder="Ej: 421" inputMode="numeric" maxLength={3} value={formData.codigo_dependencia} error={fieldErrors.codigo_dependencia}
                   helperText="Se usa en los gastos de las personas que lo tienen como jefe directo; si no tiene jefe, también en los suyos"
                   onChange={(event) => handleChange('codigo_dependencia', event.target.value, onlyNumbersRegex, 3)} />
               </div>

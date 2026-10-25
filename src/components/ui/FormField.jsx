@@ -1,4 +1,5 @@
 import {COLORS} from '../../constants';
+import FieldLabel from './FieldLabel';
 
 const styles = {
   wrapper: 'min-w-0',
@@ -9,10 +10,10 @@ const styles = {
   helperText: 'text-xs font-inter mt-1',
 };
 
-function FormField({label, value, onChange, onKeyDown, onBlur, error, helperText, type = 'text', inputMode, placeholder, maxLength, disabled}) {
+function FormField({label, required = false, value, onChange, onKeyDown, onBlur, error, helperText, type = 'text', inputMode, placeholder, maxLength, disabled}) {
   return (
     <div className={styles.wrapper}>
-      <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>
+      <FieldLabel text={label} required={required} className={styles.label} />
       <div className={styles.inputWrapper} style={{borderColor: error ? '#f87171' : COLORS.dataFields, backgroundColor: COLORS.background}}>
         <input className={styles.input} style={{color: COLORS.text}} type={type} inputMode={inputMode} placeholder={placeholder} maxLength={maxLength}
           value={value || ''} onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} disabled={disabled} autoComplete="off" />

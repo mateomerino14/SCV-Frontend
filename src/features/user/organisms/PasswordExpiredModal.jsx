@@ -59,19 +59,19 @@ function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, 
             <p className={styles.subtitle} style={{color: COLORS.backgroundHeader}}>{text.subtitle}</p>
             {!isTemporary && (
               <div className={styles.fieldRow}>
-                <PasswordField label="Contraseña Actual" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)}
+                <PasswordField required label="Contraseña Actual" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)}
                   borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                   backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
               </div>
             )}
             <div className={styles.fieldRow}>
-              <PasswordField label="Nueva Contraseña" value={newPassword} onChange={(event) => setNewPassword(event.target.value)}
+              <PasswordField required label="Nueva Contraseña" value={newPassword} onChange={(event) => setNewPassword(event.target.value)}
                 borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                 backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
               {fieldErrors.newPassword && <p className={styles.fieldError} style={{color: '#ffd4d4'}}>{fieldErrors.newPassword}</p>}
             </div>
             <div className={styles.fieldRow}>
-              <PasswordField label="Confirmar Nueva Contraseña" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)}
+              <PasswordField required label="Confirmar Nueva Contraseña" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)}
                 borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                 backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
               {fieldErrors.confirmPassword && <p className={styles.fieldError} style={{color: '#ffd4d4'}}>{fieldErrors.confirmPassword}</p>}

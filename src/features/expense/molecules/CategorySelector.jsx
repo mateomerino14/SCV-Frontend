@@ -30,7 +30,7 @@ function CategorySelector({categories, categoryId, onChange, error, disabled}) {
   }
   return (
     <div className={styles.wrapper}>
-      <SearchableSelector label="Categoría" options={options} value={categoryId ?? ''} onChange={onChange} error={error}
+      <SearchableSelector label="Categoría" required options={options} value={categoryId ?? ''} onChange={onChange} error={error}
         placeholder="Seleccione una Categoría" searchPlaceholder="Busca por cuenta, nombre o para qué se usa..." />
       {selectedCategory?.descripcion && (
         <p className={styles.help} style={{color: COLORS.labels}}>
