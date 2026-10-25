@@ -130,7 +130,6 @@ function useRegisterExpense(tripId) {
     if (!original) {
       return;
     }
-    // Con subgastos la descripción la arma cada subgasto, así que la copia empieza vacía
     let description = original.description;
     if (original.usesSubitems) {
       description = '';

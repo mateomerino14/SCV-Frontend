@@ -17,7 +17,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useExpenseDetail from '../hooks/useExpenseDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
-import {tripPath} from '../../constants/routes';
+import {routes, tripPath} from '../../constants/routes';
 import {getExpenseWithholdings} from '../../utils/withholdings';
 
 const imageMaxHeight = 720;
@@ -76,12 +76,18 @@ function ExpenseDetailPage() {
   const backups = expense.Imagen_Respaldo || [];
   const receiptRequired = expense.Categoria_Gasto?.requiere_comprobante !== false;
   const isInternational = !!expense.es_gasto_internacional;
-  const currency = isInternational ? 'USD' : 'Bs';
+  let currency = 'Bs';
+  if (isInternational) {
+    currency = 'USD';
+  }
   const installments = expense.Gasto_Tramo_Moneda || [];
   const hasInstallments = isInternational && installments.length > 0;
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;
-  const backRoute = location.state?.from || (expense.id_viaje ? tripPath(expense.id_viaje) : '/dashboard/empleado');
+  let backRoute = location.state?.from || routes.employeeDashboard;
+  if (!location.state?.from && expense.id_viaje) {
+    backRoute = tripPath(expense.id_viaje);
+  }
   const originPath = location.state?.from || '';
   const isReviewContext = originPath.includes('/supervisor/') || originPath.includes('/revisor/') || originPath.includes('/aprobador/');
   const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && !isReviewContext && expense.Viaje?.estado === 'APROBADO_FINAL';

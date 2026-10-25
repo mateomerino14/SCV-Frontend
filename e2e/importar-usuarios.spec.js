@@ -18,8 +18,7 @@ const buildFile = async (path) => {
 const removeImported = async () => {
   const admin = await apiClient('admin.prueba');
   const users = await admin.get('/user/all');
-  const imported = users.filter((user) => [employeeEmail, bossEmail].includes(user.email_corporativo));
-  imported.sort((first) => (first.email_corporativo === employeeEmail ? -1 : 1));
+  const imported = [employeeEmail, bossEmail].map((email) => users.find((user) => user.email_corporativo === email)).filter(Boolean);
   for (const user of imported) {
     await admin.del(`/user/${user.id_usuario}`);
   }

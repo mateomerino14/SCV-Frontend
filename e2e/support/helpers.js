@@ -36,16 +36,22 @@ export const createFundedTrip = async (tripOverrides = {}) => {
   const employee = await apiClient('juan.empleado');
   const me = await employee.get('/user/me');
   const isInternational = tripOverrides.tipo === 'Internacional';
+  let destination = 'Santa Cruz';
+  let assignedUsd = 0;
+  if (isInternational) {
+    destination = 'Lima';
+    assignedUsd = 2 * parseFloat(me.Cargo.monto_diario_usd);
+  }
   const trip = await employee.post('/trip', {
     motivo: 'Prueba E2E',
     origen: 'La Paz',
-    destino: isInternational ? 'Lima' : 'Santa Cruz',
+    destino: destination,
     fecha_inicio: boliviaDate(),
     fecha_fin: boliviaDate(1),
     tipo: 'Nacional',
     transporte: 'Aéreo',
     monto_asignado: 2 * parseFloat(me.Cargo.monto_diario),
-    monto_asignado_usd: isInternational ? 2 * parseFloat(me.Cargo.monto_diario_usd) : 0,
+    monto_asignado_usd: assignedUsd,
     ...tripOverrides,
   });
   const supervisor = await apiClient('maria.supervisora');

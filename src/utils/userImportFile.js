@@ -8,10 +8,11 @@ const borderColor = 'FFD0D0D0';
 const sheetName = 'USUARIOS';
 const listsSheetName = 'Listas';
 const templateRows = 500;
+const firstColumnCode = 'A'.charCodeAt(0);
 const thinLine = {style: 'thin', color: {argb: borderColor}};
 const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
 
-export const roleNames = ['EMPLEADO', 'SUPERVISOR', 'APROBADOR', 'REVISOR', 'ADMINISTRADOR'];
+const roleNames = ['EMPLEADO', 'SUPERVISOR', 'APROBADOR', 'REVISOR', 'ADMINISTRADOR'];
 
 export const importColumns = [
   {key: 'nombre', header: 'Nombre', required: true, width: 20, example: 'Juan Carlos'},
@@ -45,7 +46,7 @@ const addListsSheet = (workbook, lists) => {
   const ranges = {};
   Object.entries(lists).forEach(([name, values], index) => {
     const column = index + 1;
-    const letter = String.fromCharCode(65 + index);
+    const letter = String.fromCharCode(firstColumnCode + index);
     values.forEach((value, row) => {
       sheet.getCell(row + 1, column).value = value;
     });
