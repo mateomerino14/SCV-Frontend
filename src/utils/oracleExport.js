@@ -204,17 +204,23 @@ const missingIfEmpty = (value, key) => {
 
 const emptyRow = (columns) => Object.fromEntries(columns.map((column) => [column.key, '']));
 
+const employeeDependency = (user) => {
+  if (user?.Jefe) {
+    return user.Jefe.codigo_dependencia;
+  }
+  return user?.codigo_dependencia;
+};
+
 const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, withholding, tax}) => {
   const base = {...emptyRow(lineColumns), flexfield: '..........', viaje: buildTripCode(trip)};
-  const employeeSection = trip.Usuario?.Seccion || {};
-  const sectionCodes = {dependency: employeeSection.codigo_dependencia, section: employeeSection.codigo_seccion};
+  const accountSegments = {dependency: employeeDependency(trip.Usuario), section: trip.Usuario?.Seccion?.codigo_seccion};
   const article = {
-    ...base, tipo: 'Artículo', importe: articleAmount, codigoImpuesto: taxCode, cuenta: buildOracleAccount(categoryCode(expense), sectionCodes),
+    ...base, tipo: 'Artículo', importe: articleAmount, codigoImpuesto: taxCode, cuenta: buildOracleAccount(categoryCode(expense), accountSegments),
     grupoRetencion: withholding?.group || '', descripcion: description, confrontacionFinal: 'No',
   };
   const taxLine = oracleTaxLines[taxCode];
   const lines = [
-    {values: article, missing: [...missingIfEmpty(article.cuenta && sectionCodes.dependency && sectionCodes.section, 'cuenta'), ...missingIfEmpty(trip.numero_rendicion, 'descripcion')]},
+    {values: article, missing: [...missingIfEmpty(article.cuenta && accountSegments.dependency && accountSegments.section, 'cuenta'), ...missingIfEmpty(trip.numero_rendicion, 'descripcion')]},
     {values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true},
   ];
   if (withholding) {

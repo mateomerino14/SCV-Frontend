@@ -3,7 +3,7 @@ import {buildOracleInvoice, buildOracleRows, formatOracleDate, buildSupplierName
 
 const trip = {
   id_viaje: 40, numero_rendicion: 40, fecha_inicio: '2026-10-20', motivo: 'Viaje a SCZ por transporte de producto terminado',
-  Usuario: {nombre: 'Jhimy Wilfredo', apellido_paterno: 'Terrazas', apellido_materno: null, Seccion: {codigo_dependencia: '421', codigo_seccion: '200'}},
+  Usuario: {nombre: 'Jhimy Wilfredo', apellido_paterno: 'Terrazas', apellido_materno: null, Jefe: {codigo_dependencia: '421'}, codigo_dependencia: '530', Seccion: {codigo_seccion: '200'}},
   Recibo: [{numero: 46870, tipo: 'S', es_gasto_internacional: false, id_gasto: null}],
 };
 const fuelInvoice = {
@@ -69,7 +69,9 @@ describe('Excel para Oracle', () => {
     const {invoices, lines} = buildOracleRows([{trip, expenses: [fuelInvoice, lodging]}]);
     expect(invoices).toHaveLength(2);
     expect(lines.map((line) => line.values.filaFactura)).toEqual([2, 2, 3, 3, 3, 3]);
-    const noCodes = buildOracleInvoice({...trip, Usuario: {...trip.Usuario, Seccion: {}}}, lodging);
+    const topManager = buildOracleInvoice({...trip, Usuario: {...trip.Usuario, Jefe: null}}, lodging);
+    expect(topManager.lines[0].values.cuenta).toBe('76.8.530.626030.000000.200.000.000');
+    const noCodes = buildOracleInvoice({...trip, Usuario: {...trip.Usuario, Jefe: {codigo_dependencia: null}, Seccion: {}}}, lodging);
     expect(noCodes.lines[0].values.cuenta).toBe('76.8.XXX.626030.000000.XXX.000.000');
     expect(noCodes.lines[0].missing).toContain('cuenta');
     expect(invoices.map((invoice) => invoice.values.descripcion.slice(0, 7))).toEqual(['F 10-40', 'A 10-40']);

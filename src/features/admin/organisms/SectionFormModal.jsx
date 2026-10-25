@@ -13,7 +13,6 @@ const styles = {
   title: 'text-2xl font-bold font-inter text-center',
   subtitle: 'text-sm font-inter text-center',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl',
-  codesRow: 'grid grid-cols-2 gap-3',
   hint: 'text-[11px] font-inter -mt-1',
   buttonsRow: 'flex gap-3 mt-2 justify-center',
   cancelBtn: 'flex-1 py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer border-2 transition-colors',
@@ -30,8 +29,8 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
     setFieldErrors((prev) => ({...prev, nombre: undefined}));
     setShowSuggestions(true);
   };
-  const handleCodeChange = (field) => (event) => {
-    setFormData((prev) => ({...prev, [field]: event.target.value.replace(/\D/g, '').slice(0, 3)}));
+  const handleSectionCodeChange = (event) => {
+    setFormData((prev) => ({...prev, codigo_seccion: event.target.value.replace(/\D/g, '').slice(0, 3)}));
   };
   const handleSelectSuggestion = (name) => {
     setFormData((prev) => ({...prev, nombre: name}));
@@ -57,13 +56,9 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
                     onSelect={handleSelectSuggestion} />
                 )}
               </div>
-              <div className={styles.codesRow}>
-                <FormField label="Dependencia Oracle (Opcional)" placeholder="Ej: 421" inputMode="numeric" maxLength={3}
-                  value={formData.codigo_dependencia || ''} onChange={handleCodeChange('codigo_dependencia')} />
-                <FormField label="Sección Oracle (Opcional)" placeholder="Ej: 200" inputMode="numeric" maxLength={3}
-                  value={formData.codigo_seccion || ''} onChange={handleCodeChange('codigo_seccion')} />
-              </div>
-              <p className={styles.hint} style={{color: COLORS.labels}}>Van en la cuenta del gasto para Oracle: 76.8.dependencia.cuenta.000000.sección.000.000</p>
+              <FormField label="Sección Oracle (Opcional)" placeholder="Ej: 200" inputMode="numeric" maxLength={3}
+                value={formData.codigo_seccion || ''} onChange={handleSectionCodeChange} />
+              <p className={styles.hint} style={{color: COLORS.labels}}>Va en la cuenta del gasto para Oracle: 76.8.dependencia.cuenta.000000.sección.000.000</p>
               {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
               <div className={styles.buttonsRow}>
                 <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}

@@ -22,7 +22,7 @@ function useUserManagement() {
     nombre: '', apellido_paterno: '', apellido_materno: '',
     email_corporativo: '', telefono: '',
     id_cargo: '', id_rol: 3,
-    id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
+    id_jefe_directo: '', id_seccion: '', carnet_identidad: '', codigo_dependencia: '',
   });
 
   const load = async () => {
@@ -103,6 +103,9 @@ function useUserManagement() {
     else if (emailAlreadyExists(formData.email_corporativo, excludeId)) {
       errors.email_corporativo = 'Ya existe un usuario con ese correo';
     }
+    if (formData.codigo_dependencia && !/^\d{3}$/.test(formData.codigo_dependencia)) {
+      errors.codigo_dependencia = 'Debe tener 3 dígitos';
+    }
     if (formData.telefono.trim()) {
       if (!onlyNumbers.test(formData.telefono.trim())) {
         errors.telefono = 'Solo puede contener números';
@@ -134,7 +137,7 @@ function useUserManagement() {
       nombre: '', apellido_paterno: '', apellido_materno: '',
       email_corporativo: '', telefono: '',
       id_cargo: firstActivePosition?.id_cargo || '', id_rol: 3,
-      id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
+      id_jefe_directo: '', id_seccion: '', carnet_identidad: '', codigo_dependencia: '',
     });
     setError('');
     setFieldErrors({});
@@ -154,6 +157,7 @@ function useUserManagement() {
       id_jefe_directo: user.id_jefe_directo || '',
       id_seccion: user.id_seccion || '',
       carnet_identidad: user.carnet_identidad || '',
+      codigo_dependencia: user.codigo_dependencia || '',
     });
     setError('');
     setFieldErrors({});
@@ -173,7 +177,7 @@ function useUserManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await createUser({...formData, activo: true, id_jefe_directo: formData.id_jefe_directo || null, id_seccion: formData.id_seccion || null});
+    const data = await createUser({...formData, codigo_dependencia: formData.codigo_dependencia || null, activo: true, id_jefe_directo: formData.id_jefe_directo || null, id_seccion: formData.id_seccion || null});
     setSavingAction(false);
     if (data.error) {
       showError(data.error);
@@ -203,6 +207,7 @@ function useUserManagement() {
       id_jefe_directo: formData.id_jefe_directo || null,
       id_seccion: formData.id_seccion || null,
       carnet_identidad: formData.carnet_identidad?.trim() || null,
+      codigo_dependencia: formData.codigo_dependencia || null,
     };
     setSavingAction(true);
     const data = await updateUser(selectedUser.id_usuario, payload);

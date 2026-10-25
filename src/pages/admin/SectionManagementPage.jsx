@@ -75,7 +75,7 @@ function SectionManagementPage() {
             </div>
             <div className={styles.cardInfo}>
               <p className={styles.cardName} style={{color: COLORS.text}}>{section.nombre}</p>
-              {section.codigo_dependencia && <p className={styles.cardCodes} style={{color: COLORS.labels}}>Oracle: {section.codigo_dependencia} / {section.codigo_seccion || '000'}</p>}
+              {section.codigo_seccion && <p className={styles.cardCodes} style={{color: COLORS.labels}}>Sección Oracle: {section.codigo_seccion}</p>}
             </div>
             <div className={styles.actionsRow}>
               <div className={styles.actionBtn} style={{backgroundColor: section.activo ? '#d4edda' : COLORS.error}}>
@@ -117,7 +117,7 @@ function SectionManagementPage() {
         btnLabel="Registrar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <SectionFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
-        title="Editar Sección" subtitle="Actualice el nombre y los códigos de Oracle de la sección."
+        title="Editar Sección" subtitle="Actualice el nombre y el código de Oracle de la sección."
         btnLabel="Actualizar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <ConfirmDialog isOpen={showSuspend} icon={selectedSection?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}

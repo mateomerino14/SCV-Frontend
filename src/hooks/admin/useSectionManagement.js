@@ -8,11 +8,10 @@ function normalizeSectionName(name) {
   return (name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ');
 }
 
-const emptyForm = {nombre: '', codigo_dependencia: '', codigo_seccion: ''};
+const emptyForm = {nombre: '', codigo_seccion: ''};
 
 const sectionPayload = (formData) => ({
   nombre: formData.nombre.trim(),
-  codigo_dependencia: formData.codigo_dependencia || null,
   codigo_seccion: formData.codigo_seccion || null,
 });
 
@@ -87,7 +86,7 @@ function useSectionManagement() {
 
   const openEdit = (section) => {
     setSelectedSection(section);
-    setFormData({nombre: section.nombre, codigo_dependencia: section.codigo_dependencia || '', codigo_seccion: section.codigo_seccion || ''});
+    setFormData({nombre: section.nombre, codigo_seccion: section.codigo_seccion || ''});
     setError('');
     setFieldErrors({});
     setShowEdit(true);

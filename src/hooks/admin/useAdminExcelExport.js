@@ -61,6 +61,7 @@ function useAdminExcelExport() {
       {header: 'Correo', key: 'correo', width: 32},
       {header: 'Teléfono', key: 'telefono', width: 14},
       {header: 'CI', key: 'ci', width: 14},
+      {header: 'Dependencia Oracle', key: 'dependencia', width: 12},
       {header: 'Rol', key: 'rol', width: 16},
       {header: 'Cargo', key: 'cargo', width: 24},
       {header: 'Sección', key: 'seccion', width: 20},
@@ -71,6 +72,7 @@ function useAdminExcelExport() {
       correo: user.email_corporativo,
       telefono: user.telefono || '',
       ci: user.carnet_identidad || '',
+      dependencia: user.codigo_dependencia || '',
       rol: user.Rol?.nombre || '',
       cargo: user.Cargo?.nombre || '',
       seccion: user.Seccion?.nombre || '',
@@ -106,13 +108,11 @@ function useAdminExcelExport() {
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Secciones', [
       {header: 'Sección', key: 'nombre', width: 30},
-      {header: 'Dependencia Oracle', key: 'dependencia', width: 12},
       {header: 'Sección Oracle', key: 'codigoSeccion', width: 12},
       {header: 'Usuarios', key: 'usuarios', width: 11},
       {header: 'Estado', key: 'estado', width: 12},
     ], sections.map((section) => ({
       nombre: section.nombre,
-      dependencia: section.codigo_dependencia || '',
       codigoSeccion: section.codigo_seccion || '',
       usuarios: counts[section.id_seccion] || 0,
       estado: statusText(section.activo),

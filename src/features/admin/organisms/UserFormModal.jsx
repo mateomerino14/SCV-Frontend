@@ -75,6 +75,9 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   onChange={(value) => handleChange('id_seccion', value)} error={fieldErrors.id_seccion} />
                 <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={15} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
                   onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 15)} />
+                <FormField label="Dependencia Oracle (opcional)" placeholder="Ej: 421" inputMode="numeric" maxLength={3} value={formData.codigo_dependencia} error={fieldErrors.codigo_dependencia}
+                  helperText="Se usa en los gastos de las personas que lo tienen como jefe directo; si no tiene jefe, también en los suyos"
+                  onChange={(event) => handleChange('codigo_dependencia', event.target.value, onlyNumbersRegex, 3)} />
               </div>
               {isNew && (
                 <div className={styles.passwordNote} style={{backgroundColor: COLORS.backgroundHeader, borderColor: COLORS.dataFields}}>
