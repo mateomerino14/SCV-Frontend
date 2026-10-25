@@ -22,7 +22,7 @@ function useUserManagement() {
     nombre: '', apellido_paterno: '', apellido_materno: '',
     email_corporativo: '', telefono: '',
     id_cargo: '', id_rol: 3,
-    id_jefe_directo: '', id_seccion: '', carnet_identidad: '', nombre_proveedor_oracle: '',
+    id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
   });
 
   const load = async () => {
@@ -134,7 +134,7 @@ function useUserManagement() {
       nombre: '', apellido_paterno: '', apellido_materno: '',
       email_corporativo: '', telefono: '',
       id_cargo: firstActivePosition?.id_cargo || '', id_rol: 3,
-      id_jefe_directo: '', id_seccion: '', carnet_identidad: '', nombre_proveedor_oracle: '',
+      id_jefe_directo: '', id_seccion: '', carnet_identidad: '',
     });
     setError('');
     setFieldErrors({});
@@ -154,7 +154,6 @@ function useUserManagement() {
       id_jefe_directo: user.id_jefe_directo || '',
       id_seccion: user.id_seccion || '',
       carnet_identidad: user.carnet_identidad || '',
-      nombre_proveedor_oracle: user.nombre_proveedor_oracle || '',
     });
     setError('');
     setFieldErrors({});
@@ -174,7 +173,7 @@ function useUserManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await createUser({...formData, nombre_proveedor_oracle: formData.nombre_proveedor_oracle?.trim() || null, activo: true, id_jefe_directo: formData.id_jefe_directo || null, id_seccion: formData.id_seccion || null});
+    const data = await createUser({...formData, activo: true, id_jefe_directo: formData.id_jefe_directo || null, id_seccion: formData.id_seccion || null});
     setSavingAction(false);
     if (data.error) {
       showError(data.error);
@@ -204,7 +203,6 @@ function useUserManagement() {
       id_jefe_directo: formData.id_jefe_directo || null,
       id_seccion: formData.id_seccion || null,
       carnet_identidad: formData.carnet_identidad?.trim() || null,
-      nombre_proveedor_oracle: formData.nombre_proveedor_oracle?.trim() || null,
     };
     setSavingAction(true);
     const data = await updateUser(selectedUser.id_usuario, payload);

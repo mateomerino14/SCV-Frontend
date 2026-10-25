@@ -75,9 +75,6 @@ function UserFormModal({isOpen, onClose, onConfirm, title, btnLabel, formData, s
                   onChange={(value) => handleChange('id_seccion', value)} error={fieldErrors.id_seccion} />
                 <FormField label="Carnet de Identidad (opcional)" placeholder="Ej: 1234567 LP" maxLength={15} value={formData.carnet_identidad} error={fieldErrors.carnet_identidad}
                   onChange={(event) => handleChange('carnet_identidad', event.target.value, null, 15)} />
-                <FormField label="Nombre de proveedor en Oracle (opcional)" placeholder="Ej: TERRAZAS, JHIMY WILFREDO (BOL)" maxLength={150}
-                  value={formData.nombre_proveedor_oracle} helperText="Solo si en Oracle está escrito distinto a «APELLIDOS, NOMBRES (BOL)»"
-                  onChange={(event) => handleChange('nombre_proveedor_oracle', event.target.value.toUpperCase(), null, 150)} />
               </div>
               {isNew && (
                 <div className={styles.passwordNote} style={{backgroundColor: COLORS.backgroundHeader, borderColor: COLORS.dataFields}}>

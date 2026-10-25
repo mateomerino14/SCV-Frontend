@@ -56,7 +56,6 @@ describe('Excel para Oracle', () => {
     const alcohol = buildOracleInvoice(trip, {...fuelInvoice, tiene_alcohol: true}).values;
     expect(alcohol).toMatchObject({codigoImpuesto: 'EMP-SIN-IVA', condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', importeFactura: 144.98, flexfield: 'Lote de Facturas: 900\nContexto: Factura Estándar'});
     expect(alcohol.descripcion.startsWith('R 10-40')).toBe(true);
-    expect(buildSupplierName({nombre: 'Jhimmy', apellido_paterno: 'Terrazas', nombre_proveedor_oracle: 'TERRAZAS, JHIMY WILFREDO (BOL)'})).toBe('TERRAZAS, JHIMY WILFREDO (BOL)');
     expect(buildOracleInvoice(trip, {...fuelInvoice, tipo: 'R'}).values).toMatchObject({condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', codigoImpuesto: 'EMP-SIN-IVA'});
     expect(buildOracleInvoice(trip, {...lodging, numero_recibo: '0003431'}).values.numeroFactura).toBe('0003431');
     const international = buildOracleInvoice(trip, {...lodging, es_gasto_internacional: true, monto_total: 50});

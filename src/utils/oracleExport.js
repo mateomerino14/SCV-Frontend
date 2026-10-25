@@ -44,7 +44,7 @@ export const invoiceColumns = [
   {key: 'cuentaPasivo', kind: 'fixed', header: 'Cuenta de Pasivo'},
   {key: 'descripcionPasivo', kind: 'oracle', header: 'Descripción de Pasivo'},
   {key: 'fechaTcPago', kind: 'oracle', header: 'Fecha T. C. Pago'},
-  {key: 'divisaFuncional', kind: 'fixed', header: 'Divisa Funcional', list: 'currencies'},
+  {key: 'divisaFuncional', kind: 'oracle', header: 'Divisa Funcional', list: 'currencies'},
   {key: 'metodoPago', kind: 'fixed', header: 'Método de Pago', list: 'paymentMethods'},
   {key: 'nivelCalculo', kind: 'fixed', header: 'Nivel de Cálculo de Impuestos'},
   {key: 'categoriaDocumento', kind: 'fixed', header: 'Nombre de Categoría de Documento'},
@@ -111,9 +111,6 @@ export function buildOracleAccount(account, sectionCodes = {}) {
 }
 
 export function buildSupplierName(user) {
-  if (user?.nombre_proveedor_oracle) {
-    return user.nombre_proveedor_oracle.toUpperCase();
-  }
   const surnames = [user?.apellido_paterno, user?.apellido_materno].filter(Boolean).join(' ');
   return `${surnames}, ${user?.nombre || ''} ${oracleDefaults.supplierSuffix}`.toUpperCase();
 }
@@ -276,7 +273,6 @@ export function buildOracleInvoice(trip, expense) {
     grupoPago: payment.paymentGroup,
     divisaPago: currency,
     cuentaPasivo: buildOracleAccount(oracleDefaults.liabilityAccount),
-    divisaFuncional: oracleDefaults.functionalCurrency,
     metodoPago: oracleDefaults.paymentMethod,
     nivelCalculo: oracleDefaults.calculationLevel,
     categoriaDocumento: oracleDefaults.documentCategory,
