@@ -225,3 +225,23 @@ export const sendReminderDigestNow = async () => {
     return {error: error.response?.data?.error || 'Error al enviar el resumen de pendientes'};
   }
 };
+
+export const previewUserImport = async (rows) => {
+  try {
+    const response = await apiClient.post('/user/import/preview', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al revisar el archivo'};
+  }
+};
+
+export const importUsers = async (rows) => {
+  try {
+    const response = await apiClient.post('/user/import', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al importar los usuarios'};
+  }
+};

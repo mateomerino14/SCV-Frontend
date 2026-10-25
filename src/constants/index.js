@@ -24,6 +24,8 @@ export const COLORS = {
   positionRole: '#F1F2FF',
   element: '#eceded6a',
   error: '#fde9e9',
+  success: '#155724',
+  successBackground: '#d4edda',
   comments: '#f5d6d622',
   // Variantes de "background" (blanco) con transparencia, para usar sobre fondos de color (modales rojos, etc.)
   backgroundOnColorBorder: 'rgba(255,255,255,0.4)',

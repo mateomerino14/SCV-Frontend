@@ -257,7 +257,7 @@ function useUserManagement() {
     showSuspend, setShowSuspend, showSuccess, setShowSuccess,
     successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend,
-    handleCreate, handleEdit, handleToggleActive,
+    handleCreate, handleEdit, handleToggleActive, reload: load,
   };
 }
 
