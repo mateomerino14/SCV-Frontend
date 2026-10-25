@@ -168,6 +168,8 @@ Para cambiar la imagen de ingreso basta con reemplazar ese archivo manteniendo e
 
 ## Sistema de diseño
 
+Los campos obligatorios de los formularios llevan un **asterisco rojo** junto a la etiqueta (`FieldLabel`, usado por `FormField`, `InputField`, `PasswordField`, `SearchableSelector` y `ExpenseField` con la prop `required`); los opcionales van sin marca.
+
 La paleta se centraliza en `constants/index.js`. Ningún componente define colores literales.
 
 | Token | Valor | Uso |

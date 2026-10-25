@@ -551,6 +551,9 @@ Cada estado de viaje tiene un único nombre (\code{constants/tripStatusLabels.js
 
 En las pantallas del empleado, ``En Curso'' usa el rojo institucional porque marca su viaje activo.
 
+\subsection{Campos obligatorios}
+Los campos obligatorios llevan un asterisco rojo junto a la etiqueta (\code{FieldLabel}, usado por \code{FormField}, \code{InputField}, \code{PasswordField}, \code{SearchableSelector} y \code{ExpenseField} con la prop \code{required}); los opcionales van sin marca.
+
 \subsection{Ventanas emergentes}
 Todas las confirmaciones y avisos importantes usan \code{ConfirmDialog}: tarjeta en rojo institucional, ícono negro en un círculo blanco y botones primario y secundario. Se dibuja con \code{createPortal} sobre el \code{body}, lo que evita parpadeos cuando se abre desde una tarjeta animada.
 
@@ -603,7 +606,7 @@ Resumen general con indicadores por fase y gráficos, con filtro de periodo (est
 Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora y los pendientes. Se puede desactivar en Ajustes de Cuenta y respeta la preferencia de reducir movimiento.
 
 \section{Documentación de componentes}
-Los componentes de \code{components/ui}, todos los átomos de \code{features}, las moléculas reutilizables y los organismos de la carga de facturas (\code{InvoiceForm}, \code{InvoiceDetailPanel}) están documentados en Storybook, con cada historia junto a su componente (137 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
+Los componentes de \code{components/ui}, todos los átomos de \code{features}, las moléculas reutilizables y los organismos de la carga de facturas (\code{InvoiceForm}, \code{InvoiceDetailPanel}) están documentados en Storybook, con cada historia junto a su componente (141 historias en total). Cada historia describe el propósito del componente y sus variantes; los que tienen estado interno (selectores, diálogos) incluyen un contenedor interactivo para probarlos.
 
 \Needspace{5\baselineskip}
 \begin{lstlisting}
