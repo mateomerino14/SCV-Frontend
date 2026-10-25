@@ -19,11 +19,13 @@ const pendingNote = 'Completar antes de subir a Oracle';
 const monthNumberPlaceholder = missingCode;
 const pendingNotes = {
   descripcion: 'Reemplazar XXX por el número de rendición del mes que lleva contabilidad',
-  cuenta: 'Revisar la cuenta: falta el código de Oracle de la sección del empleado (Administración > Secciones)',
+  cuenta: 'Revisar la cuenta: falta el código de Oracle de la dependencia o de la sección del empleado',
+  numeroFactura: 'Falta el número de la factura o del recibo',
+  flexfield: 'Falta el CUF de la factura',
 };
 const autoLineNote = 'Oracle crea esta línea al validar la factura: es solo de referencia, no se carga';
 
-export const invoiceColumns = [
+const invoiceColumns = [
   {key: 'tipo', kind: 'fixed', header: 'Tipo', list: 'invoiceTypes'},
   {key: 'justificante', kind: 'oracle', header: 'Nº Justificante'},
   {key: 'proveedor', kind: 'system', header: 'Proveedor'},
@@ -62,7 +64,7 @@ export const invoiceColumns = [
   {key: 'importeImpuesto', kind: 'oracle', header: 'Importe del Impuesto', amount: true},
 ];
 
-export const lineColumns = [
+const lineColumns = [
   {key: 'numero', kind: 'system', header: 'Nº'},
   {key: 'tipo', kind: 'system', header: 'Tipo', list: 'lineTypes'},
   {key: 'importe', kind: 'system', header: 'Importe', amount: true},
@@ -104,7 +106,7 @@ export function formatOracleDate(value) {
 
 const fixedSegments = {dependency: oracleDefaults.dependency, section: oracleDefaults.section};
 
-export function buildOracleAccount(account, segments = fixedSegments) {
+function buildOracleAccount(account, segments = fixedSegments) {
   if (!account) {
     return '';
   }
@@ -131,7 +133,7 @@ const categoryConcept = (expense) => {
 
 const documentDate = (expense) => String(expense.Factura?.fecha_emision || expense.fecha_gasto || '').slice(0, 10);
 
-export function documentMonth(expense) {
+function documentMonth(expense) {
   return parseInt(documentDate(expense).slice(5, 7), 10) || '';
 }
 
@@ -144,7 +146,7 @@ const documentSymbol = (expense) => {
   return toOracleExpenseType(expense.tipo);
 };
 
-export function buildOracleDescription(trip, expense) {
+function buildOracleDescription(trip, expense) {
   const user = trip.Usuario || {};
   const fullName = `${user.nombre || ''} ${user.apellido_paterno || ''}`.trim();
   const code = `${documentSymbol(expense)} ${documentMonth(expense)}-${trip.numero_rendicion || monthNumberPlaceholder}`;
@@ -325,16 +327,43 @@ const addListsSheet = (workbook) => {
 };
 
 const solidFill = (argb) => ({type: 'pattern', pattern: 'solid', fgColor: {argb}});
-const thinLine = {style: 'thin', color: {argb: 'FF8C8C8C'}};
+const baseFont = {name: 'Calibri', size: 10};
+const headerFont = {...baseFont, bold: true, color: {argb: 'FF262626'}};
+const autoFont = {...baseFont, italic: true, color: {argb: 'FF595959'}};
+const thinLine = {style: 'thin', color: {argb: 'FFBFBFBF'}};
+const groupLine = {style: 'medium', color: {argb: 'FF7F7F7F'}};
 const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
+const oracleTabColor = 'FF2F5597';
+const legendTabColor = 'FF7F7F7F';
+const headerHeight = 42;
+const rowHeight = 18;
+const textLineHeight = 14;
+const amountFormat = '0.00';
+const frozenColumns = 3;
+const centeredKeys = ['numero', 'fechaFactura', 'numeroFactura', 'filaFactura', 'viaje', 'confrontacionFinal'];
+const minColumnWidth = 8;
+const maxColumnWidth = 110;
+
+const cellAlignment = (column) => {
+  if (column.amount) {
+    return {horizontal: 'right', vertical: 'middle'};
+  }
+  if (column.key === 'flexfield') {
+    return {horizontal: 'left', vertical: 'top', wrapText: true};
+  }
+  if (column.list || centeredKeys.includes(column.key)) {
+    return {horizontal: 'center', vertical: 'middle'};
+  }
+  return {horizontal: 'left', vertical: 'middle'};
+};
 
 const styleHeader = (sheet, columns) => {
   const header = sheet.getRow(1);
-  header.font = {bold: true};
-  header.alignment = {horizontal: 'center', vertical: 'middle', wrapText: true};
-  header.height = 32;
+  header.height = headerHeight;
   columns.forEach((column, index) => {
     const cell = header.getCell(index + 1);
+    cell.font = headerFont;
+    cell.alignment = {horizontal: 'center', vertical: 'middle', wrapText: true};
     cell.fill = solidFill(kindStyles[column.kind].header);
     cell.note = kindStyles[column.kind].note;
     cell.border = cellBorder;
@@ -342,17 +371,21 @@ const styleHeader = (sheet, columns) => {
 };
 
 const styleCell = (cell, column, row) => {
+  cell.font = baseFont;
+  if (row.auto) {
+    cell.font = autoFont;
+  }
   if (row.missing.includes(column.key)) {
     cell.fill = solidFill(pendingFill);
-    cell.font = {color: {argb: pendingFont}};
+    cell.font = {...baseFont, bold: true, color: {argb: pendingFont}};
     cell.note = pendingNotes[column.key] || pendingNote;
     return;
   }
-  const fill = kindStyles[column.kind].cell;
   if (row.auto && column.kind === 'system') {
     cell.fill = solidFill(kindStyles.oracle.cell);
     return;
   }
+  const fill = kindStyles[column.kind].cell;
   if (fill) {
     cell.fill = solidFill(fill);
   }
@@ -360,9 +393,6 @@ const styleCell = (cell, column, row) => {
     cell.value = null;
   }
 };
-
-const minColumnWidth = 6;
-const maxColumnWidth = 110;
 
 const textWidth = (value, column) => {
   if (value === null || value === undefined || value === '') {
@@ -387,65 +417,139 @@ const fitColumnWidths = (sheet, columns, rows) => {
   });
 };
 
+const pendingEntry = (name, column, index, rowNumber) => ({
+  sheet: name,
+  cell: `${columnLetter(index + 1)}${rowNumber}`,
+  column: column.header,
+  note: pendingNotes[column.key] || pendingNote,
+});
+
 const writeSheet = (workbook, name, columns, rows, ranges) => {
-  const sheet = workbook.addWorksheet(name);
+  const sheet = workbook.addWorksheet(name, {
+    properties: {tabColor: {argb: oracleTabColor}},
+    views: [{state: 'frozen', xSplit: frozenColumns, ySplit: 1}],
+    pageSetup: {orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, printTitlesRow: '1:1'},
+  });
   sheet.columns = columns.map((column) => ({header: column.header, key: column.key}));
   styleHeader(sheet, columns);
-  rows.forEach((rowData) => {
+  const pending = [];
+  rows.forEach((rowData, rowIndex) => {
     const row = sheet.addRow(rowData.values);
+    const startsGroup = rowIndex > 0 && rowData.values.numero === 1;
     columns.forEach((column, index) => {
       const cell = row.getCell(index + 1);
       cell.border = cellBorder;
-      if (column.amount) {
-        cell.numFmt = '0.00';
+      if (startsGroup) {
+        cell.border = {...cellBorder, top: groupLine};
       }
-      if (column.key === 'flexfield') {
-        cell.alignment = {wrapText: true, vertical: 'top'};
+      cell.alignment = cellAlignment(column);
+      if (column.amount) {
+        cell.numFmt = amountFormat;
       }
       if (column.list && column.kind !== 'oracle') {
         cell.dataValidation = {type: 'list', allowBlank: true, formulae: [ranges[column.list]]};
       }
       styleCell(cell, column, rowData);
+      if (rowData.missing.includes(column.key)) {
+        pending.push(pendingEntry(name, column, index, row.number));
+      }
     });
-    const flexLines = String(rowData.values.flexfield || '').split('\n').length;
-    if (flexLines > 1) {
-      row.height = flexLines * 15;
-    }
+    const textLines = String(rowData.values.flexfield || '').split('\n').length;
+    row.height = Math.max(rowHeight, textLines * textLineHeight);
     if (rowData.auto) {
       row.getCell(2).note = autoLineNote;
-      row.font = {italic: true, color: {argb: 'FF595959'}};
     }
   });
   fitColumnWidths(sheet, columns, rows);
-  sheet.views = [{state: 'frozen', ySplit: 1}];
-  return sheet;
+  sheet.autoFilter = {from: {row: 1, column: 1}, to: {row: 1, column: columns.length}};
+  return pending;
 };
 
 const legendRows = [
-  ['Blanco', 'Datos listos para Oracle: los pone el sistema o son valores fijos. La nota de cada encabezado dice cuál.', plainHeader, null],
-  ['Celeste', 'Lo llena Oracle al subir la factura, así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.header, kindStyles.oracle.cell],
-  ['Rojo', 'Falta un dato que el sistema no tiene; lo que falta aparece como XXX o vacío (CUF, número de recibo, códigos de Oracle de la cuenta, número de rendición). Completar antes de subir.', pendingFill, pendingFill],
+  ['Blanco', 'Datos listos para Oracle: los pone el sistema o son valores fijos. La nota de cada encabezado dice cuál.', null],
+  ['Celeste', 'Lo llena Oracle al subir la factura, así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.cell],
+  ['Rojo', 'Falta un dato que el sistema no tiene; lo que falta aparece como XXX o vacío (CUF, número de recibo, códigos de Oracle de la cuenta, número de rendición). Completar antes de subir.', pendingFill],
 ];
 
-const addLegendSheet = (workbook) => {
-  const sheet = workbook.addWorksheet('LEYENDA ORACLE');
-  sheet.columns = [{header: 'Color', key: 'color', width: 32}, {header: 'Significado', key: 'meaning', width: 110}];
-  sheet.getRow(1).font = {bold: true};
-  sheet.getRow(1).alignment = {horizontal: 'center', vertical: 'middle'};
-  sheet.getRow(1).eachCell((cell) => {
-    cell.border = cellBorder;
+const legendColumns = [{key: 'a', width: 16}, {key: 'b', width: 14}, {key: 'c', width: 28}, {key: 'd', width: 84}];
+const legendTitleSize = 14;
+
+const todayText = () => {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${day}/${month}/${now.getFullYear()}`;
+};
+
+const styleLegendCell = (cell, extra = {}) => {
+  cell.font = {...baseFont, ...extra.font};
+  cell.alignment = {vertical: 'middle', wrapText: true, ...extra.alignment};
+  cell.border = cellBorder;
+  if (extra.fill) {
+    cell.fill = solidFill(extra.fill);
+  }
+};
+
+const addLegendTitle = (sheet, rowNumber, text) => {
+  sheet.mergeCells(rowNumber, 1, rowNumber, legendColumns.length);
+  const cell = sheet.getCell(rowNumber, 1);
+  cell.value = text;
+  styleLegendCell(cell, {font: {bold: true}, fill: plainHeader});
+  sheet.getRow(rowNumber).height = rowHeight + 4;
+};
+
+const addPendingRows = (sheet, startRow, pending) => {
+  let rowNumber = startRow;
+  if (pending.length === 0) {
+    sheet.mergeCells(rowNumber, 1, rowNumber, legendColumns.length);
+    const cell = sheet.getCell(rowNumber, 1);
+    cell.value = 'No falta ningún dato: las hojas están listas para subir a Oracle.';
+    styleLegendCell(cell, {font: {italic: true}});
+    return;
+  }
+  ['Hoja', 'Celda', 'Columna', 'Qué falta'].forEach((text, index) => {
+    styleLegendCell(sheet.getCell(rowNumber, index + 1), {font: {bold: true}, alignment: {horizontal: 'center'}});
+    sheet.getCell(rowNumber, index + 1).value = text;
   });
-  legendRows.forEach(([label, meaning, colorFill, cellFill]) => {
-    const row = sheet.addRow({color: label, meaning});
-    row.getCell(1).border = cellBorder;
-    row.getCell(2).border = cellBorder;
-    row.getCell(1).fill = solidFill(colorFill);
-    if (cellFill) {
-      row.getCell(2).fill = solidFill(cellFill);
-    }
-    row.alignment = {vertical: 'middle', wrapText: true};
-    row.height = 30;
+  pending.forEach((entry) => {
+    rowNumber += 1;
+    const row = sheet.getRow(rowNumber);
+    row.getCell(1).value = entry.sheet;
+    row.getCell(2).value = {text: entry.cell, hyperlink: `#'${entry.sheet}'!${entry.cell}`};
+    row.getCell(3).value = entry.column;
+    row.getCell(4).value = entry.note;
+    [1, 2, 3, 4].forEach((column) => styleLegendCell(row.getCell(column), {fill: pendingFill}));
+    row.getCell(2).font = {...baseFont, underline: true, color: {argb: pendingFont}};
+    row.getCell(2).alignment = {horizontal: 'center', vertical: 'middle'};
   });
+};
+
+const addLegendSheet = (workbook, {invoices, lines, pending}) => {
+  const sheet = workbook.addWorksheet('LEYENDA ORACLE', {properties: {tabColor: {argb: legendTabColor}}});
+  sheet.columns = legendColumns;
+  sheet.mergeCells(1, 1, 1, legendColumns.length);
+  const title = sheet.getCell(1, 1);
+  title.value = 'Hojas para Oracle: FACTURAS y LINEAS';
+  title.font = {...baseFont, size: legendTitleSize, bold: true};
+  title.alignment = {vertical: 'middle'};
+  sheet.getRow(1).height = 26;
+  sheet.mergeCells(2, 1, 2, legendColumns.length);
+  const summary = sheet.getCell(2, 1);
+  summary.value = `Generado el ${todayText()}  ·  ${invoices} facturas  ·  ${lines} líneas  ·  ${pending.length} datos por completar`;
+  summary.font = {...baseFont, color: {argb: 'FF595959'}};
+  addLegendTitle(sheet, 4, 'Qué significa cada color');
+  legendRows.forEach(([label, meaning, fill], index) => {
+    const rowNumber = 5 + index;
+    sheet.mergeCells(rowNumber, 2, rowNumber, legendColumns.length);
+    sheet.getCell(rowNumber, 1).value = label;
+    sheet.getCell(rowNumber, 2).value = meaning;
+    styleLegendCell(sheet.getCell(rowNumber, 1), {font: {bold: true}, alignment: {horizontal: 'center'}, fill});
+    styleLegendCell(sheet.getCell(rowNumber, 2), {fill});
+    sheet.getRow(rowNumber).height = 30;
+  });
+  const pendingTitleRow = 5 + legendRows.length + 1;
+  addLegendTitle(sheet, pendingTitleRow, 'Datos por completar antes de subir a Oracle (clic en la celda para ir)');
+  addPendingRows(sheet, pendingTitleRow + 1, pending);
 };
 
 export function buildOracleRows(statements) {
@@ -465,7 +569,7 @@ export function buildOracleRows(statements) {
 export function addOracleSheets(workbook, statements) {
   const {invoices, lines} = buildOracleRows(statements);
   const ranges = addListsSheet(workbook);
-  writeSheet(workbook, 'FACTURAS', invoiceColumns, invoices, ranges);
-  writeSheet(workbook, 'LINEAS', lineColumns, lines, ranges);
-  addLegendSheet(workbook);
+  const invoicePending = writeSheet(workbook, 'FACTURAS', invoiceColumns, invoices, ranges);
+  const linePending = writeSheet(workbook, 'LINEAS', lineColumns, lines, ranges);
+  addLegendSheet(workbook, {invoices: invoices.length, lines: lines.length, pending: [...invoicePending, ...linePending]});
 }

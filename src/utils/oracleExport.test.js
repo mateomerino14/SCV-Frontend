@@ -1,5 +1,6 @@
 import {describe, it, expect} from 'vitest';
-import {buildOracleInvoice, buildOracleRows, formatOracleDate, buildSupplierName} from './oracleExport';
+import ExcelJS from 'exceljs';
+import {buildOracleInvoice, buildOracleRows, formatOracleDate, buildSupplierName, addOracleSheets} from './oracleExport';
 
 const trip = {
   id_viaje: 40, numero_rendicion: 40, fecha_inicio: '2026-10-20', motivo: 'Viaje a SCZ por transporte de producto terminado',
@@ -78,5 +79,25 @@ describe('Excel para Oracle', () => {
     const pending = buildOracleInvoice({...trip, numero_rendicion: null}, lodging);
     expect(pending.values.descripcion.startsWith('A 10-XXX')).toBe(true);
     expect(pending.missing).toContain('descripcion');
+  });
+
+  it('lista en la leyenda los datos por completar con enlace a su celda', () => {
+    const workbook = new ExcelJS.Workbook();
+    addOracleSheets(workbook, [{trip: {...trip, numero_rendicion: null}, expenses: [lodging]}]);
+    const invoices = workbook.getWorksheet('FACTURAS');
+    expect(invoices.autoFilter).toBeTruthy();
+    expect(invoices.views[0]).toMatchObject({state: 'frozen', xSplit: 3, ySplit: 1});
+    expect(invoices.getCell('O2').fill.fgColor.argb).toBe('FFFFC7CE');
+    const legend = workbook.getWorksheet('LEYENDA ORACLE');
+    expect(legend.getCell('A2').value).toContain('1 facturas');
+    expect(legend.getCell('A2').value).toContain('2 datos por completar');
+    expect(legend.getCell('B11').value).toEqual({text: 'O2', hyperlink: "#'FACTURAS'!O2"});
+    expect(legend.getCell('D11').value).toContain('número de rendición');
+  });
+
+  it('avisa en la leyenda cuando no falta ningún dato', () => {
+    const workbook = new ExcelJS.Workbook();
+    addOracleSheets(workbook, [{trip, expenses: [fuelInvoice]}]);
+    expect(workbook.getWorksheet('LEYENDA ORACLE').getCell('A10').value).toContain('No falta ningún dato');
   });
 });
