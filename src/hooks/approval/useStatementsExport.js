@@ -18,12 +18,12 @@ const summaryColumns = [
   {header: 'Inicio', key: 'inicio', width: 12},
   {header: 'Fin', key: 'fin', width: 12},
   {header: 'Estado', key: 'estado', width: 22},
-  {header: 'Asignado Bs', key: 'asignadoBs', width: 14, numFmt: amountFormat},
-  {header: 'Gastado Bs', key: 'gastadoBs', width: 14, numFmt: amountFormat},
-  {header: 'Saldo Bs', key: 'saldoBs', width: 14, numFmt: amountFormat},
-  {header: 'Asignado USD', key: 'asignadoUsd', width: 14, numFmt: amountFormat},
-  {header: 'Gastado USD', key: 'gastadoUsd', width: 14, numFmt: amountFormat},
-  {header: 'Saldo USD', key: 'saldoUsd', width: 14, numFmt: amountFormat},
+  {header: 'Asignado Bs', key: 'asignadoBs', width: 14, numFmt: amountFormat, total: true},
+  {header: 'Gastado Bs', key: 'gastadoBs', width: 14, numFmt: amountFormat, total: true},
+  {header: 'Saldo Bs', key: 'saldoBs', width: 14, numFmt: amountFormat, total: true},
+  {header: 'Asignado USD', key: 'asignadoUsd', width: 14, numFmt: amountFormat, total: true},
+  {header: 'Gastado USD', key: 'gastadoUsd', width: 14, numFmt: amountFormat, total: true},
+  {header: 'Saldo USD', key: 'saldoUsd', width: 14, numFmt: amountFormat, total: true},
 ];
 
 const sumExpenses = (expenses, international) => expenses

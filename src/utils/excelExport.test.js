@@ -15,4 +15,15 @@ describe('addTableSheet', () => {
     expect(sheet.getColumn(2).numFmt).toBe('#,##0.00');
     expect(sheet.getRow(1).font.bold).toBe(true);
   });
+
+  it('agrega la fila de totales en las columnas marcadas', () => {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = addTableSheet(workbook, 'Resumen', [
+      {header: 'Código', key: 'codigo'},
+      {header: 'Gastado Bs', key: 'gastado', numFmt: '#,##0.00', total: true},
+    ], [{codigo: 'VIA-1', gastado: 100.5}, {codigo: 'VIA-2', gastado: 50}]);
+    expect(sheet.getRow(4).getCell(1).value).toBe('TOTAL');
+    expect(sheet.getRow(4).getCell(2).value).toBe(150.5);
+    expect(sheet.getRow(4).font.bold).toBe(true);
+  });
 });
