@@ -70,11 +70,11 @@ describe('Excel para Oracle', () => {
     expect(invoices).toHaveLength(2);
     expect(lines.map((line) => line.values.filaFactura)).toEqual([2, 2, 3, 3, 3, 3]);
     const noCodes = buildOracleInvoice({...trip, Usuario: {...trip.Usuario, Seccion: {}}}, lodging);
-    expect(noCodes.lines[0].values.cuenta).toBe('76.8.900.626030.000000.000.000.000');
+    expect(noCodes.lines[0].values.cuenta).toBe('76.8.XXX.626030.000000.XXX.000.000');
     expect(noCodes.lines[0].missing).toContain('cuenta');
     expect(invoices.map((invoice) => invoice.values.descripcion.slice(0, 7))).toEqual(['F 10-40', 'A 10-40']);
     const pending = buildOracleInvoice({...trip, numero_rendicion: null}, lodging);
-    expect(pending.values.descripcion.startsWith('A 10-___')).toBe(true);
+    expect(pending.values.descripcion.startsWith('A 10-XXX')).toBe(true);
     expect(pending.missing).toContain('descripcion');
   });
 });
