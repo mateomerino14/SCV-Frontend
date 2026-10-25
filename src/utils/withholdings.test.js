@@ -27,4 +27,10 @@ describe('calculateWithholdings', () => {
   it('un gasto con alcohol no lleva retenciones', () => {
     expect(getExpenseWithholdings({tipo: 'C', monto_total: '100', tiene_alcohol: true}).toPay).toBe(100);
   });
+
+  it('con subgastos calcula cada uno aparte y suma, como el recibo de papel', () => {
+    expect(calculateWithholdings(240, 'S', false, [50, 80, 60, 50])).toEqual({base: 285.73, rcIva: 37.15, iue: 0, it: 8.58, cost: 285.73, toPay: 240});
+    const expense = {tipo: 'S', monto_total: '240.00', Gasto_Subitem: [{monto: '50'}, {monto: '80'}, {monto: '60'}, {monto: '50'}]};
+    expect(getExpenseWithholdings(expense).cost).toBe(285.73);
+  });
 });

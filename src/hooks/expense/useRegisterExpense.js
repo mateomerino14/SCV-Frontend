@@ -100,7 +100,14 @@ function useRegisterExpense(tripId) {
     return parseFloat(item.amount) || 0;
   };
 
-  const withholdingsOf = (item) => calculateWithholdings(finalAmountOf(item), item.type, isInternationalExpense);
+  const subitemAmountsOf = (item) => {
+    if (!item.usesSubitems) {
+      return [];
+    }
+    return validSubitemsOf(item).map((subitem) => subitem.amount);
+  };
+
+  const withholdingsOf = (item) => calculateWithholdings(finalAmountOf(item), item.type, isInternationalExpense, subitemAmountsOf(item));
   const hasWithholdingsOf = (item) => !isInternationalExpense && (item.type === 'C' || item.type === 'S') && finalAmountOf(item) > 0;
 
   const updateItem = (itemId, changes) => {

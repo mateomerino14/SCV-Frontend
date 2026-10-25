@@ -126,8 +126,12 @@ function useEditExpense(expenseId) {
   }, [amount, usesSubitems, validSubitems]);
 
   const withholdings = useMemo(() => {
-    return calculateWithholdings(finalAmount, type, isInternationalExpense);
-  }, [finalAmount, type, isInternationalExpense]);
+    let subitemAmounts = [];
+    if (usesSubitems) {
+      subitemAmounts = validSubitems.map((subitem) => subitem.amount);
+    }
+    return calculateWithholdings(finalAmount, type, isInternationalExpense, subitemAmounts);
+  }, [finalAmount, type, isInternationalExpense, usesSubitems, validSubitems]);
 
   const hasWithholdings = !isInternationalExpense && (type === 'C' || type === 'S') && finalAmount > 0;
 
