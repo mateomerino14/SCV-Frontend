@@ -17,7 +17,7 @@ const pendingNote = 'Completar antes de subir a Oracle';
 const monthNumberPlaceholder = '___';
 const pendingNotes = {
   descripcion: 'Reemplazar ___ por el número de rendición del mes que lleva contabilidad',
-  cuenta: 'Revisar la cuenta: falta el código de Oracle de la sección del empleado (Administración > Secciones) o la cuenta de la retención',
+  cuenta: 'Revisar la cuenta: falta el código de Oracle de la sección del empleado (Administración > Secciones)',
 };
 const autoLineNote = 'Oracle crea esta línea al validar la factura: es solo de referencia, no se carga';
 
@@ -209,7 +209,7 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
     const mainAccount = buildOracleAccount(withholding.mainAccount);
     lines.push({
       values: {...base, tipo: 'Retención de Impuestos', importe: -mainAmount, codigoImpuesto: withholding.mainCode, cuenta: mainAccount, descripcion: description},
-      missing: missingIfEmpty(mainAccount, 'cuenta'),
+      missing: [],
       auto: true,
     });
     lines.push({
@@ -405,7 +405,7 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
 const legendRows = [
   ['Blanco', 'Datos listos para Oracle: los pone el sistema o son valores fijos. La nota de cada encabezado dice cuál.', plainHeader, null],
   ['Celeste', 'Lo llena Oracle al subir la factura, así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.header, kindStyles.oracle.cell],
-  ['Amarillo', 'Falta un dato que el sistema no tiene (CUF, número de recibo, códigos de Oracle de la sección, cuenta del IUE, número de rendición). Completar antes de subir.', pendingFill, pendingFill],
+  ['Amarillo', 'Falta un dato que el sistema no tiene (CUF, número de recibo, códigos de Oracle de la sección, número de rendición). Completar antes de subir.', pendingFill, pendingFill],
 ];
 
 const addLegendSheet = (workbook) => {

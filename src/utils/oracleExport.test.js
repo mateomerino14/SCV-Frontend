@@ -48,10 +48,11 @@ describe('Excel para Oracle', () => {
     expect(values.descripcion).toBe('A 10-40  JHIMY WILFREDO TERRAZAS , VIAJE A SCZ POR TRANSPORTE DE PRODUCTO TERMINADO , HOTELES');
   });
 
-  it('marca para completar la cuenta del IUE y deja a Oracle el tipo de cambio del gasto internacional', () => {
+  it('deja sin marcar la cuenta del IUE de la línea que crea Oracle y el tipo de cambio del gasto internacional', () => {
     const purchase = buildOracleInvoice(trip, {...lodging, tipo: 'C'});
     expect(purchase.values.grupoRetencion).toBe('RETENCIONES COMPRAS');
-    expect(purchase.lines[2].missing).toEqual(['cuenta']);
+    expect(purchase.lines[2].missing).toEqual([]);
+    expect(purchase.lines[2].values.cuenta).toBe('');
     expect(buildOracleInvoice(trip, {...fuelInvoice, tipo: 'R'}).values).toMatchObject({condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', codigoImpuesto: 'EMP-SIN-IVA'});
     expect(buildOracleInvoice(trip, {...lodging, numero_recibo: '0003431'}).values.numeroFactura).toBe('0003431');
     const international = buildOracleInvoice(trip, {...lodging, es_gasto_internacional: true, monto_total: 50});
