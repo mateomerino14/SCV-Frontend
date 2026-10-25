@@ -13,15 +13,15 @@ const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
 const infoFill = 'FFEAF3FB';
 
-function cleanValue(value) {
-  return value === 'No Especificado' ? '' : (value || '');
-}
 const infoLabelColor = 'FF1A5276';
 const nationalRowFill = 'FFF4F9FD';
 const internationalRowFill = 'FFFDEEEE';
 const totalsFill = 'FFBFE0F5';
 const thinBorderColor = 'FFB0C4D4';
 const thickBorderColor = 'FF1B4F91';
+const totalsLabelEndCol = 3;
+const reimburseFont = 'FF9C0006';
+const footerText = '&L&8Sistema de Control de Viáticos&R&8Página &P de &N';
 
 const thinBorder = {
   top: {style: 'thin', color: {argb: thinBorderColor}},
@@ -29,6 +29,20 @@ const thinBorder = {
   left: {style: 'thin', color: {argb: thinBorderColor}},
   right: {style: 'thin', color: {argb: thinBorderColor}},
 };
+
+function cleanValue(value) {
+  if (value === 'No Especificado') {
+    return '';
+  }
+  return value || '';
+}
+
+function quantityText(quantity) {
+  if (!quantity) {
+    return '';
+  }
+  return ` x${formatQuantity(quantity)}`;
+}
 
 const symbologyRows = [
   ['F', 'Compra Bien/Servicio c/factura'],
@@ -41,7 +55,7 @@ function getExpenseDescription(expense) {
   const hasInvoice = !!expense.Factura;
   if (hasInvoice) {
     const products = (expense.Factura?.Detalle_Factura || [])
-      .map((detail) => `${cleanValue(detail.nombre_producto)}${detail.cantidad ? ` x${formatQuantity(detail.cantidad)}` : ''}`)
+      .map((detail) => `${cleanValue(detail.nombre_producto)}${quantityText(detail.cantidad)}`)
       .join(', ');
     return (products || expense.descripcion || `Factura N° ${cleanValue(expense.Factura?.numero_factura)}`).toUpperCase();
   }
@@ -159,39 +173,43 @@ function getLogoBase64() {
 async function addStatementSheet(workbook, trip, expenses, dayJustifications = [], sheetName = 'RENDICION', listSheetName = 'Listas') {
   const sheet = workbook.addWorksheet(sheetName);
   const isInternationalTrip = trip.tipo === 'Internacional';
-  const col = {
-    number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8,
-    tramos: isInternationalTrip ? 9 : null,
-    amount: isInternationalTrip ? 10 : 9,
-  };
+  const col = {number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8, tramos: null, amount: 9};
+  if (isInternationalTrip) {
+    col.tramos = 9;
+    col.amount = 10;
+  }
   col.vat = col.amount + 1;
   col.rcIva = col.amount + 2;
   col.iue = col.amount + 3;
   col.it = col.amount + 4;
   col.cost = col.amount + 5;
   const totalCols = col.cost;
-  const columnWidths = [5, 12, 10, 26, 30, 14, 13, 15];
+  const columnWidths = [5, 12, 22, 42, 9, 14, 13, 15];
   if (isInternationalTrip) {
     columnWidths.push(24);
   }
-  columnWidths.push(14, 9, 9, 9, 9, 16);
+  columnWidths.push(14, 10, 10, 10, 10, 16);
   sheet.columns = columnWidths.map((width) => ({width}));
-  sheet.pageSetup = {orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: {left: 0.3, right: 0.3, top: 0.4, bottom: 0.4, header: 0.2, footer: 0.2}};
+  sheet.properties.tabColor = {argb: headerFill};
+  sheet.pageSetup = {orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0, horizontalCentered: true, margins: {left: 0.3, right: 0.3, top: 0.4, bottom: 0.5, header: 0.2, footer: 0.2}};
+  sheet.headerFooter = {oddFooter: footerText};
   const logoStartCol = 0;
   const infoStartCol = 4;
   const infoEndCol = col.amount;
   const symbologyStartCol = col.amount + 1;
   const logoBase64 = await getLogoBase64();
   if (logoBase64) {
-    const extensionMatch = logoBase64.match(/data:image\/(png|jpeg);/);
-    const extension = extensionMatch ? extensionMatch[1] : 'png';
-    const imageId = workbook.addImage({base64: logoBase64, extension: extension === 'jpeg' ? 'jpeg' : 'png'});
+    let extension = 'png';
+    if (/data:image\/jpeg;/.test(logoBase64)) {
+      extension = 'jpeg';
+    }
+    const imageId = workbook.addImage({base64: logoBase64, extension});
     sheet.addImage(imageId, {tl: {col: logoStartCol, row: 0}, br: {col: infoStartCol - 1, row: 5}, editAsOneCell: true});
   }
   sheet.mergeCells(1, infoStartCol, 1, infoEndCol);
   const titleCell = sheet.getCell(1, infoStartCol);
   titleCell.value = 'PLANILLA DE RENDICION DE CUENTAS';
-  titleCell.font = {bold: true, size: 13, color: {argb: headerFont}};
+  titleCell.font = {bold: true, size: 14, color: {argb: headerFont}};
   titleCell.alignment = {horizontal: 'center', vertical: 'middle'};
   titleCell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: headerFill}};
   sheet.mergeCells(1, symbologyStartCol, 1, totalCols);
@@ -200,7 +218,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   symbologyHeaderCell.font = {bold: true, size: 10, color: {argb: headerFont}};
   symbologyHeaderCell.alignment = {horizontal: 'center', vertical: 'middle'};
   symbologyHeaderCell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: headerFill}};
-  sheet.getRow(1).height = 24;
+  sheet.getRow(1).height = 28;
   symbologyRows.forEach(([symbol, description], index) => {
     const row = 2 + index;
     const symbolCell = sheet.getCell(row, symbologyStartCol);
@@ -217,7 +235,10 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   });
   applyOuterBorder(sheet, 1, 5, symbologyStartCol, totalCols);
   sheet.getRow(2).height = 18;
-  const nationalLegendEnd = isInternationalTrip ? infoStartCol + 2 : infoEndCol;
+  let nationalLegendEnd = infoEndCol;
+  if (isInternationalTrip) {
+    nationalLegendEnd = infoStartCol + 2;
+  }
   sheet.mergeCells(2, infoStartCol, 2, nationalLegendEnd);
   const nationalLegendCell = sheet.getCell(2, infoStartCol);
   nationalLegendCell.value = 'Gasto Nacional (Bs)';
@@ -309,8 +330,12 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     const isInternational = isInternationalTrip && !!expense.es_gasto_internacional;
     const hasInvoice = !!expense.Factura;
     const {vat, rcIva, iue, it, cost} = getExpenseTaxValues(expense);
-    const rowFill = isInternational ? internationalRowFill : nationalRowFill;
-    const currencySuffix = isInternational ? '" USD"' : '" Bs"';
+    let rowFill = nationalRowFill;
+    let currencySuffix = '" Bs"';
+    if (isInternational) {
+      rowFill = internationalRowFill;
+      currencySuffix = '" USD"';
+    }
     const row = sheet.getRow(currentRow);
     row.getCell(col.number).value = index + 1;
     row.getCell(col.date).value = new Date(expense.Factura?.fecha_emision || expense.fecha_gasto);
@@ -374,6 +399,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
 
   const totalsRowNumber = currentRow;
   const totalsRow = sheet.getRow(totalsRowNumber);
+  sheet.mergeCells(totalsRowNumber, 1, totalsRowNumber, totalsLabelEndCol);
   totalsRow.getCell(1).value = 'Sumas Totales (Bs)';
   totalsRow.getCell(1).font = {bold: true, size: 9};
   totalsRow.getCell(col.invoiceAmount).value = totalImporteFactura;
@@ -388,7 +414,10 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: totalsFill}};
     cell.border = thinBorder;
     cell.font = {bold: true, size: 9};
-    cell.alignment = {horizontal: column === 1 ? 'left' : 'center', vertical: 'middle'};
+    cell.alignment = {horizontal: 'center', vertical: 'middle'};
+    if (column === 1) {
+      cell.alignment = {horizontal: 'left', vertical: 'middle'};
+    }
     if (column === col.invoiceAmount || column >= col.amount) {
       cell.numFmt = '#,##0.00';
     }
@@ -398,6 +427,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   currentRow += 1;
   if (isInternationalTrip) {
     const totalsUsdRow = sheet.getRow(currentRow);
+    sheet.mergeCells(currentRow, 1, currentRow, totalsLabelEndCol);
     totalsUsdRow.getCell(1).value = 'Sumas Totales (USD)';
     totalsUsdRow.getCell(1).font = {bold: true, size: 9};
     totalsUsdRow.getCell(col.amount).value = totalImporteUsd;
@@ -407,7 +437,10 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: internationalRowFill}};
       cell.border = thinBorder;
       cell.font = {bold: true, size: 9};
-      cell.alignment = {horizontal: column === 1 ? 'left' : 'center', vertical: 'middle'};
+      cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      if (column === 1) {
+        cell.alignment = {horizontal: 'left', vertical: 'middle'};
+      }
       if (column === col.amount || column === col.cost) {
         cell.numFmt = '#,##0.00';
       }
@@ -423,49 +456,55 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   const remaining = assignedAmount - totalImporteBs;
   const remainingUsd = assignedAmountUsd - totalImporteUsd;
   const balanceHeaderRow = currentRow;
-  const balanceBsCol = 6;
-  const balanceUsdCol = col.amount;
-  const balanceCols = isInternationalTrip ? [1, balanceBsCol, balanceUsdCol] : [1, balanceBsCol];
-  sheet.getCell(balanceHeaderRow, 1).value = 'CONC.';
-  sheet.getCell(balanceHeaderRow, balanceBsCol).value = 'Bs';
+  const balanceBlocks = [{startCol: 1, endCol: 5, text: 'CONC.'}, {startCol: 6, endCol: 7, text: 'Bs'}];
   if (isInternationalTrip) {
-    sheet.getCell(balanceHeaderRow, balanceUsdCol).value = 'USD';
+    balanceBlocks.push({startCol: 8, endCol: 9, text: 'USD'});
   }
-  balanceCols.forEach((column) => {
-    const cell = sheet.getCell(balanceHeaderRow, column);
+  const balanceEndCol = balanceBlocks[balanceBlocks.length - 1].endCol;
+  balanceBlocks.forEach(({startCol, endCol, text}, index) => {
+    sheet.mergeCells(balanceHeaderRow, startCol, balanceHeaderRow, endCol);
+    const cell = sheet.getCell(balanceHeaderRow, startCol);
+    cell.value = text;
     cell.font = {bold: true, size: 9, color: {argb: headerFont}};
     cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: headerFill}};
-    cell.alignment = {horizontal: column === 1 ? 'left' : 'center'};
+    cell.alignment = {horizontal: 'center', vertical: 'middle'};
+    if (index === 0) {
+      cell.alignment = {horizontal: 'left', vertical: 'middle'};
+    }
     cell.border = thinBorder;
   });
   currentRow += 1;
   const balanceRows = [
     ['Fondo Recibido', assignedAmount, assignedAmountUsd],
     ['Saldo en mi poder', remaining, remainingUsd],
-    ['Importe a Devolver', remaining > 0 ? remaining : 0, remainingUsd > 0 ? remainingUsd : 0],
-    ['Importe a Reembolsar', remaining < 0 ? Math.abs(remaining) : 0, remainingUsd < 0 ? Math.abs(remainingUsd) : 0],
+    ['Importe a Devolver', Math.max(remaining, 0), Math.max(remainingUsd, 0)],
+    ['Importe a Reembolsar', Math.max(-remaining, 0), Math.max(-remainingUsd, 0)],
   ];
+  const reimburseLabel = balanceRows[3][0];
   balanceRows.forEach(([label, bsValue, usdValue]) => {
-    const labelCell = sheet.getCell(currentRow, 1);
-    labelCell.value = label;
-    labelCell.font = {bold: true, size: 9};
-    labelCell.alignment = {horizontal: 'left'};
-    labelCell.border = thinBorder;
-    const bsCell = sheet.getCell(currentRow, balanceBsCol);
-    bsCell.value = bsValue;
-    bsCell.numFmt = '#,##0.00';
-    bsCell.alignment = {horizontal: 'center'};
-    bsCell.border = thinBorder;
-    if (isInternationalTrip) {
-      const usdCell = sheet.getCell(currentRow, balanceUsdCol);
-      usdCell.value = usdValue;
-      usdCell.numFmt = '#,##0.00';
-      usdCell.alignment = {horizontal: 'center'};
-      usdCell.border = thinBorder;
-    }
+    const values = [label, bsValue, usdValue];
+    balanceBlocks.forEach(({startCol, endCol}, index) => {
+      sheet.mergeCells(currentRow, startCol, currentRow, endCol);
+      const cell = sheet.getCell(currentRow, startCol);
+      cell.value = values[index];
+      cell.font = {size: 9};
+      cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      cell.border = thinBorder;
+      if (index === 0) {
+        cell.font = {bold: true, size: 9};
+        cell.alignment = {horizontal: 'left', vertical: 'middle'};
+      }
+      else {
+        cell.numFmt = '#,##0.00';
+      }
+      if (label === reimburseLabel && index > 0 && values[index] > 0) {
+        cell.font = {bold: true, size: 9, color: {argb: reimburseFont}};
+      }
+    });
+    sheet.getRow(currentRow).height = 18;
     currentRow += 1;
   });
-  applyOuterBorder(sheet, balanceHeaderRow, currentRow - 1, 1, isInternationalTrip ? balanceUsdCol : balanceBsCol);
+  applyOuterBorder(sheet, balanceHeaderRow, currentRow - 1, 1, balanceEndCol);
   currentRow += 1;
   if (dayJustifications.length > 0) {
     const justificationDateEnd = 2;
@@ -485,7 +524,10 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       const cell = sheet.getCell(currentRow, column);
       cell.value = text;
       cell.font = {bold: true, size: 9, color: {argb: infoLabelColor}};
-      cell.alignment = {horizontal: column === 1 ? 'center' : 'left', vertical: 'middle'};
+      cell.alignment = {horizontal: 'left', vertical: 'middle'};
+      if (column === 1) {
+        cell.alignment = {horizontal: 'center', vertical: 'middle'};
+      }
       cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: infoFill}};
       cell.border = thinBorder;
     });
@@ -494,7 +536,10 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       sheet.mergeCells(currentRow, 1, currentRow, justificationDateEnd);
       sheet.mergeCells(currentRow, justificationTextStart, currentRow, totalCols);
       const dateCell = sheet.getCell(currentRow, 1);
-      dateCell.value = item.fecha ? formatJustificationDate(item.fecha) : 'Hoteles';
+      dateCell.value = 'Hoteles';
+      if (item.fecha) {
+        dateCell.value = formatJustificationDate(item.fecha);
+      }
       dateCell.font = {bold: true, size: 9};
       dateCell.alignment = {horizontal: 'center', vertical: 'middle'};
       dateCell.border = thinBorder;
