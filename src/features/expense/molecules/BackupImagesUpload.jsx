@@ -1,4 +1,4 @@
-import {ImagePlus, X} from 'lucide-react';
+import {ImagePlus, Trash2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 
 const styles = {
@@ -6,11 +6,12 @@ const styles = {
   label: "text-xs font-bold font-inter uppercase",
   hint: "text-xs font-inter",
   grid: "grid grid-cols-2 gap-2",
-  thumb: "relative rounded-xl overflow-hidden border",
+  thumb: "rounded-xl overflow-hidden border flex flex-col",
   thumbLink: "block",
   thumbImg: "w-full h-56 sm:h-80 object-contain",
-  removeBtn: "absolute top-1 right-1 rounded-full p-1 shadow",
-  addBox: "border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1 h-56 sm:h-80 cursor-pointer",
+  thumbHint: "text-[11px] font-inter text-center py-1.5",
+  removeBtn: "w-full py-2.5 font-bold font-nunito text-sm flex items-center justify-center gap-2 border-t cursor-pointer",
+  addBox: "border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-1 h-full min-h-56 sm:min-h-80 cursor-pointer",
   addLabel: "text-xs font-bold font-inter text-center px-2",
 };
 
@@ -32,13 +33,15 @@ function BackupImagesUpload({images, onAdd, onRemove, max = 2, disabled = false}
       <p className={styles.hint} style={{color: COLORS.labels}}>Por ejemplo, el comprobante del cambio de moneda.</p>
       <div className={styles.grid}>
         {images.map((image, index) => (
-          <div key={image.id} className={styles.thumb} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.backgroundHeader}}>
+          <div key={image.id} className={styles.thumb} style={{borderColor: COLORS.dataFields}}>
             <a href={image.preview} target="_blank" rel="noreferrer" className={styles.thumbLink} title="Abrir en tamaño completo">
-              <img src={image.preview} alt={`respaldo ${index + 1}`} className={styles.thumbImg} />
+              <img src={image.preview} alt={`respaldo ${index + 1}`} className={styles.thumbImg} style={{backgroundColor: COLORS.backgroundHeader}} />
             </a>
+            <p className={styles.thumbHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
             {!disabled && (
-              <button type="button" aria-label={`Quitar respaldo ${index + 1}`} className={styles.removeBtn} style={{backgroundColor: COLORS.background, color: COLORS.secondary}} onClick={() => onRemove(image.id)}>
-                <X size={14} />
+              <button type="button" aria-label={`Quitar respaldo ${index + 1}`} className={styles.removeBtn} style={{borderColor: COLORS.dataFields, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={() => onRemove(image.id)}>
+                <Trash2 size={14} />
+                Quitar respaldo
               </button>
             )}
           </div>
