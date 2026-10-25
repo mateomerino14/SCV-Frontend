@@ -3,6 +3,8 @@ import InvoiceImagePreview from '../atoms/InvoiceImagePreview';
 import InvoiceForm from './InvoiceForm';
 import InvoiceDetailPanel from './InvoiceDetailPanel';
 
+const placeholderInvoice = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRh2G9ljcdizU4yHbZjI_JCm0GWCGJBcPgt39YIhrpew&s=10';
+
 const styles = {
   desktopGrid: 'hidden md:grid md:grid-cols-3 gap-4 mt-3 items-stretch',
   mobileStack: 'md:hidden mt-3 flex flex-col gap-4',
@@ -11,6 +13,7 @@ const styles = {
   imageLabel: 'text-sm font-bold font-inter uppercase mb-3',
   manualImageBtn: 'w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border flex items-center justify-center gap-2 mt-2 block text-center',
   manualImageError: 'text-xs font-inter mt-1',
+  imageHint: 'text-[11px] font-inter text-center py-1.5',
 };
 
 function ManualImageSection({invoice, index, onImageChange, error}) {
@@ -24,8 +27,17 @@ function ManualImageSection({invoice, index, onImageChange, error}) {
     <div className={styles.imageBox} style={{backgroundColor: COLORS.background}}>
       <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante</p>
       <div style={{borderColor: error ? '#ef4444' : COLORS.dataFields, borderWidth: 1, borderStyle: 'solid', borderRadius: 12, overflow: 'hidden', backgroundColor: COLORS.backgroundHeader, flex: 1}}>
-        <img src={invoice.preview || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRh2G9ljcdizU4yHbZjI_JCm0GWCGJBcPgt39YIhrpew&s=10'}
-          alt="comprobante" style={{width: '100%', objectFit: 'cover', maxHeight: invoice.preview ? 710 : 200, opacity: invoice.preview ? 1 : 0.5}} />
+        {invoice.preview && (
+          <>
+            <a href={invoice.preview} target="_blank" rel="noreferrer" className="block" title="Abrir en tamaño completo">
+              <img src={invoice.preview} alt="comprobante" style={{width: '100%', objectFit: 'contain', maxHeight: 710}} />
+            </a>
+            <p className={styles.imageHint} style={{color: COLORS.labels}}>Toca la imagen para verla en tamaño completo</p>
+          </>
+        )}
+        {!invoice.preview && (
+          <img src={placeholderInvoice} alt="comprobante" style={{width: '100%', objectFit: 'cover', maxHeight: 200, opacity: 0.5}} />
+        )}
       </div>
       <label className={styles.manualImageBtn} style={{borderColor: error ? '#ef4444' : COLORS.primary, color: error ? '#ef4444' : COLORS.primary, cursor: 'pointer'}}>
         {invoice.preview ? 'Cambiar imagen' : 'Subir comprobante'}

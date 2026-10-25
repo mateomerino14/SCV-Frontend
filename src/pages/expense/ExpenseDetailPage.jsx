@@ -28,6 +28,7 @@ const styles = {
   backBtn: "flex items-center gap-1 cursor-pointer mb-6 w-fit",
   imageWrapper: "rounded-xl overflow-hidden border mt-2",
   image: "w-full object-contain",
+  imageHint: "text-[11px] font-inter text-center py-1.5",
 };
 
 const typeConfig = {
@@ -177,15 +178,19 @@ function ExpenseDetailPage() {
               <a href={expense.Imagen.url_archivo} target="_blank" rel="noreferrer" className="block" title="Abrir en tamaño completo">
                 <img src={expense.Imagen.url_archivo} alt="comprobante" className={styles.image} style={{maxHeight: imageMaxHeight, backgroundColor: COLORS.backgroundHeader}} />
               </a>
+              <p className={styles.imageHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
             </div>
           </ExpenseSectionCard>
         )}
         {backups.length > 0 && (
           <ExpenseSectionCard icon={FileText} title="Respaldos">
             {backups.map((backup, index) => (
-              <a key={backup.id_respaldo} href={backup.url_archivo} target="_blank" rel="noreferrer" className={`block ${styles.imageWrapper}`} style={{borderColor: COLORS.dataFields}}>
-                <img src={backup.url_archivo} alt={`respaldo ${index + 1}`} className={styles.image} style={{maxHeight: imageMaxHeight, backgroundColor: COLORS.backgroundHeader}} />
-              </a>
+              <div key={backup.id_respaldo} className={styles.imageWrapper} style={{borderColor: COLORS.dataFields}}>
+                <a href={backup.url_archivo} target="_blank" rel="noreferrer" className="block" title="Abrir en tamaño completo">
+                  <img src={backup.url_archivo} alt={`respaldo ${index + 1}`} className={styles.image} style={{maxHeight: imageMaxHeight, backgroundColor: COLORS.backgroundHeader}} />
+                </a>
+                <p className={styles.imageHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
+              </div>
             ))}
           </ExpenseSectionCard>
         )}
