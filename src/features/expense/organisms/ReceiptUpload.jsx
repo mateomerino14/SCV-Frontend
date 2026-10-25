@@ -52,7 +52,7 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
     <div className={styles.wrapper}>
       {!hideLabel && <FieldLabel text="Comprobante" required={required} className={styles.label} />}
       <label className={styles.dropZone} style={{
-        borderColor: error ? '#f87171' : COLORS.dataFields,
+        borderColor: error ? COLORS.fieldErrorBorder : COLORS.dataFields,
         backgroundColor: COLORS.backgroundHeader,
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.6 : 1,
@@ -66,7 +66,7 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
         {!disabled && <p className={styles.dropSub} style={{color: COLORS.labels}}>JPG, PNG o PDF (Máx 5MB)</p>}
         <input type="file" accept="image/*,application/pdf" className="hidden" onChange={handleInput} disabled={disabled} />
       </label>
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
     </div>
   );
 }

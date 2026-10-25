@@ -12,11 +12,11 @@ function InputField({label, required = false, icon, error, alignTop = false, chi
   return (
     <div className={styles.wrapper}>
       <FieldLabel text={label} required={required} className={styles.label} />
-      <div className={`${styles.inputWrapper} ${alignTop ? 'items-start' : 'items-center'}`} style={{borderColor: error ? '#f87171' : COLORS.dataFields}}>
+      <div className={`${styles.inputWrapper} ${alignTop ? 'items-start' : 'items-center'}`} style={{borderColor: error ? COLORS.fieldErrorBorder : COLORS.dataFields}}>
         {icon && <span className={`flex shrink-0 ${alignTop ? 'mt-0.5' : ''}`}>{icon}</span>}
         {children}
       </div>
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
     </div>
   );
 }

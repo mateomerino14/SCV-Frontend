@@ -14,11 +14,11 @@ function FormField({label, required = false, value, onChange, onKeyDown, onBlur,
   return (
     <div className={styles.wrapper}>
       <FieldLabel text={label} required={required} className={styles.label} />
-      <div className={styles.inputWrapper} style={{borderColor: error ? '#f87171' : COLORS.dataFields, backgroundColor: COLORS.background}}>
+      <div className={styles.inputWrapper} style={{borderColor: error ? COLORS.fieldErrorBorder : COLORS.dataFields, backgroundColor: COLORS.background}}>
         <input className={styles.input} style={{color: COLORS.text}} type={type} inputMode={inputMode} placeholder={placeholder} maxLength={maxLength}
           value={value || ''} onChange={onChange} onKeyDown={onKeyDown} onBlur={onBlur} disabled={disabled} autoComplete="off" />
       </div>
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
       {!error && helperText && <p className={styles.helperText} style={{color: COLORS.secondary}}>{helperText}</p>}
     </div>
   );

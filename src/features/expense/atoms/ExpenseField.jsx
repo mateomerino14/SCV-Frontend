@@ -14,13 +14,13 @@ function ExpenseField({label, required = false, children, suffix, error}) {
   return (
     <div className={styles.wrapper}>
       <FieldLabel text={label} required={required} className={styles.label} />
-      <div className={styles.inputBox} style={{borderColor: error ? '#f87171' : COLORS.dataFields, borderWidth: error ? '1.5px' : '1px'}}>
+      <div className={styles.inputBox} style={{borderColor: error ? COLORS.fieldErrorBorder : COLORS.dataFields, borderWidth: error ? '1.5px' : '1px'}}>
         <div className={styles.inputRow}>
           {children}
           {suffix && <span className={styles.suffix} style={{color: COLORS.labels}}>{suffix}</span>}
         </div>
       </div>
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
     </div>
   );
 }

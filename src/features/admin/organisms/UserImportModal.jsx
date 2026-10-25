@@ -117,7 +117,7 @@ function UserImportModal({isOpen, onClose, fileName, preview, result, error, val
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div className={styles.overlay} style={{backgroundColor: 'rgba(0,0,0,0.4)'}}
+        <motion.div className={styles.overlay} style={{backgroundColor: COLORS.overlay}}
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.scrollWrapper} style={{backgroundColor: COLORS.background}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>

@@ -36,7 +36,7 @@ function SearchableSelector({label, required = false, options, value, onChange, 
       <FieldLabel text={label} required={required} className={styles.label} />
       <DropdownTrigger triggerRef={triggerRef} open={open} onClick={handleToggle} error={error}
         hasValue={hasValue} label={selectedOption ? selectedOption.label : placeholder} />
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
       {createPortal(
         <AnimatePresence>
           {open && menuPosition && (

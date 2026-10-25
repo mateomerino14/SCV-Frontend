@@ -1,6 +1,7 @@
 import InlineDropdown from '../../../components/ui/InlineDropdown';
 import FieldLabel from '../../../components/ui/FieldLabel';
 import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
+import {COLORS} from '../../../constants';
 
 const styles = {
   wrapper: "flex flex-col gap-1",
@@ -18,7 +19,7 @@ function CurrencySelector({currencies, currency, onChange, error}) {
       <InlineDropdown wrapperRef={wrapperRef} triggerRef={triggerRef} open={open} opensUpward={opensUpward} onToggle={toggle}
         label={selectedCurrency ? `${selectedCurrency.codigo} — ${selectedCurrency.nombre}` : 'Seleccione una moneda'} options={options} selectedValue={currency}
         onSelect={(value) => {onChange(value); close();}} />
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
     </div>
   );
 }

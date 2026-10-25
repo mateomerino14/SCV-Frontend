@@ -26,7 +26,7 @@ function ManualImageSection({invoice, index, onImageChange, error}) {
   return (
     <div className={styles.imageBox} style={{backgroundColor: COLORS.background}}>
       <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante</p>
-      <div style={{borderColor: error ? '#ef4444' : COLORS.dataFields, borderWidth: 1, borderStyle: 'solid', borderRadius: 12, overflow: 'hidden', backgroundColor: COLORS.backgroundHeader, flex: 1}}>
+      <div style={{borderColor: error ? COLORS.fieldError : COLORS.dataFields, borderWidth: 1, borderStyle: 'solid', borderRadius: 12, overflow: 'hidden', backgroundColor: COLORS.backgroundHeader, flex: 1}}>
         {invoice.preview && (
           <>
             <a href={invoice.preview} target="_blank" rel="noreferrer" className="block" title="Abrir en tamaño completo">
@@ -39,11 +39,11 @@ function ManualImageSection({invoice, index, onImageChange, error}) {
           <img src={placeholderInvoice} alt="comprobante" style={{width: '100%', objectFit: 'cover', maxHeight: 200, opacity: 0.5}} />
         )}
       </div>
-      <label className={styles.manualImageBtn} style={{borderColor: error ? '#ef4444' : COLORS.primary, color: error ? '#ef4444' : COLORS.primary, cursor: 'pointer'}}>
+      <label className={styles.manualImageBtn} style={{borderColor: error ? COLORS.fieldError : COLORS.primary, color: error ? COLORS.fieldError : COLORS.primary, cursor: 'pointer'}}>
         {invoice.preview ? 'Cambiar imagen' : 'Subir comprobante'}
         <input type="file" accept="image/*,application/pdf" className="hidden" onChange={handleChange} />
       </label>
-      {error && <p className={styles.manualImageError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.manualImageError} style={{color: COLORS.fieldError}}>{error}</p>}
     </div>
   );
 }
