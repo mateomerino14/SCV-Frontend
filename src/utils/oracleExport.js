@@ -111,6 +111,9 @@ export function buildOracleAccount(account, sectionCodes = {}) {
 }
 
 export function buildSupplierName(user) {
+  if (user?.nombre_proveedor_oracle) {
+    return user.nombre_proveedor_oracle.toUpperCase();
+  }
   const surnames = [user?.apellido_paterno, user?.apellido_materno].filter(Boolean).join(' ');
   return `${surnames}, ${user?.nombre || ''} ${oracleDefaults.supplierSuffix}`.toUpperCase();
 }
@@ -131,10 +134,19 @@ export function documentMonth(expense) {
   return parseInt(documentDate(expense).slice(5, 7), 10) || '';
 }
 
+const isInvoiceWithVat = (expense) => !!expense.Factura && expense.tipo === 'F' && !expense.tiene_alcohol;
+
+const documentSymbol = (expense) => {
+  if (expense.Factura && expense.tiene_alcohol) {
+    return 'R';
+  }
+  return toOracleExpenseType(expense.tipo);
+};
+
 export function buildOracleDescription(trip, expense) {
   const user = trip.Usuario || {};
   const fullName = `${user.nombre || ''} ${user.apellido_paterno || ''}`.trim();
-  const code = `${toOracleExpenseType(expense.tipo)} ${documentMonth(expense)}-${trip.numero_rendicion || monthNumberPlaceholder}`;
+  const code = `${documentSymbol(expense)} ${documentMonth(expense)}-${trip.numero_rendicion || monthNumberPlaceholder}`;
   return `${code}  ${fullName} , ${trip.motivo || ''} , ${categoryConcept(expense)}`.toUpperCase().slice(0, maxDescription);
 }
 
@@ -238,7 +250,7 @@ export function buildOracleInvoice(trip, expense) {
     taxCode = oracleTaxCodes.invoiceVat;
   }
   let payment = oraclePaymentTerms.noInvoice;
-  if (expense.Factura && expense.tipo === 'F') {
+  if (isInvoiceWithVat(expense)) {
     payment = oraclePaymentTerms.invoice;
   }
   let currency = oracleDefaults.functionalCurrency;
