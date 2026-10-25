@@ -1,9 +1,14 @@
 import {describe, it, expect} from 'vitest';
-import {calculateWithholdings, getExpenseWithholdings} from './withholdings';
+import {calculateWithholdings, getExpenseWithholdings, roundCents} from './withholdings';
 
 describe('calculateWithholdings', () => {
   it('servicio: lo pagado se incrementa y de esa base salen el RC-IVA 13% y el IT 3%', () => {
     expect(calculateWithholdings(40, 'S', false)).toEqual({base: 47.62, rcIva: 6.19, iue: 0, it: 1.43, cost: 47.62, toPay: 40});
+  });
+
+  it('cada retención sale de la base sin redondear y la base es lo pagado más las retenciones', () => {
+    expect(calculateWithholdings(50, 'S', false)).toEqual({base: 59.53, rcIva: 7.74, iue: 0, it: 1.79, cost: 59.53, toPay: 50});
+    expect(roundCents(1.005)).toBe(1.01);
   });
 
   it('compra: lo pagado se incrementa y de esa base salen el IUE 5% y el IT 3%', () => {

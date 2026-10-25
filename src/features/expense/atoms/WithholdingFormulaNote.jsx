@@ -12,7 +12,7 @@ function WithholdingFormulaNote({type}) {
   }
   return (
     <p className="text-[11px] font-inter leading-snug mt-2" style={{color: COLORS.labels}}>
-      La empresa asume los impuestos: el importe costo es el monto pagado ÷ {formula.divisor}. {formula.taxes} se calculan sobre ese importe, así que monto pagado + retenciones = importe costo.
+      La empresa asume los impuestos: {formula.taxes} se calculan sobre el monto pagado ÷ {formula.divisor}, y el importe costo es el monto pagado + las retenciones.
     </p>
   );
 }

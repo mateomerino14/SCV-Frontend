@@ -1,5 +1,10 @@
+const itRate = 0.03;
+const centsFactor = 100;
+
+export const roundCents = (value) => Math.round((value + Number.EPSILON) * centsFactor) / centsFactor;
+
 export function calculateWithholdings(amount, type, isInternational) {
-  const paid = parseFloat(amount) || 0;
+  const paid = roundCents(parseFloat(amount) || 0);
   const none = {base: paid, rcIva: 0, iue: 0, it: 0, cost: paid, toPay: paid};
   if (isInternational || !['C', 'S'].includes(type) || paid <= 0) {
     return none;
@@ -8,10 +13,10 @@ export function calculateWithholdings(amount, type, isInternational) {
   if (type === 'C') {
     mainRate = 0.05;
   }
-  const base = parseFloat((paid / (1 - mainRate - 0.03)).toFixed(2));
-  const mainWithholding = parseFloat((base * mainRate).toFixed(2));
-  // El IT cierra la cuenta para que pagado + retenciones sea exactamente la base
-  const it = parseFloat((base - paid - mainWithholding).toFixed(2));
+  const grossBase = paid / (1 - mainRate - itRate);
+  const mainWithholding = roundCents(grossBase * mainRate);
+  const it = roundCents(grossBase * itRate);
+  const base = roundCents(paid + mainWithholding + it);
   let rcIva = mainWithholding;
   let iue = 0;
   if (type === 'C') {

@@ -6,7 +6,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Nota bajo las retenciones de un gasto sin factura: la empresa asume los impuestos, así que lo pagado se incrementa (÷ 0.84 en servicios, ÷ 0.92 en compras) y las alícuotas se aplican sobre ese importe costo.',
+        component: 'Nota bajo las retenciones de un gasto sin factura: la empresa asume los impuestos, así que las alícuotas se aplican sobre lo pagado ÷ 0.84 en servicios (÷ 0.92 en compras) y el importe costo es lo pagado más las retenciones.',
       },
     },
   },
