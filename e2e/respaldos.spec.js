@@ -11,18 +11,18 @@ const registerWithBackups = async (tripId) => {
   const form = new FormData();
   form.append('datos', JSON.stringify({
     id_viaje: tripId, monto_total: 70, fecha_gasto: boliviaDate(), tipo: 'C', descripcion: 'Compra pagada con cambio de moneda',
-    id_categoria_gasto: categories.find((category) => category.nombre.startsWith('626040')).id_categoria, es_gasto_internacional: false,
+    id_categoria_gasto: categories.find((category) => category.nombre.startsWith('626040')).id_categoria, es_gasto_internacional: true,
   }));
   ['imagen', 'respaldos', 'respaldos'].forEach((field, index) => form.append(field, new Blob([tinyPng], {type: 'image/png'}), `imagen${index}.png`));
   const response = await context.post('/expense/register', {headers: {authorization: `Bearer ${token}`}, multipart: form});
   return (await response.json()).gasto.id_gasto;
 };
 
-test('en un viaje internacional el empleado quita y agrega respaldos de un gasto sin factura @celular', async ({page}) => {
+test('en un gasto internacional el empleado quita y agrega respaldos @celular', async ({page}) => {
   const {tripId} = await createFundedTrip({tipo: 'Internacional'});
   const expenseId = await registerWithBackups(tripId);
   await loginInBrowser(page, 'juan.empleado');
-  await page.goto(`/dashboard/empleado/gasto/${expenseId}/editar-gasto`);
+  await page.goto(`/dashboard/empleado/gasto/${expenseId}/editar-gasto?internacional=true`);
   const backups = page.locator('img[alt^="respaldo"]:visible');
   await expect(backups).toHaveCount(2);
   const removedUrl = await backups.first().getAttribute('src');
@@ -37,10 +37,16 @@ test('en un viaje internacional el empleado quita y agrega respaldos de un gasto
   await expect(page.locator(`img[src="${removedUrl}"]`)).toHaveCount(0);
 });
 
-test('en un viaje nacional el gasto no pide respaldos', async ({page}) => {
-  const {tripId} = await createFundedTrip();
+test('solo los gastos internacionales piden respaldos', async ({page}) => {
+  const {tripId} = await createFundedTrip({tipo: 'Internacional'});
   await loginInBrowser(page, 'juan.empleado');
+  await page.goto(`/dashboard/empleado/viaje/${tripId}/registrar-gasto?internacional=true`);
+  await expect(page.getByText('Respaldos (máx. 2)')).toBeVisible();
   await page.goto(`/dashboard/empleado/viaje/${tripId}/registrar-gasto`);
+  await expect(page.getByText('Comprobante').first()).toBeVisible();
+  await expect(page.getByText('Respaldos (máx. 2)')).toHaveCount(0);
+  const national = await createFundedTrip();
+  await page.goto(`/dashboard/empleado/viaje/${national.tripId}/registrar-gasto`);
   await expect(page.getByText('Comprobante').first()).toBeVisible();
   await expect(page.getByText('Respaldos (máx. 2)')).toHaveCount(0);
 });
