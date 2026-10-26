@@ -6,7 +6,7 @@ import {formatQuantity} from '../../utils/formatQuantity';
 import {oracleAccounts} from '../../constants/oracleAccounts';
 import {MAXAM_LOGO} from '../../constants';
 import {getExpenseTaxValues} from '../../utils/expenseTaxValues';
-import {addOracleSheets} from '../../utils/oracleExport';
+import {addOracleSheets, formatReceiptNumber} from '../../utils/oracleExport';
 import {addListRange} from '../../utils/excelLists';
 import {saveWorkbook} from '../../utils/excelExport';
 
@@ -43,6 +43,17 @@ function quantityText(quantity) {
     return '';
   }
   return ` x${formatQuantity(quantity)}`;
+}
+
+function documentNumberOf(expense) {
+  if (expense.Factura) {
+    return cleanValue(expense.Factura.numero_factura);
+  }
+  const ownReceipt = (expense.Recibo || [])[0];
+  if (ownReceipt) {
+    return formatReceiptNumber(ownReceipt.numero);
+  }
+  return '';
 }
 
 const symbologyRows = [
@@ -346,7 +357,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     row.getCell(col.detail).value = detailText;
     row.getCell(col.detail).alignment = {wrapText: true, vertical: 'middle', horizontal: 'left'};
     row.getCell(col.type).value = oracleType;
-    row.getCell(col.document).value = cleanValue(expense.Factura?.numero_factura);
+    row.getCell(col.document).value = documentNumberOf(expense);
     row.getCell(col.nit).value = cleanValue(expense.Proveedor?.numero_doc_fiscal);
     if (hasInvoice) {
       row.getCell(col.invoiceAmount).value = amount;

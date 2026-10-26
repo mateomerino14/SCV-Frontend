@@ -18,6 +18,7 @@ import useExpenseDetail from '../hooks/useExpenseDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes, tripPath} from '../../constants/routes';
+import {formatReceiptNumber} from '../../utils/oracleExport';
 import {getExpenseWithholdings} from '../../utils/withholdings';
 
 const imageMaxHeight = 720;
@@ -74,6 +75,7 @@ function ExpenseDetailPage() {
   const hasInvoice = !!expense.Factura;
   const hasImage = expense.Imagen && expense.Imagen.url_archivo;
   const backups = expense.Imagen_Respaldo || [];
+  const systemReceipt = (expense.Recibo || [])[0];
   const receiptRequired = expense.Categoria_Gasto?.requiere_comprobante !== false;
   const isInternational = !!expense.es_gasto_internacional;
   let currency = 'Bs';
@@ -118,7 +120,8 @@ function ExpenseDetailPage() {
           <ExpenseFieldRow icon={Calendar} label="Fecha del Gasto" value={formatLongDate(expense.fecha_gasto)} />
           {expense.Categoria_Gasto && <ExpenseFieldRow icon={Tag} label="Categoría" value={expense.Categoria_Gasto.nombre} />}
           {expense.Proveedor && <ExpenseFieldRow icon={User} label="Proveedor" value={expense.Proveedor.nombre} />}
-          {expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo" value={expense.numero_recibo} />}
+          {systemReceipt && <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema" value={formatReceiptNumber(systemReceipt.numero)} />}
+          {expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo original" value={expense.numero_recibo} />}
           {expense.Proveedor?.numero_doc_fiscal && (
             <ExpenseFieldRow icon={FileText} label={expense.Proveedor.tipo_doc_fiscal || 'Documento'} value={expense.Proveedor.numero_doc_fiscal} />
           )}

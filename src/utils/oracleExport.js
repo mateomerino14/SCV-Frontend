@@ -164,14 +164,18 @@ const getWithholdingType = (expense) => {
   return null;
 };
 
+const receiptNumberDigits = 6;
+
+export const formatReceiptNumber = (number) => String(number).padStart(receiptNumberDigits, '0');
+
 const findReceiptNumber = (trip, expense) => {
   const own = (expense.Recibo || [])[0];
   if (own) {
-    return String(own.numero);
+    return formatReceiptNumber(own.numero);
   }
   const grouped = (trip.Recibo || []).find((receipt) => !receipt.id_gasto && receipt.tipo === expense.tipo && !!receipt.es_gasto_internacional === !!expense.es_gasto_internacional);
   if (grouped) {
-    return String(grouped.numero);
+    return formatReceiptNumber(grouped.numero);
   }
   return '';
 };
@@ -184,10 +188,11 @@ const getDocumentNumber = (trip, expense) => {
     }
     return invoiceNumber;
   }
-  if (expense.numero_recibo) {
-    return expense.numero_recibo;
+  const systemNumber = findReceiptNumber(trip, expense);
+  if (systemNumber) {
+    return systemNumber;
   }
-  return findReceiptNumber(trip, expense);
+  return expense.numero_recibo || '';
 };
 
 const buildFlexfield = (isVatInvoice, cuf) => {
