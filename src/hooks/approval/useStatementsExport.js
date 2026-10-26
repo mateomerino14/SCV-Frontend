@@ -7,6 +7,7 @@ import {addTableSheet, saveWorkbook, todayFileSuffix, amountFormat} from '../../
 import {buildDayJustifications} from '../../utils/dayJustifications';
 import {getStatusLabel} from '../../constants/tripStatusLabels';
 import buildTripCode from '../../utils/tripCode';
+import {summarizeStatement} from '../../utils/expenseCurrency';
 
 const summaryColumns = [
   {header: 'Código', key: 'codigo', width: 14},
@@ -26,15 +27,8 @@ const summaryColumns = [
   {header: 'Saldo USD', key: 'saldoUsd', width: 14, numFmt: amountFormat, total: true},
 ];
 
-const sumExpenses = (expenses, international) => expenses
-  .filter((expense) => !!expense.es_gasto_internacional === international)
-  .reduce((sum, expense) => sum + (parseFloat(expense.monto_total) || 0), 0);
-
 const buildSummaryRow = ({viaje: trip, gastos: expenses}) => {
-  const assignedBs = parseFloat(trip.monto_asignado) || 0;
-  const assignedUsd = parseFloat(trip.monto_asignado_usd) || 0;
-  const spentBs = sumExpenses(expenses, false);
-  const spentUsd = sumExpenses(expenses, true);
+  const [[, assignedBs, assignedUsd], [, spentBs, spentUsd]] = summarizeStatement(trip, expenses).balanceRows;
   return {
     codigo: buildTripCode(trip),
     empleado: `${trip.Usuario?.nombre || ''} ${trip.Usuario?.apellido_paterno || ''}`.trim(),

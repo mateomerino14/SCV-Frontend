@@ -9,6 +9,7 @@ import {getExpenseTaxValues} from '../../utils/expenseTaxValues';
 import {addOracleSheets, formatReceiptNumber} from '../../utils/oracleExport';
 import {addListRange} from '../../utils/excelLists';
 import {saveWorkbook} from '../../utils/excelExport';
+import {amountInBsOf, originalAmountLinesOf, summarizeStatement, hasOriginCurrencyLines} from '../../utils/expenseCurrency';
 
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
@@ -22,6 +23,7 @@ const thinBorderColor = 'FFB0C4D4';
 const thickBorderColor = 'FF1B4F91';
 const totalsLabelEndCol = 3;
 const reimburseFont = 'FF9C0006';
+const originalLineHeight = 14;
 const footerText = '&L&8Sistema de Control de Viáticos&R&8Página &P de &N';
 
 const thinBorder = {
@@ -73,17 +75,13 @@ function getExpenseDescription(expense) {
   }
   const subitems = expense.Gasto_Subitem || [];
   if (subitems.length > 0) {
-    return subitems.map((subitem) => `${subitem.descripcion}: ${parseFloat(subitem.monto).toFixed(2)}`).join(', ').toUpperCase();
+    let lineCurrency = '';
+    if (hasOriginCurrencyLines(expense)) {
+      lineCurrency = ` ${expense.moneda}`;
+    }
+    return subitems.map((subitem) => `${subitem.descripcion}: ${parseFloat(subitem.monto).toFixed(2)}${lineCurrency}`).join(', ').toUpperCase();
   }
   return (expense.descripcion || expense.Categoria_Gasto?.nombre || '').toUpperCase();
-}
-
-function buildTramosText(expense) {
-  const installments = expense.Gasto_Tramo_Moneda || [];
-  if (installments.length === 0) {
-    return '';
-  }
-  return installments.map((installment) => `${parseFloat(installment.monto_origen).toFixed(2)} ${installment.moneda} → ${parseFloat(installment.monto_usd).toFixed(2)} USD`).join(' | ');
 }
 
 function buildOracleAccountOptions(expenses) {
@@ -94,6 +92,10 @@ function buildOracleAccountOptions(expenses) {
     }
   });
   return Array.from(names).sort();
+}
+
+function originalRowHeight(expense) {
+  return originalAmountLinesOf(expense).length * originalLineHeight;
 }
 
 function estimateRowHeight(entries) {
@@ -185,9 +187,9 @@ function getLogoBase64() {
 async function addStatementSheet(workbook, trip, expenses, dayJustifications = [], sheetName = 'RENDICION') {
   const sheet = workbook.addWorksheet(sheetName);
   const isInternationalTrip = trip.tipo === 'Internacional';
-  const col = {number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8, tramos: null, amount: 9};
+  const col = {number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8, original: null, amount: 9};
   if (isInternationalTrip) {
-    col.tramos = 9;
+    col.original = 9;
     col.amount = 10;
   }
   col.vat = col.amount + 1;
@@ -198,7 +200,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   const totalCols = col.cost;
   const columnWidths = [5, 12, 22, 42, 9, 14, 13, 15];
   if (isInternationalTrip) {
-    columnWidths.push(24);
+    columnWidths.push(30);
   }
   columnWidths.push(14, 10, 10, 10, 10, 16);
   sheet.columns = columnWidths.map((width) => ({width}));
@@ -261,7 +263,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   if (isInternationalTrip) {
     sheet.mergeCells(2, infoStartCol + 3, 2, infoEndCol);
     const internationalLegendCell = sheet.getCell(2, infoStartCol + 3);
-    internationalLegendCell.value = 'Gasto Internacional (USD) — T/C al registrar';
+    internationalLegendCell.value = 'Gasto Internacional (en Bs con su T/C)';
     internationalLegendCell.font = {size: 8};
     internationalLegendCell.alignment = {horizontal: 'center', vertical: 'middle'};
     internationalLegendCell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: internationalRowFill}};
@@ -303,11 +305,9 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   applyOuterBorder(sheet, 3, 5, infoStartCol, infoEndCol);
   const headers = ['N°', 'FECHA', 'CUENTA/ORACLE', 'D E T A L L E', 'TIPO GASTO', 'N° DOCUMENTO', 'NIT', 'IMPORTE FACT./REC.'];
   if (isInternationalTrip) {
-    headers.push('TRAMOS DE CAMBIO', 'IMPORTE Bs./USD');
+    headers.push('MONTO ORIGINAL');
   }
-  else {
-    headers.push('IMPORTE Bs.');
-  }
+  headers.push('IMPORTE Bs.');
   headers.push('I.V.A.', 'RC-IVA', 'IUE', 'IT', 'IMPORTE COSTO/ GASTO');
   const headerRowNumber = 7;
   const headerRow = sheet.getRow(headerRowNumber);
@@ -325,24 +325,32 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   let currentRow = 8;
   let totalImporteFactura = 0;
   let totalImporteBs = 0;
-  let totalImporteUsd = 0;
   let totalVat = 0;
   let totalRcIva = 0;
   let totalIue = 0;
   let totalIt = 0;
   let totalCostBs = 0;
-  let totalCostUsd = 0;
   expenses.forEach((expense, index) => {
     const oracleType = toOracleExpenseType(expense.tipo);
     const amount = parseFloat(expense.monto_total) || 0;
-    const isInternational = isInternationalTrip && !!expense.es_gasto_internacional;
+    const isInternational = !!expense.es_gasto_internacional;
     const hasInvoice = !!expense.Factura;
     const {vat, rcIva, iue, it, cost} = getExpenseTaxValues(expense);
+    const amountBs = amountInBsOf(expense);
     let rowFill = nationalRowFill;
-    let currencySuffix = '" Bs"';
     if (isInternational) {
       rowFill = internationalRowFill;
-      currencySuffix = '" USD"';
+    }
+    let shownAmount = amountBs;
+    let shownCost = cost;
+    let amountFormat = '#,##0.00';
+    if (isInternational) {
+      shownCost = amountBs;
+    }
+    if (amountBs === null) {
+      shownAmount = amount;
+      shownCost = amount;
+      amountFormat = '#,##0.00" USD"';
     }
     const row = sheet.getRow(currentRow);
     row.getCell(col.number).value = index + 1;
@@ -368,35 +376,31 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       [oracleValue, sheet.getColumn(col.oracle).width],
       [detailText, sheet.getColumn(col.detail).width],
     ];
-    if (col.tramos) {
-      const tramosText = buildTramosText(expense);
-      row.getCell(col.tramos).value = tramosText;
-      row.getCell(col.tramos).alignment = {wrapText: true, vertical: 'middle', horizontal: 'center'};
-      heightEntries.push([tramosText, sheet.getColumn(col.tramos).width]);
+    if (col.original) {
+      const originalLines = originalAmountLinesOf(expense);
+      row.getCell(col.original).value = originalLines.join('\n');
+      row.getCell(col.original).alignment = {wrapText: true, vertical: 'middle', horizontal: 'center'};
+      originalLines.forEach((line) => heightEntries.push([line, sheet.getColumn(col.original).width]));
     }
-    row.getCell(col.amount).value = amount;
-    row.getCell(col.amount).numFmt = `#,##0.00${currencySuffix}`;
-    [[col.vat, vat], [col.rcIva, rcIva], [col.iue, iue], [col.it, it], [col.cost, cost]].forEach(([column, value]) => {
+    [[col.amount, shownAmount], [col.vat, vat], [col.rcIva, rcIva], [col.iue, iue], [col.it, it], [col.cost, shownCost]].forEach(([column, value]) => {
       row.getCell(column).value = value;
       row.getCell(column).numFmt = '#,##0.00';
     });
+    row.getCell(col.amount).numFmt = amountFormat;
+    row.getCell(col.cost).numFmt = amountFormat;
     for (let column = 1; column <= totalCols; column++) {
       const cell = row.getCell(column);
       cell.border = thinBorder;
       cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: rowFill}};
       cell.font = {...(cell.font || {}), size: 9};
-      if (column !== col.detail && column !== col.tramos) {
+      if (column !== col.detail && column !== col.original) {
         cell.alignment = {...(cell.alignment || {}), horizontal: 'center', vertical: 'middle'};
       }
     }
-    row.height = estimateRowHeight(heightEntries);
-    if (isInternational) {
-      totalImporteUsd += amount;
-      totalCostUsd += cost;
-    }
-    else {
-      totalImporteBs += amount;
-      totalCostBs += cost;
+    row.height = Math.max(estimateRowHeight(heightEntries), originalRowHeight(expense));
+    if (amountBs !== null) {
+      totalImporteBs += shownAmount;
+      totalCostBs += shownCost;
     }
     totalVat += vat;
     totalRcIva += rcIva;
@@ -433,13 +437,12 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   totalsRow.height = 20;
   let lastTableRow = totalsRowNumber;
   currentRow += 1;
+  const {internationalUsd, balanceRows} = summarizeStatement(trip, expenses);
   if (isInternationalTrip) {
     const totalsUsdRow = sheet.getRow(currentRow);
-    sheet.mergeCells(currentRow, 1, currentRow, totalsLabelEndCol);
-    totalsUsdRow.getCell(1).value = 'Sumas Totales (USD)';
-    totalsUsdRow.getCell(1).font = {bold: true, size: 9};
-    totalsUsdRow.getCell(col.amount).value = totalImporteUsd;
-    totalsUsdRow.getCell(col.cost).value = totalCostUsd;
+    sheet.mergeCells(currentRow, 1, currentRow, col.original);
+    totalsUsdRow.getCell(1).value = 'Gastos internacionales en USD, para Oracle';
+    totalsUsdRow.getCell(col.amount).value = internationalUsd;
     for (let column = 1; column <= totalCols; column++) {
       const cell = totalsUsdRow.getCell(column);
       cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: internationalRowFill}};
@@ -449,20 +452,14 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       if (column === 1) {
         cell.alignment = {horizontal: 'left', vertical: 'middle'};
       }
-      if (column === col.amount || column === col.cost) {
-        cell.numFmt = '#,##0.00';
-      }
     }
+    totalsUsdRow.getCell(col.amount).numFmt = '#,##0.00" USD"';
     totalsUsdRow.height = 20;
     lastTableRow = currentRow;
     currentRow += 1;
   }
   applyOuterBorder(sheet, headerRowNumber, lastTableRow, 1, totalCols);
   currentRow += 1;
-  const assignedAmount = parseFloat(trip.monto_asignado) || 0;
-  const assignedAmountUsd = parseFloat(trip.monto_asignado_usd || 0);
-  const remaining = assignedAmount - totalImporteBs;
-  const remainingUsd = assignedAmountUsd - totalImporteUsd;
   const balanceHeaderRow = currentRow;
   const balanceBlocks = [{startCol: 1, endCol: 5, text: 'CONC.'}, {startCol: 6, endCol: 7, text: 'Bs'}];
   if (isInternationalTrip) {
@@ -482,13 +479,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     cell.border = thinBorder;
   });
   currentRow += 1;
-  const balanceRows = [
-    ['Fondo Recibido', assignedAmount, assignedAmountUsd],
-    ['Saldo en mi poder', remaining, remainingUsd],
-    ['Importe a Devolver', Math.max(remaining, 0), Math.max(remainingUsd, 0)],
-    ['Importe a Reembolsar', Math.max(-remaining, 0), Math.max(-remainingUsd, 0)],
-  ];
-  const reimburseLabel = balanceRows[3][0];
+  const reimburseLabel = balanceRows[balanceRows.length - 1][0];
   balanceRows.forEach(([label, bsValue, usdValue]) => {
     const values = [label, bsValue, usdValue];
     balanceBlocks.forEach(({startCol, endCol}, index) => {
