@@ -1,4 +1,5 @@
 import {saveWorkbook, todayFileSuffix} from './excelExport';
+import {addListRanges} from './excelLists';
 
 const headerFill = 'FF870002';
 const headerFont = 'FFFFFFFF';
@@ -6,9 +7,7 @@ const requiredFill = 'FFD20F12';
 const exampleFont = 'FF7F7F7F';
 const borderColor = 'FFD0D0D0';
 const sheetName = 'USUARIOS';
-const listsSheetName = 'Listas';
 const templateRows = 500;
-const firstColumnCode = 'A'.charCodeAt(0);
 const thinLine = {style: 'thin', color: {argb: borderColor}};
 const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
 
@@ -40,20 +39,6 @@ const instructions = [
 ];
 
 const solidFill = (argb) => ({type: 'pattern', pattern: 'solid', fgColor: {argb}});
-
-const addListsSheet = (workbook, lists) => {
-  const sheet = workbook.addWorksheet(listsSheetName, {state: 'veryHidden'});
-  const ranges = {};
-  Object.entries(lists).forEach(([name, values], index) => {
-    const column = index + 1;
-    const letter = String.fromCharCode(firstColumnCode + index);
-    values.forEach((value, row) => {
-      sheet.getCell(row + 1, column).value = value;
-    });
-    ranges[name] = `${listsSheetName}!$${letter}$1:$${letter}$${Math.max(values.length, 1)}`;
-  });
-  return ranges;
-};
 
 const styleTemplateHeader = (sheet) => {
   const header = sheet.getRow(1);
@@ -120,7 +105,7 @@ export const buildUserImportTemplate = (workbook, {positions = [], sections = []
   sheet.columns = importColumns.map((column) => ({key: column.key, width: column.width}));
   styleTemplateHeader(sheet);
   addExampleRow(sheet, lists);
-  addValidations(sheet, addListsSheet(workbook, lists));
+  addValidations(sheet, addListRanges(workbook, lists));
   addInstructionsSheet(workbook);
   return sheet;
 };

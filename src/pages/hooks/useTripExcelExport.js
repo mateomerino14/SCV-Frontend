@@ -1,5 +1,4 @@
 import ExcelJS from 'exceljs';
-import {saveAs} from 'file-saver';
 import {extractOracleAccount} from '../../utils/oracleAccount';
 import {toOracleExpenseType} from '../../utils/expenseTypeCode';
 import buildTripCode from '../../utils/tripCode';
@@ -8,6 +7,8 @@ import {oracleAccounts} from '../../constants/oracleAccounts';
 import {MAXAM_LOGO} from '../../constants';
 import {getExpenseTaxValues} from '../../utils/expenseTaxValues';
 import {addOracleSheets} from '../../utils/oracleExport';
+import {addListRange} from '../../utils/excelLists';
+import {saveWorkbook} from '../../utils/excelExport';
 
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
@@ -170,7 +171,7 @@ function getLogoBase64() {
   return logoPromise;
 }
 
-async function addStatementSheet(workbook, trip, expenses, dayJustifications = [], sheetName = 'RENDICION', listSheetName = 'Listas') {
+async function addStatementSheet(workbook, trip, expenses, dayJustifications = [], sheetName = 'RENDICION') {
   const sheet = workbook.addWorksheet(sheetName);
   const isInternationalTrip = trip.tipo === 'Internacional';
   const col = {number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8, tramos: null, amount: 9};
@@ -309,11 +310,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   });
   headerRow.height = 32;
   const oracleOptions = buildOracleAccountOptions(expenses);
-  const listSheet = workbook.addWorksheet(listSheetName, {state: 'veryHidden'});
-  oracleOptions.forEach((option, i) => {
-    listSheet.getCell(i + 1, 1).value = option;
-  });
-  const oracleFormula = `${listSheetName}!$A$1:$A$${oracleOptions.length}`;
+  const oracleFormula = addListRange(workbook, oracleOptions);
   let currentRow = 8;
   let totalImporteFactura = 0;
   let totalImporteBs = 0;
@@ -596,8 +593,7 @@ function useTripExcelExport() {
     const workbook = new ExcelJS.Workbook();
     await addStatementSheet(workbook, trip, expenses, dayJustifications);
     addOracleSheets(workbook, [{trip, expenses}]);
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer], {type: 'application/octet-stream'}), `RENDICION_${trip.id_viaje}_${fileSafeText(trip.motivo)}.xlsx`);
+    await saveWorkbook(workbook, `RENDICION_${trip.id_viaje}_${fileSafeText(trip.motivo)}.xlsx`);
   };
   return {exportToExcel};
 }

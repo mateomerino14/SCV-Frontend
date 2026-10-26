@@ -14,8 +14,8 @@ describe('Excel para importar usuarios', () => {
     expect(sheet.getCell('A1').value).toBe('Nombre *');
     expect(sheet.getCell('C1').value).toBe('Apellido materno');
     expect(sheet.getCell('G2').value).toBe('Operador de planta');
-    expect(sheet.getCell('G3').dataValidation.formulae[0]).toBe('Listas!$A$1:$A$1');
-    expect(workbook.getWorksheet('Listas').getCell('C5').value).toBe('ADMINISTRADOR');
+    expect(sheet.getCell('G3').dataValidation.formulae[0]).toBe('LISTAS!$A$1:$A$1');
+    expect(workbook.getWorksheet('LISTAS').getCell('C5').value).toBe('ADMINISTRADOR');
     expect(workbook.getWorksheet('INSTRUCCIONES')).toBeTruthy();
   });
 

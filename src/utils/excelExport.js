@@ -1,5 +1,6 @@
 import {saveAs} from 'file-saver';
 import {toDateText} from './periodRange';
+import {moveListsToEnd} from './excelLists';
 
 const headerFill = 'FF870002';
 const headerFont = 'FFFFFFFF';
@@ -85,6 +86,7 @@ export const addTableSheet = (workbook, name, columns, rows) => {
 };
 
 export const saveWorkbook = async (workbook, fileName) => {
+  moveListsToEnd(workbook);
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer], {type: 'application/octet-stream'}), fileName);
 };

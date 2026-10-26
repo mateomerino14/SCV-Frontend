@@ -75,9 +75,9 @@ function useStatementsExport() {
     }
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Resumen', summaryColumns, statements.map(buildSummaryRow));
-    for (const [index, statement] of statements.entries()) {
+    for (const statement of statements) {
       const {list} = buildDayJustifications(statement.comentarios);
-      await addStatementSheet(workbook, statement.viaje, statement.gastos, list, `VIA-${statement.viaje.id_viaje}`, `Listas${index + 1}`);
+      await addStatementSheet(workbook, statement.viaje, statement.gastos, list, `VIA-${statement.viaje.id_viaje}`);
     }
     addOracleSheets(workbook, statements.map((statement) => ({trip: statement.viaje, expenses: statement.gastos})));
     await saveWorkbook(workbook, `${fileLabel}_${todayFileSuffix()}.xlsx`);

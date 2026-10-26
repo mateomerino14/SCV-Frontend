@@ -1,4 +1,5 @@
 import buildTripCode from './tripCode';
+import {addListRanges, columnLetter} from './excelLists';
 import {toOracleExpenseType} from './expenseTypeCode';
 import {getExpenseTaxValues} from './expenseTaxValues';
 import {oracleDefaults, oracleTaxCodes, oracleTaxLines, oracleWithholdings, oraclePaymentTerms, oracleLists} from '../constants/oracleLists';
@@ -301,31 +302,6 @@ export function buildOracleInvoice(trip, expense) {
   return {values, missing, lines};
 }
 
-const columnLetter = (index) => {
-  let letter = '';
-  let current = index;
-  while (current > 0) {
-    const remainder = (current - 1) % 26;
-    letter = String.fromCharCode(65 + remainder) + letter;
-    current = Math.floor((current - 1) / 26);
-  }
-  return letter;
-};
-
-const addListsSheet = (workbook) => {
-  const sheet = workbook.addWorksheet('ListasOracle', {state: 'veryHidden'});
-  const ranges = {};
-  Object.entries(listValues).forEach(([name, values], index) => {
-    const column = index + 1;
-    values.forEach((value, row) => {
-      sheet.getCell(row + 1, column).value = value;
-    });
-    const letter = columnLetter(column);
-    ranges[name] = `ListasOracle!$${letter}$1:$${letter}$${values.length}`;
-  });
-  return ranges;
-};
-
 const solidFill = (argb) => ({type: 'pattern', pattern: 'solid', fgColor: {argb}});
 const baseFont = {name: 'Calibri', size: 10};
 const headerFont = {...baseFont, bold: true, color: {argb: 'FF262626'}};
@@ -568,7 +544,7 @@ export function buildOracleRows(statements) {
 
 export function addOracleSheets(workbook, statements) {
   const {invoices, lines} = buildOracleRows(statements);
-  const ranges = addListsSheet(workbook);
+  const ranges = addListRanges(workbook, listValues);
   const invoicePending = writeSheet(workbook, 'FACTURAS', invoiceColumns, invoices, ranges);
   const linePending = writeSheet(workbook, 'LINEAS', lineColumns, lines, ranges);
   addLegendSheet(workbook, {invoices: invoices.length, lines: lines.length, pending: [...invoicePending, ...linePending]});
