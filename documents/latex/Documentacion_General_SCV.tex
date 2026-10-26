@@ -685,7 +685,7 @@ Al cargar una factura, la imagen se envía al modelo de visión de Google Gemini
   \item La llamada reintenta ante errores temporales y, si el modelo principal falla o agota su cuota, usa un modelo de respaldo.
   \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a tres decimales. En un recibo, el monto es el total pagado y no se descuenta IVA. Si un recibo o boleto no tiene número, se registra su código, que puede llevar símbolos como @ o \$.
   \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar, incluida la fecha de emisión por si se leyó mal. Al modificar después una factura ya guardada, la fecha queda bloqueada.
-  \item La cantidad de cada producto admite hasta tres decimales, por ejemplo 53.345 litros de combustible o 6 unidades.
+  \item La cantidad de cada producto admite hasta tres decimales, por ejemplo 53.345 litros de combustible o 6 unidades, y el precio unitario hasta cuatro, como figura en el papel (por ejemplo 3.7456 Bs por litro). El total de la factura se registra con dos decimales.
   \item Se lee también el CUF (código de autorización) de la factura, que el empleado puede corregir y que se usa en las hojas para Oracle.
   \item En el formulario, tanto al escanear como al cargar una factura a mano, se registra el total que figura en el papel: en una factura el IVA es el 13\% del total y el sistema lo resta para obtener el subtotal, sin cambiar el total; en un recibo no hay IVA.
   \item Una factura repetida (mismo número, fecha y proveedor) se rechaza.
@@ -982,7 +982,7 @@ Productos o servicios incluidos en una factura.
   \campo{id_detalle}{Identificador único}{SERIAL, clave primaria}
   \campo{nombre_producto}{Nombre del ítem}{VARCHAR(255)}
   \campo{cantidad}{Cantidad, con hasta tres decimales (litros, kilos o unidades)}{NUMERIC(12,3)}
-  \campo{precio}{Precio unitario}{DECIMAL(10,2)}
+  \campo{precio}{Precio unitario, con hasta cuatro decimales}{NUMERIC(12,4)}
   \campo{id_factura}{Factura a la que pertenece}{INTEGER}
 \end{itemize}
 
