@@ -37,7 +37,7 @@ function RegisterExpensePage() {
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
     handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange, handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
-    handleToggleOtherCurrency, handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
   } = useRegisterExpense(id);
@@ -68,8 +68,7 @@ function RegisterExpensePage() {
             onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onReceiptNumberChange={handleReceiptNumberChange} onAmountChange={handleAmountChange}
             onDescriptionChange={handleDescriptionChange} onCategoryChange={handleCategoryChange} onImageChange={handleImageChange} onRemoveImage={handleRemoveImage}
             onAddBackup={handleAddBackup} onRemoveBackup={handleRemoveBackup}
-            onToggleOtherCurrency={handleToggleOtherCurrency} onAddInstallment={handleAddInstallment} onRemoveInstallment={handleRemoveInstallment}
-            onInstallmentCurrencyChange={handleInstallmentCurrencyChange} onInstallmentAmountChange={handleInstallmentAmountChange} onInstallmentExchangeRateChange={handleInstallmentExchangeRateChange}
+            onCurrencyChange={handleCurrencyChange} onExchangeRateChange={handleExchangeRateChange} onBsRateChange={handleBsRateChange}
             onToggleSubitems={handleToggleSubitems} onAddSubitem={handleAddSubitem} onRemoveSubitem={handleRemoveSubitem}
             onSubitemDescriptionChange={handleSubitemDescriptionChange} onSubitemAmountChange={handleSubitemAmountChange} />
         ))}

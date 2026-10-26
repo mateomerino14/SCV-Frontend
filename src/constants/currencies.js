@@ -1,4 +1,5 @@
 export const currencies = [
+  {codigo: 'USD', nombre: 'Dólar estadounidense'},
   {codigo: 'EUR', nombre: 'Euro'},
   {codigo: 'PEN', nombre: 'Sol peruano'},
   {codigo: 'ARS', nombre: 'Peso argentino'},

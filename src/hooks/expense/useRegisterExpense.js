@@ -5,22 +5,16 @@ import {getTripDetail} from '../../services/trip/tripService';
 import {compressImage} from '../../utils/imageCompressor';
 import {currencies} from '../../constants/currencies';
 import {calculateWithholdings} from '../../utils/withholdings';
+import {usdCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
 
-const maxAmount = 99999.99;
 const maxDescription = 1000;
-const maxExchangeRate = 9999.9999;
 const maxSubitemDescription = 255;
 const maxReceiptNumber = 50;
 
-let installmentCounter = 0;
 let subitemCounter = 0;
 let itemCounter = 0;
 let backupCounter = 0;
 const maxBackups = 2;
-
-function newInstallment() {
-  return {id: `t${++installmentCounter}`, currency: 'EUR', originAmount: '', exchangeRate: ''};
-}
 
 function newSubitem() {
   return {id: `s${++subitemCounter}`, description: '', amount: ''};
@@ -39,12 +33,12 @@ function newItem() {
     image: null,
     imagePreview: null,
     backups: [],
-    usesOtherCurrency: false,
-    installments: [newInstallment()],
+    currency: usdCurrency,
+    exchangeRate: '',
+    bsRate: '',
     usesSubitems: false,
     subitems: [newSubitem()],
     fieldErrors: {},
-    installmentErrors: {},
     subitemErrors: {},
     saved: false,
     saveError: null,
@@ -61,6 +55,7 @@ function useRegisterExpense(tripId) {
   const [isInternational, setIsInternational] = useState(false);
   const [savingAll, setSavingAll] = useState(false);
   const [saveSummary, setSaveSummary] = useState(null);
+  const amountLimit = amountLimitOf(isInternationalExpense);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -81,10 +76,6 @@ function useRegisterExpense(tripId) {
     };
     loadTrip();
   }, [tripId]);
-
-  const validInstallmentsOf = (item) => {
-    return item.installments.filter((installment) => installment.currency && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0);
-  };
 
   const validSubitemsOf = (item) => {
     return item.subitems.filter((subitem) => subitem.description.trim() && parseFloat(subitem.amount) > 0);
@@ -141,6 +132,9 @@ function useRegisterExpense(tripId) {
       supplier: original.supplier,
       description,
       categoryId: original.categoryId,
+      currency: original.currency,
+      exchangeRate: original.exchangeRate,
+      bsRate: original.bsRate,
     };
     setItems((prev) => {
       const index = prev.findIndex((item) => item.id === itemId);
@@ -197,19 +191,7 @@ function useRegisterExpense(tripId) {
   };
 
   const handleAmountChange = (itemId, value) => {
-    if (value === '') {
-      setItems((prev) => prev.map((item) => {
-        if (item.id === itemId) {
-          return {...item, amount: '', fieldErrors: {...item.fieldErrors, amount: undefined}};
-        }
-        return item;
-      }));
-      return;
-    }
-    if (!/^\d*\.?\d{0,2}$/.test(value)) {
-      return;
-    }
-    if (parseFloat(value) > maxAmount) {
+    if (!isAmountInput(value, amountLimit)) {
       return;
     }
     setItems((prev) => prev.map((item) => {
@@ -295,99 +277,29 @@ function useRegisterExpense(tripId) {
     }));
   };
 
-  const handleToggleOtherCurrency = (itemId) => {
+  const handleCurrencyChange = (itemId, currency) => {
     setItems((prev) => prev.map((item) => {
       if (item.id === itemId) {
-        return {...item, usesOtherCurrency: !item.usesOtherCurrency};
+        return {...item, currency, fieldErrors: {...item.fieldErrors, exchangeRate: undefined}};
       }
       return item;
     }));
   };
 
-  const handleAddInstallment = (itemId) => {
+  const handleRateChange = (itemId, field, value) => {
+    if (!isExchangeRateInput(value)) {
+      return;
+    }
     setItems((prev) => prev.map((item) => {
       if (item.id === itemId) {
-        return {...item, installments: [...item.installments, newInstallment()]};
+        return {...item, [field]: value, fieldErrors: {...item.fieldErrors, [field]: undefined}};
       }
       return item;
     }));
   };
 
-  const handleRemoveInstallment = (itemId, installmentId) => {
-    setItems((prev) => prev.map((item) => {
-      if (item.id !== itemId) {
-        return item;
-      }
-      if (item.installments.length <= 1) {
-        return item;
-      }
-      const updatedErrors = {...item.installmentErrors};
-      delete updatedErrors[installmentId];
-      return {...item, installments: item.installments.filter((installment) => installment.id !== installmentId), installmentErrors: updatedErrors};
-    }));
-  };
-
-  const handleInstallmentCurrencyChange = (itemId, installmentId, value) => {
-    setItems((prev) => prev.map((item) => {
-      if (item.id !== itemId) {
-        return item;
-      }
-      return {...item, installments: item.installments.map((installment) => {
-        if (installment.id === installmentId) {
-          return {...installment, currency: value};
-        }
-        return installment;
-      })};
-    }));
-  };
-
-  const handleInstallmentAmountChange = (itemId, installmentId, value) => {
-    if (value !== '' && !/^\d*\.?\d{0,2}$/.test(value)) {
-      return;
-    }
-    if (value !== '' && parseFloat(value) > maxAmount) {
-      return;
-    }
-    setItems((prev) => prev.map((item) => {
-      if (item.id !== itemId) {
-        return item;
-      }
-      return {
-        ...item,
-        installments: item.installments.map((installment) => {
-          if (installment.id === installmentId) {
-            return {...installment, originAmount: value};
-          }
-          return installment;
-        }),
-        installmentErrors: {...item.installmentErrors, [installmentId]: {...item.installmentErrors[installmentId], amount: undefined}},
-      };
-    }));
-  };
-
-  const handleInstallmentExchangeRateChange = (itemId, installmentId, value) => {
-    if (value !== '' && !/^\d*\.?\d{0,4}$/.test(value)) {
-      return;
-    }
-    if (value !== '' && parseFloat(value) > maxExchangeRate) {
-      return;
-    }
-    setItems((prev) => prev.map((item) => {
-      if (item.id !== itemId) {
-        return item;
-      }
-      return {
-        ...item,
-        installments: item.installments.map((installment) => {
-          if (installment.id === installmentId) {
-            return {...installment, exchangeRate: value};
-          }
-          return installment;
-        }),
-        installmentErrors: {...item.installmentErrors, [installmentId]: {...item.installmentErrors[installmentId], exchangeRate: undefined}},
-      };
-    }));
-  };
+  const handleExchangeRateChange = (itemId, value) => handleRateChange(itemId, 'exchangeRate', value);
+  const handleBsRateChange = (itemId, value) => handleRateChange(itemId, 'bsRate', value);
 
   const handleToggleSubitems = (itemId) => {
     setItems((prev) => prev.map((item) => {
@@ -443,10 +355,7 @@ function useRegisterExpense(tripId) {
   };
 
   const handleSubitemAmountChange = (itemId, subitemId, value) => {
-    if (value !== '' && !/^\d*\.?\d{0,2}$/.test(value)) {
-      return;
-    }
-    if (value !== '' && parseFloat(value) > maxAmount) {
+    if (!isAmountInput(value, amountLimit)) {
       return;
     }
     setItems((prev) => prev.map((item) => {
@@ -488,20 +397,8 @@ function useRegisterExpense(tripId) {
       }
     }
 
-    const installmentErrors = {};
-    if (item.usesOtherCurrency) {
-      item.installments.forEach((installment) => {
-        const currentErrors = {};
-        if (!installment.originAmount || parseFloat(installment.originAmount) <= 0) {
-          currentErrors.amount = 'El monto es requerido';
-        }
-        if (!installment.exchangeRate || parseFloat(installment.exchangeRate) <= 0) {
-          currentErrors.exchangeRate = 'El tipo de cambio es requerido';
-        }
-        if (Object.keys(currentErrors).length > 0) {
-          installmentErrors[installment.id] = currentErrors;
-        }
-      });
+    if (isInternationalExpense) {
+      Object.assign(errors, validateForeignCurrency(item.currency, item.exchangeRate, item.bsRate));
     }
 
     const subitemErrors = {};
@@ -520,7 +417,7 @@ function useRegisterExpense(tripId) {
       });
     }
 
-    return {errors, installmentErrors, subitemErrors};
+    return {errors, subitemErrors};
   };
 
   const handleSaveAll = async () => {
@@ -532,11 +429,11 @@ function useRegisterExpense(tripId) {
       if (item.saved) {
         continue;
       }
-      const {errors, installmentErrors, subitemErrors} = validateItem(item);
-      if (Object.keys(errors).length > 0 || Object.keys(installmentErrors).length > 0 || Object.keys(subitemErrors).length > 0) {
+      const {errors, subitemErrors} = validateItem(item);
+      if (Object.keys(errors).length > 0 || Object.keys(subitemErrors).length > 0) {
         setItems((prev) => prev.map((current) => {
           if (current.id === item.id) {
-            return {...current, fieldErrors: errors, installmentErrors, subitemErrors, saveError: 'Completa los campos requeridos'};
+            return {...current, fieldErrors: errors, subitemErrors, saveError: 'Completa los campos requeridos'};
           }
           return current;
         }));
@@ -544,7 +441,6 @@ function useRegisterExpense(tripId) {
         continue;
       }
       const finalAmount = finalAmountOf(item);
-      const validInstallments = validInstallmentsOf(item);
       const validSubitems = validSubitemsOf(item);
       const payload = {
         id_viaje: tripId,
@@ -557,20 +453,8 @@ function useRegisterExpense(tripId) {
         id_categoria_gasto: item.categoryId,
         es_gasto_internacional: isInternationalExpense,
       };
-      if (item.usesOtherCurrency && validInstallments.length > 0) {
-        payload.tramos = validInstallments.map((installment) => ({
-          moneda: installment.currency,
-          monto_origen: parseFloat(installment.originAmount),
-          tipo_cambio: parseFloat(installment.exchangeRate),
-        }));
-        payload.moneda = validInstallments[0].currency;
-        payload.tipo_cambio = parseFloat(validInstallments[0].exchangeRate);
-        payload.monto_moneda_origen = validInstallments.reduce((sum, installment) => sum + parseFloat(installment.originAmount), 0);
-      }
-      else {
-        payload.moneda = 'USD';
-        payload.tipo_cambio = 1;
-        payload.monto_moneda_origen = finalAmount;
+      if (isInternationalExpense) {
+        Object.assign(payload, buildForeignCurrencyPayload(finalAmount, item.currency, item.exchangeRate, item.bsRate));
       }
       if (item.usesSubitems && validSubitems.length > 0) {
         payload.subitems = validSubitems.map((subitem) => ({
@@ -592,7 +476,7 @@ function useRegisterExpense(tripId) {
         saved++;
         setItems((prev) => prev.map((current) => {
           if (current.id === item.id) {
-            return {...current, saved: true, saveError: null, requiresAuthorization: false, fieldErrors: {}, installmentErrors: {}, subitemErrors: {}};
+            return {...current, saved: true, saveError: null, requiresAuthorization: false, fieldErrors: {}, subitemErrors: {}};
           }
           return current;
         }));
@@ -618,13 +502,12 @@ function useRegisterExpense(tripId) {
     allSaved,
     pendingToSave,
     currencies,
-    validInstallmentsOf, validSubitemsOf, finalAmountOf, withholdingsOf, hasWithholdingsOf,
+    validSubitemsOf, finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
     handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange,
     handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
-    handleToggleOtherCurrency,
-    handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
   };

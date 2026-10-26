@@ -2,6 +2,7 @@ import {Eye, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseObsButton from '../atoms/ExpenseObsButton';
+import {conversionLabelOf} from '../../../utils/expenseCurrency';
 
 const styles = {
   section: 'mb-6',
@@ -57,7 +58,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
               let conversionColor = COLORS.labels;
               let conversionWeight = 'normal';
               if (hasInstallments) {
-                conversion = `${installments.length} tramo${installments.length !== 1 ? 's' : ''}`;
+                conversion = conversionLabelOf(installments);
                 conversionColor = COLORS.secondary;
                 conversionWeight = 'bold';
               }

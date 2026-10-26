@@ -9,6 +9,7 @@ import ReceiptSendingModal from './ReceiptSendingModal';
 import useExpenseReceipt from '../hooks/useExpenseReceipt';
 import useExpenseObservations from '../hooks/useExpenseObservations';
 import useExpenseNavigation from '../hooks/useExpenseNavigation';
+import {conversionLabelOf} from '../../../utils/expenseCurrency';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -37,7 +38,10 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
   const expenseDate = expense.Factura?.fecha_emision || expense.fecha_gasto;
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;
-  const conversionsCount = isInternational ? (expense.Gasto_Tramo_Moneda || []).length : 0;
+  let conversions = [];
+  if (isInternational) {
+    conversions = expense.Gasto_Tramo_Moneda || [];
+  }
   const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
   const expenseObservations = observations.filter((observation) => observation.id_gasto === expense.id_gasto);
 
@@ -65,10 +69,10 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
               {parseFloat(expense.monto_total).toFixed(2)} USD
             </span>
           )}
-          {conversionsCount > 0 && (
+          {conversions.length > 0 && (
             <span style={{...badgeStyle, backgroundColor: COLORS.primary + '15', color: COLORS.primary}}>
               <ArrowLeftRight size={10} />
-              {conversionsCount} conversi{conversionsCount !== 1 ? 'ones' : 'ón'} de moneda
+              {conversionLabelOf(conversions)}
             </span>
           )}
           {hasSubitems && (

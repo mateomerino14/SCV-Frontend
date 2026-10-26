@@ -11,7 +11,7 @@ const registerWithBackups = async (tripId) => {
   const form = new FormData();
   form.append('datos', JSON.stringify({
     id_viaje: tripId, monto_total: 70, fecha_gasto: boliviaDate(), tipo: 'C', descripcion: 'Compra pagada con cambio de moneda',
-    id_categoria_gasto: categories.find((category) => category.nombre.startsWith('626040')).id_categoria, es_gasto_internacional: true,
+    id_categoria_gasto: categories.find((category) => category.nombre.startsWith('626040')).id_categoria, es_gasto_internacional: true, tipo_cambio_bs: 6.96,
   }));
   ['imagen', 'respaldos', 'respaldos'].forEach((field, index) => form.append(field, new Blob([tinyPng], {type: 'image/png'}), `imagen${index}.png`));
   const response = await context.post('/expense/register', {headers: {authorization: `Bearer ${token}`}, multipart: form});

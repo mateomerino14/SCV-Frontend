@@ -1,11 +1,11 @@
 import {useState} from 'react';
-import {Globe, List, Copy, Trash2, ChevronDown, ChevronUp} from 'lucide-react';
+import {List, Copy, Trash2, ChevronDown, ChevronUp} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseTypeToggle from '../atoms/ExpenseTypeToggle';
 import ExpenseField from '../atoms/ExpenseField';
 import WithholdingSummary from '../molecules/WithholdingSummary';
 import CategorySelector from '../molecules/CategorySelector';
-import CurrencySelector from '../molecules/CurrencySelector';
+import ForeignCurrencyFields from '../molecules/ForeignCurrencyFields';
 import ReceiptUpload from './ReceiptUpload';
 import BackupImagesUpload from '../molecules/BackupImagesUpload';
 
@@ -27,12 +27,6 @@ const styles = {
   amountCalculatedLabel: "text-xs font-inter uppercase mb-1",
   amountCalculatedValue: "text-2xl font-bold font-inter",
   charCount: "text-xs font-inter text-right mt-1",
-  installmentCard: "rounded-xl p-3.5 flex flex-col gap-2.5",
-  installmentHeaderRow: "flex justify-between items-center",
-  installmentTitle: "text-xs font-bold font-inter",
-  installmentRemove: "text-xs font-bold font-inter cursor-pointer",
-  installmentEquivalent: "text-xs font-inter text-right",
-  addInstallmentBtn: "w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border",
   subitemCard: "rounded-xl p-3.5 flex flex-col gap-2.5",
   subitemHeaderRow: "flex justify-between items-center",
   subitemTitle: "text-xs font-bold font-inter",
@@ -68,17 +62,19 @@ function ExpenseFormCard({
   finalAmount, withholdings, hasWithholdings,
   onTypeChange, onDateChange, onSupplierChange, onReceiptNumberChange, onAmountChange, onDescriptionChange, onCategoryChange,
   onImageChange, onRemoveImage, onAddBackup, onRemoveBackup,
-  onToggleOtherCurrency, onAddInstallment, onRemoveInstallment, onInstallmentCurrencyChange, onInstallmentAmountChange, onInstallmentExchangeRateChange,
+  onCurrencyChange, onExchangeRateChange, onBsRateChange,
   onToggleSubitems, onAddSubitem, onRemoveSubitem, onSubitemDescriptionChange, onSubitemAmountChange,
 }) {
-  const [installmentsExpanded, setInstallmentsExpanded] = useState(true);
   const [subitemsExpanded, setSubitemsExpanded] = useState(true);
   const typeLabel = typeLabels[item.type] || item.type;
-  const validInstallments = item.installments.filter((installment) => installment.currency && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0);
   const validSubitems = item.subitems.filter((subitem) => subitem.description.trim() && parseFloat(subitem.amount) > 0);
   const categoryName = categories.find((category) => category.id_categoria === item.categoryId)?.nombre;
   const receiptRequired = categories.find((category) => category.id_categoria === item.categoryId)?.requiere_comprobante !== false;
   const automaticAmount = item.usesSubitems;
+  let amountSuffix = 'Bs';
+  if (isInternationalExpense) {
+    amountSuffix = item.currency;
+  }
 
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${item.saveError ? COLORS.secondary : COLORS.dataFields}`}}>
@@ -88,7 +84,7 @@ function ExpenseFormCard({
             Gasto {index + 1}{item.saved ? ' — Guardado' : ''}
           </p>
           <p className={styles.headerSub} style={{color: item.saved ? '#155724' : COLORS.labels}}>
-            {categoryName || 'Sin categoría'} — {finalAmount > 0 ? `${finalAmount.toFixed(2)} ${isInternationalExpense ? 'USD' : 'Bs'}` : '0.00'}
+            {categoryName || 'Sin categoría'} — {finalAmount > 0 ? `${finalAmount.toFixed(2)} ${amountSuffix}` : '0.00'}
           </p>
           {item.saveError && <p className={styles.headerError} style={{color: COLORS.secondary}}>{item.saveError}</p>}
         </div>
@@ -115,54 +111,20 @@ function ExpenseFormCard({
               className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
               value={item.receiptNumber} onChange={(event) => onReceiptNumberChange(item.id, event.target.value)} />
           </ExpenseField>
-          <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} required={!automaticAmount} suffix={isInternationalExpense ? 'USD' : 'Bs'} error={item.fieldErrors.amount}>
+          {isInternationalExpense && (
+            <ForeignCurrencyFields currencies={currencies} currency={item.currency} exchangeRate={item.exchangeRate} bsRate={item.bsRate} amount={finalAmount}
+              errors={item.fieldErrors} disabled={item.saved} onCurrencyChange={(value) => onCurrencyChange(item.id, value)}
+              onExchangeRateChange={(value) => onExchangeRateChange(item.id, value)} onBsRateChange={(value) => onBsRateChange(item.id, value)} />
+          )}
+          <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} required={!automaticAmount} suffix={amountSuffix} error={item.fieldErrors.amount}>
             <input type="text" inputMode="decimal" placeholder="0.00" disabled={item.saved || automaticAmount}
               className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
               value={automaticAmount ? finalAmount.toFixed(2) : item.amount} onChange={(event) => onAmountChange(item.id, event.target.value)} />
           </ExpenseField>
-          {isInternationalExpense && (
-            <AccordionSection active={item.usesOtherCurrency} expanded={installmentsExpanded} disabled={item.saved} icon={Globe} iconColor={COLORS.primary} label="Cambio de Moneda (Tramos)"
-              onToggleActive={() => {onToggleOtherCurrency(item.id); setInstallmentsExpanded(true);}} onToggleExpanded={() => setInstallmentsExpanded((value) => !value)}>
-              <p className={styles.accordionNote} style={{color: COLORS.labels}}>Registra los tramos como referencia. El monto a pagar es el que ingresaste arriba.</p>
-              {item.installments.map((installment, installmentIndex) => (
-                <div key={installment.id} className={styles.installmentCard} style={{backgroundColor: COLORS.background}}>
-                  <div className={styles.installmentHeaderRow}>
-                    <p className={styles.installmentTitle} style={{color: COLORS.environmentTypesText}}>Tramo {installmentIndex + 1}</p>
-                    {item.installments.length > 1 && !item.saved && (
-                      <p className={styles.installmentRemove} style={{color: COLORS.secondary}} onClick={() => onRemoveInstallment(item.id, installment.id)}>Quitar</p>
-                    )}
-                  </div>
-                  <CurrencySelector currencies={currencies} currency={installment.currency} onChange={(value) => onInstallmentCurrencyChange(item.id, installment.id, value)} />
-                  <ExpenseField label={`Monto en ${installment.currency}`} required suffix={installment.currency} error={item.installmentErrors[installment.id]?.amount}>
-                    <input type="text" inputMode="decimal" placeholder="0.00" disabled={item.saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
-                      value={installment.originAmount} onChange={(event) => onInstallmentAmountChange(item.id, installment.id, event.target.value)} />
-                  </ExpenseField>
-                  <ExpenseField label={`Tipo de cambio (1 USD = cuántos ${installment.currency})`} required suffix={installment.currency} error={item.installmentErrors[installment.id]?.exchangeRate}>
-                    <input type="text" inputMode="decimal" placeholder="0.0000" disabled={item.saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
-                      value={installment.exchangeRate} onChange={(event) => onInstallmentExchangeRateChange(item.id, installment.id, event.target.value)} />
-                  </ExpenseField>
-                  {installment.originAmount && installment.exchangeRate && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0 && (
-                    <p className={styles.installmentEquivalent} style={{color: COLORS.title}}>= {(parseFloat(installment.originAmount) / parseFloat(installment.exchangeRate)).toFixed(2)} USD</p>
-                  )}
-                </div>
-              ))}
-              {!item.saved && (
-                <button className={styles.addInstallmentBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}} onClick={() => onAddInstallment(item.id)}>+ Agregar otro tramo</button>
-              )}
-              {validInstallments.length > 0 && (
-                <div className={styles.amountCalculated} style={{backgroundColor: COLORS.background}}>
-                  <p className={styles.amountCalculatedLabel} style={{color: COLORS.labels}}>Suma de tramos (referencia)</p>
-                  <p className={styles.amountCalculatedValue} style={{color: COLORS.primary}}>
-                    {validInstallments.reduce((sum, installment) => sum + (parseFloat(installment.originAmount) / parseFloat(installment.exchangeRate)), 0).toFixed(2)} USD
-                  </p>
-                </div>
-              )}
-            </AccordionSection>
-          )}
           <AccordionSection active={item.usesSubitems} expanded={subitemsExpanded} disabled={item.saved} icon={List} iconColor={COLORS.title} label="Lista de Subgastos"
             onToggleActive={() => {onToggleSubitems(item.id); setSubitemsExpanded(true);}} onToggleExpanded={() => setSubitemsExpanded((value) => !value)}>
             <p className={styles.accordionNote} style={{color: COLORS.labels}}>
-              {isInternationalExpense ? 'El monto se calculará automáticamente como la suma de estos subgastos.' : 'El monto se calculará automáticamente como la suma de estos subgastos.'}
+              El monto se calculará automáticamente como la suma de estos subgastos.
             </p>
             {item.subitems.map((subitem, subitemIndex) => (
               <div key={subitem.id} className={styles.subitemCard} style={{backgroundColor: COLORS.background}}>
@@ -176,7 +138,7 @@ function ExpenseFormCard({
                   <input type="text" placeholder="Ej: Almuerzo" maxLength={255} disabled={item.saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                     value={subitem.description} onChange={(event) => onSubitemDescriptionChange(item.id, subitem.id, event.target.value)} />
                 </ExpenseField>
-                <ExpenseField label="Monto" required suffix={isInternationalExpense ? 'USD' : 'Bs'} error={item.subitemErrors[subitem.id]?.amount}>
+                <ExpenseField label="Monto" required suffix={amountSuffix} error={item.subitemErrors[subitem.id]?.amount}>
                   <input type="text" inputMode="decimal" placeholder="0.00" disabled={item.saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                     value={subitem.amount} onChange={(event) => onSubitemAmountChange(item.id, subitem.id, event.target.value)} />
                 </ExpenseField>
@@ -189,7 +151,7 @@ function ExpenseFormCard({
               <div className={styles.amountCalculated} style={{backgroundColor: COLORS.background}}>
                 <p className={styles.amountCalculatedLabel} style={{color: COLORS.labels}}>Suma de subgastos</p>
                 <p className={styles.amountCalculatedValue} style={{color: COLORS.title}}>
-                  {validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2)} {isInternationalExpense ? 'USD' : 'Bs'}
+                  {validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2)} {amountSuffix}
                 </p>
               </div>
             )}

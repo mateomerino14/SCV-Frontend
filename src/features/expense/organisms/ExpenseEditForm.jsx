@@ -1,10 +1,10 @@
-import {Globe, List} from 'lucide-react';
+import {List} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseTypeToggle from '../atoms/ExpenseTypeToggle';
 import ExpenseField from '../atoms/ExpenseField';
 import WithholdingSummary from '../molecules/WithholdingSummary';
 import CategorySelector from '../molecules/CategorySelector';
-import CurrencySelector from '../molecules/CurrencySelector';
+import ForeignCurrencyFields from '../molecules/ForeignCurrencyFields';
 import ReceiptUpload from './ReceiptUpload';
 import BackupImagesUpload from '../molecules/BackupImagesUpload';
 
@@ -20,12 +20,6 @@ const styles = {
   amountCalculated: "rounded-xl px-4 py-3 text-center",
   amountCalculatedLabel: "text-xs font-inter uppercase mb-1",
   amountCalculatedValue: "text-2xl font-bold font-inter",
-  installmentCard: "rounded-xl p-3.5 flex flex-col gap-2.5",
-  installmentHeaderRow: "flex justify-between items-center",
-  installmentTitle: "text-xs font-bold font-inter",
-  installmentRemove: "text-xs font-bold font-inter cursor-pointer",
-  installmentEquivalent: "text-xs font-inter text-right",
-  addInstallmentBtn: "w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer text-center border",
   subitemCard: "rounded-xl p-3.5 flex flex-col gap-2.5",
   subitemHeaderRow: "flex justify-between items-center",
   subitemTitle: "text-xs font-bold font-inter",
@@ -54,14 +48,18 @@ function AccordionSection({active, onToggleActive, icon: Icon, iconColor, label,
 
 function ExpenseEditForm({
   type, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, fieldErrors, saved,
-  isInternationalExpense, usesOtherCurrency, setUsesOtherCurrency, installments, validInstallments, installmentErrors,
+  isInternationalExpense, currency, exchangeRate, bsRate,
   usesSubitems, subitems, validSubitems, subitemErrors, currencies, withholdings, hasWithholdings, finalAmount,
   handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange, handleDescriptionChange, handleCategoryChange,
   handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
-  handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
+  handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
   handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
 }) {
   const automaticAmount = usesSubitems;
+  let amountSuffix = 'Bs';
+  if (isInternationalExpense) {
+    amountSuffix = currency;
+  }
   return (
     <>
       <ExpenseTypeToggle type={type} onChange={(newType) => !saved && handleTypeChange(newType)} />
@@ -79,50 +77,15 @@ function ExpenseEditForm({
           className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
           value={receiptNumber} onChange={(event) => handleReceiptNumberChange(event.target.value)} />
       </ExpenseField>
-      <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} required={!automaticAmount} suffix={isInternationalExpense ? 'USD' : 'Bs'} error={fieldErrors.amount}>
+      {isInternationalExpense && (
+        <ForeignCurrencyFields currencies={currencies} currency={currency} exchangeRate={exchangeRate} bsRate={bsRate} amount={finalAmount} errors={fieldErrors} disabled={saved}
+          onCurrencyChange={handleCurrencyChange} onExchangeRateChange={handleExchangeRateChange} onBsRateChange={handleBsRateChange} />
+      )}
+      <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} required={!automaticAmount} suffix={amountSuffix} error={fieldErrors.amount}>
         <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved || automaticAmount}
           className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
           value={automaticAmount ? finalAmount.toFixed(2) : amount} onChange={(event) => handleAmountChange(event.target.value)} />
       </ExpenseField>
-      {isInternationalExpense && (
-        <AccordionSection active={usesOtherCurrency} disabled={saved} icon={Globe} iconColor={COLORS.primary} label="Cambio de Moneda (Tramos)"
-          onToggleActive={() => setUsesOtherCurrency(!usesOtherCurrency)}>
-          <p className={styles.accordionNote} style={{color: COLORS.labels}}>Registra los tramos como referencia. El monto a pagar es el que ingresaste arriba.</p>
-          {installments.map((installment, index) => (
-            <div key={installment.id} className={styles.installmentCard} style={{backgroundColor: COLORS.background}}>
-              <div className={styles.installmentHeaderRow}>
-                <p className={styles.installmentTitle} style={{color: COLORS.environmentTypesText}}>Tramo {index + 1}</p>
-                {installments.length > 1 && !saved && (
-                  <p className={styles.installmentRemove} style={{color: COLORS.secondary}} onClick={() => handleRemoveInstallment(installment.id)}>Quitar</p>
-                )}
-              </div>
-              <CurrencySelector currencies={currencies} currency={installment.currency} onChange={(value) => handleInstallmentCurrencyChange(installment.id, value)} />
-              <ExpenseField label={`Monto en ${installment.currency}`} required suffix={installment.currency} error={installmentErrors[installment.id]?.amount}>
-                <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
-                  value={installment.originAmount} onChange={(event) => handleInstallmentAmountChange(installment.id, event.target.value)} />
-              </ExpenseField>
-              <ExpenseField label={`Tipo de cambio (1 USD = cuántos ${installment.currency})`} required suffix={installment.currency} error={installmentErrors[installment.id]?.exchangeRate}>
-                <input type="text" inputMode="decimal" placeholder="0.0000" disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
-                  value={installment.exchangeRate} onChange={(event) => handleInstallmentExchangeRateChange(installment.id, event.target.value)} />
-              </ExpenseField>
-              {installment.originAmount && installment.exchangeRate && parseFloat(installment.originAmount) > 0 && parseFloat(installment.exchangeRate) > 0 && (
-                <p className={styles.installmentEquivalent} style={{color: COLORS.title}}>= {(parseFloat(installment.originAmount) / parseFloat(installment.exchangeRate)).toFixed(2)} USD</p>
-              )}
-            </div>
-          ))}
-          {!saved && (
-            <button className={styles.addInstallmentBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}} onClick={handleAddInstallment}>+ Agregar otro tramo</button>
-          )}
-          {validInstallments.length > 0 && (
-            <div className={styles.amountCalculated} style={{backgroundColor: COLORS.background}}>
-              <p className={styles.amountCalculatedLabel} style={{color: COLORS.labels}}>Suma de tramos (referencia)</p>
-              <p className={styles.amountCalculatedValue} style={{color: COLORS.primary}}>
-                {validInstallments.reduce((sum, installment) => sum + (parseFloat(installment.originAmount) / parseFloat(installment.exchangeRate)), 0).toFixed(2)} USD
-              </p>
-            </div>
-          )}
-        </AccordionSection>
-      )}
       <AccordionSection active={usesSubitems} disabled={saved} icon={List} iconColor={COLORS.title} label="Lista de Subgastos" onToggleActive={handleToggleSubitems}>
         <p className={styles.accordionNote} style={{color: COLORS.labels}}>
           El monto se calculará automáticamente como la suma de estos subgastos.
@@ -139,7 +102,7 @@ function ExpenseEditForm({
               <input type="text" placeholder="Ej: Almuerzo" maxLength={255} disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                 value={subitem.description} onChange={(event) => handleSubitemDescriptionChange(subitem.id, event.target.value)} />
             </ExpenseField>
-            <ExpenseField label="Monto" required suffix={isInternationalExpense ? 'USD' : 'Bs'} error={subitemErrors[subitem.id]?.amount}>
+            <ExpenseField label="Monto" required suffix={amountSuffix} error={subitemErrors[subitem.id]?.amount}>
               <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved} className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text}}
                 value={subitem.amount} onChange={(event) => handleSubitemAmountChange(subitem.id, event.target.value)} />
             </ExpenseField>
@@ -152,7 +115,7 @@ function ExpenseEditForm({
           <div className={styles.amountCalculated} style={{backgroundColor: COLORS.background}}>
             <p className={styles.amountCalculatedLabel} style={{color: COLORS.labels}}>Suma de subgastos</p>
             <p className={styles.amountCalculatedValue} style={{color: COLORS.title}}>
-              {validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2)} {isInternationalExpense ? 'USD' : 'Bs'}
+              {validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2)} {amountSuffix}
             </p>
           </div>
         )}

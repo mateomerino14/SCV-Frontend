@@ -14,8 +14,8 @@ const styles = {
   receiptBtn: 'inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-bold font-inter uppercase cursor-pointer border-none',
 };
 
-function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, hasInstallments, installmentsCount, hasSubitems, subitemsCount, canGenerateReceipt, sending, onSendReceipt}) {
-  const showTagsRow = isInternational || hasInstallments || hasSubitems;
+function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, conversionLabel, hasSubitems, subitemsCount, canGenerateReceipt, sending, onSendReceipt}) {
+  const showTagsRow = isInternational || conversionLabel || hasSubitems;
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.primary}}>
       <div className={styles.top}>
@@ -32,10 +32,10 @@ function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, hasIn
               Gasto Internacional
             </span>
           )}
-          {hasInstallments && (
+          {conversionLabel && (
             <span className={styles.tag} style={{backgroundColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)'}}>
               <Globe size={12} />
-              {installmentsCount} tramo{installmentsCount !== 1 ? 's' : ''} de cambio
+              {conversionLabel}
             </span>
           )}
           {hasSubitems && (

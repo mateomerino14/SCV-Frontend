@@ -8,7 +8,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Selector de la moneda de un tramo de cambio, con la lista compartida de monedas del sistema.',
+        component: 'Selector de la moneda de la factura de un gasto internacional, con la lista compartida de monedas del sistema (USD primero).',
       },
     },
   },
@@ -26,6 +26,6 @@ export const Interactive = {
 };
 
 export const WithError = {
-  args: {currencies, currency: '', onChange: () => {}, error: 'Elige la moneda del tramo'},
+  args: {currencies, currency: '', onChange: () => {}, error: 'Elige la moneda del gasto'},
   decorators: [(Story) => <div style={{width: 320}}><Story /></div>],
 };

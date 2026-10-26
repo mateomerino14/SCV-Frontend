@@ -1,5 +1,5 @@
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
-import {ArrowLeft, Calendar, DollarSign, Tag, FileText, User, Receipt, List, Globe, Image as ImageIcon} from 'lucide-react';
+import {ArrowLeft, Calendar, DollarSign, Tag, FileText, User, Receipt, List, Globe, ArrowLeftRight, Image as ImageIcon} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -19,7 +19,8 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes, tripPath} from '../../constants/routes';
 import {formatReceiptNumber} from '../../utils/oracleExport';
-import {getExpenseWithholdings} from '../../utils/withholdings';
+import {getExpenseWithholdings, roundCents} from '../../utils/withholdings';
+import {usdCurrency, savedBsRateOf, hasOriginCurrencyLines, conversionLabelOf} from '../../utils/expenseCurrency';
 
 const imageMaxHeight = 720;
 
@@ -83,7 +84,17 @@ function ExpenseDetailPage() {
     currency = 'USD';
   }
   const installments = expense.Gasto_Tramo_Moneda || [];
-  const hasInstallments = isInternational && installments.length > 0;
+  const bsRate = savedBsRateOf(expense);
+  const hasRates = isInternational && bsRate > 0;
+  const hasInstallments = isInternational && !hasRates && installments.length > 0;
+  let conversionLabel = null;
+  if (isInternational && installments.length > 0) {
+    conversionLabel = conversionLabelOf(installments);
+  }
+  let subitemCurrency = currency;
+  if (hasOriginCurrencyLines(expense)) {
+    subitemCurrency = expense.moneda;
+  }
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;
   let backRoute = location.state?.from || routes.employeeDashboard;
@@ -113,7 +124,7 @@ function ExpenseDetailPage() {
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
         <ExpenseHeaderCard expense={expense} typeLabel={typeInfo.label} isInternational={isInternational} currency={currency}
-          hasInstallments={hasInstallments} installmentsCount={installments.length}
+          conversionLabel={conversionLabel}
           hasSubitems={hasSubitems} subitemsCount={subitems.length}
           canGenerateReceipt={canGenerateReceipt} sending={sending} onSendReceipt={handleSendReceipt} />
         <ExpenseSectionCard icon={Calendar} title="Información General">
@@ -134,13 +145,24 @@ function ExpenseDetailPage() {
         {hasSubitems && (
           <ExpenseSectionCard icon={List} title="Detalle de Subgastos">
             <ExpenseDataTable columns={['Descripción', 'Monto']} gridTemplate="2fr 1fr" headerBg={COLORS.title}
-              rows={subitems} totalValue={`${subitems.reduce((sum, subitem) => sum + parseFloat(subitem.monto || 0), 0).toFixed(2)} ${currency}`}
+              rows={subitems} totalValue={`${subitems.reduce((sum, subitem) => sum + parseFloat(subitem.monto || 0), 0).toFixed(2)} ${subitemCurrency}`}
               renderRow={(subitem) => (
                 <>
                   <span className="px-2 text-left" style={{color: COLORS.text}}>{subitem.descripcion}</span>
-                  <span style={{color: COLORS.title, fontWeight: 'bold'}}>{parseFloat(subitem.monto).toFixed(2)} {currency}</span>
+                  <span style={{color: COLORS.title, fontWeight: 'bold'}}>{parseFloat(subitem.monto).toFixed(2)} {subitemCurrency}</span>
                 </>
               )} />
+          </ExpenseSectionCard>
+        )}
+        {hasRates && (
+          <ExpenseSectionCard icon={Globe} title="Cambio de Moneda">
+            <ExpenseFieldRow icon={DollarSign} label={`Monto en ${expense.moneda}`} value={`${parseFloat(expense.monto_moneda_origen).toFixed(2)} ${expense.moneda}`} />
+            {expense.moneda !== usdCurrency && (
+              <ExpenseFieldRow icon={ArrowLeftRight} label="Tipo de cambio a dólares" value={`1 USD = ${parseFloat(expense.tipo_cambio).toFixed(4)} ${expense.moneda}`} />
+            )}
+            <ExpenseFieldRow icon={DollarSign} label="Equivalente en USD" value={`${parseFloat(expense.monto_total).toFixed(2)} USD`} />
+            <ExpenseFieldRow icon={ArrowLeftRight} label="Tipo de cambio a bolivianos" value={`1 USD = ${bsRate.toFixed(4)} Bs`} />
+            <ExpenseFieldRow icon={DollarSign} label="Equivalente en Bs" value={`${roundCents(parseFloat(expense.monto_total) * bsRate).toFixed(2)} Bs`} last />
           </ExpenseSectionCard>
         )}
         {hasInstallments && (
