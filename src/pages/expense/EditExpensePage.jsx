@@ -29,7 +29,7 @@ function EditExpensePage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    type, setType, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, isInternationalTrip, loading, loadingData,
+    type, setType, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, loading, loadingData,
     error, fieldErrors, saved, tripId, isInternationalExpense, usesOtherCurrency, setUsesOtherCurrency,
     installments, validInstallments, finalAmount, installmentErrors, usesSubitems, subitems, validSubitems, subitemErrors,
     currencies, withholdings, hasWithholdings,
@@ -62,7 +62,7 @@ function EditExpensePage() {
         <PageHeader title="Editar Gasto" subtitle="Corrige los datos del gasto o su comprobante y guarda los cambios." />
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseEditForm type={type} date={date} supplier={supplier} receiptNumber={receiptNumber} amount={amount} description={description} categoryId={categoryId}
-            categories={categories} imagePreview={imagePreview} backups={backups} isInternationalTrip={isInternationalTrip} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}
+            categories={categories} imagePreview={imagePreview} backups={backups} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}
             usesOtherCurrency={usesOtherCurrency} setUsesOtherCurrency={setUsesOtherCurrency} installments={installments} validInstallments={validInstallments}
             installmentErrors={installmentErrors} usesSubitems={usesSubitems} subitems={subitems} validSubitems={validSubitems} subitemErrors={subitemErrors}
             currencies={currencies} withholdings={withholdings} hasWithholdings={hasWithholdings} finalAmount={finalAmount}

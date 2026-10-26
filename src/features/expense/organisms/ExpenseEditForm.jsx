@@ -53,7 +53,7 @@ function AccordionSection({active, onToggleActive, icon: Icon, iconColor, label,
 }
 
 function ExpenseEditForm({
-  type, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, isInternationalTrip, fieldErrors, saved,
+  type, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, fieldErrors, saved,
   isInternationalExpense, usesOtherCurrency, setUsesOtherCurrency, installments, validInstallments, installmentErrors,
   usesSubitems, subitems, validSubitems, subitemErrors, currencies, withholdings, hasWithholdings, finalAmount,
   handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange, handleDescriptionChange, handleCategoryChange,
@@ -172,7 +172,7 @@ function ExpenseEditForm({
       <CategorySelector categories={categories} categoryId={categoryId} onChange={handleCategoryChange} error={fieldErrors.category} />
       <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image}
         required={categories.find((category) => category.id_categoria === categoryId)?.requiere_comprobante !== false} />
-      <BackupImagesUpload images={backups} onAdd={handleAddBackup} onRemove={handleRemoveBackup} disabled={saved} allowAdd={isInternationalTrip} />
+      <BackupImagesUpload images={backups} onAdd={handleAddBackup} onRemove={handleRemoveBackup} disabled={saved} allowAdd={isInternationalExpense} />
     </>
   );
 }
