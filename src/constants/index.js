@@ -30,6 +30,8 @@ export const COLORS = {
   overlay: 'rgba(0,0,0,0.4)',
   successBackground: '#d4edda',
   comments: '#f5d6d622',
+  systemReceipt: '#ECE6F7',
+  systemReceiptText: '#5B3FA0',
   // Variantes de "background" (blanco) con transparencia, para usar sobre fondos de color (modales rojos, etc.)
   backgroundOnColorBorder: 'rgba(255,255,255,0.4)',
   backgroundOnColorFill: 'rgba(255,255,255,0.12)',

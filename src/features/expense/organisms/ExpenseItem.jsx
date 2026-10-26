@@ -10,6 +10,7 @@ import useExpenseReceipt from '../hooks/useExpenseReceipt';
 import useExpenseObservations from '../hooks/useExpenseObservations';
 import useExpenseNavigation from '../hooks/useExpenseNavigation';
 import {conversionLabelOf} from '../../../utils/expenseCurrency';
+import {resolveDocumentNumber, documentSources, systemReceiptNote} from '../../../utils/documentNumber';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -43,6 +44,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
     conversions = expense.Gasto_Tramo_Moneda || [];
   }
   const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
+  const documentInfo = resolveDocumentNumber(expense);
   const expenseObservations = observations.filter((observation) => observation.id_gasto === expense.id_gasto);
 
   return (
@@ -58,6 +60,13 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
         {expenseDate && <ExpenseFieldTag icon={Calendar} text={formatDateShort(expenseDate)} color={accentColor} />}
         <ExpenseFieldTag icon={Tag} text={typeLabels[expense.tipo] || expense.tipo} color={accentColor} />
         {expense.Factura?.numero_factura && <ExpenseFieldTag icon={FileText} text={`N° ${expense.Factura.numero_factura}`} color={accentColor} />}
+        {!expense.Factura && documentInfo.source === documentSources.original && <ExpenseFieldTag icon={FileText} text={`Recibo N° ${documentInfo.number}`} color={accentColor} />}
+        {documentInfo.source === documentSources.system && (
+          <span title={systemReceiptNote} style={{...badgeStyle, backgroundColor: COLORS.systemReceipt, color: COLORS.systemReceiptText}}>
+            <FileText size={10} />
+            Recibo N° {documentInfo.number} · Sistema
+          </span>
+        )}
         {expense.Categoria_Gasto?.nombre && expense.Proveedor?.nombre && <ExpenseFieldTag icon={FolderOpen} text={expense.Categoria_Gasto.nombre} color={accentColor} />}
         {docLabel && <span style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter, sans-serif'}}>{docLabel}</span>}
       </div>

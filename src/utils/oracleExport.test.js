@@ -58,8 +58,12 @@ describe('Excel para Oracle', () => {
     expect(alcohol).toMatchObject({codigoImpuesto: 'EMP-SIN-IVA', condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', importeFactura: 144.98, flexfield: 'Lote de Facturas: 900\nContexto: Factura Estándar'});
     expect(alcohol.descripcion.startsWith('R 10-40')).toBe(true);
     expect(buildOracleInvoice(trip, {...fuelInvoice, tipo: 'R'}).values).toMatchObject({condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', codigoImpuesto: 'EMP-SIN-IVA'});
-    expect(buildOracleInvoice(trip, {...lodging, numero_recibo: '0003431', Recibo: [{numero: 1857}]}).values.numeroFactura).toBe('001857');
-    expect(buildOracleInvoice({...trip, Recibo: []}, {...lodging, numero_recibo: '0003431'}).values.numeroFactura).toBe('0003431');
+    const withOriginal = buildOracleInvoice(trip, {...lodging, numero_recibo: '0003431', Recibo: [{numero: 1857}]});
+    expect(withOriginal.values.numeroFactura).toBe('0003431');
+    expect(withOriginal.marked).toEqual([]);
+    const systemOnly = buildOracleInvoice(trip, {...lodging, Recibo: [{numero: 1857}]});
+    expect(systemOnly.values.numeroFactura).toBe('001857');
+    expect(systemOnly.marked).toEqual(['numeroFactura']);
     const international = buildOracleInvoice(trip, {...lodging, es_gasto_internacional: true, monto_total: 50});
     expect(international.values).toMatchObject({divisaFactura: 'USD', importeFactura: 50, grupoRetencion: ''});
     expect(international.missing).toEqual(['numeroFactura']);
@@ -92,13 +96,13 @@ describe('Excel para Oracle', () => {
     const legend = workbook.getWorksheet('LEYENDA ORACLE');
     expect(legend.getCell('A2').value).toContain('1 facturas');
     expect(legend.getCell('A2').value).toContain('2 datos por completar');
-    expect(legend.getCell('B11').value).toEqual({text: 'O2', hyperlink: "#'FACTURAS'!O2"});
-    expect(legend.getCell('D11').value).toContain('número de rendición');
+    expect(legend.getCell('B12').value).toEqual({text: 'O2', hyperlink: "#'FACTURAS'!O2"});
+    expect(legend.getCell('D12').value).toContain('número de rendición');
   });
 
   it('avisa en la leyenda cuando no falta ningún dato', () => {
     const workbook = new ExcelJS.Workbook();
     addOracleSheets(workbook, [{trip, expenses: [fuelInvoice]}]);
-    expect(workbook.getWorksheet('LEYENDA ORACLE').getCell('A10').value).toContain('No falta ningún dato');
+    expect(workbook.getWorksheet('LEYENDA ORACLE').getCell('A11').value).toContain('No falta ningún dato');
   });
 });

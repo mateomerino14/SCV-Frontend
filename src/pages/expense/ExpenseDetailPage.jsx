@@ -18,7 +18,7 @@ import useExpenseDetail from '../hooks/useExpenseDetail';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes, tripPath} from '../../constants/routes';
-import {formatReceiptNumber} from '../../utils/oracleExport';
+import {formatReceiptNumber} from '../../utils/documentNumber';
 import {getExpenseWithholdings, roundCents} from '../../utils/withholdings';
 import {usdCurrency, savedBsRateOf, hasOriginCurrencyLines, conversionLabelOf} from '../../utils/expenseCurrency';
 
@@ -131,8 +131,12 @@ function ExpenseDetailPage() {
           <ExpenseFieldRow icon={Calendar} label="Fecha del Gasto" value={formatLongDate(expense.fecha_gasto)} />
           {expense.Categoria_Gasto && <ExpenseFieldRow icon={Tag} label="Categoría" value={expense.Categoria_Gasto.nombre} />}
           {expense.Proveedor && <ExpenseFieldRow icon={User} label="Proveedor" value={expense.Proveedor.nombre} />}
-          {systemReceipt && <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema" value={formatReceiptNumber(systemReceipt.numero)} />}
-          {expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo original" value={expense.numero_recibo} />}
+          {expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo original (va en la planilla y en Oracle)" value={expense.numero_recibo} />}
+          {systemReceipt && expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema" value={formatReceiptNumber(systemReceipt.numero)} />}
+          {systemReceipt && !expense.numero_recibo && (
+            <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema (no tiene recibo original)" value={formatReceiptNumber(systemReceipt.numero)}
+              iconBg={COLORS.systemReceipt} iconColor={COLORS.systemReceiptText} valueColor={COLORS.systemReceiptText} />
+          )}
           {expense.Proveedor?.numero_doc_fiscal && (
             <ExpenseFieldRow icon={FileText} label={expense.Proveedor.tipo_doc_fiscal || 'Documento'} value={expense.Proveedor.numero_doc_fiscal} />
           )}

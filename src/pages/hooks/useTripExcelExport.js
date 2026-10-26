@@ -6,7 +6,8 @@ import {formatQuantity} from '../../utils/formatQuantity';
 import {oracleAccounts} from '../../constants/oracleAccounts';
 import {MAXAM_LOGO} from '../../constants';
 import {getExpenseTaxValues} from '../../utils/expenseTaxValues';
-import {addOracleSheets, formatReceiptNumber} from '../../utils/oracleExport';
+import {addOracleSheets} from '../../utils/oracleExport';
+import {resolveDocumentNumber, documentSources, systemReceiptNote} from '../../utils/documentNumber';
 import {addListRange} from '../../utils/excelLists';
 import {saveWorkbook} from '../../utils/excelExport';
 import {amountInBsOf, originalAmountLinesOf, summarizeStatement, hasOriginCurrencyLines} from '../../utils/expenseCurrency';
@@ -24,6 +25,8 @@ const thickBorderColor = 'FF1B4F91';
 const totalsLabelEndCol = 3;
 const reimburseFont = 'FF9C0006';
 const originalLineHeight = 14;
+const systemReceiptFill = 'FFE4DFEC';
+const systemReceiptLegend = 'N° DOCUMENTO en lila: número de recibo que asignó el sistema, porque el gasto no tiene recibo original. Sin color: número de la factura o del recibo original.';
 const footerText = '&L&8Sistema de Control de Viáticos&R&8Página &P de &N';
 
 const thinBorder = {
@@ -45,17 +48,6 @@ function quantityText(quantity) {
     return '';
   }
   return ` x${formatQuantity(quantity)}`;
-}
-
-function documentNumberOf(expense) {
-  if (expense.Factura) {
-    return cleanValue(expense.Factura.numero_factura);
-  }
-  const ownReceipt = (expense.Recibo || [])[0];
-  if (ownReceipt) {
-    return formatReceiptNumber(ownReceipt.numero);
-  }
-  return '';
 }
 
 const symbologyRows = [
@@ -365,7 +357,8 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     row.getCell(col.detail).value = detailText;
     row.getCell(col.detail).alignment = {wrapText: true, vertical: 'middle', horizontal: 'left'};
     row.getCell(col.type).value = oracleType;
-    row.getCell(col.document).value = documentNumberOf(expense);
+    const documentInfo = resolveDocumentNumber(expense, trip.Recibo);
+    row.getCell(col.document).value = documentInfo.number;
     row.getCell(col.nit).value = cleanValue(expense.Proveedor?.numero_doc_fiscal);
     if (hasInvoice) {
       row.getCell(col.invoiceAmount).value = amount;
@@ -396,6 +389,10 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       if (column !== col.detail && column !== col.original) {
         cell.alignment = {...(cell.alignment || {}), horizontal: 'center', vertical: 'middle'};
       }
+    }
+    if (documentInfo.source === documentSources.system) {
+      row.getCell(col.document).fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: systemReceiptFill}};
+      row.getCell(col.document).note = systemReceiptNote;
     }
     row.height = Math.max(estimateRowHeight(heightEntries), originalRowHeight(expense));
     if (amountBs !== null) {
@@ -459,7 +456,16 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     currentRow += 1;
   }
   applyOuterBorder(sheet, headerRowNumber, lastTableRow, 1, totalCols);
-  currentRow += 1;
+  const legendCell = sheet.getCell(currentRow, col.document);
+  legendCell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: systemReceiptFill}};
+  legendCell.border = thinBorder;
+  sheet.mergeCells(currentRow, col.document + 1, currentRow, totalCols);
+  const legendTextCell = sheet.getCell(currentRow, col.document + 1);
+  legendTextCell.value = systemReceiptLegend;
+  legendTextCell.font = {italic: true, size: 8};
+  legendTextCell.alignment = {horizontal: 'left', vertical: 'middle', wrapText: true};
+  sheet.getRow(currentRow).height = 24;
+  currentRow += 2;
   const balanceHeaderRow = currentRow;
   const balanceBlocks = [{startCol: 1, endCol: 5, text: 'CONC.'}, {startCol: 6, endCol: 7, text: 'Bs'}];
   if (isInternationalTrip) {

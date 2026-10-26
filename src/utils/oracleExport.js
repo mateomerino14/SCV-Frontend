@@ -2,6 +2,7 @@ import buildTripCode from './tripCode';
 import {addListRanges, columnLetter} from './excelLists';
 import {toOracleExpenseType} from './expenseTypeCode';
 import {getExpenseTaxValues} from './expenseTaxValues';
+import {resolveDocumentNumber, documentSources, systemReceiptNote} from './documentNumber';
 import {oracleDefaults, oracleTaxCodes, oracleTaxLines, oracleWithholdings, oraclePaymentTerms, oracleLists} from '../constants/oracleLists';
 
 const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -14,6 +15,7 @@ const kindStyles = {
   reference: {header: plainHeader, note: 'Referencia del sistema: no es una columna de Oracle'},
 };
 const pendingFill = 'FFFFC7CE';
+const systemReceiptFill = 'FFE4DFEC';
 const pendingFont = 'FF9C0006';
 const missingCode = 'XXX';
 const pendingNote = 'Completar antes de subir a Oracle';
@@ -164,37 +166,6 @@ const getWithholdingType = (expense) => {
   return null;
 };
 
-const receiptNumberDigits = 6;
-
-export const formatReceiptNumber = (number) => String(number).padStart(receiptNumberDigits, '0');
-
-const findReceiptNumber = (trip, expense) => {
-  const own = (expense.Recibo || [])[0];
-  if (own) {
-    return formatReceiptNumber(own.numero);
-  }
-  const grouped = (trip.Recibo || []).find((receipt) => !receipt.id_gasto && receipt.tipo === expense.tipo && !!receipt.es_gasto_internacional === !!expense.es_gasto_internacional);
-  if (grouped) {
-    return formatReceiptNumber(grouped.numero);
-  }
-  return '';
-};
-
-const getDocumentNumber = (trip, expense) => {
-  const invoiceNumber = expense.Factura?.numero_factura;
-  if (expense.Factura) {
-    if (!invoiceNumber || invoiceNumber === 'No Especificado') {
-      return '';
-    }
-    return invoiceNumber;
-  }
-  const systemNumber = findReceiptNumber(trip, expense);
-  if (systemNumber) {
-    return systemNumber;
-  }
-  return expense.numero_recibo || '';
-};
-
 const buildFlexfield = (isVatInvoice, cuf) => {
   const {invoiceBatch, context, controlCode, bolInvoiceType} = oracleDefaults;
   if (isVatInvoice) {
@@ -274,7 +245,8 @@ export function buildOracleInvoice(trip, expense) {
   }
   const invoiceDate = formatOracleDate(documentDate(expense));
   const description = buildOracleDescription(trip, expense);
-  const documentNumber = getDocumentNumber(trip, expense);
+  const documentInfo = resolveDocumentNumber(expense, trip.Recibo);
+  const documentNumber = documentInfo.number;
   const values = {
     ...emptyRow(invoiceColumns),
     tipo: oracleDefaults.invoiceType,
@@ -303,8 +275,12 @@ export function buildOracleInvoice(trip, expense) {
   if (isVatInvoice && !expense.Factura?.cuf) {
     missing.push('flexfield');
   }
+  const marked = [];
+  if (documentInfo.source === documentSources.system) {
+    marked.push('numeroFactura');
+  }
   const lines = buildLines({trip, expense, description, taxCode, articleAmount: roundAmount(invoiceAmount - vat), vat, withholding, tax});
-  return {values, missing, lines};
+  return {values, missing, marked, lines};
 }
 
 const solidFill = (argb) => ({type: 'pattern', pattern: 'solid', fgColor: {argb}});
@@ -360,6 +336,11 @@ const styleCell = (cell, column, row) => {
     cell.fill = solidFill(pendingFill);
     cell.font = {...baseFont, bold: true, color: {argb: pendingFont}};
     cell.note = pendingNotes[column.key] || pendingNote;
+    return;
+  }
+  if ((row.marked || []).includes(column.key)) {
+    cell.fill = solidFill(systemReceiptFill);
+    cell.note = systemReceiptNote;
     return;
   }
   if (row.auto && column.kind === 'system') {
@@ -449,6 +430,7 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
 const legendRows = [
   ['Blanco', 'Datos listos para Oracle: los pone el sistema o son valores fijos. La nota de cada encabezado dice cuál.', null],
   ['Celeste', 'Lo llena Oracle al subir la factura, así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.cell],
+  ['Lila', 'Nº de recibo que asignó el sistema, porque el gasto sin factura no tiene recibo original. Si lo tiene, va el número original, sin color.', systemReceiptFill],
   ['Rojo', 'Falta un dato que el sistema no tiene; lo que falta aparece como XXX o vacío (CUF, número de recibo, códigos de Oracle de la cuenta, número de rendición). Completar antes de subir.', pendingFill],
 ];
 
@@ -539,7 +521,7 @@ export function buildOracleRows(statements) {
   statements.forEach(({trip, expenses}) => {
     expenses.forEach((expense) => {
       const invoice = buildOracleInvoice(trip, expense);
-      invoices.push({values: invoice.values, missing: invoice.missing});
+      invoices.push({values: invoice.values, missing: invoice.missing, marked: invoice.marked});
       const invoiceRow = invoices.length + 1;
       invoice.lines.forEach((line) => lines.push({...line, values: {...line.values, filaFactura: invoiceRow}}));
     });
