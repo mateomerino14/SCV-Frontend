@@ -15,8 +15,8 @@ const styles = {
   addLabel: "text-xs font-bold font-inter text-center px-2",
 };
 
-function BackupImagesUpload({images, onAdd, onRemove, max = 2, disabled = false}) {
-  const canAdd = !disabled && images.length < max;
+function BackupImagesUpload({images, onAdd, onRemove, max = 2, disabled = false, allowAdd = true}) {
+  const canAdd = !disabled && allowAdd && images.length < max;
   const handleInput = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -24,7 +24,7 @@ function BackupImagesUpload({images, onAdd, onRemove, max = 2, disabled = false}
       event.target.value = '';
     }
   };
-  if (disabled && images.length === 0) {
+  if ((disabled || !allowAdd) && images.length === 0) {
     return null;
   }
   return (

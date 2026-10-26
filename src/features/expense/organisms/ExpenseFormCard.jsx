@@ -64,7 +64,7 @@ function AccordionSection({active, expanded, onToggleActive, onToggleExpanded, i
 }
 
 function ExpenseFormCard({
-  item, index, expanded, onSelect, onRemove, onDuplicate, canRemove, categories, isInternationalExpense, currencies,
+  item, index, expanded, onSelect, onRemove, onDuplicate, canRemove, categories, isInternationalExpense, isInternationalTrip, currencies,
   finalAmount, withholdings, hasWithholdings,
   onTypeChange, onDateChange, onSupplierChange, onReceiptNumberChange, onAmountChange, onDescriptionChange, onCategoryChange,
   onImageChange, onRemoveImage, onAddBackup, onRemoveBackup,
@@ -210,7 +210,9 @@ function ExpenseFormCard({
             error={item.fieldErrors.category} disabled={item.saved} />
           <ReceiptUpload previewImage={item.imagePreview} onChange={(file) => onImageChange(item.id, file)}
             onRemove={() => onRemoveImage(item.id)} error={item.fieldErrors.image} disabled={item.saved} required={receiptRequired} />
-          <BackupImagesUpload images={item.backups} onAdd={(file) => onAddBackup(item.id, file)} onRemove={(backupId) => onRemoveBackup(item.id, backupId)} disabled={item.saved} />
+          {isInternationalTrip && (
+            <BackupImagesUpload images={item.backups} onAdd={(file) => onAddBackup(item.id, file)} onRemove={(backupId) => onRemoveBackup(item.id, backupId)} disabled={item.saved} />
+          )}
         </div>
       )}
     </div>

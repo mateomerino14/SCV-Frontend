@@ -54,6 +54,7 @@ function useEditExpense(expenseId) {
   const [saved, setSaved] = useState(false);
   const [tripId, setTripId] = useState(null);
   const [tripDateRange, setTripDateRange] = useState({start: null, end: null});
+  const [isInternationalTrip, setIsInternationalTrip] = useState(false);
   const [usesOtherCurrency, setUsesOtherCurrency] = useState(false);
   const [installments, setInstallments] = useState([newInstallment()]);
   const [installmentErrors, setInstallmentErrors] = useState({});
@@ -80,6 +81,7 @@ function useEditExpense(expenseId) {
       setCategoryId(expenseData.id_categoria || null);
       setTripId(expenseData.id_viaje || null);
       setTripDateRange({start: expenseData.Viaje?.fecha_inicio || null, end: expenseData.Viaje?.fecha_fin || null});
+      setIsInternationalTrip(expenseData.Viaje?.tipo === 'Internacional');
       setAmount(parseFloat(expenseData.monto_total || 0).toString());
       const savedInstallments = expenseData.Gasto_Tramo_Moneda || [];
       if (savedInstallments.length > 0) {
@@ -463,7 +465,7 @@ function useEditExpense(expenseId) {
     type, setType,
     date, supplier, receiptNumber, amount, description,
     categoryId, categories,
-    imagePreview, backups, loading, loadingData,
+    imagePreview, backups, isInternationalTrip, loading, loadingData,
     error, fieldErrors, saved, tripId,
     isInternationalExpense,
     usesOtherCurrency, setUsesOtherCurrency,

@@ -31,7 +31,7 @@ function RegisterExpensePage() {
   const fechaFin = location.state?.fechaFin;
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    items, expandedId, categories, isInternationalExpense, savingAll, saveSummary,
+    items, expandedId, categories, isInternationalExpense, isInternational, savingAll, saveSummary,
     hasRequiresAuthorization, allSaved, pendingToSave, currencies,
     finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
@@ -64,7 +64,7 @@ function RegisterExpensePage() {
         {items.map((item, index) => (
           <ExpenseFormCard key={item.id} item={item} index={index} expanded={expandedId === item.id} onSelect={handleSelectItem}
             onRemove={handleRemoveItem} onDuplicate={handleDuplicateItem} canRemove={items.length > 1} categories={categories}
-            isInternationalExpense={isInternationalExpense} currencies={currencies} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
+            isInternationalExpense={isInternationalExpense} isInternationalTrip={isInternational} currencies={currencies} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
             onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onReceiptNumberChange={handleReceiptNumberChange} onAmountChange={handleAmountChange}
             onDescriptionChange={handleDescriptionChange} onCategoryChange={handleCategoryChange} onImageChange={handleImageChange} onRemoveImage={handleRemoveImage}
             onAddBackup={handleAddBackup} onRemoveBackup={handleRemoveBackup}
