@@ -18,8 +18,8 @@ const registerWithBackups = async (tripId) => {
   return (await response.json()).gasto.id_gasto;
 };
 
-test('el empleado quita y agrega respaldos de un gasto sin factura @celular', async ({page}) => {
-  const {tripId} = await createFundedTrip();
+test('en un viaje internacional el empleado quita y agrega respaldos de un gasto sin factura @celular', async ({page}) => {
+  const {tripId} = await createFundedTrip({tipo: 'Internacional'});
   const expenseId = await registerWithBackups(tripId);
   await loginInBrowser(page, 'juan.empleado');
   await page.goto(`/dashboard/empleado/gasto/${expenseId}/editar-gasto`);
@@ -35,4 +35,12 @@ test('el empleado quita y agrega respaldos de un gasto sin factura @celular', as
   await page.goto(`/dashboard/empleado/gasto/${expenseId}`);
   await expect(page.locator('img[alt^="respaldo"]:visible')).toHaveCount(2);
   await expect(page.locator(`img[src="${removedUrl}"]`)).toHaveCount(0);
+});
+
+test('en un viaje nacional el gasto no pide respaldos', async ({page}) => {
+  const {tripId} = await createFundedTrip();
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto(`/dashboard/empleado/viaje/${tripId}/registrar-gasto`);
+  await expect(page.getByText('Comprobante').first()).toBeVisible();
+  await expect(page.getByText('Respaldos (máx. 2)')).toHaveCount(0);
 });
