@@ -2,7 +2,7 @@ import {Trash2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import ExpenseField from '../atoms/ExpenseField';
 import useInvoiceDetailPanel from '../../../hooks/expense/useInvoiceDetailPanel';
-import {formatQuantity} from '../../../utils/formatQuantity';
+import {formatQuantity, formatUnitPrice} from '../../../utils/formatQuantity';
 
 const styles = {
   wrapper: "mt-4 shadow-md p-5 rounded-xl",
@@ -28,7 +28,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
   const hasManyItems = detail.length > 9;
   const {item, selectedIndex, fieldErrors, handleSelectRow, handleFieldChange, handleAdd, handleModify} = useInvoiceDetailPanel(detail, onAdd, onRemove);
   const handleInputChange = (key, value) => {
-    if (key === 'precio' && value !== '' && !/^\d{0,8}(\.\d{0,2})?$/.test(value)) {
+    if (key === 'precio' && value !== '' && !/^\d{0,8}([.,]\d{0,4})?$/.test(value)) {
       return;
     }
     if (key === 'cantidad' && value !== '' && !/^\d{0,6}([.,]\d{0,3})?$/.test(value)) {
@@ -54,7 +54,7 @@ function InvoiceDetailPanel({detail, onAdd, onRemove, saved = false, error}) {
               style={{borderColor: COLORS.dataFields, backgroundColor: selectedIndex === index ? COLORS.backgroundHeader : 'transparent', cursor: saved ? 'default' : 'pointer', ...gridColumns}}>
               <span className="px-1 text-left" style={{color: COLORS.text}}>{row.nombre_producto}</span>
               <span style={{color: COLORS.text}}>{formatQuantity(row.cantidad)}</span>
-              <span style={{color: COLORS.text}}>{parseFloat(row.precio).toFixed(2)} Bs</span>
+              <span style={{color: COLORS.text}}>{formatUnitPrice(row.precio)} Bs</span>
               <div className={styles.iconWrapper}>
                 {!saved && <Trash2 size={14} style={{color: COLORS.secondary, cursor: 'pointer'}} onClick={(event) => {event.stopPropagation(); onRemove(index);}} />}
               </div>

@@ -27,4 +27,22 @@ describe('useInvoiceDetailPanel', () => {
     });
     expect(result.current.item.cantidad).toBe('1.255');
   });
+
+  it('acepta un precio unitario con hasta 4 decimales', () => {
+    const onAdd = vi.fn();
+    const {result} = renderHook(() => useInvoiceDetailPanel([], onAdd, vi.fn()));
+    act(() => {
+      result.current.handleFieldChange('nombre_producto', 'Gasolina');
+      result.current.handleFieldChange('cantidad', '40');
+      result.current.handleFieldChange('precio', '3,7456');
+    });
+    act(() => {
+      result.current.handleFieldChange('precio', '3.74567');
+    });
+    expect(result.current.item.precio).toBe('3.7456');
+    act(() => {
+      result.current.handleAdd();
+    });
+    expect(onAdd).toHaveBeenCalledWith({nombre_producto: 'Gasolina', precio: 3.7456, cantidad: 40});
+  });
 });

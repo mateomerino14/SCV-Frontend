@@ -1,5 +1,7 @@
 import {useState} from 'react';
 
+const maxPriceDecimals = 4;
+
 function useInvoiceDetailPanel(detail, onAdd, onRemove) {
   const [item, setItem] = useState({nombre_producto: '', precio: '', cantidad: 1});
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -22,7 +24,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
       if (parts.length > 2) {
         return;
       }
-      if (parts.length === 2 && parts[1].length > 2) {
+      if (parts.length === 2 && parts[1].length > maxPriceDecimals) {
         return;
       }
       setItem((prev) => ({...prev, [key]: validDecimal}));
@@ -72,7 +74,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     }
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
-      precio: parseFloat(parseFloat(item.precio).toFixed(2)),
+      precio: parseFloat(parseFloat(item.precio).toFixed(maxPriceDecimals)),
       cantidad: parseFloat(parseFloat(item.cantidad).toFixed(3)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
@@ -92,7 +94,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     onRemove(selectedIndex);
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
-      precio: parseFloat(parseFloat(item.precio).toFixed(2)),
+      precio: parseFloat(parseFloat(item.precio).toFixed(maxPriceDecimals)),
       cantidad: parseFloat(parseFloat(item.cantidad).toFixed(3)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
