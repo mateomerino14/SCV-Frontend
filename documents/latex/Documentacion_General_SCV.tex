@@ -162,7 +162,7 @@ Fecha: & Octubre de 2026 \\
   \item Se aplican retenciones impositivas automáticas según el tipo de comprobante, conforme a la normativa tributaria boliviana.
   \item Existe un plazo de tolerancia de cuatro días posteriores a la finalización del viaje para completar la carga de gastos. Vencido ese plazo, se debe solicitar una ampliación al revisor.
   \item El empleado puede pedir que otra persona de su sección rinda los gastos de su viaje en su nombre.
-  \item En los gastos sin factura, nacionales o internacionales, se puede anotar el número impreso del recibo en papel, si lo tiene, y adjuntar hasta dos respaldos además del comprobante, por ejemplo el comprobante del cambio de moneda; los revisores los ven en el detalle del gasto.
+  \item En los gastos sin factura se puede anotar el número impreso del recibo en papel, si lo tiene. Solo en los viajes internacionales se pueden adjuntar, además del comprobante, hasta dos respaldos para el comprobante del cambio de moneda; los revisores los ven en el detalle del gasto. En los viajes nacionales, con o sin factura, no se piden respaldos.
   \item El sistema exporta la rendición en Excel, replicando el formato institucional de la planilla de rendición de cuentas y, en el mismo archivo, las hojas FACTURAS y LINEAS con el formato que contabilidad sube a Oracle, también de varios viajes a la vez para el revisor, el tesorero y el administrador; genera en PDF el memorándum, la confirmación de fondos, los recibos y la rendición final. El administrador puede exportar además a Excel el resumen general, los usuarios, los cargos y las secciones, e importar usuarios desde una plantilla de Excel: el sistema revisa cada fila (repetidos, cargos y jefes que no existen, etc.) y solo crea las correctas.
 \end{enumerate}
 
@@ -956,7 +956,7 @@ Comprobante adjunto a un gasto.
 \end{itemize}
 
 \subsubsection{Imagen\_Respaldo}
-Respaldos extra de un gasto sin factura (hasta 2), por ejemplo el comprobante del cambio de moneda.
+Respaldos extra de un gasto sin factura de un viaje internacional (hasta 2), para el comprobante del cambio de moneda.
 \begin{itemize}
   \campo{id_respaldo}{Identificador único}{SERIAL, clave primaria}
   \campo{url_archivo}{URL del archivo}{TEXT}
