@@ -199,6 +199,16 @@ Los demás tonos de estado y acentos (`successStrong`, `neutralBackground`, `inf
 
 Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
+**Botones.** Los botones con texto no llevan icono; los que solo tienen icono (volver, ver, editar o borrar en una fila, quitar un subgasto con el basurero) sí lo llevan, con `aria-label`. Quitar algo con un botón de solo icono usa siempre el basurero (`Trash2`).
+
+**Fechas.** Todas las fechas se eligen con `DatePickerInput` (`components/ui`, con `useDatePicker` y `utils/calendar.js`): abre una ventana con cabecera granate y la fecha elegida en grande, semana de lunes a domingo, hoy con anillo, los días fuera de `min`/`max` en gris y, con `rangeStart`/`rangeEnd`, los días del viaje como una franja; se confirma con Aceptar, y en los filtros (`clearable`) se puede borrar. Lo usan el registro y la edición de gastos y facturas, la creación y edición de viajes y los filtros por periodo.
+
+**Horas de los recordatorios.** `ReminderTimesPicker` muestra una cuadrícula de horas frecuentes (07:00 a 22:00) que se marcan o quitan con un toque, hasta 4, y «+ Otra hora» para elegir hora y minutos (de 5 en 5).
+
+**Barra de desplazamiento.** Una sola en toda la app (`index.css`): 10 px, granate a media transparencia sobre un carril gris cálido, granate pleno al pasar el mouse; en las ventanas granates se usa la variante `scroll-on-color`.
+
+**Formularios de gasto.** La moneda (`ForeignCurrencyFields`) y los subgastos (`ToggleSection` con `SubitemsEditor`) van en tarjetas blancas con borde gris y un encabezado con icono; cada subgasto es una fila con descripción, monto y el basurero para quitarlo, y al final el total.
+
 **Estados de viaje.** Cada estado tiene un solo nombre (`constants/tripStatusLabels.js`) y un solo par de colores (`constants/tripStatusColors.js`) en todas las pantallas y roles. Los avisos de confirmación o rechazo usan el color del estado en que queda el viaje. La única excepción es "En Curso" en las pantallas del empleado, que usa el rojo institucional porque marca su viaje activo.
 
 ## Funcionalidades destacadas
