@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {extractInvoice, saveInvoice} from '../../services/expense/invoiceService';
 import {getCategories} from '../../services/expense/expenseService';
 import {compressImage} from '../../utils/imageCompressor';
@@ -18,11 +18,20 @@ const clearFieldErrors = (invoice, fields) => {
   return {fieldErrors, saveError};
 };
 
+const positionOf = (invoices, id) => {
+  const position = invoices.findIndex((invoice) => invoice.id === id);
+  if (position === -1) {
+    return null;
+  }
+  return position;
+};
+
 function useUploadInvoice(tripId) {
   const [invoices, setInvoices] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(null);
-  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [currentId, setCurrentId] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
+  const lastInvoiceId = useRef(0);
   const [savingAll, setSavingAll] = useState(false);
   const [error, setError] = useState('');
   const [saveSummary, setSaveSummary] = useState(null);
@@ -39,6 +48,22 @@ function useUploadInvoice(tripId) {
     loadCategories();
   }, []);
 
+  const createInvoiceId = () => {
+    lastInvoiceId.current += 1;
+    return lastInvoiceId.current;
+  };
+
+  const idAt = (index) => invoices[index]?.id ?? null;
+
+  const updateInvoice = (id, update) => {
+    setInvoices((prev) => prev.map((invoice) => {
+      if (invoice.id !== id) {
+        return invoice;
+      }
+      return update(invoice);
+    }));
+  };
+
   const showError = (message) => {
     setError(message);
     setTimeout(() => setError(''), 3000);
@@ -47,6 +72,7 @@ function useUploadInvoice(tripId) {
   const handleAddFiles = async (files) => {
     const compressedFiles = await Promise.all(Array.from(files).map((file) => compressImage(file)));
     const newInvoices = compressedFiles.map((file) => ({
+      id: createInvoiceId(),
       file,
       name: file.name,
       preview: URL.createObjectURL(file),
@@ -61,50 +87,30 @@ function useUploadInvoice(tripId) {
       manual: false,
     }));
 
-    let baseIndex = 0;
-    setInvoices((prev) => {
-      baseIndex = prev.length;
-      return [...prev, ...newInvoices];
-    });
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    for (let i = 0; i < newInvoices.length; i++) {
-      const index = baseIndex + i;
-      const data = await extractInvoice(newInvoices[i].file);
-      setInvoices((prev) =>
-        prev.map((invoice, idx) => {
-          if (idx !== index) {
-            return invoice;
-          }
-          let invoiceData = null;
-          if (!data.error) {
-            invoiceData = {...data, id_categoria_gasto: null};
-          }
-          return {
-            ...invoice,
-            loading: false,
-            data: invoiceData,
-            error: data.error || null,
-            manuallyModified: false,
-          };
-        })
-      );
-      setCurrentIndex((prevIndex) => {
-        if (prevIndex === null && !data.error) {
-          return index;
-        }
-        return prevIndex;
-      });
-      setExpandedIndex((prevExpanded) => {
-        if (prevExpanded === null && !data.error) {
-          return index;
-        }
-        return prevExpanded;
-      });
+    setInvoices((prev) => [...prev, ...newInvoices]);
+    for (const newInvoice of newInvoices) {
+      const data = await extractInvoice(newInvoice.file);
+      let invoiceData = null;
+      if (!data.error) {
+        invoiceData = {...data, id_categoria_gasto: null};
+      }
+      updateInvoice(newInvoice.id, (invoice) => ({
+        ...invoice,
+        loading: false,
+        data: invoiceData,
+        error: data.error || null,
+        manuallyModified: false,
+      }));
+      if (!data.error) {
+        setCurrentId((previous) => previous ?? newInvoice.id);
+        setExpandedId((previous) => previous ?? newInvoice.id);
+      }
     }
   };
 
   const handleAddManual = () => {
     const newInvoice = {
+      id: createInvoiceId(),
       file: null,
       name: 'Factura Manual',
       preview: null,
@@ -131,24 +137,20 @@ function useUploadInvoice(tripId) {
       manual: true,
     };
 
-    setInvoices((prev) => {
-      const newIndex = prev.length;
-      setTimeout(() => {
-        setCurrentIndex(newIndex);
-        setExpandedIndex(newIndex);
-      }, 0);
-      return [...prev, newInvoice];
-    });
+    setInvoices((prev) => [...prev, newInvoice]);
+    setCurrentId(newInvoice.id);
+    setExpandedId(newInvoice.id);
   };
 
   const handleSelectInvoice = (index) => {
-    setExpandedIndex((prev) => {
-      if (prev === index) {
+    const id = idAt(index);
+    setExpandedId((previous) => {
+      if (previous === id) {
         return null;
       }
-      return index;
+      return id;
     });
-    setCurrentIndex(index);
+    setCurrentId(id);
   };
 
   const handleRequestDelete = (index) => {
@@ -161,12 +163,13 @@ function useUploadInvoice(tripId) {
     if (invoiceToDelete?.preview) {
       URL.revokeObjectURL(invoiceToDelete.preview);
     }
-    setInvoices((prev) => prev.filter((_, i) => i !== indexToDelete));
-    if (currentIndex === indexToDelete) {
-      setCurrentIndex(null);
+    const deletedId = invoiceToDelete?.id;
+    setInvoices((prev) => prev.filter((invoice) => invoice.id !== deletedId));
+    if (currentId === deletedId) {
+      setCurrentId(null);
     }
-    if (expandedIndex === indexToDelete) {
-      setExpandedIndex(null);
+    if (expandedId === deletedId) {
+      setExpandedId(null);
     }
     setShowDeleteModal(false);
     setIndexToDelete(null);
@@ -181,84 +184,61 @@ function useUploadInvoice(tripId) {
     if (index === null || index === undefined) {
       return;
     }
-    setInvoices((prev) =>
-      prev.map((invoice, i) => {
-        if (i !== index) {
-          return invoice;
-        }
-        let manuallyModified = invoice.manuallyModified;
-        if (!silent) {
-          manuallyModified = true;
-        }
-        return {
-          ...invoice,
-          data: {...invoice.data, [field]: value},
-          ...clearFieldErrors(invoice, [field]),
-          manuallyModified,
-        };
-      })
-    );
+    updateInvoice(idAt(index), (invoice) => {
+      let manuallyModified = invoice.manuallyModified;
+      if (!silent) {
+        manuallyModified = true;
+      }
+      return {
+        ...invoice,
+        data: {...invoice.data, [field]: value},
+        ...clearFieldErrors(invoice, [field]),
+        manuallyModified,
+      };
+    });
   };
 
   const handleManualImageChange = async (file, index) => {
     if (!file) {
       return;
     }
+    const id = idAt(index);
     const compressed = await compressImage(file);
-    setInvoices((prev) =>
-      prev.map((invoice, i) => {
-        if (i !== index) {
-          return invoice;
-        }
-        if (invoice.preview) {
-          URL.revokeObjectURL(invoice.preview);
-        }
-        return {
-          ...invoice,
-          file: compressed,
-          preview: URL.createObjectURL(compressed),
-          name: compressed.name,
-          ...clearFieldErrors(invoice, ['image']),
-        };
-      })
-    );
+    updateInvoice(id, (invoice) => {
+      if (invoice.preview) {
+        URL.revokeObjectURL(invoice.preview);
+      }
+      return {
+        ...invoice,
+        file: compressed,
+        preview: URL.createObjectURL(compressed),
+        name: compressed.name,
+        ...clearFieldErrors(invoice, ['image']),
+      };
+    });
   };
 
   const handleAddDetail = (index, item) => {
     if (index === null || index === undefined) {
       return;
     }
-    setInvoices((prev) =>
-      prev.map((invoice, i) => {
-        if (i !== index) {
-          return invoice;
-        }
-        return {
-          ...invoice,
-          data: {...invoice.data, detalle: [...(invoice.data.detalle || []), item]},
-          ...clearFieldErrors(invoice, ['detalle']),
-          manuallyModified: true,
-        };
-      })
-    );
+    updateInvoice(idAt(index), (invoice) => ({
+      ...invoice,
+      data: {...invoice.data, detalle: [...(invoice.data.detalle || []), item]},
+      ...clearFieldErrors(invoice, ['detalle']),
+      manuallyModified: true,
+    }));
   };
 
   const handleRemoveDetail = (index, detailIndex) => {
     if (index === null || index === undefined) {
       return;
     }
-    setInvoices((prev) =>
-      prev.map((invoice, i) => {
-        if (i !== index) {
-          return invoice;
-        }
-        return {
-          ...invoice,
-          data: {...invoice.data, detalle: invoice.data.detalle.filter((_, j) => j !== detailIndex)},
-          manuallyModified: true,
-        };
-      })
-    );
+    updateInvoice(idAt(index), (invoice) => ({
+      ...invoice,
+      data: {...invoice.data, detalle: invoice.data.detalle.filter((_, j) => j !== detailIndex)},
+      manuallyModified: true,
+    }));
   };
 
   const validateInvoice = (invoice) => {
@@ -297,21 +277,13 @@ function useUploadInvoice(tripId) {
     setSaveSummary(null);
     let totalSaved = 0;
     let totalFailed = 0;
-    for (let i = 0; i < invoices.length; i++) {
-      const invoice = invoices[i];
+    for (const invoice of invoices) {
       if (!invoice.data || invoice.loading || invoice.saved) {
         continue;
       }
       const errors = validateInvoice(invoice);
       if (Object.keys(errors).length > 0) {
-        setInvoices((prev) =>
-          prev.map((current, idx) => {
-            if (idx === i) {
-              return {...current, fieldErrors: errors, saveError: validationSaveError};
-            }
-            return current;
-          })
-        );
+        updateInvoice(invoice.id, (current) => ({...current, fieldErrors: errors, saveError: validationSaveError}));
         totalFailed++;
         continue;
       }
@@ -325,31 +297,19 @@ function useUploadInvoice(tripId) {
       );
       if (data.error) {
         totalFailed++;
-        setInvoices((prev) =>
-          prev.map((current, idx) => {
-            if (idx === i) {
-              return {...current, saveError: data.error, requiresAuthorization: !!data.requiereAutorizacion};
-            }
-            return current;
-          })
-        );
+        updateInvoice(invoice.id, (current) => ({...current, saveError: data.error, requiresAuthorization: !!data.requiereAutorizacion}));
       }
       else {
         totalSaved++;
-        setInvoices((prev) =>
-          prev.map((current, idx) => {
-            if (idx === i) {
-              return {...current, saved: true, saveError: null, requiresAuthorization: false, fieldErrors: {}};
-            }
-            return current;
-          })
-        );
+        updateInvoice(invoice.id, (current) => ({...current, saved: true, saveError: null, requiresAuthorization: false, fieldErrors: {}}));
       }
     }
     setSavingAll(false);
     setSaveSummary({saved: totalSaved, failed: totalFailed});
   };
 
+  const currentIndex = positionOf(invoices, currentId);
+  const expandedIndex = positionOf(invoices, expandedId);
   let currentInvoice = null;
   if (currentIndex !== null) {
     currentInvoice = invoices[currentIndex];
