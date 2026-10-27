@@ -50,12 +50,12 @@ function useReminderSettings() {
     });
   };
 
-  const addTime = () => {
-    if (!newTime) {
+  const addTime = (time = newTime) => {
+    if (!time) {
       setResult({success: false, message: 'Elige una hora para agregarla.'});
       return;
     }
-    if (schedule.horas.includes(newTime)) {
+    if (schedule.horas.includes(time)) {
       setResult({success: false, message: 'Esa hora ya está en la lista.'});
       return;
     }
@@ -63,11 +63,20 @@ function useReminderSettings() {
       setResult({success: false, message: `Puedes programar como máximo ${maxTimes} envíos por día.`});
       return;
     }
-    setSchedule((prev) => ({...prev, horas: [...prev.horas, newTime].sort()}));
+    setSchedule((prev) => ({...prev, horas: [...prev.horas, time].sort()}));
     setNewTime('');
   };
 
   const removeTime = (time) => setSchedule((prev) => ({...prev, horas: prev.horas.filter((current) => current !== time)}));
+
+  const toggleTime = (time) => {
+    if (schedule.horas.includes(time)) {
+      removeTime(time);
+    }
+    else {
+      addTime(time);
+    }
+  };
 
   const hasChanges = JSON.stringify(schedule) !== JSON.stringify(savedSchedule);
 
@@ -130,7 +139,7 @@ function useReminderSettings() {
 
   return {
     schedule, lastUpdate, loading, saving, loadError, hasChanges, maxTimes,
-    newTime, setNewTime, toggleActive, toggleDay, addTime, removeTime, save, discardChanges,
+    newTime, setNewTime, toggleActive, toggleDay, addTime, removeTime, toggleTime, save, discardChanges,
     preview, loadingPreview, loadPreview, closePreview: () => setPreview(null),
     sending, confirmSend, openConfirmSend: () => setConfirmSend(true), closeConfirmSend: () => setConfirmSend(false), sendNow,
     result, closeResult: () => setResult(null),

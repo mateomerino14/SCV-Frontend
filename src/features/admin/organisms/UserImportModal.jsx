@@ -1,5 +1,5 @@
 import {motion, AnimatePresence} from 'framer-motion';
-import {FileSpreadsheet, Download, Upload, CheckCircle, AlertCircle} from 'lucide-react';
+import {FileSpreadsheet, CheckCircle, AlertCircle} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
 import ModalActions from '../../../components/ui/ModalActions';
 import InlineAlert from '../../../components/ui/InlineAlert';
@@ -134,7 +134,6 @@ function UserImportModal({isOpen, onClose, fileName, preview, result, error, val
                     <p className={styles.stepText} style={{color: COLORS.labels}}>Trae las listas de cargos, secciones y roles del sistema.</p>
                     <button type="button" className={styles.stepButton} onClick={onDownloadTemplate} disabled={downloading}
                       style={{backgroundColor: COLORS.background, color: COLORS.primary, border: `2px solid ${COLORS.primary}`, opacity: downloading ? 0.6 : 1}}>
-                      <Download size={16} />
                       {downloading ? 'Descargando...' : 'Descargar plantilla'}
                     </button>
                   </div>
@@ -142,7 +141,6 @@ function UserImportModal({isOpen, onClose, fileName, preview, result, error, val
                     <p className={styles.stepTitle} style={{color: COLORS.text}}>2. Sube el archivo lleno</p>
                     <p className={styles.stepText} style={{color: COLORS.labels}}>Excel (.xlsx), hasta 500 personas.</p>
                     <label className={styles.stepButton} style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: checking || importing ? 0.6 : 1}}>
-                      <Upload size={16} />
                       {fileLabel}
                       <input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="hidden" onChange={handleInput} disabled={checking || importing} />
                     </label>

@@ -1,5 +1,6 @@
-import {BellRing, Plus, X} from 'lucide-react';
+import {BellRing} from 'lucide-react';
 import ConfigToggle from '../../user/atoms/ConfigToggle';
+import ReminderTimesPicker from '../molecules/ReminderTimesPicker';
 import {COLORS} from '../../../constants';
 
 const styles = {
@@ -9,13 +10,6 @@ const styles = {
   label: 'text-xs font-inter uppercase mb-2',
   daysRow: 'grid grid-cols-7 gap-1.5',
   dayBtn: 'py-2 rounded-xl text-xs font-bold font-nunito cursor-pointer border transition-colors text-center',
-  timesRow: 'flex flex-wrap gap-2',
-  timeChip: 'flex items-center gap-1.5 pl-3 pr-1.5 py-1.5 rounded-full text-sm font-bold font-inter',
-  removeBtn: 'w-6 h-6 rounded-full flex items-center justify-center cursor-pointer',
-  addRow: 'flex gap-2 mt-3',
-  timeInput: 'flex-1 rounded-xl px-3 py-2 text-sm font-inter outline-none border',
-  addBtn: 'flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-bold font-nunito cursor-pointer',
-  hint: 'text-xs font-inter mt-2',
   summary: 'text-sm font-inter rounded-xl px-3 py-2.5 mt-4 text-center',
 };
 
@@ -51,7 +45,7 @@ function describeTimes(times) {
   return `a las ${times.slice(0, -1).join(', ')} y ${times[times.length - 1]}`;
 }
 
-function ReminderScheduleCard({schedule, maxTimes, newTime, setNewTime, onToggleActive, onToggleDay, onAddTime, onRemoveTime}) {
+function ReminderScheduleCard({schedule, maxTimes, newTime, setNewTime, onToggleActive, onToggleDay, onAddTime, onToggleTime}) {
   const disabled = !schedule.activo;
   let summary = 'Los recordatorios están desactivados: no se enviará ningún resumen automático.';
   if (schedule.activo && schedule.dias.length > 0 && schedule.horas.length > 0) {
@@ -83,30 +77,7 @@ function ReminderScheduleCard({schedule, maxTimes, newTime, setNewTime, onToggle
         </div>
 
         <div className={styles.block}>
-          <p className={styles.label} style={{color: COLORS.labels}}>Horas de envío</p>
-          <div className={styles.timesRow}>
-            {schedule.horas.map((time) => (
-              <span key={time} className={styles.timeChip} style={{backgroundColor: COLORS.backgroundHeader, color: COLORS.title}}>
-                {time}
-                <span className={styles.removeBtn} role="button" aria-label={`Quitar ${time}`} onClick={() => onRemoveTime(time)}
-                  style={{backgroundColor: COLORS.dataFields}}>
-                  <X size={13} style={{color: COLORS.title}} />
-                </span>
-              </span>
-            ))}
-            {schedule.horas.length === 0 && <p className="text-sm font-inter" style={{color: COLORS.labels}}>Sin horas programadas</p>}
-          </div>
-          {schedule.horas.length < maxTimes && (
-            <div className={styles.addRow}>
-              <input type="time" className={styles.timeInput} value={newTime} onChange={(event) => setNewTime(event.target.value)}
-                style={{borderColor: COLORS.dataFields, color: COLORS.text}} />
-              <button type="button" className={styles.addBtn} onClick={onAddTime} style={{backgroundColor: COLORS.backgroundHeader, color: COLORS.primary}}>
-                <Plus size={15} />
-                Agregar
-              </button>
-            </div>
-          )}
-          <p className={styles.hint} style={{color: COLORS.labels}}>Hasta {maxTimes} envíos por día. Las horas son de Bolivia.</p>
+          <ReminderTimesPicker times={schedule.horas} maxTimes={maxTimes} newTime={newTime} setNewTime={setNewTime} onToggleTime={onToggleTime} onAddTime={onAddTime} />
         </div>
       </div>
 
