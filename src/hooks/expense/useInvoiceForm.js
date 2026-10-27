@@ -1,4 +1,5 @@
 import {splitInvoiceTotal} from '../../utils/invoiceAmounts';
+import {removeControlCharacters} from '../../utils/textCleaner';
 
 const maxSupplier = 50;
 const maxInvoiceNumber = 50;
@@ -58,7 +59,7 @@ function useInvoiceForm(data, onChange) {
 
     if (field === 'numero_factura') {
       // Recibos y boletos traen códigos con símbolos (@, $, #); solo se quitan los saltos de línea y tabulaciones
-      const invoiceCode = value.replace(/[\u0000-\u001F\u007F]/g, '').slice(0, maxInvoiceNumber);
+      const invoiceCode = removeControlCharacters(value).slice(0, maxInvoiceNumber);
       onChange(field, invoiceCode);
       return;
     }

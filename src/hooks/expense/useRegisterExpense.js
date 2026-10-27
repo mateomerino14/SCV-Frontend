@@ -7,6 +7,7 @@ import {currencies} from '../../constants/currencies';
 import {calculateWithholdings} from '../../utils/withholdings';
 import {filterValidSubitems, amountWithSubitems, validateSubitems, buildSubitemsPayload} from '../../utils/expenseSubitems';
 import {usdCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
+import {removeControlCharacters} from '../../utils/textCleaner';
 
 const maxDescription = 1000;
 const maxSubitemDescription = 255;
@@ -183,7 +184,7 @@ function useRegisterExpense(tripId) {
   };
 
   const handleReceiptNumberChange = (itemId, value) => {
-    updateItem(itemId, {receiptNumber: value.replace(/[\u0000-\u001F\u007F]/g, '').slice(0, maxReceiptNumber)});
+    updateItem(itemId, {receiptNumber: removeControlCharacters(value).slice(0, maxReceiptNumber)});
   };
 
   const handleAmountChange = (itemId, value) => {

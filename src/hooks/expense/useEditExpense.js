@@ -6,6 +6,7 @@ import {currencies} from '../../constants/currencies';
 import {calculateWithholdings} from '../../utils/withholdings';
 import {filterValidSubitems, amountWithSubitems, validateSubitems, buildSubitemsPayload} from '../../utils/expenseSubitems';
 import {usdCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
+import {removeControlCharacters} from '../../utils/textCleaner';
 
 const maxDescription = 1000;
 const maxSubitemDescription = 255;
@@ -251,7 +252,7 @@ function useEditExpense(expenseId) {
   };
 
   const handleReceiptNumberChange = (value) => {
-    setReceiptNumber(value.replace(/[\u0000-\u001F\u007F]/g, '').slice(0, maxReceiptNumber));
+    setReceiptNumber(removeControlCharacters(value).slice(0, maxReceiptNumber));
   };
 
   const handleSupplierChange = (value) => {
