@@ -4,6 +4,7 @@ import {getCategories, getExpenseDetail, updateExpense} from '../../services/exp
 import {compressImage} from '../../utils/imageCompressor';
 import {currencies} from '../../constants/currencies';
 import {calculateWithholdings} from '../../utils/withholdings';
+import {filterValidSubitems, amountWithSubitems, validateSubitems, buildSubitemsPayload} from '../../utils/expenseSubitems';
 import {usdCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
 
 const maxDescription = 1000;
@@ -113,16 +114,9 @@ function useEditExpense(expenseId) {
     load();
   }, [expenseId]);
 
-  const validSubitems = useMemo(() => {
-    return subitems.filter((subitem) => subitem.description.trim() && parseFloat(subitem.amount) > 0);
-  }, [subitems]);
+  const validSubitems = useMemo(() => filterValidSubitems(subitems), [subitems]);
 
-  const finalAmount = useMemo(() => {
-    if (usesSubitems && validSubitems.length > 0) {
-      return parseFloat(validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2));
-    }
-    return parseFloat(amount) || 0;
-  }, [amount, usesSubitems, validSubitems]);
+  const finalAmount = useMemo(() => amountWithSubitems(amount, usesSubitems, validSubitems), [amount, usesSubitems, validSubitems]);
 
   const withholdings = useMemo(() => {
     let subitemAmounts = [];
@@ -314,20 +308,9 @@ function useEditExpense(expenseId) {
       Object.assign(errors, validateForeignCurrency(currency, exchangeRate, bsRate));
     }
 
-    const currentSubitemErrors = {};
+    let currentSubitemErrors = {};
     if (usesSubitems) {
-      subitems.forEach((subitem) => {
-        const errs = {};
-        if (!subitem.description.trim()) {
-          errs.description = 'La descripción es requerida';
-        }
-        if (!subitem.amount || parseFloat(subitem.amount) <= 0) {
-          errs.amount = 'El monto es requerido';
-        }
-        if (Object.keys(errs).length > 0) {
-          currentSubitemErrors[subitem.id] = errs;
-        }
-      });
+      currentSubitemErrors = validateSubitems(subitems);
     }
 
     return {errors, currentSubitemErrors};
@@ -359,10 +342,7 @@ function useEditExpense(expenseId) {
       Object.assign(payload, buildForeignCurrencyPayload(finalAmount, currency, exchangeRate, bsRate));
     }
     if (usesSubitems && validSubitems.length > 0) {
-      payload.subitems = validSubitems.map((subitem) => ({
-        descripcion: subitem.description.trim(),
-        monto: parseFloat(subitem.amount),
-      }));
+      payload.subitems = buildSubitemsPayload(validSubitems);
     }
     const newBackupFiles = backups.filter((backup) => backup.file).map((backup) => backup.file);
     const data = await updateExpense(expenseId, payload, image, newBackupFiles);

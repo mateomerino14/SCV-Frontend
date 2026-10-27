@@ -5,6 +5,7 @@ import ExpenseField from '../atoms/ExpenseField';
 import WithholdingSummary from '../molecules/WithholdingSummary';
 import CategorySelector from '../molecules/CategorySelector';
 import ForeignCurrencyFields from '../molecules/ForeignCurrencyFields';
+import {sumSubitems} from '../../../utils/expenseSubitems';
 import ReceiptUpload from './ReceiptUpload';
 import BackupImagesUpload from '../molecules/BackupImagesUpload';
 
@@ -115,7 +116,7 @@ function ExpenseEditForm({
           <div className={styles.amountCalculated} style={{backgroundColor: COLORS.background}}>
             <p className={styles.amountCalculatedLabel} style={{color: COLORS.labels}}>Suma de subgastos</p>
             <p className={styles.amountCalculatedValue} style={{color: COLORS.title}}>
-              {validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2)} {amountSuffix}
+              {sumSubitems(validSubitems).toFixed(2)} {amountSuffix}
             </p>
           </div>
         )}

@@ -5,6 +5,7 @@ import {getTripDetail} from '../../services/trip/tripService';
 import {compressImage} from '../../utils/imageCompressor';
 import {currencies} from '../../constants/currencies';
 import {calculateWithholdings} from '../../utils/withholdings';
+import {filterValidSubitems, amountWithSubitems, validateSubitems, buildSubitemsPayload} from '../../utils/expenseSubitems';
 import {usdCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
 
 const maxDescription = 1000;
@@ -77,19 +78,9 @@ function useRegisterExpense(tripId) {
     loadTrip();
   }, [tripId]);
 
-  const validSubitemsOf = (item) => {
-    return item.subitems.filter((subitem) => subitem.description.trim() && parseFloat(subitem.amount) > 0);
-  };
+  const validSubitemsOf = (item) => filterValidSubitems(item.subitems);
 
-  const finalAmountOf = (item) => {
-    if (item.usesSubitems) {
-      const valid = validSubitemsOf(item);
-      if (valid.length > 0) {
-        return parseFloat(valid.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2));
-      }
-    }
-    return parseFloat(item.amount) || 0;
-  };
+  const finalAmountOf = (item) => amountWithSubitems(item.amount, item.usesSubitems, validSubitemsOf(item));
 
   const subitemAmountsOf = (item) => {
     if (!item.usesSubitems) {
@@ -401,20 +392,9 @@ function useRegisterExpense(tripId) {
       Object.assign(errors, validateForeignCurrency(item.currency, item.exchangeRate, item.bsRate));
     }
 
-    const subitemErrors = {};
+    let subitemErrors = {};
     if (item.usesSubitems) {
-      item.subitems.forEach((subitem) => {
-        const currentErrors = {};
-        if (!subitem.description.trim()) {
-          currentErrors.description = 'La descripción es requerida';
-        }
-        if (!subitem.amount || parseFloat(subitem.amount) <= 0) {
-          currentErrors.amount = 'El monto es requerido';
-        }
-        if (Object.keys(currentErrors).length > 0) {
-          subitemErrors[subitem.id] = currentErrors;
-        }
-      });
+      subitemErrors = validateSubitems(item.subitems);
     }
 
     return {errors, subitemErrors};
@@ -457,10 +437,7 @@ function useRegisterExpense(tripId) {
         Object.assign(payload, buildForeignCurrencyPayload(finalAmount, item.currency, item.exchangeRate, item.bsRate));
       }
       if (item.usesSubitems && validSubitems.length > 0) {
-        payload.subitems = validSubitems.map((subitem) => ({
-          descripcion: subitem.description.trim(),
-          monto: parseFloat(subitem.amount),
-        }));
+        payload.subitems = buildSubitemsPayload(validSubitems);
       }
       const data = await registerExpense(payload, item.image, item.backups.map((backup) => backup.file));
       if (data.error) {

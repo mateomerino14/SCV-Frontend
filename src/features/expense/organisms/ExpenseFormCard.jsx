@@ -6,6 +6,7 @@ import ExpenseField from '../atoms/ExpenseField';
 import WithholdingSummary from '../molecules/WithholdingSummary';
 import CategorySelector from '../molecules/CategorySelector';
 import ForeignCurrencyFields from '../molecules/ForeignCurrencyFields';
+import {filterValidSubitems, sumSubitems} from '../../../utils/expenseSubitems';
 import ReceiptUpload from './ReceiptUpload';
 import BackupImagesUpload from '../molecules/BackupImagesUpload';
 
@@ -67,7 +68,7 @@ function ExpenseFormCard({
 }) {
   const [subitemsExpanded, setSubitemsExpanded] = useState(true);
   const typeLabel = typeLabels[item.type] || item.type;
-  const validSubitems = item.subitems.filter((subitem) => subitem.description.trim() && parseFloat(subitem.amount) > 0);
+  const validSubitems = filterValidSubitems(item.subitems);
   const categoryName = categories.find((category) => category.id_categoria === item.categoryId)?.nombre;
   const receiptRequired = categories.find((category) => category.id_categoria === item.categoryId)?.requiere_comprobante !== false;
   const automaticAmount = item.usesSubitems;
@@ -78,12 +79,12 @@ function ExpenseFormCard({
 
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${item.saveError ? COLORS.secondary : COLORS.dataFields}`}}>
-      <div className={styles.header} style={{backgroundColor: item.saved ? '#d4edda' : COLORS.backgroundHeader}} onClick={() => onSelect(item.id)}>
+      <div className={styles.header} style={{backgroundColor: item.saved ? COLORS.successBackground : COLORS.backgroundHeader}} onClick={() => onSelect(item.id)}>
         <div className={styles.headerInfo}>
-          <p className={styles.headerTitle} style={{color: item.saved ? '#155724' : COLORS.text}}>
+          <p className={styles.headerTitle} style={{color: item.saved ? COLORS.success : COLORS.text}}>
             Gasto {index + 1}{item.saved ? ' — Guardado' : ''}
           </p>
-          <p className={styles.headerSub} style={{color: item.saved ? '#155724' : COLORS.labels}}>
+          <p className={styles.headerSub} style={{color: item.saved ? COLORS.success : COLORS.labels}}>
             {categoryName || 'Sin categoría'} — {finalAmount > 0 ? `${finalAmount.toFixed(2)} ${amountSuffix}` : '0.00'}
           </p>
           {item.saveError && <p className={styles.headerError} style={{color: COLORS.secondary}}>{item.saveError}</p>}
@@ -151,7 +152,7 @@ function ExpenseFormCard({
               <div className={styles.amountCalculated} style={{backgroundColor: COLORS.background}}>
                 <p className={styles.amountCalculatedLabel} style={{color: COLORS.labels}}>Suma de subgastos</p>
                 <p className={styles.amountCalculatedValue} style={{color: COLORS.title}}>
-                  {validSubitems.reduce((sum, subitem) => sum + parseFloat(subitem.amount || 0), 0).toFixed(2)} {amountSuffix}
+                  {sumSubitems(validSubitems).toFixed(2)} {amountSuffix}
                 </p>
               </div>
             )}
