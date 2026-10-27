@@ -1,4 +1,4 @@
-import {Camera, Trash2} from 'lucide-react';
+import {Camera} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import FieldLabel from '../../../components/ui/FieldLabel';
 
@@ -39,7 +39,6 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
           <p className={styles.previewHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
           {!disabled && (
             <button type="button" className={styles.removeBtn} style={{borderColor: COLORS.dataFields, color: COLORS.secondary, backgroundColor: COLORS.background, cursor: 'pointer'}} onClick={onRemove}>
-              <Trash2 size={14} />
               Quitar comprobante
             </button>
           )}

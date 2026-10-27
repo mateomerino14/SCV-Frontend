@@ -1,4 +1,4 @@
-import {ImagePlus, Trash2} from 'lucide-react';
+import {ImagePlus} from 'lucide-react';
 import {COLORS} from '../../../constants';
 
 const styles = {
@@ -40,7 +40,6 @@ function BackupImagesUpload({images, onAdd, onRemove, max = 2, disabled = false,
             <p className={styles.thumbHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
             {!disabled && (
               <button type="button" aria-label={`Quitar respaldo ${index + 1}`} className={styles.removeBtn} style={{borderColor: COLORS.dataFields, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={() => onRemove(image.id)}>
-                <Trash2 size={14} />
                 Quitar respaldo
               </button>
             )}

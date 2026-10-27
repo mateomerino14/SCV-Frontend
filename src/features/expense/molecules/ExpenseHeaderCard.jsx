@@ -1,4 +1,4 @@
-import {Receipt, Globe, List, PenLine} from 'lucide-react';
+import {Globe, List, PenLine} from 'lucide-react';
 import {COLORS} from '../../../constants';
 
 const styles = {
@@ -55,7 +55,6 @@ function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, conve
       {canGenerateReceipt && (
         <button className={styles.receiptBtn} style={{backgroundColor: COLORS.onColorText90, color: COLORS.primary, opacity: sending ? 0.6 : 1}}
           onClick={onSendReceipt} disabled={sending}>
-          <Receipt size={12} />
           {sending ? 'Enviando recibo...' : 'Enviar Recibo por Correo'}
         </button>
       )}

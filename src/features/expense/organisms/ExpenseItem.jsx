@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, MessageSquare, List, Receipt, FolderOpen, ArrowLeftRight} from 'lucide-react';
+import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, List, Receipt, FolderOpen, ArrowLeftRight} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseFieldTag from '../atoms/ExpenseFieldTag';
@@ -97,7 +97,6 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
       )}
       {expenseObservations.length > 0 && (
         <button onClick={open} style={{display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', backgroundColor: COLORS.error, color: COLORS.secondary, padding: '4px 9px', borderRadius: 8, width: 'fit-content', cursor: 'pointer', border: 'none'}}>
-          <MessageSquare size={12} />
           {expenseObservations.length} Observación{expenseObservations.length !== 1 ? 'es' : ''}
         </button>
       )}

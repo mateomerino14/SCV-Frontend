@@ -30,6 +30,7 @@ export const COLORS = {
   overlay: 'rgba(0,0,0,0.4)',
   successBackground: '#d4edda',
   comments: '#f5d6d622',
+  primarySoft: '#F7ECEC',
   systemReceipt: '#ECE6F7',
   systemReceiptText: '#5B3FA0',
   // Estados, avisos y acentos
