@@ -6,7 +6,6 @@ export const oracleDefaults = {
   section: '000',
   product: '000',
   complement: '000',
-  liabilityAccount: '466100',
   invoiceBatch: '900',
   context: 'Factura Estándar',
   controlCode: '0',

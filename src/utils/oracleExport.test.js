@@ -27,7 +27,7 @@ describe('Excel para Oracle', () => {
     const {values, lines, missing} = buildOracleInvoice(trip, fuelInvoice);
     expect(values).toMatchObject({
       importeFactura: 144.98, codigoImpuesto: '13-IVA', condiciones: '0D', grupoPago: 'M-CENTRO', importeDescuento: '', numeroProveedor: '',
-      flexfield: 'Lote de Facturas: 900\nCUF: DD5F2336313F\nCódigo Control: 0\nTipo Factura: 1', cuentaPasivo: '76.8.900.466100.000000.000.000.000', fechaFactura: '21-oct-26',
+      flexfield: 'Lote de Facturas: 900\nCUF: DD5F2336313F\nCódigo Control: 0\nTipo Factura: 1', cuentaPasivo: '', fechaFactura: '21-oct-26',
     });
     expect(lines.map((line) => [line.values.tipo, line.values.importe])).toEqual([['Artículo', 126.13], ['Impuesto', 18.85]]);
     expect(missing).toEqual([]);
@@ -104,5 +104,20 @@ describe('Excel para Oracle', () => {
     const workbook = new ExcelJS.Workbook();
     addOracleSheets(workbook, [{trip, expenses: [fuelInvoice]}]);
     expect(workbook.getWorksheet('LEYENDA ORACLE').getCell('A11').value).toContain('No falta ningún dato');
+  });
+
+  it('centra el importe y los valores fijos de pago y deja en blanco la cuenta de pasivo para Oracle', () => {
+    const workbook = new ExcelJS.Workbook();
+    addOracleSheets(workbook, [{trip, expenses: [fuelInvoice]}]);
+    const invoices = workbook.getWorksheet('FACTURAS');
+    const headers = invoices.getRow(1).values;
+    const cellOf = (header) => invoices.getRow(2).getCell(headers.indexOf(header));
+    ['Importe de Factura', 'Método de Pago', 'Nivel de Cálculo de Impuestos', 'Nombre de Categoría de Documento', 'Nombre Secuencia Documento'].forEach((header) => {
+      expect(cellOf(header).alignment.horizontal).toBe('center');
+    });
+    expect(cellOf('Importe de Factura').value).toBe(144.98);
+    expect(cellOf('Método de Pago').value).toBe('Cheque');
+    expect(cellOf('Cuenta de Pasivo').value).toBeNull();
+    expect(cellOf('Cuenta de Pasivo').fill.fgColor.argb).toBe('FFDDEBF7');
   });
 });

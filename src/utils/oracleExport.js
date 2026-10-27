@@ -37,7 +37,7 @@ const invoiceColumns = [
   {key: 'fechaFactura', kind: 'system', header: 'Fecha de la Factura'},
   {key: 'numeroFactura', kind: 'system', header: 'Nº Factura'},
   {key: 'divisaFactura', kind: 'system', header: 'Div. Factura', list: 'currencies'},
-  {key: 'importeFactura', kind: 'system', header: 'Importe de Factura', amount: true},
+  {key: 'importeFactura', kind: 'system', header: 'Importe de Factura', amount: true, centered: true},
   {key: 'flexfield', kind: 'system', header: '[ ]'},
   {key: 'fechaContable', kind: 'oracle', header: 'Fecha Contable'},
   {key: 'codigoImpuesto', kind: 'system', header: 'Código de Impuesto', list: 'taxCodes'},
@@ -48,14 +48,14 @@ const invoiceColumns = [
   {key: 'grupoPago', kind: 'system', header: 'Grupo de Pago', list: 'paymentGroups'},
   {key: 'divisaPago', kind: 'system', header: 'Div. Pago', list: 'currencies'},
   {key: 'importeDescuento', kind: 'oracle', header: 'Importe del Descuento', amount: true},
-  {key: 'cuentaPasivo', kind: 'fixed', header: 'Cuenta de Pasivo'},
+  {key: 'cuentaPasivo', kind: 'oracle', header: 'Cuenta de Pasivo'},
   {key: 'descripcionPasivo', kind: 'oracle', header: 'Descripción de Pasivo'},
   {key: 'fechaTcPago', kind: 'oracle', header: 'Fecha T. C. Pago'},
   {key: 'divisaFuncional', kind: 'oracle', header: 'Divisa Funcional', list: 'currencies'},
-  {key: 'metodoPago', kind: 'fixed', header: 'Método de Pago', list: 'paymentMethods'},
-  {key: 'nivelCalculo', kind: 'fixed', header: 'Nivel de Cálculo de Impuestos'},
-  {key: 'categoriaDocumento', kind: 'fixed', header: 'Nombre de Categoría de Documento'},
-  {key: 'secuenciaDocumento', kind: 'fixed', header: 'Nombre Secuencia Documento'},
+  {key: 'metodoPago', kind: 'fixed', header: 'Método de Pago', list: 'paymentMethods', centered: true},
+  {key: 'nivelCalculo', kind: 'fixed', header: 'Nivel de Cálculo de Impuestos', centered: true},
+  {key: 'categoriaDocumento', kind: 'fixed', header: 'Nombre de Categoría de Documento', centered: true},
+  {key: 'secuenciaDocumento', kind: 'fixed', header: 'Nombre Secuencia Documento', centered: true},
   {key: 'importeAprobado', kind: 'oracle', header: 'Importe Aprobado', amount: true},
   {key: 'fechaCambio', kind: 'oracle', header: 'Fecha de Cambio'},
   {key: 'claseTipoCambio', kind: 'oracle', header: 'Clase Tipo Cambio'},
@@ -262,7 +262,6 @@ export function buildOracleInvoice(trip, expense) {
     condiciones: payment.terms,
     grupoPago: payment.paymentGroup,
     divisaPago: currency,
-    cuentaPasivo: buildOracleAccount(oracleDefaults.liabilityAccount),
     metodoPago: oracleDefaults.paymentMethod,
     nivelCalculo: oracleDefaults.calculationLevel,
     categoriaDocumento: oracleDefaults.documentCategory,
@@ -302,6 +301,9 @@ const minColumnWidth = 8;
 const maxColumnWidth = 110;
 
 const cellAlignment = (column) => {
+  if (column.centered) {
+    return {horizontal: 'center', vertical: 'middle'};
+  }
   if (column.amount) {
     return {horizontal: 'right', vertical: 'middle'};
   }
@@ -429,7 +431,7 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
 
 const legendRows = [
   ['Blanco', 'Datos listos para Oracle: los pone el sistema o son valores fijos. La nota de cada encabezado dice cuál.', null],
-  ['Celeste', 'Lo llena Oracle al subir la factura, así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.cell],
+  ['Celeste', 'Lo llena Oracle al subir la factura (por ejemplo, la cuenta de pasivo), así que va en blanco y no se toca. En LINEAS, las filas celestes en cursiva son las líneas de impuesto y retención que Oracle crea al validar: están solo para revisar los montos.', kindStyles.oracle.cell],
   ['Lila', 'Nº de recibo que asignó el sistema, porque el gasto sin factura no tiene recibo original. Si lo tiene, va el número original, sin color.', systemReceiptFill],
   ['Rojo', 'Falta un dato que el sistema no tiene; lo que falta aparece como XXX o vacío (CUF, número de recibo, códigos de Oracle de la cuenta, número de rendición). Completar antes de subir.', pendingFill],
 ];
