@@ -41,7 +41,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos varios sin respaldo de factura oficial</p>
       {hasAlcohol && (
-        <p className={styles.subtitle} style={{color: '#856404'}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen bebidas alcohólicas</p>
       )}
       {hasSystemNumbers && (
         <p className={styles.subtitle} style={{color: COLORS.systemReceiptText}}>Los N° de recibo en lila los asignó el sistema: el gasto no tiene recibo original</p>
@@ -51,7 +51,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
           <thead>
             <tr style={{backgroundColor: COLORS.title}}>
               {['#', 'Fecha', 'Categoría / Concepto', 'Descripción', 'N° Recibo', 'Tipo', 'Importe (Bs)', 'RC-IVA', 'IUE', 'IT 3%', 'Costo', 'Obs.', ''].map((header) => (
-                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: 'rgba(255,255,255,0.2)'}}>{header}</th>
+                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: COLORS.onColorFill20}}>{header}</th>
               ))}
             </tr>
           </thead>
@@ -59,7 +59,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
               const {rcIva, iue, it: itTax, cost} = withholdingList[index];
-              const bg = expense.tiene_alcohol ? '#fef3cd' : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
+              const bg = expense.tiene_alcohol ? COLORS.warningBackground : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
               const subitems = expense.Gasto_Subitem || [];
               let description = expense.descripcion || '—';
               let descriptionColor = COLORS.labels;

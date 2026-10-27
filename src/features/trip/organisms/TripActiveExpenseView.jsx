@@ -259,14 +259,14 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
             <div key={day.fecha} className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {describeDayExcess(day, dailyRate, dailyRateUsd)}</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
-                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+                style={{backgroundColor: COLORS.onColorSubtle, borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           ))}
           {exceedsHotels && dayJustifications.HOTEL && (
             <div className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>Hoteles</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications.HOTEL} readOnly
-                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+                style={{backgroundColor: COLORS.onColorSubtle, borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           )}
         </div>
@@ -279,32 +279,32 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       )}
 
       {isRejectedExpenses && (
-        <div className={styles.alertBox} style={{backgroundColor: '#ffa7a8aa'}}>
-          <p style={{color: '#500203', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.rejectedHighlight}}>
+          <p style={{color: COLORS.title, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tu rendición de gastos fue rechazada. Revisa las observaciones, corrige los gastos y vuelve a enviar.
           </p>
         </div>
       )}
 
       {hasActiveExtension && tripInProgress && (
-        <div className={styles.alertBox} style={{backgroundColor: '#d4edda'}}>
-          <p style={{color: '#155724', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.successBackground}}>
+          <p style={{color: COLORS.success, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tienes una autorización de plazo activa. Puedes registrar gastos hasta el {deadlineRequest?.limite_extendido?.split('-').reverse().join('/')}.
           </p>
         </div>
       )}
 
       {actionsDisabled && tripInProgress && (
-        <div className={styles.alertBox} style={{backgroundColor: '#fef3cd'}}>
-          <p style={{color: '#856404', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.warningBackground}}>
+          <p style={{color: COLORS.warningText, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             El plazo para registrar gastos ha vencido. Solicita una autorización al revisor para continuar.
           </p>
         </div>
       )}
 
       {deadlinePending && (
-        <div className={styles.alertBox} style={{backgroundColor: '#ffd700aa'}}>
-          <p style={{color: '#7a5900', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.pendingHighlight}}>
+          <p style={{color: COLORS.warningStrong, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.
           </p>
         </div>
@@ -338,24 +338,24 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       )}
 
       {tripInProgress && !isSubstitution && substitution?.isPending && (
-        <div className={styles.noticeBox} style={{backgroundColor: '#ffd700aa'}}>
-          <p style={{color: '#7a5900', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.noticeBox} style={{backgroundColor: COLORS.pendingHighlight}}>
+          <p style={{color: COLORS.warningStrong, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tienes una solicitud de reemplazo pendiente de revisión.
           </p>
         </div>
       )}
 
       {tripInProgress && !isSubstitution && substitution?.isApproved && (
-        <div className={styles.noticeBox} style={{backgroundColor: '#d4edda'}}>
-          <p style={{color: '#155724', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.noticeBox} style={{backgroundColor: COLORS.successBackground}}>
+          <p style={{color: COLORS.success, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tu solicitud de reemplazo fue aprobada.
           </p>
         </div>
       )}
 
       {isSubstitution && (
-        <div className={styles.noticeBox} style={{backgroundColor: '#e0e7ff'}}>
-          <p style={{color: '#3730a3', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.noticeBox} style={{backgroundColor: COLORS.infoBackground}}>
+          <p style={{color: COLORS.infoText, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Estás rindiendo este viaje en nombre de {trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}.
           </p>
         </div>

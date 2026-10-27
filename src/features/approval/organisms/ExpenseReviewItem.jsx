@@ -58,7 +58,7 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             </p>
             <p className={styles.employeeDates} style={{color: COLORS.labels}}>{formatDateRange(trip.fecha_inicio, trip.fecha_fin)}</p>
           </div>
-          <span className={styles.conformityBadge} style={{backgroundColor: isObserved ? COLORS.error : '#d4edda', color: isObserved ? COLORS.secondary : '#155724'}}>
+          <span className={styles.conformityBadge} style={{backgroundColor: isObserved ? COLORS.error : COLORS.successBackground, color: isObserved ? COLORS.secondary : COLORS.success}}>
             {isObserved ? <AlertTriangle size={11} /> : <CheckCircle size={11} />}
             <span className="truncate">{isObserved ? 'Observado' : 'Conforme'}</span>
           </span>
@@ -96,7 +96,7 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
           <div className={styles.infoItem}>
             <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Estado</p>
             <div className={styles.statusRow}>
-              <div className={styles.statusDot} style={{backgroundColor: statusConfig?.color || '#f59e0b'}} />
+              <div className={styles.statusDot} style={{backgroundColor: statusConfig?.color || COLORS.amber}} />
               <p className={styles.statusText} style={{color: COLORS.labels}}>{statusConfig?.label || 'Pendiente'}</p>
             </div>
           </div>

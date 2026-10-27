@@ -191,7 +191,7 @@ function ReviewerReviewDetailPage() {
         )}
 
         {actionCompleted && warning && (
-          <p className={styles.warningMsg} style={{color: '#856404'}}>{warning}</p>
+          <p className={styles.warningMsg} style={{color: COLORS.warningText}}>{warning}</p>
         )}
 
         {canAct && (

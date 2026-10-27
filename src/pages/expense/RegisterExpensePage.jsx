@@ -57,7 +57,7 @@ function RegisterExpensePage() {
           subtitle={isInternationalExpense ? 'Registra los gastos realizados fuera de Bolivia.' : 'Ingresa los datos de los gastos de tu viaje.'}
         />
         {isPending && (
-          <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2" style={{backgroundColor: '#ffd700aa', color: '#7a5900'}}>
+          <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2" style={{backgroundColor: COLORS.pendingHighlight, color: COLORS.warningStrong}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.
           </p>
         )}
@@ -77,14 +77,14 @@ function RegisterExpensePage() {
           Agregar otro gasto
         </button>
         {saveSummary && (
-          <div className="rounded-2xl px-4 py-3 mt-3 mb-3 text-center" style={{backgroundColor: saveSummary.failed > 0 ? '#fef3cd' : '#d4edda'}}>
+          <div className="rounded-2xl px-4 py-3 mt-3 mb-3 text-center" style={{backgroundColor: saveSummary.failed > 0 ? COLORS.warningBackground : COLORS.successBackground}}>
             {saveSummary.saved > 0 && (
-              <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? '#856404' : '#155724'}}>
+              <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? COLORS.warningText : COLORS.success}}>
                 {saveSummary.saved} gasto{saveSummary.saved !== 1 ? 's' : ''} guardado{saveSummary.saved !== 1 ? 's' : ''} correctamente
               </p>
             )}
             {saveSummary.failed > 0 && (
-              <p className={`font-inter ${saveSummary.saved > 0 ? 'text-xs mt-1' : 'text-sm font-bold'}`} style={{color: '#856404'}}>
+              <p className={`font-inter ${saveSummary.saved > 0 ? 'text-xs mt-1' : 'text-sm font-bold'}`} style={{color: COLORS.warningText}}>
                 {saveSummary.failed} gasto{saveSummary.failed !== 1 ? 's' : ''} con error — revisa las tarjetas marcadas en rojo
               </p>
             )}

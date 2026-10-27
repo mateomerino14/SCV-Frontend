@@ -9,8 +9,8 @@ const styles = {
 };
 
 const alertConfig = {
-  EXCESO_PRESUPUESTO: {label: 'Exceso Detectado', color: '#856404', bg: '#fef3cd'},
-  ALCOHOL: {label: 'Alcohol', color: '#721c24', bg: '#f8d7da'},
+  EXCESO_PRESUPUESTO: {label: 'Exceso Detectado', color: COLORS.warningText, bg: COLORS.warningBackground},
+  ALCOHOL: {label: 'Alcohol', color: COLORS.dangerText, bg: COLORS.dangerBackground},
 };
 
 function ExpenseAlertsRow({alerts}) {

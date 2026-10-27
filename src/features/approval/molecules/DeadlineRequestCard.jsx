@@ -30,11 +30,11 @@ const styles = {
 };
 
 const statusConfig = {
-  PENDIENTE: {label: 'Pendiente', bg: '#ffd700aa', color: '#7a5900'},
-  APROBADA: {label: 'Aprobada', bg: '#d4edda', color: '#155724'},
-  RECHAZADA: {label: 'Rechazada', bg: '#ffa7a8aa', color: '#500203'},
+  PENDIENTE: {label: 'Pendiente', bg: COLORS.pendingHighlight, color: COLORS.warningStrong},
+  APROBADA: {label: 'Aprobada', bg: COLORS.successBackground, color: COLORS.success},
+  RECHAZADA: {label: 'Rechazada', bg: COLORS.rejectedHighlight, color: COLORS.title},
   // Cerrada por el sistema (sin revisor): el viaje se envio a revision antes de responderla
-  CERRADA: {label: 'Cerrada', bg: '#e5e7eb', color: '#374151'},
+  CERRADA: {label: 'Cerrada', bg: COLORS.neutralBackground, color: COLORS.neutralText},
 };
 
 function DeadlineRequestCard({request, onApprove, onReject, savingAction, showActions}) {

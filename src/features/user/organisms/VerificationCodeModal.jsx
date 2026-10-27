@@ -2,6 +2,7 @@ import {ShieldCheck} from 'lucide-react';
 import ModalBase from './ModalBase';
 import Button from '../../../components/ui/Button';
 import useVerificationCodeInput from '../hooks/useVerificationCodeInput';
+import {COLORS} from '../../../constants';
 
 const styles = {
   icon: 'rounded-full p-5 border-4 border-white',
@@ -20,7 +21,7 @@ function VerificationCodeModal({isOpen, onClose, onVerify, onResend, onExpired, 
 
   return (
     <ModalBase isOpen={isOpen}>
-      <div className={styles.icon} style={{backgroundColor: '#000000'}}>
+      <div className={styles.icon} style={{backgroundColor: COLORS.backgroundSecondary}}>
         <ShieldCheck size={36} color="white" />
       </div>
       <h2 className={styles.title}>Confirmación de Correo</h2>
@@ -30,7 +31,7 @@ function VerificationCodeModal({isOpen, onClose, onVerify, onResend, onExpired, 
         {digits.map((digit, index) => (
           <input key={index} ref={(element) => (inputRefs.current[index] = element)} type="text" inputMode="numeric" maxLength={1}
             value={digit} onChange={(event) => handleChange(event.target.value, index)} onKeyDown={(event) => handleKeyDown(event, index)}
-            className={styles.digitInput} style={{backgroundColor: '#000000', borderColor: hasError ? '#fca5a5' : 'white', width: '100%'}} />
+            className={styles.digitInput} style={{backgroundColor: COLORS.backgroundSecondary, borderColor: hasError ? COLORS.errorSoft : 'white', width: '100%'}} />
         ))}
       </div>
       {codeError && <p className={styles.errorMsg}>{codeError}</p>}

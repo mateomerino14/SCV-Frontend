@@ -53,7 +53,7 @@ const typeIcon = {
 };
 
 const typeColor = {
-  INGRESO: '#155724',
+  INGRESO: COLORS.success,
   SALIDA: COLORS.labels,
   CAMBIO_CLAVE: COLORS.primary,
 };
@@ -154,8 +154,8 @@ function AuditLogPage() {
           <EmptyState title="Sin registros" subtitle="No se encontraron eventos con los filtros aplicados"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="10" stroke="rgba(255,255,255,0.7)" strokeWidth="2" />
-                <path d="M16 10V16L20 19" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="16" cy="16" r="10" stroke={COLORS.onColorText70} strokeWidth="2" />
+                <path d="M16 10V16L20 19" stroke={COLORS.onColorText80} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}

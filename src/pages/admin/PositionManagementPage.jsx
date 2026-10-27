@@ -81,14 +81,14 @@ function PositionManagementPage() {
               )}
             </div>
             <div className={styles.actionsRow}>
-              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? '#d4edda' : COLORS.error}}>
-                <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: position.activo ? '#2d7a3a' : COLORS.secondary}} />
+              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? COLORS.successBackground : COLORS.error}}>
+                <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: position.activo ? COLORS.successStrong : COLORS.secondary}} />
               </div>
               <div className={styles.actionBtn} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(position)}>
                 <Pencil size={14} style={{color: COLORS.background}} />
               </div>
-              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? COLORS.error : '#d4edda'}} onClick={() => openSuspend(position)}>
-                {position.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: '#2d7a3a'}} />}
+              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? COLORS.error : COLORS.successBackground}} onClick={() => openSuspend(position)}>
+                {position.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: COLORS.successStrong}} />}
               </div>
             </div>
           </div>
@@ -98,9 +98,9 @@ function PositionManagementPage() {
           <EmptyState title="Sin cargos registrados" subtitle="No se encontraron cargos con los filtros aplicados"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <rect x="8" y="10" width="16" height="12" rx="2" fill="rgba(255,255,255,0.4)" />
-                <path d="M12 10V8C12 6.9 12.9 6 14 6H18C19.1 6 20 6.9 20 8V10" stroke="rgba(255,255,255,0.7)" strokeWidth="2" />
-                <path d="M12 16H20" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+                <rect x="8" y="10" width="16" height="12" rx="2" fill={COLORS.backgroundOnColorBorder} />
+                <path d="M12 10V8C12 6.9 12.9 6 14 6H18C19.1 6 20 6.9 20 8V10" stroke={COLORS.onColorText70} strokeWidth="2" />
+                <path d="M12 16H20" stroke={COLORS.onColorText80} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}

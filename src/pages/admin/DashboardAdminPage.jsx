@@ -53,7 +53,7 @@ function renderPieLabel({cx, cy, midAngle, innerRadius, outerRadius, percent}) {
   );
 }
 
-const roleColors = [COLORS.primary, '#4a7fd4', '#2d7a3a', COLORS.secondary, COLORS.title];
+const roleColors = [COLORS.primary, COLORS.chartBlue, COLORS.successStrong, COLORS.secondary, COLORS.title];
 
 function SectionTooltip({active, payload, label}) {
   if (!active || !payload?.length) {
@@ -110,8 +110,8 @@ function DashboardAdminPage() {
               <div className={styles.statCard} style={{backgroundColor: COLORS.primary}}>
                 <Users size={20} style={{color: COLORS.background}} />
                 <p className={styles.statValue} style={{color: COLORS.background}}>{data?.totalUsuarios || 0}</p>
-                <p className={styles.statLabel} style={{color: 'rgba(255,255,255,0.7)'}}>Usuarios</p>
-                <p className={styles.statSub} style={{color: 'rgba(255,255,255,0.6)'}}>{data?.usuariosActivos || 0} activos</p>
+                <p className={styles.statLabel} style={{color: COLORS.onColorText70}}>Usuarios</p>
+                <p className={styles.statSub} style={{color: COLORS.onColorText60}}>{data?.usuariosActivos || 0} activos</p>
               </div>
               <div className={styles.statCard} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <Briefcase size={20} style={{color: COLORS.primary}} />

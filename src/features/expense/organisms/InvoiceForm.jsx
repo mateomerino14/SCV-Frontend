@@ -75,7 +75,7 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
         {isInvoice ? 'Escribe el total que figura en la factura; el IVA ya está incluido y se separa solo.' : 'El recibo no lleva IVA: el total es lo pagado.'}
       </p>
       {manuallyModified && (
-        <div className={styles.alert} style={{backgroundColor: '#fef3cd', color: '#856404'}}>Se han detectado cambios manuales en los datos extraídos</div>
+        <div className={styles.alert} style={{backgroundColor: COLORS.warningBackground, color: COLORS.warningText}}>Se han detectado cambios manuales en los datos extraídos</div>
       )}
     </div>
   );

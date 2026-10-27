@@ -50,7 +50,7 @@ function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, 
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div className={styles.overlay} style={{backgroundColor: 'rgba(0,0,0,0.7)'}}
+        <motion.div className={styles.overlay} style={{backgroundColor: COLORS.overlayStrong}}
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
@@ -68,13 +68,13 @@ function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, 
               <PasswordField required label="Nueva Contraseña" value={newPassword} onChange={(event) => setNewPassword(event.target.value)}
                 borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                 backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
-              {fieldErrors.newPassword && <p className={styles.fieldError} style={{color: '#ffd4d4'}}>{fieldErrors.newPassword}</p>}
+              {fieldErrors.newPassword && <p className={styles.fieldError} style={{color: COLORS.dangerLight}}>{fieldErrors.newPassword}</p>}
             </div>
             <div className={styles.fieldRow}>
               <PasswordField required label="Confirmar Nueva Contraseña" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)}
                 borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                 backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
-              {fieldErrors.confirmPassword && <p className={styles.fieldError} style={{color: '#ffd4d4'}}>{fieldErrors.confirmPassword}</p>}
+              {fieldErrors.confirmPassword && <p className={styles.fieldError} style={{color: COLORS.dangerLight}}>{fieldErrors.confirmPassword}</p>}
               {confirmPassword && newPassword && !fieldErrors.confirmPassword && (
                 <p className={styles.fieldError} style={{color: COLORS.background}}>Las contraseñas coinciden</p>
               )}

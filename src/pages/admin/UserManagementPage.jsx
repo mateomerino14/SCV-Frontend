@@ -57,10 +57,10 @@ const tabs = [
 ];
 
 const roleConfig = {
-  ADMINISTRADOR: {label: 'Administrador', bg: '#d4edda', color: '#155724'},
-  SUPERVISOR: {label: 'Supervisor', bg: '#85aff3ab', color: '#000a65'},
-  APROBADOR: {label: 'Aprobador', bg: '#ffd700aa', color: '#7a5900'},
-  REVISOR: {label: 'Revisor', bg: '#fef3cd', color: '#856404'},
+  ADMINISTRADOR: {label: 'Administrador', bg: COLORS.successBackground, color: COLORS.success},
+  SUPERVISOR: {label: 'Supervisor', bg: COLORS.adminBadge, color: COLORS.adminBadgeText},
+  APROBADOR: {label: 'Aprobador', bg: COLORS.pendingHighlight, color: COLORS.warningStrong},
+  REVISOR: {label: 'Revisor', bg: COLORS.warningBackground, color: COLORS.warningText},
   EMPLEADO: {label: 'Empleado', bg: COLORS.environmentTypes, color: COLORS.background},
 };
 
@@ -127,14 +127,14 @@ function UserManagementPage() {
                 <span className={styles.cardRole} style={{backgroundColor: config.bg, color: config.color}}>{config.label}</span>
               </div>
               <div className={styles.actionsRow}>
-                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? '#d4edda' : COLORS.error}}>
-                  <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: currentUser.activo ? '#2d7a3a' : COLORS.secondary}} />
+                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.successBackground : COLORS.error}}>
+                  <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: currentUser.activo ? COLORS.successStrong : COLORS.secondary}} />
                 </div>
                 <div className={styles.actionBtn} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(currentUser)}>
                   <Pencil size={14} style={{color: COLORS.background}} />
                 </div>
-                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.error : '#d4edda'}} onClick={() => openSuspend(currentUser)}>
-                  {currentUser.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: '#2d7a3a'}} />}
+                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.error : COLORS.successBackground}} onClick={() => openSuspend(currentUser)}>
+                  {currentUser.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: COLORS.successStrong}} />}
                 </div>
               </div>
             </div>
@@ -145,8 +145,8 @@ function UserManagementPage() {
           <EmptyState title="Sin usuarios registrados" subtitle="No se encontraron usuarios con los filtros aplicados"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="12" r="5" fill="rgba(255,255,255,0.6)" />
-                <path d="M6 26C6 21 10 18 16 18C22 18 26 21 26 26" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="16" cy="12" r="5" fill={COLORS.onColorText60} />
+                <path d="M6 26C6 21 10 18 16 18C22 18 26 21 26 26" stroke={COLORS.onColorText60} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}

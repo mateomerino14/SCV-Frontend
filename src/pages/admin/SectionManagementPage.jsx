@@ -78,14 +78,14 @@ function SectionManagementPage() {
               {section.codigo_seccion && <p className={styles.cardCodes} style={{color: COLORS.labels}}>Sección Oracle: {section.codigo_seccion}</p>}
             </div>
             <div className={styles.actionsRow}>
-              <div className={styles.actionBtn} style={{backgroundColor: section.activo ? '#d4edda' : COLORS.error}}>
-                <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: section.activo ? '#2d7a3a' : COLORS.secondary}} />
+              <div className={styles.actionBtn} style={{backgroundColor: section.activo ? COLORS.successBackground : COLORS.error}}>
+                <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: section.activo ? COLORS.successStrong : COLORS.secondary}} />
               </div>
               <div className={styles.actionBtn} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(section)}>
                 <Pencil size={14} style={{color: COLORS.background}} />
               </div>
-              <div className={styles.actionBtn} style={{backgroundColor: section.activo ? COLORS.error : '#d4edda'}} onClick={() => openSuspend(section)}>
-                {section.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: '#2d7a3a'}} />}
+              <div className={styles.actionBtn} style={{backgroundColor: section.activo ? COLORS.error : COLORS.successBackground}} onClick={() => openSuspend(section)}>
+                {section.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: COLORS.successStrong}} />}
               </div>
             </div>
           </div>
@@ -95,9 +95,9 @@ function SectionManagementPage() {
           <EmptyState title="Sin secciones registradas" subtitle="No se encontraron secciones con los filtros aplicados"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <rect x="6" y="8" width="20" height="16" rx="2" fill="rgba(255,255,255,0.4)" />
-                <path d="M6 14H26" stroke="rgba(255,255,255,0.7)" strokeWidth="2" />
-                <path d="M11 19H15" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+                <rect x="6" y="8" width="20" height="16" rx="2" fill={COLORS.backgroundOnColorBorder} />
+                <path d="M6 14H26" stroke={COLORS.onColorText70} strokeWidth="2" />
+                <path d="M11 19H15" stroke={COLORS.onColorText80} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}

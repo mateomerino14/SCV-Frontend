@@ -55,8 +55,8 @@ function SubstitutionRequestsPage() {
           <EmptyState title="Sin solicitudes" subtitle={tab === 'PENDIENTES' ? 'No hay solicitudes de reemplazo pendientes' : 'Aún no hay historial de solicitudes'}
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="12" stroke="rgba(255,255,255,0.7)" strokeWidth="2" />
-                <path d="M16 10V16L20 19" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="16" cy="16" r="12" stroke={COLORS.onColorText70} strokeWidth="2" />
+                <path d="M16 10V16L20 19" stroke={COLORS.onColorText70} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}

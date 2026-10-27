@@ -60,7 +60,7 @@ function TripDetailPage() {
         <div className="flex-1 flex flex-col items-center justify-center gap-4 px-5 py-10">
           <EmptyState title={error === 'El viaje no existe' ? 'Viaje no encontrado' : 'Viaje no disponible'}
             subtitle={error || 'No se encontró el viaje'}
-            icon={<FileX size={30} style={{color: 'rgba(255,255,255,0.8)'}} />} />
+            icon={<FileX size={30} style={{color: COLORS.onColorText80}} />} />
           <button className="px-6 py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer border-2"
             style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}
             onClick={() => navigate(originRoute)}>Volver</button>

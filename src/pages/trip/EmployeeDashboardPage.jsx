@@ -97,8 +97,8 @@ function EmployeeDashboardPage() {
         ) : (
           <div className={styles.emptyRecent} style={{background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.title})`, marginBottom: 16}}>
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.1)" />
-              <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill="rgba(255,255,255,0.6)" />
+              <circle cx="20" cy="20" r="20" fill={COLORS.onColorFill10} />
+              <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill={COLORS.onColorText60} />
             </svg>
             <p className="font-inter font-bold text-base text-white">Sin borradores pendientes</p>
             <p className="font-inter text-xs text-white opacity-70">Todos tus viajes ya fueron enviados a revisión</p>
@@ -132,8 +132,8 @@ function EmployeeDashboardPage() {
           ) : (
             <div className={styles.emptyRecent} style={{background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.title})`}}>
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.1)" />
-                <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill="rgba(255,255,255,0.6)" />
+                <circle cx="20" cy="20" r="20" fill={COLORS.onColorFill10} />
+                <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill={COLORS.onColorText60} />
               </svg>
               <p className="font-inter font-bold text-base text-white">Sin viajes recientes</p>
               <p className="font-inter text-xs text-white opacity-70">Aún no tienes viajes registrados</p>

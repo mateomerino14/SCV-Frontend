@@ -34,9 +34,9 @@ const styles = {
 };
 
 const typeConfig = {
-  F: {label: 'Factura', bg: COLORS.positionRole, color: '#3b4fd4'},
+  F: {label: 'Factura', bg: COLORS.positionRole, color: COLORS.accentBlue},
   R: {label: 'Recibo', bg: COLORS.travelTypes, color: COLORS.travelTypesText},
-  C: {label: 'Compra', bg: '#e6f4ea', color: '#2d7a3a'},
+  C: {label: 'Compra', bg: COLORS.successLight, color: COLORS.successStrong},
   S: {label: 'Servicio', bg: COLORS.backgroundHeader, color: COLORS.labels},
 };
 

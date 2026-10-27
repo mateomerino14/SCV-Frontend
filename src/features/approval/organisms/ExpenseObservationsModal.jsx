@@ -55,7 +55,7 @@ function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, c
               ) : (
                 observations.map((observation) => (
                   <CommentCard key={observation.id_comentario} compact date={formatDateTime(observation.fecha)} text={observation.descripcion}
-                    backgroundColor="rgba(255,255,255,0.12)" onEdit={canManage(observation) ? () => onEdit(observation) : null} onDelete={canManage(observation) ? () => onDelete(observation.id_comentario) : null} />
+                    backgroundColor={COLORS.backgroundOnColorFill} onEdit={canManage(observation) ? () => onEdit(observation) : null} onDelete={canManage(observation) ? () => onDelete(observation.id_comentario) : null} />
                 ))
               )}
             </div>

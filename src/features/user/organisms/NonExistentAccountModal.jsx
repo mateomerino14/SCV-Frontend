@@ -1,6 +1,7 @@
 import {AlertCircle} from 'lucide-react';
 import ModalBase from './ModalBase';
 import Button from '../../../components/ui/Button';
+import {COLORS} from '../../../constants';
 
 const styles = {
   icon: 'rounded-full p-5 border-4 border-white',
@@ -11,7 +12,7 @@ const styles = {
 function NonExistentAccountModal({isOpen, onClose, message}) {
   return (
     <ModalBase isOpen={isOpen}>
-      <div className={styles.icon} style={{backgroundColor: '#000000'}}>
+      <div className={styles.icon} style={{backgroundColor: COLORS.backgroundSecondary}}>
         <AlertCircle size={36} color="white" />
       </div>
       <h2 className={styles.title}>{message ? 'Correo No Válido' : 'Cuenta Inexistente'}</h2>

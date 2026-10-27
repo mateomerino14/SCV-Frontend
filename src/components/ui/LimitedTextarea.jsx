@@ -5,7 +5,7 @@ const styles = {
   errorMsg: 'text-xs font-inter italic text-center w-full mt-2',
 };
 
-function LimitedTextarea({value, onChange, rows = 4, placeholder, exceedsLimit, maxLength, error, borderColorOk = 'rgba(255,255,255,0.3)'}) {
+function LimitedTextarea({value, onChange, rows = 4, placeholder, exceedsLimit, maxLength, error, borderColorOk = COLORS.onColorFill30}) {
   return (
     <div className="w-full flex flex-col gap-1">
       <style>{`

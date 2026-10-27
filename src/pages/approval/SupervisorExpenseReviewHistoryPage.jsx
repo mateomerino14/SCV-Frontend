@@ -58,7 +58,7 @@ function SupervisorExpenseReviewHistoryPage() {
           <EmptyState title="Sin revisiones en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M8 16L14 22L24 10" stroke="rgba(255,255,255,0.7)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 16L14 22L24 10" stroke={COLORS.onColorText70} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             } />
         )}

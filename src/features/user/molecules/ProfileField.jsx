@@ -39,7 +39,7 @@ function ProfileField({icon: Icon, label, value, editing, editValue, onEditValue
               value={editValue} onChange={onEditValueChange} disabled={saving} autoFocus />
             <div className={styles.actionsRow}>
               <button className={styles.editBtn} onClick={onSave} disabled={saving}>
-                <Check size={16} style={{color: '#2d7a3a'}} />
+                <Check size={16} style={{color: COLORS.successStrong}} />
               </button>
               <button className={styles.editBtn} onClick={onCancel} disabled={saving}>
                 <X size={16} style={{color: COLORS.secondary}} />

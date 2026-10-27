@@ -42,8 +42,8 @@ function TripHistoryPage() {
           <EmptyState title="Sin viajes registrados" subtitle="Aún no tienes viajes en esta categoría"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M16 4C16 4 8 12 8 18C8 22.4 11.6 26 16 26C20.4 26 24 22.4 24 18C24 12 16 4 16 4Z" fill="rgba(255,255,255,0.5)" />
-                <circle cx="16" cy="18" r="3" fill="rgba(255,255,255,0.9)" />
+                <path d="M16 4C16 4 8 12 8 18C8 22.4 11.6 26 16 26C20.4 26 24 22.4 24 18C24 12 16 4 16 4Z" fill={COLORS.onColorText50} />
+                <circle cx="16" cy="18" r="3" fill={COLORS.onColorText90} />
               </svg>
             } />
         )}

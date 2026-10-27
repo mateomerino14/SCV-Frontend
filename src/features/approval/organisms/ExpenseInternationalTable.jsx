@@ -40,7 +40,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
           <thead>
             <tr style={{backgroundColor: COLORS.primary}}>
               {['#', 'Fecha', 'Concepto', 'Descripción', 'N° Recibo', 'Conversión', 'Importe (USD)', 'Obs.', ''].map((header) => (
-                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: 'rgba(255,255,255,0.2)'}}>{header}</th>
+                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: COLORS.onColorFill20}}>{header}</th>
               ))}
             </tr>
           </thead>

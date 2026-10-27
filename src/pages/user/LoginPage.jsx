@@ -8,7 +8,7 @@ import ErrorModal from '../../features/user/organisms/ErrorModal';
 import ExpiredCodeModal from '../../features/user/organisms/ExpiredCodeModal';
 import NonExistentAccountModal from '../../features/user/organisms/NonExistentAccountModal';
 import useLogin from '../../hooks/user/useLogin';
-import {LOGIN_IMAGE} from '../../constants';
+import {LOGIN_IMAGE, COLORS} from '../../constants';
 
 const styles = {
   page: 'min-h-screen bg-gray-100 flex items-center justify-center',
@@ -50,7 +50,7 @@ function LoginPage() {
       </div>
       <div>
         <label className={styles.label}>Correo Corporativo</label>
-        <div className={styles.inputWrapper} style={{borderColor: fieldErrors.email ? '#dc2626' : '#e5e7eb'}}>
+        <div className={styles.inputWrapper} style={{borderColor: fieldErrors.email ? COLORS.danger : COLORS.neutralBackground}}>
           <Mail size={18} className="text-gray-400" />
           <input type="email" placeholder="nombre@empresa.com" className={styles.input} disabled={logging}
             value={email} onChange={(event) => handleEmailChange(event.target.value)} />
@@ -62,7 +62,7 @@ function LoginPage() {
           <label className={styles.label}>Contraseña</label>
           <button type="button" onClick={handleForgotPassword} className={styles.forgotPassword}>¿Olvidaste tu contraseña?</button>
         </div>
-        <div className={styles.inputWrapper} style={{borderColor: fieldErrors.password ? '#dc2626' : '#e5e7eb'}}>
+        <div className={styles.inputWrapper} style={{borderColor: fieldErrors.password ? COLORS.danger : COLORS.neutralBackground}}>
           <Lock size={18} className="text-gray-400" />
           <input type={showPassword ? 'text' : 'password'} placeholder="••••••••••••••••" className={styles.input} disabled={logging}
             value={password} onChange={(event) => handlePasswordChange(event.target.value)} />

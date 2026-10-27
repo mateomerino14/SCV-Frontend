@@ -1,5 +1,7 @@
 import {statusColors} from '../../../constants/tripStatusColors';
 import {statusLabels} from '../../../constants/tripStatusLabels';
+import {COLORS} from '../../../constants';
+
 export const tripStatusConfig = {
   EN_REVISION_VIAJE: {label: statusLabels.EN_REVISION_VIAJE, ...statusColors.EN_REVISION_VIAJE},
   APROBADO_VIAJE: {label: statusLabels.APROBADO_VIAJE, ...statusColors.APROBADO_VIAJE},
@@ -13,11 +15,11 @@ export const tripStatusConfig = {
 };
 
 export const reviewStatusConfig = {
-  CONFORME: {label: 'Conforme', bg: '#d4edda', color: '#155724'},
-  OBSERVADO: {label: 'Observado', bg: '#fef3cd', color: '#856404'},
+  CONFORME: {label: 'Conforme', bg: COLORS.successBackground, color: COLORS.success},
+  OBSERVADO: {label: 'Observado', bg: COLORS.warningBackground, color: COLORS.warningText},
 };
 
 export const alertConfig = {
-  EXCESO_PRESUPUESTO: {label: 'Exceso Detectado', color: '#856404', bg: '#fef3cd'},
-  ALCOHOL: {label: 'Alcohol', color: '#721c24', bg: '#f8d7da'},
+  EXCESO_PRESUPUESTO: {label: 'Exceso Detectado', color: COLORS.warningText, bg: COLORS.warningBackground},
+  ALCOHOL: {label: 'Alcohol', color: COLORS.dangerText, bg: COLORS.dangerBackground},
 };

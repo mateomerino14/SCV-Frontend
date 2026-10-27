@@ -46,7 +46,7 @@ function ChangePasswordModal({isOpen, onClose}) {
                   onChange={(event) => setConfirmPassword(event.target.value)} />
                 {fieldErrors.confirmPassword && <p className={styles.fieldError} style={{color: COLORS.secondary}}>{fieldErrors.confirmPassword}</p>}
                 {confirmPassword && newPassword && !fieldErrors.confirmPassword && (
-                  <p className={styles.fieldError} style={{color: '#2d7a3a'}}>Las contraseñas coinciden</p>
+                  <p className={styles.fieldError} style={{color: COLORS.successStrong}}>Las contraseñas coinciden</p>
                 )}
               </div>
               {error && <InlineAlert type="error">{error}</InlineAlert>}

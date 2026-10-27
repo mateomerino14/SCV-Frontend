@@ -33,14 +33,14 @@ function ExpenseInvoicedTable({expenses, onViewExpense, countObservations, onOpe
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos respaldados con factura o recibo oficial</p>
       {hasAlcohol && (
-        <p className={styles.subtitle} style={{color: '#856404'}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen bebidas alcohólicas</p>
       )}
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <table className={styles.table}>
           <thead>
             <tr style={{backgroundColor: COLORS.primary}}>
               {['#', 'Fecha', 'Proveedor', 'Descripción', 'Tipo', 'N° Doc.', 'NIT/CI', 'Importe (Bs)', 'IVA (Bs)', 'Obs.', ''].map((header) => (
-                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: 'rgba(255,255,255,0.2)'}}>{header}</th>
+                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: COLORS.onColorFill20}}>{header}</th>
               ))}
             </tr>
           </thead>
@@ -48,7 +48,7 @@ function ExpenseInvoicedTable({expenses, onViewExpense, countObservations, onOpe
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
               const vat = getExpenseInvoiceVat(expense);
-              const bg = expense.tiene_alcohol ? '#fef3cd' : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
+              const bg = expense.tiene_alcohol ? COLORS.warningBackground : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
               return (
                 <tr key={expense.id_gasto} style={{backgroundColor: bg}}>
                   <td className={styles.td} style={cell({color: COLORS.labels})}>{index + 1}</td>

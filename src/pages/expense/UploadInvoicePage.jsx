@@ -55,7 +55,7 @@ function UploadInvoicePage() {
         </button>
         <PageHeader title="Subir Factura" subtitle="Sube la foto de tu factura para que el sistema extraiga sus datos, o regístrala manualmente; revisa todo antes de guardar." />
         {isPending && (
-          <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2 mb-4" style={{backgroundColor: '#ffd700aa', color: '#7a5900'}}>
+          <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2 mb-4" style={{backgroundColor: COLORS.pendingHighlight, color: COLORS.warningStrong}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.
           </p>
         )}
@@ -79,12 +79,12 @@ function UploadInvoicePage() {
           </div>
         )}
         {saveSummary && (
-          <div className="rounded-2xl px-4 py-3 mt-3 mb-3 text-center" style={{backgroundColor: saveSummary.failed > 0 ? '#fef3cd' : '#d4edda'}}>
-            <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? '#856404' : '#155724'}}>
+          <div className="rounded-2xl px-4 py-3 mt-3 mb-3 text-center" style={{backgroundColor: saveSummary.failed > 0 ? COLORS.warningBackground : COLORS.successBackground}}>
+            <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? COLORS.warningText : COLORS.success}}>
               {saveSummary.saved} factura{saveSummary.saved !== 1 ? 's' : ''} guardada{saveSummary.saved !== 1 ? 's' : ''} correctamente
             </p>
             {saveSummary.failed > 0 && (
-              <p className="text-xs font-inter mt-1" style={{color: '#856404'}}>
+              <p className="text-xs font-inter mt-1" style={{color: COLORS.warningText}}>
                 {saveSummary.failed} factura{saveSummary.failed !== 1 ? 's' : ''} con error — revisa las tarjetas marcadas
               </p>
             )}
