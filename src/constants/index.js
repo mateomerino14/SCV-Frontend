@@ -82,3 +82,7 @@ export const COLORS = {
   backgroundOnColorFill: 'rgba(255,255,255,0.12)',
   backgroundOnColorText: 'rgba(255,255,255,0.85)',
 };
+
+export const ROLES = {admin: 1, supervisor: 2, employee: 3, reviewer: 4, approver: 5};
+
+export const TEAM_REVIEW_ROLES = [ROLES.supervisor, ROLES.approver];

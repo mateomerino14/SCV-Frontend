@@ -4,7 +4,7 @@ import {AnimatePresence, motion} from 'framer-motion';
 import {jwtDecode} from 'jwt-decode';
 import axios from 'axios';
 import {getToken, setToken} from './services/shared/tokenStore';
-import {COLORS} from './constants';
+import {COLORS, TEAM_REVIEW_ROLES} from './constants';
 
 import LoginPage from './pages/user/LoginPage';
 import PasswordChangeGate from './features/user/organisms/PasswordChangeGate';
@@ -165,12 +165,12 @@ function App() {
         <Route path="/dashboard/administrador/perfil" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/configuracion" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/supervisor" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SupervisorPendingExpenseReviewsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/supervisor/historial" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SupervisorExpenseReviewHistoryPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/supervisor/revision/:id" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SupervisorExpenseReviewDetailPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/supervisor/gasto/:id" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><ExpenseDetailPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/supervisor/historial" element={<ProtectedRoute allowedRoles={TEAM_REVIEW_ROLES}><PageTransition><SupervisorExpenseReviewHistoryPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/supervisor/revision/:id" element={<ProtectedRoute allowedRoles={TEAM_REVIEW_ROLES}><PageTransition><SupervisorExpenseReviewDetailPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/supervisor/gasto/:id" element={<ProtectedRoute allowedRoles={TEAM_REVIEW_ROLES}><PageTransition><ExpenseDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/supervisor/viajes-pendientes" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SupervisorPendingTripsPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/supervisor/viajes-historial" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SupervisorTripHistoryPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/dashboard/supervisor/viaje-previo/:id" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SupervisorTripReviewDetailPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/supervisor/viajes-historial" element={<ProtectedRoute allowedRoles={TEAM_REVIEW_ROLES}><PageTransition><SupervisorTripHistoryPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/supervisor/viaje-previo/:id" element={<ProtectedRoute allowedRoles={TEAM_REVIEW_ROLES}><PageTransition><SupervisorTripReviewDetailPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/supervisor/perfil" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/supervisor/configuracion" element={<ProtectedRoute allowedRoles={[2]}><PageTransition><SettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/aprobador/revisiones" element={<ProtectedRoute allowedRoles={[5]}><PageTransition><ApproverReviewsPage /></PageTransition></ProtectedRoute>} />

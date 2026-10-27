@@ -11,11 +11,12 @@ import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useSupervisorTripHistory from '../../hooks/approval/useSupervisorTripHistory';
 import useMenu from '../../hooks/shared/useMenu';
-import {COLORS} from '../../constants';
+import {COLORS, ROLES} from '../../constants';
 import {supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import useUserRole from '../../hooks/shared/useUserRole';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -32,6 +33,8 @@ const tabs = [
 
 function SupervisorTripHistoryPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
+  const {role} = useUserRole();
+  const canReturnReviews = role === ROLES.supervisor;
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
@@ -77,7 +80,7 @@ function SupervisorTripHistoryPage() {
           <div className={styles.grid}>
             {pagination.visibleItems.map((trip) => (
               <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={supervisorPendingTripPath(trip.id_viaje)} originRoute={routes.supervisorTripHistory}
-                detailLabel="Ver Detalle" onReturn={trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false ? handleReturn : null} />
+                detailLabel="Ver Detalle" onReturn={canReturnReviews && trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false ? handleReturn : null} />
             ))}
           </div>
         )}

@@ -12,11 +12,12 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useSupervisorExpenseReviewHistory from '../../hooks/approval/useSupervisorExpenseReviewHistory';
 import useMenu from '../../hooks/shared/useMenu';
 import {historyTabsDefault} from '../../features/approval/constants/reviewTabs';
-import {COLORS} from '../../constants';
+import {COLORS, ROLES} from '../../constants';
 import {supervisorTripReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import useUserRole from '../../hooks/shared/useUserRole';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -27,6 +28,8 @@ const styles = {
 
 function SupervisorExpenseReviewHistoryPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
+  const {role} = useUserRole();
+  const canReturnReviews = role === ROLES.supervisor;
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
@@ -72,7 +75,7 @@ function SupervisorExpenseReviewHistoryPage() {
           <div className={styles.grid}>
             {pagination.visibleItems.map((trip) => (
               <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={supervisorTripReviewPath(trip.id_viaje)} originRoute={routes.supervisorExpenseReviewHistory}
-                onReturn={trip.estado === 'EN_REVISION' ? handleReturn : null} />
+                onReturn={canReturnReviews && trip.estado === 'EN_REVISION' ? handleReturn : null} />
             ))}
           </div>
         )}
