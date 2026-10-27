@@ -1,5 +1,5 @@
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
-import {ArrowLeft, AlertTriangle, Download} from 'lucide-react';
+import {ArrowLeft, AlertTriangle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -179,7 +179,6 @@ function ReviewerReviewDetailPage() {
 
         {expenses.length > 0 && (
           <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, dayJustificationsList)}>
-            <Download size={16} />
             Exportar Excel
           </button>
         )}

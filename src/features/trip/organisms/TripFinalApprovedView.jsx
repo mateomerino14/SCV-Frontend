@@ -1,4 +1,4 @@
-import {ArrowLeft, Globe, Download} from 'lucide-react';
+import {ArrowLeft, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {tripStatusConfig, tripStatusMessages} from '../hooks/useTripStatusConfig';
 import TripInfoCard from '../molecules/TripInfoCard';
@@ -73,7 +73,6 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
         </div>
       )}
       <button className={styles.exportBtn} style={{backgroundColor: downloading ? COLORS.fields : COLORS.primary, color: COLORS.background}} onClick={handleDownload} disabled={downloading}>
-        <Download size={16} />
         {downloading ? 'Generando PDF...' : 'Descargar Planilla PDF'}
       </button>
       {downloadError && <p className={styles.downloadError} style={{color: COLORS.secondary}}>{downloadError}</p>}

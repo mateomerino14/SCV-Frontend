@@ -1,4 +1,4 @@
-import {ArrowLeft, Pencil, Send} from 'lucide-react';
+import {ArrowLeft} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {editTripPath} from '../../../constants/routes';
 import TripInfoCard from '../molecules/TripInfoCard';
@@ -31,12 +31,10 @@ function TripDraftView({trip, tripId, isInternational, originRoute, navigate}) {
       <div className={styles.actionRow}>
         <button className={styles.actionBtn} style={{borderColor: COLORS.primary, color: COLORS.primary}}
           onClick={() => navigate(editTripPath(tripId), {state: {from: originRoute}})}>
-          <Pencil size={16} />
           Editar
         </button>
         <button className={styles.actionBtn} style={{backgroundColor: COLORS.secondary, borderColor: COLORS.secondary, color: COLORS.background}}
           onClick={() => setShowModal(true)}>
-          <Send size={16} />
           Enviar a Revisión
         </button>
       </div>

@@ -1,4 +1,3 @@
-import {Download} from 'lucide-react';
 import {COLORS} from '../../constants';
 
 const styles = {
@@ -10,7 +9,6 @@ function ExportButton({onClick, exporting = false, disabled = false, label = 'Ex
   return (
     <button className={styles.button} onClick={onClick} disabled={inactive}
       style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: inactive ? 0.6 : 1, cursor: inactive ? 'default' : 'pointer'}}>
-      <Download size={16} />
       {exporting ? 'Exportando...' : label}
     </button>
   );

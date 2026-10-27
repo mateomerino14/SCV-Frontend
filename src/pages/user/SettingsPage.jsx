@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {KeyRound, FileText, LogOut, Smile} from 'lucide-react';
+import {KeyRound, FileText, Smile} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -70,7 +70,6 @@ function SettingsPage() {
           </div>
         </div>
         <button className={styles.logoutBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={handleLogout}>
-          <LogOut size={18} />
           Cerrar Sesión
         </button>
       </div>

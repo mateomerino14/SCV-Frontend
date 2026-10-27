@@ -1,5 +1,5 @@
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
-import {ArrowLeft, AlertTriangle} from 'lucide-react';
+import {ArrowLeft} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -93,7 +93,6 @@ function UploadInvoicePage() {
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {hasRequiresAuthorization && canRequest && !isPending && (
           <button className={styles.solicitudBtn} style={{backgroundColor: COLORS.secondary, color: COLORS.background}} onClick={() => setShowDeadlineModal(true)}>
-            <AlertTriangle size={16} />
             Solicitar Autorización al Revisor
           </button>
         )}

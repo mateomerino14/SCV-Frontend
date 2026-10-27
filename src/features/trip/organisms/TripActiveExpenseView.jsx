@@ -1,4 +1,4 @@
-import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle, Users, Building2, Car} from 'lucide-react';
+import {ArrowLeft, Globe, Navigation, MapPin, Building2, Car} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {registerExpensePath, uploadInvoicePath} from '../../../constants/routes';
 import {formatDateRange, formatDateShort} from '../../../utils/dateFormatter';
@@ -138,11 +138,9 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       {tripInProgress && !isInternational && (
         <div className={styles.actionRow}>
           <button className={styles.actionBtn} style={primaryActionStyle} onClick={() => !actionsDisabled && navigateToRegister()} disabled={actionsDisabled}>
-            <PlusCircle size={16} />
             Registrar Gasto
           </button>
           <button className={styles.actionBtn} style={secondaryActionStyle} onClick={() => !actionsDisabled && navigateToUpload()} disabled={actionsDisabled}>
-            <Upload size={16} />
             Subir Facturas
           </button>
         </div>
@@ -153,18 +151,15 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <p className={styles.internationalLabel} style={{color: COLORS.labels}}>Gastos Nacionales (Bs)</p>
           <div className={styles.actionRow}>
             <button className={styles.actionBtn} style={primaryActionStyle} onClick={() => !actionsDisabled && navigateToRegister()} disabled={actionsDisabled}>
-              <PlusCircle size={16} />
               Gasto sin Factura
             </button>
             <button className={styles.actionBtn} style={secondaryActionStyle} onClick={() => !actionsDisabled && navigateToUpload()} disabled={actionsDisabled}>
-              <Upload size={16} />
               Subir Facturas
             </button>
           </div>
           <p className={styles.internationalLabel} style={{color: COLORS.labels}}>Gastos Internacionales (USD)</p>
           <div className={styles.actionRow}>
             <button className={styles.actionBtn} style={primaryActionStyle} onClick={() => !actionsDisabled && navigateToRegisterInternational()} disabled={actionsDisabled}>
-              <Globe size={16} />
               Gasto Internacional
             </button>
           </div>
@@ -324,7 +319,6 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       {canRequestDeadline && !deadlinePending && tripInProgress && (
         <button className={styles.requestBtn} style={{backgroundColor: COLORS.secondary, color: COLORS.background}}
           onClick={() => setShowDeadlineModal(true)}>
-          <AlertTriangle size={15} />
           Solicitar Autorización al Revisor
         </button>
       )}
@@ -332,7 +326,6 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       {tripInProgress && !isSubstitution && substitution?.canRequest && (
         <button className={styles.requestBtn} style={{backgroundColor: COLORS.title, color: COLORS.background}}
           onClick={substitution.openModal}>
-          <Users size={15} />
           Solicitar que Otra Persona Rinda por Mí
         </button>
       )}

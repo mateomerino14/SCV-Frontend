@@ -1,6 +1,6 @@
 import ExportButton from '../../components/ui/ExportButton';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
-import {Search, Plus, Pencil, Ban, CheckCircle, FileSpreadsheet} from 'lucide-react';
+import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -105,7 +105,6 @@ function UserManagementPage() {
         <div className={styles.excelRow}>
           <button className={styles.importBtn} onClick={userImport.open} disabled={loading}
             style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background, opacity: loading ? 0.6 : 1}}>
-            <FileSpreadsheet size={16} />
             Importar desde Excel
           </button>
           <ExportButton onClick={() => exportUsers(users)} exporting={exporting} disabled={loading || users.length === 0} />
