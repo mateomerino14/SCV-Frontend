@@ -14,6 +14,11 @@ function Button({text, variant = 'primary', onClick, disabled, type = 'button'})
     color = COLORS.primary;
     borderColor = COLORS.background;
   }
+  if (variant === 'outline') {
+    backgroundColor = 'transparent';
+    color = COLORS.primary;
+    borderColor = COLORS.primary;
+  }
   if (disabled) {
     backgroundColor = COLORS.fields;
     borderColor = COLORS.fields;

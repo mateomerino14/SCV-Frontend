@@ -165,7 +165,7 @@ function UserImportModal({isOpen, onClose, fileName, preview, result, error, val
               )}
               {result && <ImportResult result={result} />}
               <ModalActions onCancel={onClose} onConfirm={onConfirm} confirmLabel={confirmLabel} loading={importing}
-                cancelLabel={result ? 'Cerrar' : 'Cancelar'} hideConfirm={!hasPreview} confirmDisabled={validRows.length === 0 || checking} />
+                cancelLabel={result ? 'Cerrar' : 'Cancelar'} onLight hideConfirm={!hasPreview} confirmDisabled={validRows.length === 0 || checking} />
             </div>
           </motion.div>
         </motion.div>
