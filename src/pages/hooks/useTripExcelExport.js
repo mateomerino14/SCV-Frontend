@@ -25,6 +25,10 @@ const thickBorderColor = 'FF1B4F91';
 const totalsLabelEndCol = 3;
 const reimburseFont = 'FF9C0006';
 const originalLineHeight = 14;
+const fundLabel = 'SALDO ANTERIOR FONDO RECIBIDO';
+const amountNumberFormat = '#,##0.00';
+const bsNumberFormat = '#,##0.00" Bs"';
+const usdNumberFormat = '#,##0.00" USD"';
 const systemReceiptFill = 'FFE4DFEC';
 const systemReceiptLegend = 'N° DOCUMENTO en lila: número de recibo que asignó el sistema, porque el gasto no tiene recibo original. Sin color: número de la factura o del recibo original.';
 const footerText = '&L&8Sistema de Control de Viáticos&R&8Página &P de &N';
@@ -149,6 +153,22 @@ function applyOuterBorder(sheet, startRow, endRow, startCol, endCol) {
       cell.border = border;
     }
   }
+}
+
+function addFundRow(sheet, rowNumber, col, totalCols, label, value, format) {
+  const row = sheet.getRow(rowNumber);
+  row.getCell(col.detail).value = label;
+  row.getCell(col.amount).value = value;
+  row.getCell(col.amount).numFmt = format;
+  for (let column = 1; column <= totalCols; column++) {
+    const cell = row.getCell(column);
+    cell.border = thinBorder;
+    cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: infoFill}};
+    cell.font = {bold: true, size: 9};
+    cell.alignment = {horizontal: 'center', vertical: 'middle'};
+  }
+  row.getCell(col.detail).alignment = {horizontal: 'left', vertical: 'middle'};
+  row.height = 18;
 }
 
 function styleInfoLabel(cell, value) {
@@ -299,7 +319,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   if (isInternationalTrip) {
     headers.push('MONTO ORIGINAL');
   }
-  headers.push('IMPORTE Bs.');
+  headers.push('IMPORTE');
   headers.push('I.V.A.', 'RC-IVA', 'IUE', 'IT', 'IMPORTE COSTO/ GASTO');
   const headerRowNumber = 7;
   const headerRow = sheet.getRow(headerRowNumber);
@@ -314,8 +334,17 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   headerRow.height = 32;
   const oracleOptions = buildOracleAccountOptions(expenses);
   const oracleFormula = addListRange(workbook, oracleOptions);
-  let currentRow = 8;
-  let totalImporteFactura = 0;
+  const {internationalUsd, balanceRows} = summarizeStatement(trip, expenses);
+  const [, fundBs, fundUsd] = balanceRows[0];
+  let currentRow = headerRowNumber + 1;
+  let fundRows = [[fundLabel, fundBs, amountNumberFormat]];
+  if (isInternationalTrip) {
+    fundRows = [[`${fundLabel} (Bs)`, fundBs, bsNumberFormat], [`${fundLabel} (USD)`, fundUsd, usdNumberFormat]];
+  }
+  fundRows.forEach(([label, value, format]) => {
+    addFundRow(sheet, currentRow, col, totalCols, label, value, format);
+    currentRow += 1;
+  });
   let totalImporteBs = 0;
   let totalVat = 0;
   let totalRcIva = 0;
@@ -326,7 +355,6 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     const oracleType = toOracleExpenseType(expense.tipo);
     const amount = parseFloat(expense.monto_total) || 0;
     const isInternational = !!expense.es_gasto_internacional;
-    const hasInvoice = !!expense.Factura;
     const {vat, rcIva, iue, it, cost} = getExpenseTaxValues(expense);
     const amountBs = amountInBsOf(expense);
     let rowFill = nationalRowFill;
@@ -335,14 +363,14 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     }
     let shownAmount = amountBs;
     let shownCost = cost;
-    let amountFormat = '#,##0.00';
+    let amountFormat = amountNumberFormat;
     if (isInternational) {
       shownCost = amountBs;
     }
     if (amountBs === null) {
       shownAmount = amount;
       shownCost = amount;
-      amountFormat = '#,##0.00" USD"';
+      amountFormat = usdNumberFormat;
     }
     const row = sheet.getRow(currentRow);
     row.getCell(col.number).value = index + 1;
@@ -360,11 +388,6 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     const documentInfo = resolveDocumentNumber(expense, trip.Recibo);
     row.getCell(col.document).value = documentInfo.number;
     row.getCell(col.nit).value = cleanValue(expense.Proveedor?.numero_doc_fiscal);
-    if (hasInvoice) {
-      row.getCell(col.invoiceAmount).value = amount;
-      row.getCell(col.invoiceAmount).numFmt = '#,##0.00';
-      totalImporteFactura += amount;
-    }
     const heightEntries = [
       [oracleValue, sheet.getColumn(col.oracle).width],
       [detailText, sheet.getColumn(col.detail).width],
@@ -375,11 +398,11 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       row.getCell(col.original).alignment = {wrapText: true, vertical: 'middle', horizontal: 'center'};
       originalLines.forEach((line) => heightEntries.push([line, sheet.getColumn(col.original).width]));
     }
-    [[col.amount, shownAmount], [col.vat, vat], [col.rcIva, rcIva], [col.iue, iue], [col.it, it], [col.cost, shownCost]].forEach(([column, value]) => {
+    [[col.invoiceAmount, shownAmount], [col.vat, vat], [col.rcIva, rcIva], [col.iue, iue], [col.it, it], [col.cost, shownCost]].forEach(([column, value]) => {
       row.getCell(column).value = value;
-      row.getCell(column).numFmt = '#,##0.00';
+      row.getCell(column).numFmt = amountNumberFormat;
     });
-    row.getCell(col.amount).numFmt = amountFormat;
+    row.getCell(col.invoiceAmount).numFmt = amountFormat;
     row.getCell(col.cost).numFmt = amountFormat;
     for (let column = 1; column <= totalCols; column++) {
       const cell = row.getCell(column);
@@ -411,8 +434,8 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   sheet.mergeCells(totalsRowNumber, 1, totalsRowNumber, totalsLabelEndCol);
   totalsRow.getCell(1).value = 'Sumas Totales (Bs)';
   totalsRow.getCell(1).font = {bold: true, size: 9};
-  totalsRow.getCell(col.invoiceAmount).value = totalImporteFactura;
-  totalsRow.getCell(col.amount).value = totalImporteBs;
+  totalsRow.getCell(col.invoiceAmount).value = totalImporteBs;
+  totalsRow.getCell(col.amount).value = fundBs;
   totalsRow.getCell(col.vat).value = totalVat;
   totalsRow.getCell(col.rcIva).value = totalRcIva;
   totalsRow.getCell(col.iue).value = totalIue;
@@ -428,18 +451,18 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       cell.alignment = {horizontal: 'left', vertical: 'middle'};
     }
     if (column === col.invoiceAmount || column >= col.amount) {
-      cell.numFmt = '#,##0.00';
+      cell.numFmt = amountNumberFormat;
     }
   }
   totalsRow.height = 20;
   let lastTableRow = totalsRowNumber;
   currentRow += 1;
-  const {internationalUsd, balanceRows} = summarizeStatement(trip, expenses);
   if (isInternationalTrip) {
     const totalsUsdRow = sheet.getRow(currentRow);
-    sheet.mergeCells(currentRow, 1, currentRow, col.original);
+    sheet.mergeCells(currentRow, 1, currentRow, col.nit);
     totalsUsdRow.getCell(1).value = 'Gastos internacionales en USD, para Oracle';
-    totalsUsdRow.getCell(col.amount).value = internationalUsd;
+    totalsUsdRow.getCell(col.invoiceAmount).value = internationalUsd;
+    totalsUsdRow.getCell(col.amount).value = fundUsd;
     for (let column = 1; column <= totalCols; column++) {
       const cell = totalsUsdRow.getCell(column);
       cell.fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: internationalRowFill}};
@@ -450,7 +473,8 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
         cell.alignment = {horizontal: 'left', vertical: 'middle'};
       }
     }
-    totalsUsdRow.getCell(col.amount).numFmt = '#,##0.00" USD"';
+    totalsUsdRow.getCell(col.invoiceAmount).numFmt = usdNumberFormat;
+    totalsUsdRow.getCell(col.amount).numFmt = usdNumberFormat;
     totalsUsdRow.height = 20;
     lastTableRow = currentRow;
     currentRow += 1;
@@ -500,7 +524,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
         cell.alignment = {horizontal: 'left', vertical: 'middle'};
       }
       else {
-        cell.numFmt = '#,##0.00';
+        cell.numFmt = amountNumberFormat;
       }
       if (label === reimburseLabel && index > 0 && values[index] > 0) {
         cell.font = {bold: true, size: 9, color: {argb: reimburseFont}};
