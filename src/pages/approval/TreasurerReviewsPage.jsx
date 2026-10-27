@@ -48,7 +48,13 @@ function TreasurerReviewsPage() {
     subtitle = 'Viajes que rechazaste en la asignación de fondos y el empleado aún no corrige.';
   }
 
-  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalPending, 'viaje esperando fondos', 'viajes esperando fondos');
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = pendingMessage(user?.nombre, totalPending, 'viaje esperando fondos', 'viajes esperando fondos');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

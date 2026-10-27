@@ -45,7 +45,13 @@ function ApproverReviewsPage() {
     subtitle = 'Viajes que rechazaste y el empleado aún no corrige. Al reenviarlos a revisión salen de esta lista.';
   }
 
-  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'viaje por aprobar', 'viajes por aprobar');
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = pendingMessage(user?.nombre, totalMyPending, 'viaje por aprobar', 'viajes por aprobar');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

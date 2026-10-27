@@ -33,7 +33,6 @@ const statusConfig = {
   PENDIENTE: {label: 'Pendiente', bg: COLORS.pendingHighlight, color: COLORS.warningStrong},
   APROBADA: {label: 'Aprobada', bg: COLORS.successBackground, color: COLORS.success},
   RECHAZADA: {label: 'Rechazada', bg: COLORS.rejectedHighlight, color: COLORS.title},
-  // Cerrada por el sistema (sin revisor): el viaje se envio a revision antes de responderla
   CERRADA: {label: 'Cerrada', bg: COLORS.neutralBackground, color: COLORS.neutralText},
 };
 
@@ -41,9 +40,12 @@ function DeadlineRequestCard({request, onApprove, onReject, savingAction, showAc
   const [showRejectBox, setShowRejectBox] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const closedAutomatically = request.estado === 'RECHAZADA' && !request.id_revisor;
-  const config = statusConfig[closedAutomatically ? 'CERRADA' : request.estado] || statusConfig.PENDIENTE;
+  let statusKey = request.estado;
+  if (closedAutomatically) {
+    statusKey = 'CERRADA';
+  }
+  const config = statusConfig[statusKey] || statusConfig.PENDIENTE;
   const employee = request.Viaje?.Usuario;
-  // La pidio el reemplazo aprobado, no el titular del viaje
   const requestedBySubstitute = request.Solicitante && request.Viaje?.id_usuario && request.Solicitante.id_usuario !== request.Viaje.id_usuario;
 
   const handleConfirmReject = () => {

@@ -48,7 +48,13 @@ function ExpenseInvoicedTable({expenses, onViewExpense, countObservations, onOpe
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
               const vat = getExpenseInvoiceVat(expense);
-              const bg = expense.tiene_alcohol ? COLORS.warningBackground : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
+              let bg = COLORS.backgroundHeader;
+              if (expense.tiene_alcohol) {
+                bg = COLORS.warningBackground;
+              }
+              else if (index % 2 === 0) {
+                bg = COLORS.background;
+              }
               return (
                 <tr key={expense.id_gasto} style={{backgroundColor: bg}}>
                   <td className={styles.td} style={cell({color: COLORS.labels})}>{index + 1}</td>

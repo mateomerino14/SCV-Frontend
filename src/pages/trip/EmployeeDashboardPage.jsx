@@ -59,7 +59,13 @@ function EmployeeDashboardPage() {
     );
   }
 
-  const mascotMessage = loading ? null : buildDashboardMessage(user?.nombre, inProgressTrips.length, draftTrips.length);
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = buildDashboardMessage(user?.nombre, inProgressTrips.length, draftTrips.length);
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

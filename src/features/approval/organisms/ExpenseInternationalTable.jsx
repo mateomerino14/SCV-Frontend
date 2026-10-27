@@ -51,7 +51,10 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
               const subitems = expense.Gasto_Subitem || [];
               const hasInstallments = installments.length > 0;
               const hasSubitems = subitems.length > 0;
-              const bg = index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader;
+              let bg = COLORS.backgroundHeader;
+              if (index % 2 === 0) {
+                bg = COLORS.background;
+              }
               let description = expense.descripcion || '—';
               let descriptionColor = COLORS.labels;
               let descriptionWeight = 'normal';

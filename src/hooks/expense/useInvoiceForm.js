@@ -58,7 +58,6 @@ function useInvoiceForm(data, onChange) {
     }
 
     if (field === 'numero_factura') {
-      // Recibos y boletos traen códigos con símbolos (@, $, #); solo se quitan los saltos de línea y tabulaciones
       const invoiceCode = removeControlCharacters(value).slice(0, maxInvoiceNumber);
       onChange(field, invoiceCode);
       return;

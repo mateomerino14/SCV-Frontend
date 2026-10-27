@@ -45,7 +45,13 @@ function SupervisorTripHistoryPage() {
     subtitle = 'Viajes que rechazaste y el empleado aún no corrige. Al reenviarlos a revisión salen de esta lista.';
   }
 
-  const mascotMessage = !loading && statusFilter === 'EN_REVISION_VIAJE' ? pendingMessage(user?.nombre, total, 'viaje por revisar', 'viajes por revisar') : null;
+  let mascotMessage = null;
+
+  if (!loading && statusFilter === 'EN_REVISION_VIAJE') {
+
+    mascotMessage = pendingMessage(user?.nombre, total, 'viaje por revisar', 'viajes por revisar');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

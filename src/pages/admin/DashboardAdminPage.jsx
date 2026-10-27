@@ -85,7 +85,13 @@ function DashboardAdminPage() {
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
 
-  const mascotMessage = loading ? null : `${greetingFor(user?.nombre)} Aquí tienes el resumen del sistema.`;
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = `${greetingFor(user?.nombre)} Aquí tienes el resumen del sistema.`;
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

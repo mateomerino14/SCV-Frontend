@@ -46,7 +46,10 @@ function InProgressTripContent({trip, navigate}) {
     isInternational, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,
     internationalExpense, assignedAmountUsd, internationalPercentage, exceedsInternational,
   } = useBudgetProgress(trip);
-  const nationalLabel = isInternational ? 'Nacional (Bs)' : 'Gasto Acumulado';
+  let nationalLabel = 'Gasto Acumulado';
+  if (isInternational) {
+    nationalLabel = 'Nacional (Bs)';
+  }
 
   return (
     <motion.div className={styles.container} whileHover={{y: -3, boxShadow: '0 12px 28px rgba(0,0,0,0.14)'}} transition={{duration: 0.18}}>

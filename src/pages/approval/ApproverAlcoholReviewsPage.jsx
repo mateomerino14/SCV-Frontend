@@ -45,7 +45,13 @@ function ApproverAlcoholReviewsPage() {
     subtitle = 'Rendiciones con alcohol que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
-  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición con alcohol por revisar', 'rendiciones con alcohol por revisar');
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = pendingMessage(user?.nombre, totalMyPending, 'rendición con alcohol por revisar', 'rendiciones con alcohol por revisar');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

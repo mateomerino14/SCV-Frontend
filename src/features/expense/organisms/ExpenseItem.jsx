@@ -35,7 +35,10 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
   const displayName = expense.Proveedor?.nombre || expense.Categoria_Gasto?.nombre || 'Sin proveedor';
   const isInternational = !!expense.es_gasto_internacional;
   const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && isFinalApproved;
-  const accentColor = isInternational ? COLORS.primary : COLORS.title;
+  let accentColor = COLORS.title;
+  if (isInternational) {
+    accentColor = COLORS.primary;
+  }
   const expenseDate = expense.Factura?.fecha_emision || expense.fecha_gasto;
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;

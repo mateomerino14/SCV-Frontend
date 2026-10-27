@@ -48,7 +48,13 @@ function ReviewerReviewsPage() {
     subtitle = 'Rendiciones que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
-  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición por revisar', 'rendiciones por revisar');
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = pendingMessage(user?.nombre, totalMyPending, 'rendición por revisar', 'rendiciones por revisar');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

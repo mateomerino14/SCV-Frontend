@@ -60,7 +60,10 @@ function ProfilePage() {
     );
   }
 
-  const mascotMessage = menuUser ? 'Mantén tus datos al día: tu carnet de identidad aparece en tus recibos.' : null;
+  let mascotMessage = null;
+  if (menuUser) {
+    mascotMessage = 'Mantén tus datos al día: tu carnet de identidad aparece en tus recibos.';
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>

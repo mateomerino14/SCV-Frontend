@@ -39,8 +39,11 @@ function TripDetailPage() {
   const {trip, loading, error} = tripDetail;
   const tripInProgress = trip?.estado === 'EN_CURSO' || (trip?.estado === 'RECHAZADO' && !!trip?.fue_iniciado);
   const deadline = useDeadlineAuthorization(id, trip?.fecha_fin, tripInProgress);
-  // Solo el titular pide un reemplazo: para quien rinde como reemplazo no se consulta
-  const substitution = useSubstitutionRequest(trip && !tripDetail.isSubstitution ? id : null);
+  let substitutionTripId = null;
+  if (trip && !tripDetail.isSubstitution) {
+    substitutionTripId = id;
+  }
+  const substitution = useSubstitutionRequest(substitutionTripId);
 
   if (loading) {
     return (

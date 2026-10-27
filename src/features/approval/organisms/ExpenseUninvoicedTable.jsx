@@ -59,7 +59,13 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
               const {rcIva, iue, it: itTax, cost} = withholdingList[index];
-              const bg = expense.tiene_alcohol ? COLORS.warningBackground : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
+              let bg = COLORS.backgroundHeader;
+              if (expense.tiene_alcohol) {
+                bg = COLORS.warningBackground;
+              }
+              else if (index % 2 === 0) {
+                bg = COLORS.background;
+              }
               const subitems = expense.Gasto_Subitem || [];
               let description = expense.descripcion || '—';
               let descriptionColor = COLORS.labels;
