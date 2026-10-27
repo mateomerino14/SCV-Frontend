@@ -1,5 +1,4 @@
 const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-const shortWeekdays = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
 const daysPerWeek = 7;
 
 export const weekdayInitials = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
@@ -24,12 +23,6 @@ export const formatDisplayDate = (iso) => {
   }
   const [year, month, day] = String(iso).slice(0, 10).split('-');
   return `${day}/${month}/${year}`;
-};
-
-export const formatHeaderDate = (iso) => {
-  const [year, month, day] = String(iso).split('-').map(Number);
-  const weekday = shortWeekdays[new Date(year, month - 1, day).getDay()];
-  return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${day} de ${monthNames[month - 1].slice(0, 3)}`;
 };
 
 export const formatLongDay = (iso) => {

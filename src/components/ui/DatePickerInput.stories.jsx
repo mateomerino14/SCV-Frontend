@@ -8,7 +8,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Calendario de la app: abre una ventana con cabecera granate, marca los días del viaje como franja y confirma la fecha con Aceptar.',
+        component: 'Calendario de la app: se despliega pequeño debajo del campo (o encima si no hay espacio), marca los días del viaje como franja y elige la fecha con un toque; Hoy y Borrar al pie.',
       },
     },
   },

@@ -82,5 +82,5 @@ export const pickDate = async (page, index, isoDate) => {
     }
   }
   await dialog.locator(`[data-date="${isoDate}"]`).click();
-  await dialog.getByRole('button', {name: 'Aceptar'}).click();
+  await dialog.waitFor({state: 'hidden'});
 };
