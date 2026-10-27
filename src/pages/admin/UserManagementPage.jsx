@@ -129,7 +129,7 @@ function UserManagementPage() {
                 <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.successBackground : COLORS.error}}>
                   <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: currentUser.activo ? COLORS.successStrong : COLORS.secondary}} />
                 </div>
-                <div className={styles.actionBtn} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(currentUser)}>
+                <div className={styles.actionBtn} role="button" aria-label={`Editar a ${currentUser.nombre} ${currentUser.apellido_paterno}`} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(currentUser)}>
                   <Pencil size={14} style={{color: COLORS.background}} />
                 </div>
                 <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.error : COLORS.successBackground}} onClick={() => openSuspend(currentUser)}>

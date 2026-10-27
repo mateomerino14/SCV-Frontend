@@ -15,6 +15,8 @@ function Navbar({text, onMenuClick, profilePhoto}) {
           size={22}
           strokeWidth={3}
           className="cursor-pointer"
+          role="button"
+          aria-label="Abrir menú"
           style={{color: COLORS.title}}
           onClick={onMenuClick}
         />
