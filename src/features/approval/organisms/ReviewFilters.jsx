@@ -28,8 +28,8 @@ function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onAp
       <div className={styles.card} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>
         <p className={styles.cardTitle} style={{color: COLORS.labels}}>Filtros de Búsqueda</p>
         <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
-          onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
-          onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
+          onStartDateChange={(value) => setFilters((prev) => ({...prev, fecha_inicio: value}))}
+          onEndDateChange={(value) => setFilters((prev) => ({...prev, fecha_fin: value}))} />
         {/* Todos los filtros se muestran desde el inicio; las listas se completan al cargar */}
         <div className={styles.employeeSection}>
           <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Empleado</p>

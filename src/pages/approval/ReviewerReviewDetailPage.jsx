@@ -1,5 +1,5 @@
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
-import {ArrowLeft, AlertTriangle, Download} from 'lucide-react';
+import {ArrowLeft, AlertTriangle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -11,6 +11,7 @@ import EditCommentModal from '../../features/approval/organisms/EditCommentModal
 import DeleteCommentConfirmModal from '../../features/approval/organisms/DeleteCommentConfirmModal';
 import ExpenseTripInfoCard from '../../features/approval/organisms/ExpenseTripInfoCard';
 import ExpenseBudgetBar from '../../features/approval/molecules/ExpenseBudgetBar';
+import DailyBreakdownCard from '../../features/trip/molecules/DailyBreakdownCard';
 import ExpenseSettlementCard from '../../features/approval/molecules/ExpenseSettlementCard';
 import ExpenseAlertsRow from '../../features/approval/molecules/ExpenseAlertsRow';
 import ExpenseInvoicedTable from '../../features/approval/organisms/ExpenseInvoicedTable';
@@ -26,6 +27,8 @@ import {buildDayJustifications} from '../../utils/dayJustifications';
 import {COLORS} from '../../constants';
 import {reviewerExpenseDetailPath, reviewerReviewPath} from '../../constants/routes';
 import {getStatusColors} from '../../constants/tripStatusColors';
+import {getExpenseInvoiceVat} from '../../utils/invoiceAmounts';
+import {showsUsdFund} from '../../utils/expenseCurrency';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -103,6 +106,7 @@ function ReviewerReviewDetailPage() {
   const trip = data.viaje;
   const expenses = data.gastos || [];
   const isInternational = trip.tipo === 'Internacional';
+  const hasUsdFund = showsUsdFund(trip);
 
   const nationalExpenses = expenses.filter((expense) => !expense.es_gasto_internacional);
   const internationalExpenses = expenses.filter((expense) => !!expense.es_gasto_internacional);
@@ -110,7 +114,7 @@ function ReviewerReviewDetailPage() {
   const uninvoicedExpenses = nationalExpenses.filter((expense) => !expense.Factura);
 
   const totalVat = invoicedExpenses.reduce((sum, expense) => {
-    return sum + Math.max(0, parseFloat(expense.monto_total || 0) - parseFloat(expense.Factura?.monto_parcial || 0));
+    return sum + getExpenseInvoiceVat(expense);
   }, 0);
 
   const isPending = trip.estado === 'APROBADO_SUPERVISOR';
@@ -144,15 +148,19 @@ function ReviewerReviewDetailPage() {
           <ExpenseBudgetBar accumulated={data.gastoAcumulado} assignedAmount={parseFloat(trip.monto_asignado)} isUsd={false} />
         </div>
 
-        {isInternational && (
+        {hasUsdFund && (
           <div className={styles.card} style={{backgroundColor: COLORS.background}}>
             <ExpenseBudgetBar accumulated={data.gastoAcumuladoUsd} assignedAmount={parseFloat(trip.monto_asignado_usd || 0)} isUsd />
           </div>
         )}
 
+        <DailyBreakdownCard dailyBreakdown={data.desgloseDiario || []} isInternational={isInternational}
+          dailyRate={parseFloat(trip.Usuario?.Cargo?.monto_diario || 0)} dailyRateUsd={parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0)}
+          justifiedDays={Object.keys(dayJustifications).filter((key) => dayJustifications[key])} />
+
         <ExpenseSettlementCard
           amount={data.excedeTotal ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
-          exceeds={data.excedeTotal} isInternational={isInternational}
+          exceeds={data.excedeTotal} isInternational={hasUsdFund}
           amountUsd={data.excedeTotalUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
           exceedsUsd={data.excedeTotalUsd} exceededDays={data.diasExcedidos} exceedsHotels={data.excedeHoteles} dayJustifications={dayJustifications} />
 
@@ -169,11 +177,10 @@ function ReviewerReviewDetailPage() {
             countObservations={countExpenseObservations} onOpenObservations={openExpenseObservations} />
         )}
 
-        <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
+        <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={hasUsdFund} netBalanceUsd={data.gastoAcumuladoUsd} />
 
         {expenses.length > 0 && (
           <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, dayJustificationsList)}>
-            <Download size={16} />
             Exportar Excel
           </button>
         )}
@@ -185,7 +192,7 @@ function ReviewerReviewDetailPage() {
         )}
 
         {actionCompleted && warning && (
-          <p className={styles.warningMsg} style={{color: '#856404'}}>{warning}</p>
+          <p className={styles.warningMsg} style={{color: COLORS.warningText}}>{warning}</p>
         )}
 
         {canAct && (

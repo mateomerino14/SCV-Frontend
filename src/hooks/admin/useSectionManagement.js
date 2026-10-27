@@ -1,12 +1,19 @@
 import {useState, useEffect} from 'react';
 import {getSections, createSection, updateSection, suspendSection, activateSection} from '../../services/admin/adminService';
-import {normalizeSearchText} from '../../features/admin/hooks/useSearchableSelector';
+import {normalizeSearchText} from '../shared/useSearchableSelector';
 
 const maxName = 100;
 
 function normalizeSectionName(name) {
   return (name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ');
 }
+
+const emptyForm = {nombre: '', codigo_seccion: ''};
+
+const sectionPayload = (formData) => ({
+  nombre: formData.nombre.trim(),
+  codigo_seccion: formData.codigo_seccion || null,
+});
 
 function useSectionManagement() {
   const [allSections, setAllSections] = useState([]);
@@ -21,7 +28,7 @@ function useSectionManagement() {
   const [showSuspend, setShowSuspend] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [formData, setFormData] = useState({nombre: ''});
+  const [formData, setFormData] = useState(emptyForm);
 
   const load = async () => {
     setLoading(true);
@@ -71,7 +78,7 @@ function useSectionManagement() {
   };
 
   const openCreate = () => {
-    setFormData({nombre: ''});
+    setFormData(emptyForm);
     setError('');
     setFieldErrors({});
     setShowCreate(true);
@@ -79,7 +86,7 @@ function useSectionManagement() {
 
   const openEdit = (section) => {
     setSelectedSection(section);
-    setFormData({nombre: section.nombre});
+    setFormData({nombre: section.nombre, codigo_seccion: section.codigo_seccion || ''});
     setError('');
     setFieldErrors({});
     setShowEdit(true);
@@ -98,7 +105,7 @@ function useSectionManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await createSection({nombre: formData.nombre.trim(), activo: true});
+    const data = await createSection({...sectionPayload(formData), activo: true});
     setSavingAction(false);
     if (data.error) {
       showError(data.error);
@@ -118,7 +125,7 @@ function useSectionManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await updateSection(selectedSection.id_seccion, {nombre: formData.nombre.trim()});
+    const data = await updateSection(selectedSection.id_seccion, sectionPayload(formData));
     setSavingAction(false);
     if (data.error) {
       showError(data.error);

@@ -10,7 +10,7 @@ function ExpenseObsButton({count, accentColor, onClick}) {
   return (
     <button className={styles.btn} style={{backgroundColor: count > 0 ? COLORS.error : COLORS.backgroundHeader, margin: '0 auto'}} onClick={onClick}>
       <MessageSquare size={13} style={{color: count > 0 ? COLORS.secondary : accentColor}} />
-      {count > 0 && <span className={styles.badge} style={{backgroundColor: COLORS.secondary, color: '#fff'}}>{count}</span>}
+      {count > 0 && <span className={styles.badge} style={{backgroundColor: COLORS.secondary, color: COLORS.background}}>{count}</span>}
     </button>
   );
 }

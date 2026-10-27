@@ -31,7 +31,6 @@ const styles = {
   scrollRow: "flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory items-stretch",
 };
 
-// Mensaje de Casquito en Mis Viajes, segun lo que el empleado tiene pendiente
 function buildDashboardMessage(name, inProgressCount, draftCount) {
   if (inProgressCount > 0) {
     return `${greetingFor(name)} Tienes ${inProgressCount} ${inProgressCount === 1 ? 'viaje en curso' : 'viajes en curso'}: registra tus gastos a tiempo.`;
@@ -60,17 +59,16 @@ function EmployeeDashboardPage() {
     );
   }
 
-  const mascotMessage = loading ? null : buildDashboardMessage(user?.nombre, inProgressTrips.length, draftTrips.length);
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = buildDashboardMessage(user?.nombre, inProgressTrips.length, draftTrips.length);
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <style>{`
-        .scroll-trips::-webkit-scrollbar { height: 6px; }
-        .scroll-trips::-webkit-scrollbar-track { background: transparent; }
-        .scroll-trips::-webkit-scrollbar-thumb { background: ${COLORS.dataFields}; border-radius: 999px; }
-        .scroll-trips::-webkit-scrollbar-thumb:hover { background: ${COLORS.labels}; }
-        .scroll-trips { scrollbar-width: thin; scrollbar-color: ${COLORS.dataFields} transparent; }
-      `}</style>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
@@ -87,7 +85,7 @@ function EmployeeDashboardPage() {
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes sin Enviar</p>
         {draftTrips.length > 0 ? (
           <div className="relative mb-2">
-            <div className={`${styles.scrollRow} scroll-trips`}>
+            <div className={styles.scrollRow}>
               {draftTrips.map((trip) => (
                 <div key={trip.id_viaje} className="snap-start shrink-0 w-full md:w-[450px] flex flex-col">
                   <DraftTripCard trip={trip} onSubmit={handleRequestSubmitReview} submitting={submittingReview === trip.id_viaje} />
@@ -98,8 +96,8 @@ function EmployeeDashboardPage() {
         ) : (
           <div className={styles.emptyRecent} style={{background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.title})`, marginBottom: 16}}>
             <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.1)" />
-              <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill="rgba(255,255,255,0.6)" />
+              <circle cx="20" cy="20" r="20" fill={COLORS.onColorFill10} />
+              <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill={COLORS.onColorText60} />
             </svg>
             <p className="font-inter font-bold text-base text-white">Sin borradores pendientes</p>
             <p className="font-inter text-xs text-white opacity-70">Todos tus viajes ya fueron enviados a revisión</p>
@@ -107,7 +105,7 @@ function EmployeeDashboardPage() {
         )}
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes en Curso</p>
         <div className="relative">
-          <div className={`${styles.scrollRow} scroll-trips`}>
+          <div className={styles.scrollRow}>
             {inProgressTrips.length > 0 || substitutionTrips.length > 0 ? (
               [...inProgressTrips, ...substitutionTrips].map((trip) => (
                 <div key={trip.id_viaje} className="snap-start shrink-0 w-full md:w-[450px] flex flex-col">
@@ -133,8 +131,8 @@ function EmployeeDashboardPage() {
           ) : (
             <div className={styles.emptyRecent} style={{background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.title})`}}>
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.1)" />
-                <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill="rgba(255,255,255,0.6)" />
+                <circle cx="20" cy="20" r="20" fill={COLORS.onColorFill10} />
+                <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill={COLORS.onColorText60} />
               </svg>
               <p className="font-inter font-bold text-base text-white">Sin viajes recientes</p>
               <p className="font-inter text-xs text-white opacity-70">Aún no tienes viajes registrados</p>

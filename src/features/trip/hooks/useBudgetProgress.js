@@ -1,7 +1,9 @@
 import useBudgetPercentage from './useBudgetPercentage';
+import {showsUsdFund} from '../../../utils/expenseCurrency';
 
 function useBudgetProgress(trip) {
   const isInternational = trip.tipo === 'Internacional';
+  const hasUsdFund = showsUsdFund(trip);
   const nationalExpense = trip.gastoAcumulado || 0;
   const internationalExpense = trip.gastoAcumuladoUsd || 0;
   const assignedAmount = parseFloat(trip.monto_asignado) || 0;
@@ -10,7 +12,7 @@ function useBudgetProgress(trip) {
   const international = useBudgetPercentage(internationalExpense, assignedAmountUsd);
 
   return {
-    isInternational,
+    isInternational, hasUsdFund,
     nationalExpense, assignedAmount, nationalPercentage: national.percentage, exceedsNational: national.exceeds,
     internationalExpense, assignedAmountUsd, internationalPercentage: international.percentage, 
     exceedsInternational: international.exceeds,

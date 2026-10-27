@@ -34,7 +34,13 @@ function SupervisorPendingExpenseReviewsPage() {
   } = useSupervisorPendingExpenseReviews();
   const pagination = useClientPagination(trips, 12, statusFilter);
 
-  const mascotMessage = loading ? null : (total > 0 ? `${greetingFor(user?.nombre)} Hay ${total} ${total === 1 ? 'rendición sin asignar esperando' : 'rendiciones sin asignar esperando'} que alguien la${total === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay rendiciones sin asignar por ahora.`);
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = (total > 0 ? `${greetingFor(user?.nombre)} Hay ${total} ${total === 1 ? 'rendición sin asignar esperando' : 'rendiciones sin asignar esperando'} que alguien la${total === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay rendiciones sin asignar por ahora.`);
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -53,7 +59,7 @@ function SupervisorPendingExpenseReviewsPage() {
           <EmptyState title="Sin solicitudes pendientes" subtitle="No hay rendiciones de gastos esperando revisión"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M8 16L14 22L24 10" stroke="rgba(255,255,255,0.7)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 16L14 22L24 10" stroke={COLORS.onColorText70} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             } />
         )}

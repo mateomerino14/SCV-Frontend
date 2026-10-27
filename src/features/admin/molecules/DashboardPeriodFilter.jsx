@@ -24,8 +24,8 @@ function DashboardPeriodFilter({options, preset, onSelectPreset, customRange, on
       {preset === 'rango' && (
         <div className={styles.rangeBox}>
           <DateRangeFilter startDate={customRange.fecha_inicio} endDate={customRange.fecha_fin}
-            onStartDateChange={(event) => onCustomRangeChange({...customRange, fecha_inicio: event.target.value})}
-            onEndDateChange={(event) => onCustomRangeChange({...customRange, fecha_fin: event.target.value})} />
+            onStartDateChange={(value) => onCustomRangeChange({...customRange, fecha_inicio: value})}
+            onEndDateChange={(value) => onCustomRangeChange({...customRange, fecha_fin: value})} />
           <button className={styles.applyBtn} onClick={onApply} style={{backgroundColor: COLORS.primary, color: COLORS.background}}>
             Aplicar Periodo
           </button>

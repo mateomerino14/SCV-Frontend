@@ -14,7 +14,7 @@ const styles = {
   headerRow: 'flex items-center gap-3',
   title: 'text-lg font-bold font-inter leading-tight',
   subtitle: 'text-xs font-inter mt-0.5',
-  listWrapper: 'flex flex-col gap-2 max-h-52 overflow-y-auto pr-1 obs-scroll',
+  listWrapper: 'flex flex-col gap-2 max-h-52 overflow-y-auto pr-1 scroll-on-color',
   empty: 'text-xs font-inter text-center py-3',
 };
 
@@ -22,7 +22,6 @@ const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
 function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, canEdit, currentUserId, newText, setNewText, onAdd, onEdit, onDelete, loading, error}) {
-  // Solo se pueden editar o borrar las observaciones propias
   const canManage = (observation) => canEdit && (!currentUserId || observation.id_usuario === currentUserId);
   const {maxLength, exceedsLimit} = useCommentTextarea(newText);
   const handleAdd = () => {
@@ -36,11 +35,6 @@ function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, c
     <AnimatePresence>
       {isOpen && (
         <motion.div className={styles.overlay} variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
-          <style>{`
-            .obs-scroll::-webkit-scrollbar { width: 6px; }
-            .obs-scroll::-webkit-scrollbar-track { background: transparent; }
-            .obs-scroll::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.4); border-radius: 10px; }
-          `}</style>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
             <div className={styles.headerRow}>
@@ -56,7 +50,7 @@ function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, c
               ) : (
                 observations.map((observation) => (
                   <CommentCard key={observation.id_comentario} compact date={formatDateTime(observation.fecha)} text={observation.descripcion}
-                    backgroundColor="rgba(255,255,255,0.12)" onEdit={canManage(observation) ? () => onEdit(observation) : null} onDelete={canManage(observation) ? () => onDelete(observation.id_comentario) : null} />
+                    backgroundColor={COLORS.backgroundOnColorFill} onEdit={canManage(observation) ? () => onEdit(observation) : null} onDelete={canManage(observation) ? () => onDelete(observation.id_comentario) : null} />
                 ))
               )}
             </div>

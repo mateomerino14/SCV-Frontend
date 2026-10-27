@@ -1,9 +1,13 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
 import UserFormModal from '../../features/admin/organisms/UserFormModal';
+import UserImportModal from '../../features/admin/organisms/UserImportModal';
+import useUserImport from '../../hooks/admin/useUserImport';
 import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import SuccessModal from '../../components/ui/SuccessModal';
@@ -17,7 +21,6 @@ import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import ListCount from '../../components/ui/ListCount';
-
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -40,6 +43,8 @@ const styles = {
   noticeText: 'flex flex-col flex-1',
   noticeTitle: 'text-sm font-bold font-inter',
   noticeSub: 'text-xs font-inter',
+  excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
+  importBtn: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4 border-2',
 };
 
 const tabs = [
@@ -52,10 +57,10 @@ const tabs = [
 ];
 
 const roleConfig = {
-  ADMINISTRADOR: {label: 'Administrador', bg: '#d4edda', color: '#155724'},
-  SUPERVISOR: {label: 'Supervisor', bg: '#85aff3ab', color: '#000a65'},
-  APROBADOR: {label: 'Aprobador', bg: '#ffd700aa', color: '#7a5900'},
-  REVISOR: {label: 'Revisor', bg: '#fef3cd', color: '#856404'},
+  ADMINISTRADOR: {label: 'Administrador', bg: COLORS.successBackground, color: COLORS.success},
+  SUPERVISOR: {label: 'Supervisor', bg: COLORS.adminBadge, color: COLORS.adminBadgeText},
+  APROBADOR: {label: 'Aprobador', bg: COLORS.pendingHighlight, color: COLORS.warningStrong},
+  REVISOR: {label: 'Revisor', bg: COLORS.warningBackground, color: COLORS.warningText},
   EMPLEADO: {label: 'Empleado', bg: COLORS.environmentTypes, color: COLORS.background},
 };
 
@@ -67,8 +72,10 @@ function UserManagementPage() {
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
-    allUsers,
+    allUsers, reload,
   } = useUserManagement();
+  const userImport = useUserImport({positions, sections, onImported: reload});
+  const {exporting, exportError, exportUsers} = useAdminExcelExport();
   const pagination = useClientPagination(users, 15, `${search}|${roleFilter}|${sectionFilter}`);
 
   return (
@@ -77,7 +84,7 @@ function UserManagementPage() {
       <Navbar text="Usuarios" onMenuClick={openMenu} profilePhoto={menuUser?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={menuUser} />
       <div className={styles.content}>
-        <PageHeader title="Usuarios" subtitle="Crea usuarios y asígnales rol, cargo, sección y jefe directo; también puedes suspender o reactivar cuentas." />
+        <PageHeader title="Usuarios" subtitle="Crea usuarios uno por uno o impórtalos desde Excel, y asígnales rol, cargo, sección y jefe directo; también puedes suspender o reactivar cuentas." />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar usuarios..." value={search} onChange={(event) => setSearch(event.target.value)} />
@@ -95,6 +102,14 @@ function UserManagementPage() {
             </button>
           ))}
         </div>
+        <div className={styles.excelRow}>
+          <button className={styles.importBtn} onClick={userImport.open} disabled={loading}
+            style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background, opacity: loading ? 0.6 : 1}}>
+            Importar desde Excel
+          </button>
+          <ExportButton onClick={() => exportUsers(users)} exporting={exporting} disabled={loading || users.length === 0} />
+        </div>
+        {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
           <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="usuario" plural="usuarios" />
@@ -111,14 +126,14 @@ function UserManagementPage() {
                 <span className={styles.cardRole} style={{backgroundColor: config.bg, color: config.color}}>{config.label}</span>
               </div>
               <div className={styles.actionsRow}>
-                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? '#d4edda' : COLORS.error}}>
-                  <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: currentUser.activo ? '#2d7a3a' : COLORS.secondary}} />
+                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.successBackground : COLORS.error}}>
+                  <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: currentUser.activo ? COLORS.successStrong : COLORS.secondary}} />
                 </div>
-                <div className={styles.actionBtn} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(currentUser)}>
+                <div className={styles.actionBtn} role="button" aria-label={`Editar a ${currentUser.nombre} ${currentUser.apellido_paterno}`} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(currentUser)}>
                   <Pencil size={14} style={{color: COLORS.background}} />
                 </div>
-                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.error : '#d4edda'}} onClick={() => openSuspend(currentUser)}>
-                  {currentUser.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: '#2d7a3a'}} />}
+                <div className={styles.actionBtn} style={{backgroundColor: currentUser.activo ? COLORS.error : COLORS.successBackground}} onClick={() => openSuspend(currentUser)}>
+                  {currentUser.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: COLORS.successStrong}} />}
                 </div>
               </div>
             </div>
@@ -129,8 +144,8 @@ function UserManagementPage() {
           <EmptyState title="Sin usuarios registrados" subtitle="No se encontraron usuarios con los filtros aplicados"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="12" r="5" fill="rgba(255,255,255,0.6)" />
-                <path d="M6 26C6 21 10 18 16 18C22 18 26 21 26 26" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="16" cy="12" r="5" fill={COLORS.onColorText60} />
+                <path d="M6 26C6 21 10 18 16 18C22 18 26 21 26 26" stroke={COLORS.onColorText60} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}
@@ -156,6 +171,10 @@ function UserManagementPage() {
         message={selectedUser?.activo ? '¿Estás seguro de que deseas suspender este usuario?' : '¿Estás seguro de que deseas activar este usuario?'}
         confirmText={selectedUser?.activo ? 'Suspender' : 'Activar'} loading={savingAction}
         onConfirm={handleToggleActive} onCancel={() => setShowSuspend(false)} />
+      <UserImportModal isOpen={userImport.isOpen} onClose={userImport.close} fileName={userImport.fileName} preview={userImport.preview}
+        result={userImport.result} error={userImport.error} validRows={userImport.validRows} invalidRows={userImport.invalidRows}
+        checking={userImport.checking} importing={userImport.importing} downloading={userImport.downloading}
+        onDownloadTemplate={userImport.downloadTemplate} onSelectFile={userImport.selectFile} onConfirm={userImport.confirmImport} />
       <SuccessModal isOpen={showSuccess} title="Éxito" message={successMessage} onAccept={() => setShowSuccess(false)} />
       <Footer />
     </div>

@@ -23,31 +23,31 @@ function TermsModal({isOpen, onClose}) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div className={styles.overlay} style={{backgroundColor: 'rgba(0,0,0,0.4)'}}
+        <motion.div className={styles.overlay} style={{backgroundColor: COLORS.overlay}}
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
-            <div className={styles.iconWrapper} style={{backgroundColor: 'rgba(255,255,255,0.15)'}}>
+            <div className={styles.iconWrapper} style={{backgroundColor: COLORS.onColorFill15}}>
               <Shield size={36} style={{color: COLORS.background}} />
             </div>
             <p className={styles.title} style={{color: COLORS.background}}>MAXAM</p>
-            <p className={styles.subtitle} style={{color: 'rgba(255,255,255,0.7)'}}>Sistema de Gestión Corporativa</p>
-            <div className={styles.sectionWrapper} style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
+            <p className={styles.subtitle} style={{color: COLORS.onColorText70}}>Sistema de Gestión Corporativa</p>
+            <div className={styles.sectionWrapper} style={{backgroundColor: COLORS.onColorFill10}}>
               <div className={styles.sectionIcon} style={{backgroundColor: COLORS.secondary}}>
                 <p className="text-sm font-bold font-inter px-1" style={{color: COLORS.background}}>C</p>
               </div>
               <div>
                 <p className="text-sm font-bold font-inter" style={{color: COLORS.background}}>© 2026 Maxam</p>
-                <p className={styles.sectionText} style={{color: 'rgba(255,255,255,0.85)'}}>
+                <p className={styles.sectionText} style={{color: COLORS.backgroundOnColorText}}>
                   Todos los derechos reservados. El uso no autorizado de esta aplicación está estrictamente prohibido y sujeto a sanciones legales.
                 </p>
               </div>
             </div>
-            <p className={styles.noticeLabel} style={{color: 'rgba(255,255,255,0.7)'}}>Aviso Legal y Privacidad</p>
-            <p className={styles.noticeText} style={{color: 'rgba(255,255,255,0.85)'}}>
+            <p className={styles.noticeLabel} style={{color: COLORS.onColorText70}}>Aviso Legal y Privacidad</p>
+            <p className={styles.noticeText} style={{color: COLORS.backgroundOnColorText}}>
               Esta plataforma es de uso exclusivo para empleados y contratistas autorizados del Grupo Maxam. Toda la información contenida es confidencial y propiedad intelectual del Grupo.
             </p>
-            <p className={styles.noticeText} style={{color: 'rgba(255,255,255,0.85)'}}>
+            <p className={styles.noticeText} style={{color: COLORS.backgroundOnColorText}}>
               El acceso y uso están restringidos únicamente a personal autorizado. Queda prohibida la divulgación, reproducción o distribución sin permiso previo.
             </p>
             <button className={styles.acceptBtn} style={{borderColor: COLORS.background, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={onClose}>

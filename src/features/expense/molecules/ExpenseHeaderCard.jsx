@@ -1,4 +1,4 @@
-import {Receipt, Globe, List, PenLine} from 'lucide-react';
+import {Globe, List, PenLine} from 'lucide-react';
 import {COLORS} from '../../../constants';
 
 const styles = {
@@ -14,32 +14,32 @@ const styles = {
   receiptBtn: 'inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-bold font-inter uppercase cursor-pointer border-none',
 };
 
-function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, hasInstallments, installmentsCount, hasSubitems, subitemsCount, canGenerateReceipt, sending, onSendReceipt}) {
-  const showTagsRow = isInternational || hasInstallments || hasSubitems;
+function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, conversionLabel, hasSubitems, subitemsCount, canGenerateReceipt, sending, onSendReceipt}) {
+  const showTagsRow = isInternational || conversionLabel || hasSubitems;
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.primary}}>
       <div className={styles.top}>
         <p className={styles.title} style={{color: COLORS.background}}>{expense.descripcion || (hasSubitems ? 'Gasto con varios subgastos' : '')}</p>
-        <span className={styles.badge} style={{backgroundColor: 'rgba(255,255,255,0.2)', color: COLORS.background}}>{typeLabel}</span>
+        <span className={styles.badge} style={{backgroundColor: COLORS.onColorFill20, color: COLORS.background}}>{typeLabel}</span>
       </div>
       <p className={styles.amount} style={{color: COLORS.background}}>{parseFloat(expense.monto_total).toFixed(2)} {currency}</p>
-      <p className={styles.amountLabel} style={{color: 'rgba(255,255,255,0.7)'}}>{isInternational ? 'Monto Total en USD' : 'Monto Total del Gasto'}</p>
+      <p className={styles.amountLabel} style={{color: COLORS.onColorText70}}>{isInternational ? 'Monto Total en USD' : 'Monto Total del Gasto'}</p>
       {showTagsRow && (
         <div className={styles.tagsRow}>
           {isInternational && (
-            <span className={styles.tag} style={{backgroundColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)'}}>
+            <span className={styles.tag} style={{backgroundColor: COLORS.onColorFill15, color: COLORS.onColorText90}}>
               <Globe size={12} />
               Gasto Internacional
             </span>
           )}
-          {hasInstallments && (
-            <span className={styles.tag} style={{backgroundColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)'}}>
+          {conversionLabel && (
+            <span className={styles.tag} style={{backgroundColor: COLORS.onColorFill15, color: COLORS.onColorText90}}>
               <Globe size={12} />
-              {installmentsCount} tramo{installmentsCount !== 1 ? 's' : ''} de cambio
+              {conversionLabel}
             </span>
           )}
           {hasSubitems && (
-            <span className={styles.tag} style={{backgroundColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)'}}>
+            <span className={styles.tag} style={{backgroundColor: COLORS.onColorFill15, color: COLORS.onColorText90}}>
               <List size={12} />
               {subitemsCount} subgasto{subitemsCount !== 1 ? 's' : ''}
             </span>
@@ -47,15 +47,14 @@ function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, hasIn
         </div>
       )}
       {expense.modificado && (
-        <span className={styles.modifiedBadge} style={{backgroundColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)'}}>
+        <span className={styles.modifiedBadge} style={{backgroundColor: COLORS.onColorFill15, color: COLORS.onColorText90}}>
           <PenLine size={12} />
           Modificado manualmente
         </span>
       )}
       {canGenerateReceipt && (
-        <button className={styles.receiptBtn} style={{backgroundColor: 'rgba(255,255,255,0.9)', color: COLORS.primary, opacity: sending ? 0.6 : 1}}
+        <button className={styles.receiptBtn} style={{backgroundColor: COLORS.onColorText90, color: COLORS.primary, opacity: sending ? 0.6 : 1}}
           onClick={onSendReceipt} disabled={sending}>
-          <Receipt size={12} />
           {sending ? 'Enviando recibo...' : 'Enviar Recibo por Correo'}
         </button>
       )}

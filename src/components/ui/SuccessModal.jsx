@@ -21,7 +21,7 @@ function SuccessModal({isOpen, title = 'Éxito', message, onAccept}) {
         <motion.div className={styles.overlay} variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
-            <ModalIconHeader icon={CheckCircle2} backgroundColor={COLORS.background} color="#000000" />
+            <ModalIconHeader icon={CheckCircle2} backgroundColor={COLORS.background} color={COLORS.backgroundSecondary} />
             <h2 className={styles.title} style={{color: COLORS.background}}>{title}</h2>
             <p className={styles.message} style={{color: COLORS.backgroundHeader}}>{message}</p>
             <Button text="Aceptar" variant="secondary" onClick={onAccept} />

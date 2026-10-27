@@ -9,9 +9,3 @@ export const pendingTabsDefault = [
   {valor: 'OBSERVADO', label: 'Observados'},
   {valor: 'CONFORME', label: 'Conformes'},
 ];
-
-export const historyVariantTabs = [
-  {valor: 'TODOS', label: 'Todos'},
-  {valor: 'APROBADO_FINAL', label: 'Aprobados'},
-  {valor: 'RECHAZADO', label: 'Rechazados'},
-];

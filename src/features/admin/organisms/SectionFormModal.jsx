@@ -13,6 +13,7 @@ const styles = {
   title: 'text-2xl font-bold font-inter text-center',
   subtitle: 'text-sm font-inter text-center',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl',
+  hint: 'text-[11px] font-inter -mt-1',
   buttonsRow: 'flex gap-3 mt-2 justify-center',
   cancelBtn: 'flex-1 py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer border-2 transition-colors',
   confirmBtn: 'flex-1 py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer border-2 transition-colors',
@@ -28,6 +29,9 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
     setFieldErrors((prev) => ({...prev, nombre: undefined}));
     setShowSuggestions(true);
   };
+  const handleSectionCodeChange = (event) => {
+    setFormData((prev) => ({...prev, codigo_seccion: event.target.value.replace(/\D/g, '').slice(0, 3)}));
+  };
   const handleSelectSuggestion = (name) => {
     setFormData((prev) => ({...prev, nombre: name}));
     setShowSuggestions(false);
@@ -35,7 +39,7 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div className={styles.overlay} style={{backgroundColor: 'rgba(0,0,0,0.4)'}}
+        <motion.div className={styles.overlay} style={{backgroundColor: COLORS.overlay}}
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.scrollWrapper} style={{backgroundColor: COLORS.background}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
@@ -44,7 +48,7 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
               <p className={styles.title} style={{color: COLORS.text}}>{title}</p>
               <p className={styles.subtitle} style={{color: COLORS.labels}}>{subtitle}</p>
               <div>
-                <FormField label="Nombre de la Sección" placeholder="Ej: Ventas" maxLength={100}
+                <FormField label="Nombre de la Sección" required placeholder="Ej: Ventas" maxLength={100}
                   value={formData.nombre} onChange={handleNameChange} error={fieldErrors.nombre}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
                 {showSuggestions && suggestions.length > 0 && (
@@ -52,6 +56,9 @@ function SectionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel
                     onSelect={handleSelectSuggestion} />
                 )}
               </div>
+              <FormField label="Sección Oracle" placeholder="Ej: 200" inputMode="numeric" maxLength={3}
+                value={formData.codigo_seccion || ''} onChange={handleSectionCodeChange} />
+              <p className={styles.hint} style={{color: COLORS.labels}}>Va en la cuenta del gasto para Oracle: 76.8.dependencia.cuenta.000000.sección.000.000</p>
               {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
               <div className={styles.buttonsRow}>
                 <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}

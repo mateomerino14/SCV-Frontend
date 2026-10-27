@@ -1,4 +1,5 @@
 import {motion, AnimatePresence} from 'framer-motion';
+import {COLORS} from '../../../constants';
 
 const styles = {
   overlay: "fixed inset-0 flex items-center justify-center z-50",
@@ -19,9 +20,9 @@ function ModalBase({isOpen, children}) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div className={styles.overlay} style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', backdropFilter: 'blur(4px)'}}
+        <motion.div className={styles.overlay} style={{backgroundColor: COLORS.overlaySoft, backdropFilter: 'blur(4px)'}}
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
-          <motion.div className={styles.container} style={{backgroundColor: '#870002'}}
+          <motion.div className={styles.container} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden"
             transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
             {children}

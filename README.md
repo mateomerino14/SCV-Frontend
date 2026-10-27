@@ -4,7 +4,7 @@ Cliente web del sistema de gestión de viajes corporativos y rendición de gasto
 
 ## Requisitos
 
-- Node.js 18 o superior
+- Node.js 22.22 o superior (lo piden las herramientas de pruebas; la app funciona desde 22.12)
 - Una instancia del backend en ejecución
 
 ## Instalación
@@ -29,6 +29,8 @@ npm run build              # compilación para producción
 npm run preview             # previsualización de la compilación
 npm run storybook           # documentación interactiva de los componentes
 npm run build-storybook     # sitio estático de Storybook
+npm test                    # pruebas unitarias (Vitest)
+npm run test:e2e            # pruebas de extremo a extremo (Playwright; ver "Pruebas automáticas")
 ```
 
 ## Stack
@@ -45,7 +47,7 @@ npm run build-storybook     # sitio estático de Storybook
 | ExcelJS + FileSaver | Generación y descarga de la planilla en Excel |
 | Lucide React | Iconografía |
 | jwt-decode | Lectura del rol desde el token |
-| Storybook | Documentación interactiva de `components/ui/` y de los átomos y moléculas de `features/` |
+| Storybook | Documentación interactiva de `components/ui/`, de los átomos y moléculas de `features/` y de los organismos de la carga de facturas |
 
 ## Arquitectura
 
@@ -95,11 +97,15 @@ src/
 │   ├── admin/  approval/  expense/  trip/  user/
 │   └── shared/apiClient.js
 ├── layouts/             Navbar, Footer y menús por rol
-│   └── menu/
-├── utils/               Funciones auxiliares puras
-├── constants/           Paleta, rutas, inicio por rol, nombres y colores de estado
+│   └── menu/            MenuLayout (cabecera granate, opciones agrupadas en bloques y Cerrar Sesión), MenuShell, MenuOption, secciones comunes y un archivo por rol con sus secciones
+├── utils/               Funciones auxiliares puras (fechas y calendario, cantidades, retenciones, IVA de facturas, moneda y subgastos de un gasto, N° de documento, limpieza de texto, Excel, hojas para Oracle, plantilla de usuarios)
+├── constants/           Paleta, rutas, inicio por rol, monedas, límites de texto, nombres y colores de estado
+├── test/setup.js        Configuración de las pruebas unitarias
 ├── App.jsx              Rutas y guardas de acceso
 └── main.jsx             Punto de entrada
+
+e2e/                     Pruebas de extremo a extremo (Playwright) y sus ayudas
+.github/workflows/       Ejecución automática de las pruebas en GitHub Actions
 ```
 
 ### Responsabilidad de cada capa
@@ -116,7 +122,7 @@ src/
 | Nivel | Definición | Ejemplos |
 |---|---|---|
 | Átomo | Elemento indivisible sin lógica de negocio | `TripRoute`, `ExpenseObsButton`, `TripStatusBadge` |
-| Molécula | Composición que resuelve una unidad funcional | `ExpenseBudgetBar`, `ExpenseSettlementCard`, `CategorySelector` |
+| Molécula | Composición que resuelve una unidad funcional | `ExpenseBudgetBar`, `ExpenseSettlementCard`, `CategorySelector` (plan de cuentas con buscador), `WithholdingSummary` |
 | Organismo | Bloque autónomo y complejo | `ExpenseInvoicedTable`, `ExpenseTripInfoCard`, `UserFormModal` |
 
 ## Roles y rutas
@@ -162,6 +168,8 @@ Para cambiar la imagen de ingreso basta con reemplazar ese archivo manteniendo e
 
 ## Sistema de diseño
 
+Los campos obligatorios de los formularios llevan un **asterisco rojo** junto a la etiqueta (`FieldLabel`, usado por `FormField`, `InputField`, `PasswordField`, `SearchableSelector` y `ExpenseField` con la prop `required`); los opcionales van sin marca.
+
 La paleta se centraliza en `constants/index.js`. Ningún componente define colores literales.
 
 | Token | Valor | Uso |
@@ -177,8 +185,30 @@ La paleta se centraliza en `constants/index.js`. Ningún componente define color
 | `dataFields` | `#DEE2F0` | Bordes y separadores |
 | `fields` | `#C2C6D4` | Controles deshabilitados |
 | `error` | `#fde9e9` | Fondo de mensajes de error |
+| `fieldError` | `#ef4444` | Texto de error bajo un campo |
+| `fieldErrorBorder` | `#f87171` | Borde de un campo con error |
+| `success` | `#155724` | Texto de confirmación (filas listas al importar usuarios) |
+| `successBackground` | `#d4edda` | Fondo de confirmación |
+| `overlay` | `rgba(0,0,0,0.4)` | Fondo oscuro detrás de ventanas y menú |
+| `menuGroup` | `#F7F5F4` | Fondo gris cálido de cada grupo del menú lateral |
+| `systemReceipt` / `systemReceiptText` | `#ECE6F7` / `#5B3FA0` | Número de recibo que asignó el sistema (lila) |
+| `warningBackground` / `warningText` | `#fef3cd` / `#856404` | Avisos (alcohol, plazos pendientes) |
+| `dangerBackground` / `dangerText` | `#f8d7da` / `#721c24` | Alertas de exceso o rechazo |
+| `onColorFill…` / `onColorText…` | `rgba(255,255,255,…)` | Fondos y textos blancos translúcidos sobre fondos de color |
+
+Los demás tonos de estado y acentos (`successStrong`, `neutralBackground`, `infoBackground`, `pendingHighlight`, etc.) están en el mismo archivo con un nombre que dice su uso.
 
 Tipografías: **Inter** para contenido general, **Nunito** para botones.
+
+**Botones.** Los botones con texto no llevan icono; los que solo tienen icono (volver, ver, editar o borrar en una fila, quitar un subgasto con el basurero) sí lo llevan, con `aria-label`. Quitar algo con un botón de solo icono usa siempre el basurero (`Trash2`).
+
+**Fechas.** Todas las fechas se eligen con `DatePickerInput` (`components/ui`, con `useDatePicker` y `utils/calendar.js`): abre una ventana con cabecera granate y la fecha elegida en grande, semana de lunes a domingo, hoy con anillo, los días fuera de `min`/`max` en gris y, con `rangeStart`/`rangeEnd`, los días del viaje como una franja; se confirma con Aceptar, y en los filtros (`clearable`) se puede borrar. Lo usan el registro y la edición de gastos y facturas, la creación y edición de viajes y los filtros por periodo.
+
+**Horas de los recordatorios.** `ReminderTimesPicker` muestra una cuadrícula de horas frecuentes (07:00 a 22:00) que se marcan o quitan con un toque, hasta 4, y «+ Otra hora» para elegir hora y minutos (de 5 en 5).
+
+**Barra de desplazamiento.** Una sola en toda la app (`index.css`): 10 px, granate a media transparencia sobre un carril gris cálido, granate pleno al pasar el mouse; en las ventanas granates se usa la variante `scroll-on-color`.
+
+**Formularios de gasto.** La moneda (`ForeignCurrencyFields`) y los subgastos (`ToggleSection` con `SubitemsEditor`) van en tarjetas blancas con borde gris y un encabezado con icono; cada subgasto es una fila con descripción, monto y el basurero para quitarlo, y al final el total.
 
 **Estados de viaje.** Cada estado tiene un solo nombre (`constants/tripStatusLabels.js`) y un solo par de colores (`constants/tripStatusColors.js`) en todas las pantallas y roles. Los avisos de confirmación o rechazo usan el color del estado en que queda el viaje. La única excepción es "En Curso" en las pantallas del empleado, que usa el rojo institucional porque marca su viaje activo.
 
@@ -186,13 +216,34 @@ Tipografías: **Inter** para contenido general, **Nunito** para botones.
 
 ### Planilla de rendición
 
-`useTripExcelExport` construye la planilla oficial en Excel con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, columna de tramos de cambio, totales por moneda, la justificación de cada día que excedió la cuota diaria, y cinco bloques de firma.
+`useTripExcelExport` construye la planilla oficial en Excel con ExcelJS: logotipo anclado a un rango de celdas, tabla de simbología, distinción cromática entre gastos nacionales e internacionales, listas de validación en la columna de cuenta Oracle, como en el formato de la empresa, una primera fila «SALDO ANTERIOR FONDO RECIBIDO» con lo recibido en la columna IMPORTE (en un viaje internacional, una fila en Bs y otra en USD), el importe de cada gasto en IMPORTE FACT./REC. (la columna IMPORTE queda en blanco en los gastos), columna MONTO ORIGINAL en los viajes internacionales (por ejemplo «170.00 PEN = 44.97 USD (T/C 3.7800)» y «T/C 6.9600 Bs por USD»), importes y sumas todo en Bs (el gasto internacional convertido con su tipo de cambio a Bs), una fila con el total internacional en USD para Oracle, como N° DOCUMENTO de los gastos sin factura el número del recibo original o, si no lo tiene, el del sistema en una celda lila con nota y una leyenda bajo la tabla (`utils/documentNumber.js`; en el Excel de Oracle va igual, con el color lila explicado en LEYENDA ORACLE), la justificación de cada día que excedió la cuota diaria, y cinco bloques de firma. La columna de cuenta Oracle y la de detalle son anchas para que no se corte el texto; el bloque de fondo recibido, total gastado, saldo, importe a devolver e importe a reembolsar ocupa un ancho continuo (el reembolso pendiente sale en rojo); la hoja se imprime horizontal en una página de ancho, centrada, con el pie «Sistema de Control de Viáticos» y el número de página. Los valores de todas las listas desplegables del archivo (cuentas Oracle de cada planilla y listas de Oracle) se guardan en **una sola hoja oculta, LISTAS, al final del libro** (`utils/excelLists.js`); Excel no la muestra, y los visores que no respetan las hojas ocultas muestran solo esa pestaña, al final.
 
-El empleado descarga en cambio la planilla en **PDF** (no editable, generada por el backend) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos se generan a partir de los mismos valores de retención calculados y persistidos por el backend; no se recalculan al exportar.
+El mismo archivo trae dos hojas con el **formato que contabilidad sube a Oracle** (`utils/oracleExport.js`):
+
+- **FACTURAS**: una fila por gasto con las columnas de la cabecera de factura de Oracle (tipo, proveedor, fecha, número, divisa, importe, campo adicional `[ ]` con un dato por línea —en factura: lote 900, CUF, código de control 0 y tipo de factura 1; en lo demás: lote 900 y contexto «Factura Estándar»—, código de impuesto, grupo de retención, importe retenido, descripción —sigla del comprobante (F, R, C o A), mes y número de rendición del mes, que la base asigna sola al quedar la rendición aprobada del todo (`Viaje.numero_rendicion`; si aún no lo tiene sale `XXX` en rojo), empleado, motivo y concepto; por ejemplo «A 10-41  JHIMY TERRAZAS , VIAJE A SCZ … , HOTELES»—, condiciones y grupo de pago («0D» y «M-CENTRO» en facturas; «Contado» y «TRANS-EMPLEADOS» en recibos y gastos sin factura). Una factura con alcohol pierde el IVA y se registra como recibo (sigla R, EMP-SIN-IVA, Contado). El proveedor es el nombre completo del empleado dueño de la rendición, como «APELLIDOS, NOMBRES (BOL)». La **cuenta de pasivo** va en blanco: la completa Oracle.
+- **LINEAS**: el detalle contable de cada factura, es decir a qué cuenta va cada parte del dinero: la línea del **artículo** (el gasto, a la cuenta de su categoría) y, de referencia, la de **impuesto** (IVA) y las de **retención** (RC-IVA o IUE, e IT). La columna **«Fila en FACTURAS»** indica a qué fila de FACTURAS pertenece cada línea (es solo una referencia para contabilidad, no una columna de Oracle), y «Viaje», el código del viaje.
+
+**Impuestos y retenciones.** Oracle calcula y crea las líneas de impuesto y de retención al validar la factura, a partir del código de impuesto y del grupo de retención de FACTURAS («SERVICIOS Y ALQUILERES» en servicios sin factura, «RETENCIONES COMPRAS» en compras sin factura). El sistema las escribe en celeste y cursiva solo para comparar sus montos con los de Oracle; la que se carga es la del artículo. En un servicio sin factura de 180 Bs pagados: artículo 214.29 (base incrementada), impuesto 0, RC-IVA −27.86 e IT −6.43, que suman 180.00, lo que se reembolsa al empleado; en una compra, IUE 5 % en lugar de RC-IVA. En una factura no hay retenciones: el artículo es el total sin IVA y la línea de IVA es el 13 %.
+
+En LINEAS, la cuenta del gasto es `76.8.<dependencia>.<cuenta de la categoría>.000000.<sección>.000.000`. La **dependencia** es la del **jefe directo** del empleado (o la suya si no tiene jefe, como el gerente general), que el administrador carga en *Usuarios* («Dependencia Oracle»); la **sección** es el código de Oracle de su sección, en *Secciones* («Sección Oracle»). Si falta alguno, en su lugar sale `XXX` y la celda queda en rojo.
+
+Los valores fijos se toman de `constants/oracleLists.js` (lote 900, método de pago Cheque, categoría «Facturas estándar», secuencia AP.F.BOL, cuentas de IVA y de retenciones). Los campos que en Oracle son listas de valores (tipo de factura, divisa, código de impuesto, grupo de retención, condiciones, grupo de pago, método de pago, tipo de línea) tienen lista desplegable. Las columnas se ajustan al ancho de su contenido, los encabezados van centrados, todas las celdas llevan borde, los importes van alineados a la derecha salvo el «Importe de Factura», que va centrado igual que el método de pago, el nivel de cálculo de impuestos, la categoría y la secuencia del documento, y cada hoja tiene filtros en el encabezado y deja fijas la fila de títulos y las tres primeras columnas al desplazarse; en LINEAS, una línea más gruesa separa las líneas de cada factura. Se usan cuatro colores, explicados en la hoja **LEYENDA ORACLE**: **blanco**, datos listos (los pone el sistema o son valores fijos; la nota de cada encabezado dice cuál); **celeste**, lo llena Oracle al subir la factura (Nº justificante, Nº proveedor, dirección, cuenta de pasivo, fecha contable, importes calculados, tipo de cambio, estado), va en blanco y no se toca; **lila**, número de recibo que asignó el sistema porque el gasto no tiene recibo original; **rojo**, falta un dato que el sistema no tiene (CUF, número de recibo aún no emitido, códigos de Oracle de la sección, número de rendición). En LINEAS, las líneas de impuesto y retención van en celeste y cursiva: Oracle las crea al validar y están solo para revisar los montos. La hoja LEYENDA ORACLE muestra además la fecha de generación, cuántas facturas y líneas trae el archivo, y la lista de **datos por completar** (hoja, celda, columna y qué falta), con un enlace a cada celda en rojo; si no falta nada, lo dice. Ejemplo de un servicio sin factura de 180 Bs: factura de 214.29 con grupo SERVICIOS Y ALQUILERES; líneas de 214.29 (artículo) y, de referencia, 0 (impuesto), −27.86 (13 RCIVA RET) y −6.43 (3 IT RET).
+
+Además, el revisor y el tesorero exportan con un botón las **planillas de todos los viajes de su lista** (según el filtro aplicado) en un solo archivo: una hoja *Resumen* con una fila por viaje y una fila de totales de lo asignado, gastado y el saldo en Bs y USD, una hoja de planilla por viaje y las hojas FACTURAS y LINEAS de todos ellos. El administrador puede exportar las planillas del periodo elegido en el Resumen General.
+
+El empleado descarga en cambio la planilla en **PDF** (no editable, generada por el backend) una vez que su viaje está aprobado en su totalidad; los revisores siguen usando el Excel. Ambos formatos tienen las mismas columnas, filas de fondo recibido y sumas: en un viaje internacional, todo en Bs con la columna MONTO ORIGINAL y el total internacional en USD aparte; y los mismos saldos (un gasto internacional se descuenta del fondo en USD si el viaje lo tiene, o del fondo en Bs si solo se entregaron bolivianos). Ambos calculan las retenciones de la misma forma, con base incrementada desde lo pagado en cada gasto (`utils/withholdings.js`), así que un gasto guardado con otro cálculo se muestra con el actual. En los gastos sin factura la planilla muestra lo pagado como importe y la base (pagado + retenciones) como importe costo/gasto. Los gastos de cada viaje se muestran ordenados por fecha (y por orden de registro dentro del mismo día), tanto al empleado como a los revisores.
+
+### Monto del viaje
+
+Al crear o editar un viaje, el sistema calcula el monto con las tarifas del cargo del empleado: en un viaje nacional, días × tarifa en Bs; en uno internacional, el día de salida y el de regreso con la tarifa en Bs y los días intermedios con la tarifa en USD. Tesorería ajusta el monto final al asignar los fondos. Si el jefe directo de un empleado es el aprobador (Gerente General), su menú suma «Viajes de Mi Equipo» al grupo Aprobación de Viajes y «Rendiciones de Mi Equipo» al grupo Revisión de Rendiciones; son las pantallas del supervisor, con su propio título y explicación (las rutas admiten los roles de `TEAM_REVIEW_ROLES`); ahí aprueba como jefe directo y ya no vuelve a aprobar como aprobador. No ve las bandejas sin asignar ni el botón para devolver una revisión. Si la empresa entrega todo en bolivianos, tesorería deja el fondo en USD en 0: entonces las pantallas (tarjeta del viaje en curso, barra de presupuesto, balance, revisiones del supervisor, el aprobador y el revisor) descuentan cada gasto en el exterior del fondo en Bs con el tipo de cambio que pagó el empleado, y no muestran la barra ni los saldos en USD (`showsUsdFund` y `spentAgainstFunds` en `utils/expenseCurrency.js`, la misma regla que la planilla y el backend). El control diario sigue con la tarifa en USD del cargo.
 
 ### Control de gasto diario
 
-El presupuesto se controla día por día contra el `monto_diario` del cargo, no contra el total del viaje. Los gastos de hotel quedan fuera de ese control y se comparan en cambio contra el total asignado. Cuando un día (o el total de hoteles) excede la cuota, `useTripDetail` exige una justificación de texto propia por cada exceso antes de permitir el envío a revisión.
+El presupuesto se controla día por día y por moneda: en un viaje nacional contra la tarifa diaria en Bs; en uno internacional, cada día con las dos tarifas por separado (Bs y USD), y se puede gastar en cualquiera de las dos monedas cualquier día. Los gastos de hotel quedan fuera de ese control y se comparan contra el total asignado. El **Control Diario** (`DailyBreakdownCard`) muestra una tarjeta por día con una barra por moneda y su estado (dentro del límite, cerca, excedido o justificado); lo ven el empleado y los revisores. Cuando un día (o el total de hoteles) excede la tarifa, `useTripDetail` exige una justificación por cada exceso antes de permitir el envío a revisión.
+
+### Tipo de cambio
+
+Un gasto internacional se escribe en la moneda de su factura (`ForeignCurrencyFields`, antes del monto): el empleado elige la moneda (USD primero), escribe el monto y los subgastos en esa moneda, el tipo de cambio a dólares (solo si no es USD) y el de dólares a bolivianos, y el formulario muestra al momento el equivalente en USD y en Bs (`utils/expenseCurrency.js`). Se guarda el monto en USD, que es el que controla el presupuesto diario y va a Oracle; la planilla lo muestra en Bs. Las tablas de revisión (gastos sin factura e internacionales) traen la columna «N° Recibo» y la lista del viaje del empleado muestra el número: el del sistema va en lila con la etiqueta «Sistema» (`DocumentNumberBadge`), el original sin color. El detalle del gasto muestra la sección «Cambio de Moneda» con el monto original, los dos tipos de cambio y los equivalentes, además del N° de recibo del sistema y el original. Los gastos internacionales no llevan impuestos.
 
 ### Revisión adicional por alcohol
 
@@ -204,7 +255,13 @@ Un empleado puede solicitar desde su viaje que otra persona rinda los gastos en 
 
 ### Digitalización de comprobantes
 
-La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. El campo de fecha de emisión queda bloqueado si la IA la extrajo con formato válido, y editable si vino vacía o mal formada.
+Al crear o editar un viaje, el motivo admite hasta 500 caracteres (`constants/tripLimits.js`) en un campo que empieza en una línea y crece al escribir (`AutoResizeTextarea`, dentro de `InputField` con `alignTop`), con contador; en las listas se recorta a dos o tres líneas y en el detalle se ve completo.
+
+La categoría de un gasto se elige entre el plan de cuentas de la empresa (112 cuentas de la planilla de Castro más «OTROS») con un buscador por número de cuenta, nombre o nota de uso (`CategorySelector`, que usa `SearchableSelector` de `components/ui/`). Las cuentas con nota de la planilla de Castro (por ejemplo, Taxis (viaje) frente a Taxis gestión oficina) la muestran en la lista y debajo de la categoría elegida; la planilla en Excel ofrece la misma lista en la columna CUENTA/ORACLE (`constants/oracleAccounts.js`).
+
+La carga de facturas presenta cada comprobante en tres columnas —imagen, formulario y detalle de productos— permitiendo corregir los datos extraídos antes de confirmar. Cada factura mantiene su propio estado: en extracción, con datos, con error o guardada. Al registrar, la fecha de emisión siempre se puede corregir (por si la IA la leyó mal); al modificar una factura guardada (`EditInvoicePage`, `InvoiceForm` con `lockDate`) queda bloqueada. El empleado escribe el **total que figura en el papel** («Total de la factura»): con Factura (F) el IVA es el 13 % del total y se resta de él (`utils/invoiceAmounts.js`: IVA = total × 0.13 y subtotal = total − IVA; con 305 queda 265.35 + 39.65), y el formulario muestra ambos; con Recibo (R) no hay IVA y el total es lo pagado, también en la planilla en Excel. Al cambiar entre F y R se conserva el total pagado. El campo «Número de Factura / Código» admite símbolos (`@`, `$`, `#`) para los códigos de recibos y boletos. La cantidad del detalle (`InvoiceDetailPanel`) admite hasta 3 decimales (53.345 litros o 6 unidades) y se muestra sin ceros de más (`formatQuantity`). El **precio unitario** admite hasta **4 decimales**, como figura en el papel (por ejemplo 3.7456 Bs por litro), y se muestra con 2 a 4 decimales sin ceros de más (`formatUnitPrice`: 3.74, 3.7456, 8.00); el total de la factura sigue con 2 decimales. En los gastos sin factura, la tarjeta de retenciones (`WithholdingSummary`, compartida por el registro y la edición) muestra el monto pagado, el RC-IVA o IUE, el IT y el importe costo, calculados en `utils/withholdings.js`: cada retención sale con su porcentaje de lo pagado ÷ 0.84 en servicios (÷ 0.92 en compras), sin redondear esa división, y se redondea a centavos; el importe costo es pagado + retenciones, como lo calcula contabilidad (50.00 + 7.74 + 1.79 = 59.53); con subgastos, cada uno se calcula aparte y se suman, como en el recibo de papel (cuatro taxis de 50, 80, 60 y 50 dan 285.73); `WithholdingFormulaNote` lo explica.
+
+La factura guarda también el **CUF** (código de autorización): la IA lo lee del comprobante y el empleado puede corregirlo en «CUF / Código de Autorización» (solo letras y números; el recibo no lo pide). Los gastos sin factura tienen un campo opcional **«N° de Recibo»** para el número impreso del recibo en papel; en el Excel para Oracle va como Nº Factura y, si está vacío, se usa el número del recibo que emite el sistema. Además, **solo los gastos internacionales** (en dólares, dentro de un viaje internacional) admiten junto al comprobante **hasta 2 respaldos** opcionales para el comprobante del cambio de moneda (`BackupImagesUpload`, en registro y edición); se ven en el detalle del gasto y se pueden quitar o cambiar al editarlo. Los gastos en bolivianos, con o sin factura, no los piden, sea el viaje nacional o internacional; si uno ya tenía respaldos de antes, se pueden ver y quitar, pero no agregar. El comprobante y los respaldos se muestran grandes (hasta 620 px de alto el comprobante en el formulario y 720 px en el detalle) y, al tocarlos, se abren en tamaño completo; los dos usan la misma tarjeta, con el botón «Quitar comprobante» o «Quitar respaldo» debajo de la imagen. Lo mismo vale para la foto de la factura al subirla o registrarla a mano, y para el comprobante y los respaldos en el detalle del gasto que ven el empleado, el supervisor, el aprobador y el revisor.
 
 ### Control de plazos
 
@@ -220,6 +277,10 @@ Para rechazar se usan solo las observaciones propias de la ronda actual; las de 
 
 Resumen general con indicadores por fase y gráficos, con filtro de periodo (este mes, que es el valor inicial, este año, todo o un rango, por fecha de inicio del viaje); el gráfico por sección cuenta solo los viajes con fondos entregados por tesorería; gestión de usuarios con buscador en cargo, sección y jefe directo (`SearchableSelector`); sugerencia de nombres existentes al crear cargos y secciones; historial de accesos (ingresos, salidas y cambios de contraseña) con filtro de periodo (por defecto el mes actual, en días de Bolivia); ambos usan los mismos botones de periodo (`PeriodPresets`), filtros por evento y usuario, paginación de 20 en 20 y exportación a Excel.
 
+**Importar usuarios desde Excel** (`useUserImport`, `UserImportModal`, `utils/userImportFile.js`): en *Usuarios*, el botón «Importar desde Excel» abre una ventana con dos pasos. Primero se descarga la plantilla, que trae las columnas (las obligatorias en rojo y con `*`), una fila de ejemplo, una hoja de instrucciones y listas desplegables con los cargos, secciones y roles activos del sistema. Después se sube el archivo lleno (.xlsx, hasta 500 personas): el navegador lo lee y el backend revisa cada fila sin guardar nada. La ventana muestra cuántas filas están listas y cuántas tienen errores, y cada fila con sus errores en rojo: correo o CI que ya existen o que se repiten en el archivo, cargo o sección que no existen, jefe directo que no se encuentra (puede estar en el sistema o en el mismo archivo), rol o cargo de una sola persona ocupado, formatos. «Crear N usuarios» crea solo las correctas, primero los jefes, y cada uno recibe por correo su contraseña temporal; al final se listan las filas que no se crearon.
+
+**Exportar a Excel** (`useAdminExcelExport`, `ExportButton`): el Resumen General (del periodo elegido), Usuarios, Cargos, Secciones e Historial de Accesos tienen su botón, que exporta lo que se está viendo con el mismo estilo (encabezado rojo MAXAM y nombre con la fecha).
+
 **Recordatorios** (`ReminderSettingsPage`, `useReminderSettings`): el administrador activa o desactiva el resumen de pendientes por correo, elige los días de la semana y hasta 4 horas de envío (hora de Bolivia), y ve un resumen en lenguaje natural de cuándo saldrá. El backend aplica los cambios al guardar, sin reiniciarse. Desde la misma pantalla puede ver una vista previa de a quién le llegaría el resumen con los pendientes actuales y enviarlo en el momento.
 
 ### Casquito
@@ -228,11 +289,26 @@ Mascota que saluda una vez por pantalla y sesión con un mensaje según la hora 
 
 ## Documentación de componentes
 
-Los componentes de `components/ui/`, todos los átomos de `features/` y las moléculas reutilizables están documentados con Storybook (cada historia junto a su componente). Cada historia describe el propósito del componente y sus variantes principales; los componentes con estado interno (dropdowns, diálogos) incluyen un wrapper interactivo para probarlos en vivo.
+Los componentes de `components/ui/`, todos los átomos de `features/`, las moléculas reutilizables y los organismos de la carga de facturas (`InvoiceForm`, `InvoiceDetailPanel`) están documentados con Storybook (cada historia junto a su componente). Cada historia describe el propósito del componente y sus variantes principales; los componentes con estado interno (dropdowns, diálogos) incluyen un wrapper interactivo para probarlos en vivo.
 
 ```bash
 npm run storybook
 ```
+
+## Pruebas automáticas
+
+| Tipo | Qué prueba | Comando | Dónde |
+|---|---|---|---|
+| Unitarias | Componentes y utilidades: estados del control diario, periodos, Excel, hojas para Oracle, plantilla y lectura del Excel de usuarios, retenciones, cantidades con decimales del detalle de factura, conversión de un gasto internacional a USD y Bs, fondo solo en Bs, planilla en Excel toda en Bs con el monto original y las filas del fondo recibido, N° de documento (original primero, el del sistema en lila), subgastos, limpieza de caracteres invisibles, alineación y cuenta de pasivo de FACTURAS | `npm test` | Junto a cada archivo (`*.test.js`, `*.test.jsx`) |
+| De extremo a extremo | El sistema completo en un navegador real: ingreso por rol, monto calculado del viaje, control diario, gasto en soles con su equivalente en USD y Bs, viaje internacional con fondo solo en Bs (el gasto se descuenta en Bs y no aparecen saldos en USD), fechas con el calendario propio (`pickDate`), respaldos de los gastos internacionales (y que los gastos en bolivianos no los piden), exportaciones, importación de usuarios desde Excel, que la edición de un usuario guarde la dependencia y el apellido materno (y no los borre al volver a guardar) y que el menú del administrador entre sin barra de desplazamiento | `npm run test:e2e` | `e2e/` |
+
+Las pruebas unitarias no necesitan nada más. Las de extremo a extremo necesitan el backend y el frontend levantados con la base de prueba (organización de `testing_02_organizacion_prueba.sql`); `E2E_BASE_URL` y `E2E_API_URL` indican dónde están (por defecto `localhost:5173` y `localhost:5055`). La primera vez hay que instalar el navegador con `npx playwright install chromium`.
+
+En GitHub las pruebas se ejecutan solas en cada `push` y pull request (`.github/workflows/pruebas.yml`): compila el proyecto y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base temporal y levanta todo. Si algo falla, el reporte con capturas queda en la pestaña **Actions**.
+
+## Dependencias y seguridad
+
+`npm audit` no reporta vulnerabilidades. `package.json` fuerza (`overrides`) la versión 11 de `uuid` para ExcelJS, que solo usa su función `v4`; el navegador usa la versión empaquetada de ExcelJS, así que el Excel sale igual. No hace falta `npm audit fix --force`.
 
 ## Convenciones
 

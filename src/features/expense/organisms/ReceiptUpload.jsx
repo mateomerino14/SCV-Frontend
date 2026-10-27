@@ -1,5 +1,6 @@
-import {Camera, Trash2} from 'lucide-react';
+import {Camera} from 'lucide-react';
 import {COLORS} from '../../../constants';
+import FieldLabel from '../../../components/ui/FieldLabel';
 
 const styles = {
   wrapper: "flex flex-col gap-1",
@@ -9,13 +10,14 @@ const styles = {
   dropLabel: "text-sm font-bold font-inter text-center",
   dropSub: "text-xs font-inter text-center",
   previewWrapper: "rounded-xl overflow-hidden border flex flex-col",
-  previewImg: "w-full object-contain",
+  previewLink: "block",
+  previewImg: "w-full object-contain h-[440px] sm:h-[620px]",
+  previewHint: "text-[11px] font-inter text-center py-1.5",
   removeBtn: "w-full py-2.5 font-bold font-nunito text-sm flex items-center justify-center gap-2 border-t",
   fieldError: "text-xs font-inter mt-1",
 };
 
 function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, required = true, hideLabel = false}) {
-  const label = `Comprobante${required ? '' : ' (Opcional)'}`;
   const handleInput = (event) => {
     if (disabled) {
       return;
@@ -29,12 +31,14 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
   if (previewImage) {
     return (
       <div className={styles.wrapper}>
-        {!hideLabel && <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>}
+        {!hideLabel && <FieldLabel text="Comprobante" required={required} className={styles.label} />}
         <div className={styles.previewWrapper} style={{borderColor: COLORS.dataFields}}>
-          <img src={previewImage} alt="comprobante" className={styles.previewImg} style={{height: '350px', backgroundColor: COLORS.backgroundHeader}} />
+          <a href={previewImage} target="_blank" rel="noreferrer" className={styles.previewLink} title="Abrir en tamaño completo">
+            <img src={previewImage} alt="comprobante" className={styles.previewImg} style={{backgroundColor: COLORS.backgroundHeader}} />
+          </a>
+          <p className={styles.previewHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
           {!disabled && (
-            <button className={styles.removeBtn} style={{borderColor: COLORS.dataFields, color: COLORS.secondary, backgroundColor: COLORS.background, cursor: 'pointer'}} onClick={onRemove}>
-              <Trash2 size={14} />
+            <button type="button" className={styles.removeBtn} style={{borderColor: COLORS.dataFields, color: COLORS.secondary, backgroundColor: COLORS.background, cursor: 'pointer'}} onClick={onRemove}>
               Quitar comprobante
             </button>
           )}
@@ -45,10 +49,10 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
 
   return (
     <div className={styles.wrapper}>
-      {!hideLabel && <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>}
+      {!hideLabel && <FieldLabel text="Comprobante" required={required} className={styles.label} />}
       <label className={styles.dropZone} style={{
-        borderColor: error ? '#f87171' : COLORS.dataFields,
-        backgroundColor: disabled ? COLORS.backgroundHeader : COLORS.backgroundHeader,
+        borderColor: error ? COLORS.fieldErrorBorder : COLORS.dataFields,
+        backgroundColor: COLORS.backgroundHeader,
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.6 : 1,
       }}>
@@ -61,7 +65,7 @@ function ReceiptUpload({previewImage, onChange, onRemove, error, disabled, requi
         {!disabled && <p className={styles.dropSub} style={{color: COLORS.labels}}>JPG, PNG o PDF (Máx 5MB)</p>}
         <input type="file" accept="image/*,application/pdf" className="hidden" onChange={handleInput} disabled={disabled} />
       </label>
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
     </div>
   );
 }

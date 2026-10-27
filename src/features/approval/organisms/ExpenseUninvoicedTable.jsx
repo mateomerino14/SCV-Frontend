@@ -2,6 +2,9 @@ import {Eye, MapPin} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseObsButton from '../atoms/ExpenseObsButton';
+import DocumentNumberBadge from '../../expense/atoms/DocumentNumberBadge';
+import {resolveDocumentNumber, documentSources} from '../../../utils/documentNumber';
+import {getExpenseWithholdings} from '../../../utils/withholdings';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -21,11 +24,13 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
     return null;
   }
   const cell = (extra = {}) => ({...extra, borderColor: COLORS.dataFields});
+  const hasSystemNumbers = expenses.some((expense) => resolveDocumentNumber(expense).source === documentSources.system);
   const totalAmount = expenses.reduce((sum, expense) => sum + parseFloat(expense.monto_total || 0), 0);
-  const totalRcIva = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_rc_iva || 0), 0);
-  const totalIue = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_iue || 0), 0);
-  const totalIt = expenses.reduce((sum, expense) => sum + parseFloat(expense.retencion_it || 0), 0);
-  const totalCost = expenses.reduce((sum, expense) => sum + parseFloat(expense.importe_costo || expense.monto_total || 0), 0);
+  const withholdingList = expenses.map((expense) => getExpenseWithholdings(expense));
+  const totalRcIva = withholdingList.reduce((sum, item) => sum + item.rcIva, 0);
+  const totalIue = withholdingList.reduce((sum, item) => sum + item.iue, 0);
+  const totalIt = withholdingList.reduce((sum, item) => sum + item.it, 0);
+  const totalCost = withholdingList.reduce((sum, item) => sum + item.cost, 0);
   const hasAlcohol = expenses.some((expense) => expense.tiene_alcohol);
 
   return (
@@ -36,25 +41,31 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos varios sin respaldo de factura oficial</p>
       {hasAlcohol && (
-        <p className={styles.subtitle} style={{color: '#856404'}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+      )}
+      {hasSystemNumbers && (
+        <p className={styles.subtitle} style={{color: COLORS.systemReceiptText}}>Los N° de recibo en lila los asignó el sistema: el gasto no tiene recibo original</p>
       )}
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <table className={styles.table}>
           <thead>
             <tr style={{backgroundColor: COLORS.title}}>
-              {['#', 'Fecha', 'Categoría / Concepto', 'Descripción', 'Tipo', 'Importe (Bs)', 'RC-IVA', 'IUE', 'IT 3%', 'Costo', 'Obs.', ''].map((header) => (
-                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: 'rgba(255,255,255,0.2)'}}>{header}</th>
+              {['#', 'Fecha', 'Categoría / Concepto', 'Descripción', 'N° Recibo', 'Tipo', 'Importe (Bs)', 'RC-IVA', 'IUE', 'IT 3%', 'Costo', 'Obs.', ''].map((header) => (
+                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: COLORS.onColorFill20}}>{header}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
-              const rcIva = parseFloat(expense.retencion_rc_iva || 0);
-              const iue = parseFloat(expense.retencion_iue || 0);
-              const itTax = parseFloat(expense.retencion_it || 0);
-              const cost = parseFloat(expense.importe_costo || amount);
-              const bg = expense.tiene_alcohol ? '#fef3cd' : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
+              const {rcIva, iue, it: itTax, cost} = withholdingList[index];
+              let bg = COLORS.backgroundHeader;
+              if (expense.tiene_alcohol) {
+                bg = COLORS.warningBackground;
+              }
+              else if (index % 2 === 0) {
+                bg = COLORS.background;
+              }
               const subitems = expense.Gasto_Subitem || [];
               let description = expense.descripcion || '—';
               let descriptionColor = COLORS.labels;
@@ -70,6 +81,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
                   <td className={styles.td} style={cell({color: COLORS.text})}>{formatDateShort(expense.fecha_gasto)}</td>
                   <td className={styles.td} style={cell({color: COLORS.text})}>{expense.Categoria_Gasto?.nombre || expense.Proveedor?.nombre || '—'}</td>
                   <td className={styles.td} style={cell({color: descriptionColor, fontWeight: descriptionWeight})}>{description}</td>
+                  <td className={styles.td} style={cell()}><DocumentNumberBadge {...resolveDocumentNumber(expense)} /></td>
                   <td className={styles.td} style={cell({color: COLORS.text})}>{typeLabels[expense.tipo] || expense.tipo}</td>
                   <td className={styles.td} style={cell({color: COLORS.title})}>{amount.toFixed(2)}</td>
                   <td className={styles.td} style={cell({color: rcIva > 0 ? COLORS.secondary : COLORS.labels})}>{rcIva > 0 ? rcIva.toFixed(2) : '—'}</td>
@@ -88,7 +100,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
               );
             })}
             <tr style={{backgroundColor: COLORS.backgroundHeader}}>
-              <td colSpan={5} className={styles.td} style={cell({color: COLORS.title, fontWeight: 'bold'})}>TOTAL</td>
+              <td colSpan={6} className={styles.td} style={cell({color: COLORS.title, fontWeight: 'bold'})}>TOTAL</td>
               <td className={styles.td} style={cell({color: COLORS.title, fontWeight: 'bold'})}>{totalAmount.toFixed(2)}</td>
               <td className={styles.td} style={cell({color: COLORS.secondary, fontWeight: 'bold'})}>{totalRcIva > 0 ? totalRcIva.toFixed(2) : '—'}</td>
               <td className={styles.td} style={cell({color: COLORS.secondary, fontWeight: 'bold'})}>{totalIue > 0 ? totalIue.toFixed(2) : '—'}</td>

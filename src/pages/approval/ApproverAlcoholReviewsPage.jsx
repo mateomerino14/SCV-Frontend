@@ -45,7 +45,13 @@ function ApproverAlcoholReviewsPage() {
     subtitle = 'Rendiciones con alcohol que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
-  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición con alcohol por revisar', 'rendiciones con alcohol por revisar');
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = pendingMessage(user?.nombre, totalMyPending, 'rendición con alcohol por revisar', 'rendiciones con alcohol por revisar');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -63,7 +69,7 @@ function ApproverAlcoholReviewsPage() {
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron rendiciones con alcohol con el filtro seleccionado"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M8 16L14 22L24 10" stroke="rgba(255,255,255,0.7)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 16L14 22L24 10" stroke={COLORS.onColorText70} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             } />
         )}

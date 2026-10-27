@@ -3,7 +3,7 @@ import {COLORS} from '../../../constants';
 function useInvoicePreviewStatus(invoice) {
   const getStatusColor = () => {
     if (invoice.saved) {
-      return '#008330';
+      return COLORS.invoiceReady;
     }
     if (invoice.saveError) {
       return COLORS.secondary;
@@ -38,7 +38,7 @@ function useInvoicePreviewStatus(invoice) {
 
   const getBorderColor = (expanded) => {
     if (invoice.saved) {
-      return '#008330';
+      return COLORS.invoiceReady;
     }
     if (invoice.saveError) {
       return COLORS.secondary;

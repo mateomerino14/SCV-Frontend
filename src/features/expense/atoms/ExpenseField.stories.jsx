@@ -25,5 +25,9 @@ export const Default = {
 };
 
 export const WithError = {
-  args: {children: input, error: 'El monto es requerido'},
+  args: {children: input, required: true, error: 'El monto es requerido'},
+};
+
+export const Required = {
+  args: {children: input, required: true},
 };

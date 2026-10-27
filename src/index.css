@@ -23,3 +23,63 @@
 .recharts-wrapper text {
   font-family: 'Inter', sans-serif;
 }
+
+/* Barra de desplazamiento de toda la app: granate suave sobre un carril gris calido */
+:root {
+  --scrollbar-thumb: rgba(135, 0, 2, 0.45);
+  --scrollbar-thumb-hover: #870002;
+  --scrollbar-track: #F7F5F4;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
+  border: 3px solid var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Variante para zonas con fondo de color (ventanas granates) */
+.scroll-on-color::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-on-color::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.45);
+  border-color: transparent;
+  background-clip: padding-box;
+}
+
+.scroll-on-color::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.7);
+  background-clip: padding-box;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .scroll-on-color {
+    scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
+  }
+}

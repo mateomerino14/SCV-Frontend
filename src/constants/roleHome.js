@@ -1,6 +1,5 @@
 import {routes} from './routes';
 
-// Pantalla de inicio de cada rol: la primera opcion de su menu
 const roleHomes = {
   1: routes.adminDashboard,
   2: routes.supervisorPendingTrips,

@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {Eye, EyeOff} from 'lucide-react';
 import {COLORS} from '../../constants';
+import FieldLabel from './FieldLabel';
 
 const styles = {
   label: 'text-xs font-bold font-inter uppercase mb-1',
@@ -9,11 +10,11 @@ const styles = {
   helperText: 'text-xs font-inter mt-0.5',
 };
 
-function PasswordField({label, value, onChange, maxLength, borderColor, labelColor, textColor, backgroundColor, iconColor}) {
+function PasswordField({label, required = false, value, onChange, maxLength, borderColor, labelColor, textColor, backgroundColor, iconColor}) {
   const [visible, setVisible] = useState(false);
   return (
     <div>
-      <p className={styles.label} style={{color: labelColor || COLORS.labels}}>{label}</p>
+      <FieldLabel text={label} required={required} className={styles.label} color={labelColor || COLORS.labels} />
       <div className={styles.inputRow} style={{borderColor: borderColor || COLORS.dataFields, backgroundColor: backgroundColor || 'transparent'}}>
         <input className={styles.input} style={{color: textColor || COLORS.text, backgroundColor: 'transparent'}} type={visible ? 'text' : 'password'}
           value={value} maxLength={maxLength} onChange={onChange} />

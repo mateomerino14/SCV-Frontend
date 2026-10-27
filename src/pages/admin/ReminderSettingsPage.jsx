@@ -1,4 +1,4 @@
-import {Send, Eye, CheckCircle, AlertCircle} from 'lucide-react';
+import {Send, CheckCircle, AlertCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -50,7 +50,7 @@ function ReminderSettingsPage() {
             <ReminderScheduleCard schedule={reminders.schedule} maxTimes={reminders.maxTimes}
               newTime={reminders.newTime} setNewTime={reminders.setNewTime}
               onToggleActive={reminders.toggleActive} onToggleDay={reminders.toggleDay}
-              onAddTime={reminders.addTime} onRemoveTime={reminders.removeTime} />
+              onAddTime={reminders.addTime} onToggleTime={reminders.toggleTime} />
 
             <div className={styles.buttonsRow}>
               <button className={styles.primaryBtn} onClick={reminders.save} disabled={busy || !reminders.hasChanges}
@@ -78,12 +78,10 @@ function ReminderSettingsPage() {
               <div className={styles.actionsRow}>
                 <button className={styles.actionBtn} onClick={reminders.loadPreview} disabled={reminders.loadingPreview || busy}
                   style={{backgroundColor: 'transparent', borderColor: COLORS.primary, color: COLORS.primary, opacity: reminders.loadingPreview ? 0.6 : 1}}>
-                  <Eye size={16} />
                   {reminders.loadingPreview ? 'Consultando...' : 'Vista Previa'}
                 </button>
                 <button className={styles.actionBtn} onClick={reminders.openConfirmSend} disabled={busy}
                   style={{backgroundColor: COLORS.primary, borderColor: COLORS.primary, color: COLORS.background, opacity: reminders.sending ? 0.6 : 1}}>
-                  <Send size={16} />
                   {reminders.sending ? 'Enviando...' : 'Enviar Ahora'}
                 </button>
               </div>

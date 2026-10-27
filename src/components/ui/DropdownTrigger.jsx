@@ -8,7 +8,7 @@ const styles = {
 function DropdownTrigger({triggerRef, label, open, onClick, error, hasValue}) {
   return (
     <button ref={triggerRef} type="button" className={styles.button} onClick={onClick}
-      style={{borderColor: error ? '#f87171' : COLORS.dataFields, backgroundColor: COLORS.background, color: hasValue ? COLORS.text : COLORS.labels}}>
+      style={{borderColor: error ? COLORS.fieldErrorBorder : COLORS.dataFields, backgroundColor: COLORS.background, color: hasValue ? COLORS.text : COLORS.labels}}>
       <span className="truncate">{label}</span>
       {open ? <ChevronUp size={16} style={{color: COLORS.labels, flexShrink: 0}} /> : <ChevronDown size={16} style={{color: COLORS.labels, flexShrink: 0}} />}
     </button>

@@ -35,7 +35,7 @@ function EditInvoicePage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    data, categories, imagePreview, existingImage, loading, loadingData, error, fieldErrors, saved, manuallyModified, tripId,
+    data, categories, imagePreview, loading, loadingData, error, fieldErrors, saved, manuallyModified, tripId,
     handleFieldChange, handleAddDetail, handleRemoveDetail, handleImageChange, handleRemoveImage, handleSave,
   } = useEditInvoice(id);
 
@@ -70,7 +70,7 @@ function EditInvoicePage() {
         <div className={styles.desktopGrid}>
           {imageSection}
           <div className={styles.colWrapper}>
-            <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
+            <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} lockDate />
           </div>
           <div className={styles.colWrapper}>
             <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
@@ -78,7 +78,7 @@ function EditInvoicePage() {
         </div>
         <div className={styles.mobileStack}>
           {imageSection}
-          <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} />
+          <InvoiceForm data={data} onChange={handleFieldChange} manuallyModified={manuallyModified} fieldErrors={fieldErrors} saved={saved} categories={categories} lockDate />
           <InvoiceDetailPanel detail={data.detalle || []} onAdd={handleAddDetail} onRemove={handleRemoveDetail} saved={saved} error={fieldErrors.detalle} />
         </div>
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

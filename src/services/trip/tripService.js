@@ -35,7 +35,10 @@ export const downloadStatementPdf = async (tripId) => {
     const response = await apiClient.get(`/trip/${tripId}/rendicion-pdf`, {responseType: 'blob'});
     const disposition = response.headers['content-disposition'] || '';
     const fileNameMatch = disposition.match(/filename="?([^"]+)"?/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Rendicion_${tripId}.pdf`;
+    let fileName = `Rendicion_${tripId}.pdf`;
+    if (fileNameMatch) {
+      fileName = fileNameMatch[1];
+    }
     return {blob: response.data, fileName};
   }
   catch (error) {
@@ -89,5 +92,14 @@ export const submitTripForReview = async (tripId) => {
   }
   catch (error) {
     return {error: error.response?.data?.error || 'Error al enviar el viaje a revisión'};
+  }
+};
+export const getStatementsForExport = async (params) => {
+  try {
+    const response = await apiClient.get('/trip/export/statements', {params});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'No se pudieron obtener las planillas'};
   }
 };

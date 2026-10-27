@@ -13,7 +13,6 @@ const styles = {
   actionsRow: 'flex items-center gap-1.5 shrink-0',
 };
 
-// En un correo, el salto de linea se permite en la arroba y no en medio del nombre
 function renderValue(value, inputType) {
   if (!value) {
     return '—';
@@ -40,7 +39,7 @@ function ProfileField({icon: Icon, label, value, editing, editValue, onEditValue
               value={editValue} onChange={onEditValueChange} disabled={saving} autoFocus />
             <div className={styles.actionsRow}>
               <button className={styles.editBtn} onClick={onSave} disabled={saving}>
-                <Check size={16} style={{color: '#2d7a3a'}} />
+                <Check size={16} style={{color: COLORS.successStrong}} />
               </button>
               <button className={styles.editBtn} onClick={onCancel} disabled={saving}>
                 <X size={16} style={{color: COLORS.secondary}} />

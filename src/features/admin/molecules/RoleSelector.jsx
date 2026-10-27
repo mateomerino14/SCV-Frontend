@@ -3,6 +3,7 @@ import {motion, AnimatePresence} from 'framer-motion';
 import DropdownTrigger from '../../../components/ui/DropdownTrigger';
 import DropdownListItem from '../../../components/ui/DropdownListItem';
 import {COLORS} from '../../../constants';
+import FieldLabel from '../../../components/ui/FieldLabel';
 
 const styles = {
   wrapper: 'relative',
@@ -18,7 +19,7 @@ const dropdownVariants = {
 function RoleSelector({roleOptions, selectedRole, open, menuPosition, triggerRef, menuRef, onToggle, onSelect}) {
   return (
     <div className={styles.wrapper}>
-      <p className={styles.label} style={{color: COLORS.labels}}>Rol de Sistema</p>
+      <FieldLabel text="Rol de Sistema" required className={styles.label} />
       <DropdownTrigger triggerRef={triggerRef} open={open} onClick={onToggle} hasValue={!!selectedRole}
         label={selectedRole?.label || 'Seleccionar rol'} />
       {createPortal(

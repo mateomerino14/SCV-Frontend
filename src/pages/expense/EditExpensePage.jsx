@@ -29,14 +29,14 @@ function EditExpensePage() {
   const navigate = useNavigate();
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    type, setType, date, supplier, amount, description, categoryId, categories, imagePreview, loading, loadingData,
-    error, fieldErrors, saved, tripId, isInternationalExpense, usesOtherCurrency, setUsesOtherCurrency,
-    installments, validInstallments, finalAmount, installmentErrors, usesSubitems, subitems, validSubitems, subitemErrors,
+    type, setType, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, loading, loadingData,
+    error, fieldErrors, saved, tripId, isInternationalExpense, currency, exchangeRate, bsRate, tripDateRange,
+    finalAmount, usesSubitems, subitems, validSubitems, subitemErrors,
     currencies, withholdings, hasWithholdings,
-    handleImageChange, handleRemoveImage, handleAmountChange,
-    handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
+    handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup, handleAmountChange,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
-    handleSupplierChange, handleDescriptionChange, handleDateChange, handleCategoryChange, handleSave,
+    handleSupplierChange, handleReceiptNumberChange, handleDescriptionChange, handleDateChange, handleCategoryChange, handleSave,
   } = useEditExpense(id);
 
   if (loadingData) {
@@ -61,16 +61,14 @@ function EditExpensePage() {
         </button>
         <PageHeader title="Editar Gasto" subtitle="Corrige los datos del gasto o su comprobante y guarda los cambios." />
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
-          <ExpenseEditForm type={type} date={date} supplier={supplier} amount={amount} description={description} categoryId={categoryId}
-            categories={categories} imagePreview={imagePreview} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}
-            usesOtherCurrency={usesOtherCurrency} setUsesOtherCurrency={setUsesOtherCurrency} installments={installments} validInstallments={validInstallments}
-            installmentErrors={installmentErrors} usesSubitems={usesSubitems} subitems={subitems} validSubitems={validSubitems} subitemErrors={subitemErrors}
+          <ExpenseEditForm type={type} date={date} supplier={supplier} receiptNumber={receiptNumber} amount={amount} description={description} categoryId={categoryId}
+            categories={categories} imagePreview={imagePreview} backups={backups} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}
+            currency={currency} exchangeRate={exchangeRate} bsRate={bsRate} tripDateRange={tripDateRange} usesSubitems={usesSubitems} subitems={subitems} validSubitems={validSubitems} subitemErrors={subitemErrors}
             currencies={currencies} withholdings={withholdings} hasWithholdings={hasWithholdings} finalAmount={finalAmount}
-            handleTypeChange={setType} handleDateChange={handleDateChange} handleSupplierChange={handleSupplierChange} handleAmountChange={handleAmountChange}
+            handleTypeChange={setType} handleDateChange={handleDateChange} handleSupplierChange={handleSupplierChange} handleReceiptNumberChange={handleReceiptNumberChange} handleAmountChange={handleAmountChange}
             handleDescriptionChange={handleDescriptionChange} handleCategoryChange={handleCategoryChange}
-            handleImageChange={handleImageChange} handleRemoveImage={handleRemoveImage}
-            handleAddInstallment={handleAddInstallment} handleRemoveInstallment={handleRemoveInstallment}
-            handleInstallmentCurrencyChange={handleInstallmentCurrencyChange} handleInstallmentAmountChange={handleInstallmentAmountChange} handleInstallmentExchangeRateChange={handleInstallmentExchangeRateChange}
+            handleImageChange={handleImageChange} handleRemoveImage={handleRemoveImage} handleAddBackup={handleAddBackup} handleRemoveBackup={handleRemoveBackup}
+            handleCurrencyChange={handleCurrencyChange} handleExchangeRateChange={handleExchangeRateChange} handleBsRateChange={handleBsRateChange}
             handleToggleSubitems={handleToggleSubitems} handleAddSubitem={handleAddSubitem} handleRemoveSubitem={handleRemoveSubitem}
             handleSubitemDescriptionChange={handleSubitemDescriptionChange} handleSubitemAmountChange={handleSubitemAmountChange} />
           {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

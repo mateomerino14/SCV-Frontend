@@ -1,4 +1,3 @@
-// Fecha corta ("28 sept 2026"); acepta YYYY-MM-DD o un timestamp y devuelve '' si no hay fecha
 export function formatDateShort(dateString) {
   if (!dateString) {
     return '';

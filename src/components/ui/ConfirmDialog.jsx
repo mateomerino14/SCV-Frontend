@@ -26,7 +26,6 @@ const cardVariants = {
   visible: {opacity: 1, scale: 1, y: 0},
 };
 
-// Se dibuja sobre toda la pantalla (portal en body), con el icono en un circulo blanco
 function ConfirmDialog({isOpen, icon, iconColor = COLORS.backgroundSecondary, iconBackgroundColor = COLORS.background, cardColor = COLORS.primary, title, message, warning, confirmText = 'Confirmar', cancelText = 'Cancelar', onConfirm, onCancel, loading, hideCancel, compact}) {
   let confirmLabel = confirmText;
   if (loading) {

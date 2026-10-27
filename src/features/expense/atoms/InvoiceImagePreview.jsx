@@ -5,6 +5,7 @@ const styles = {
   footer: "p-3 flex flex-col justify-between items-start",
   metaLabel: "text-xs font-inter pl-2",
   metaValue: "text-sm font-bold font-inter pl-2",
+  imageHint: "text-[11px] font-inter text-center py-1.5",
 };
 
 function InvoiceImagePreview({invoice}) {
@@ -15,7 +16,10 @@ function InvoiceImagePreview({invoice}) {
 
   return (
     <div className={styles.wrapper}>
-      <img src={invoice.preview} alt="factura" className="w-full object-cover" style={{maxHeight: '710px'}} />
+      <a href={invoice.preview} target="_blank" rel="noreferrer" className="block" title="Abrir en tamaño completo">
+        <img src={invoice.preview} alt="factura" className="w-full object-contain" style={{maxHeight: '710px', backgroundColor: COLORS.backgroundHeader}} />
+      </a>
+      <p className={styles.imageHint} style={{color: COLORS.labels, backgroundColor: COLORS.backgroundHeader}}>Toca la imagen para verla en tamaño completo</p>
       <div className={styles.footer} style={{backgroundColor: COLORS.backgroundHeader}}>
         <div className="text-left">
           <p className={styles.metaLabel} style={{color: COLORS.labels}}>Vista Previa</p>

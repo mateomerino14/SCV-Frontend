@@ -1,4 +1,4 @@
-import SearchableSelector from './SearchableSelector';
+import SearchableSelector from '../../../components/ui/SearchableSelector';
 
 const noBoss = {value: '', label: 'Sin jefe directo asignado'};
 
@@ -12,7 +12,7 @@ function BossSelector({users, bossId, onChange, error}) {
       return {value: user.id_usuario, label: `${fullName} (${user.Rol?.nombre || 'Sin rol'})`, searchText: `${fullName} ${user.Rol?.nombre || ''}`};
     });
   return (
-    <SearchableSelector label="Jefe Directo (opcional)" options={options} value={bossId ?? ''} onChange={onChange} error={error}
+    <SearchableSelector label="Jefe Directo" options={options} value={bossId ?? ''} onChange={onChange} error={error}
       placeholder={noBoss.label} searchPlaceholder="Buscar por nombre o rol..." emptyOption={noBoss} />
   );
 }

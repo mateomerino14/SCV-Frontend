@@ -4,7 +4,6 @@ import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
 import {COLORS} from '../../../constants';
 import {statusLabels} from '../../../constants/tripStatusLabels';
 
-// Misma tarjeta de filtros que las bandejas de revision (ReviewFilters)
 const styles = {
   wrapper: 'mb-5',
   card: 'rounded-2xl p-4 shadow-md',

@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import {getExpenseDetail, getCategories} from '../../services/expense/expenseService';
 import {updateInvoice} from '../../services/expense/invoiceService';
 import {compressImage} from '../../utils/imageCompressor';
+import {splitInvoiceTotal} from '../../utils/invoiceAmounts';
 
 function useEditInvoice(expenseId) {
   const [data, setData] = useState(null);
@@ -38,11 +39,8 @@ function useEditInvoice(expenseId) {
       setTripId(expenseData.id_viaje || null);
       setManuallyModified(expenseData.modificado || false);
       const invoice = expenseData.Factura;
-      const amount = parseFloat(invoice?.monto_parcial || 0);
-      const tax = invoice?.Factura_Impuestos?.[0]?.Impuesto;
-      const percentage = tax?.porcentaje || 0;
-      const vat = parseFloat(((amount * percentage) / 100).toFixed(2));
       const totalAmount = parseFloat(expenseData.monto_total || 0);
+      const {subtotal: amount, vat} = splitInvoiceTotal(totalAmount, expenseData.tipo || 'F');
       let amountText = '';
       if (amount > 0) {
         amountText = amount.toString();
@@ -59,6 +57,7 @@ function useEditInvoice(expenseId) {
         proveedor: expenseData.Proveedor?.nombre || '',
         numero_factura: invoice?.numero_factura || '',
         nit: expenseData.Proveedor?.numero_doc_fiscal || '',
+        cuf: invoice?.cuf || '',
         fecha_emision: invoice?.fecha_emision || '',
         monto: amountText,
         iva: vatText,
@@ -66,7 +65,6 @@ function useEditInvoice(expenseId) {
         tipo_doc: expenseData.tipo || 'F',
         detalle: invoice?.Detalle_Factura || [],
         id_categoria_gasto: expenseData.id_categoria || null,
-        fecha_emision_valida: !!invoice?.fecha_emision,
       });
       if (expenseData.Imagen?.url_archivo) {
         setExistingImage(expenseData.Imagen.url_archivo);
@@ -132,8 +130,8 @@ function useEditInvoice(expenseId) {
     if (!data?.fecha_emision) {
       errors.fecha_emision = 'La fecha de emisión es requerida';
     }
-    if (!data?.monto || parseFloat(data.monto) <= 0) {
-      errors.monto = 'El monto es requerido y debe ser mayor a 0';
+    if (!data?.monto_total || parseFloat(data.monto_total) <= 0) {
+      errors.monto_total = 'El total de la factura es requerido y debe ser mayor a 0';
     }
     if (!data?.id_categoria_gasto) {
       errors.id_categoria_gasto = 'La categoría es requerida';
@@ -155,9 +153,9 @@ function useEditInvoice(expenseId) {
     }
     setFieldErrors({});
     setLoading(true);
+    const totalAmount = parseFloat(data.monto_total || 0);
     const amount = parseFloat(data.monto || 0);
-    const vat = parseFloat(data.iva || 0);
-    const totalAmount = parseFloat((amount + vat).toFixed(2));
+    const vat = parseFloat((totalAmount - amount).toFixed(2));
     const payload = {
       ...data,
       monto: amount,

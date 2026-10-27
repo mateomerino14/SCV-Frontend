@@ -5,7 +5,6 @@ import {compressImage} from '../../utils/imageCompressor';
 
 const validationSaveError = 'Completa los campos requeridos';
 
-// Quita los errores de esos campos y, si no queda ninguno, el aviso general
 const clearFieldErrors = (invoice, fields) => {
   const fieldErrors = {...invoice.fieldErrors};
   fields.forEach((field) => {
@@ -113,10 +112,11 @@ function useUploadInvoice(tripId) {
         proveedor: '',
         numero_factura: '',
         nit: '',
+        cuf: '',
         fecha_emision: '',
         monto: '',
         iva: '',
-        monto_total: 0,
+        monto_total: '',
         tipo_doc: 'F',
         detalle: [],
         id_categoria_gasto: null,
@@ -272,8 +272,8 @@ function useUploadInvoice(tripId) {
     if (!invoice.data.fecha_emision) {
       errors.fecha_emision = 'La fecha de emisión es requerida';
     }
-    if (!invoice.data.monto || parseFloat(invoice.data.monto) <= 0) {
-      errors.monto = 'El monto es requerido y debe ser mayor a 0';
+    if (!invoice.data.monto_total || parseFloat(invoice.data.monto_total) <= 0) {
+      errors.monto_total = 'El total de la factura es requerido y debe ser mayor a 0';
     }
     if (!invoice.data.id_categoria_gasto) {
       errors.id_categoria_gasto = 'La categoría es requerida';
@@ -350,7 +350,10 @@ function useUploadInvoice(tripId) {
     setSaveSummary({saved: totalSaved, failed: totalFailed});
   };
 
-  const currentInvoice = currentIndex !== null ? invoices[currentIndex] : null;
+  let currentInvoice = null;
+  if (currentIndex !== null) {
+    currentInvoice = invoices[currentIndex];
+  }
   const hasInvoicesWithError = invoices.some((invoice) => invoice.saveError);
   const hasRequiresAuthorization = invoices.some((invoice) => invoice.requiresAuthorization);
   const allSaved = invoices.length > 0 && invoices.every((invoice) => invoice.saved || invoice.loading || invoice.error);

@@ -2,6 +2,9 @@ import {Eye, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseObsButton from '../atoms/ExpenseObsButton';
+import DocumentNumberBadge from '../../expense/atoms/DocumentNumberBadge';
+import {resolveDocumentNumber, documentSources} from '../../../utils/documentNumber';
+import {conversionLabelOf} from '../../../utils/expenseCurrency';
 
 const styles = {
   section: 'mb-6',
@@ -19,6 +22,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
     return null;
   }
   const cell = (extra = {}) => ({...extra, borderColor: COLORS.dataFields});
+  const hasSystemNumbers = expenses.some((expense) => resolveDocumentNumber(expense).source === documentSources.system);
   const total = expenses.reduce((sum, expense) => sum + parseFloat(expense.monto_total || 0), 0);
 
   return (
@@ -28,12 +32,15 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
         Gastos Internacionales (USD)
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos realizados en el extranjero</p>
+      {hasSystemNumbers && (
+        <p className={styles.subtitle} style={{color: COLORS.systemReceiptText}}>Los N° de recibo en lila los asignó el sistema: el gasto no tiene recibo original</p>
+      )}
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <table className={styles.table}>
           <thead>
             <tr style={{backgroundColor: COLORS.primary}}>
-              {['#', 'Fecha', 'Concepto', 'Descripción', 'Conversión', 'Importe (USD)', 'Obs.', ''].map((header) => (
-                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: 'rgba(255,255,255,0.2)'}}>{header}</th>
+              {['#', 'Fecha', 'Concepto', 'Descripción', 'N° Recibo', 'Conversión', 'Importe (USD)', 'Obs.', ''].map((header) => (
+                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: COLORS.onColorFill20}}>{header}</th>
               ))}
             </tr>
           </thead>
@@ -44,7 +51,10 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
               const subitems = expense.Gasto_Subitem || [];
               const hasInstallments = installments.length > 0;
               const hasSubitems = subitems.length > 0;
-              const bg = index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader;
+              let bg = COLORS.backgroundHeader;
+              if (index % 2 === 0) {
+                bg = COLORS.background;
+              }
               let description = expense.descripcion || '—';
               let descriptionColor = COLORS.labels;
               let descriptionWeight = 'normal';
@@ -57,7 +67,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
               let conversionColor = COLORS.labels;
               let conversionWeight = 'normal';
               if (hasInstallments) {
-                conversion = `${installments.length} tramo${installments.length !== 1 ? 's' : ''}`;
+                conversion = conversionLabelOf(installments);
                 conversionColor = COLORS.secondary;
                 conversionWeight = 'bold';
               }
@@ -67,6 +77,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
                   <td className={styles.td} style={cell({color: COLORS.text})}>{formatDateShort(expense.fecha_gasto)}</td>
                   <td className={styles.td} style={cell({color: COLORS.text})}>{expense.Categoria_Gasto?.nombre || expense.Proveedor?.nombre || '—'}</td>
                   <td className={styles.td} style={cell({color: descriptionColor, fontWeight: descriptionWeight})}>{description}</td>
+                  <td className={styles.td} style={cell()}><DocumentNumberBadge {...resolveDocumentNumber(expense)} /></td>
                   <td className={styles.td} style={cell({color: conversionColor, fontWeight: conversionWeight})}>{conversion}</td>
                   <td className={styles.td} style={cell({color: COLORS.primary})}>{amount.toFixed(2)}</td>
                   <td className={styles.td} style={cell({width: 36})}>
@@ -81,7 +92,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
               );
             })}
             <tr style={{backgroundColor: COLORS.backgroundHeader}}>
-              <td colSpan={5} className={styles.td} style={cell({color: COLORS.primary, fontWeight: 'bold'})}>TOTAL</td>
+              <td colSpan={6} className={styles.td} style={cell({color: COLORS.primary, fontWeight: 'bold'})}>TOTAL</td>
               <td className={styles.td} style={cell({color: COLORS.primary, fontWeight: 'bold'})}>{total.toFixed(2)}</td>
               <td colSpan={2} className={styles.td} style={cell()} />
             </tr>

@@ -11,11 +11,12 @@ import SkeletonList from '../../components/ui/SkeletonList';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import useSupervisorTripHistory from '../../hooks/approval/useSupervisorTripHistory';
 import useMenu from '../../hooks/shared/useMenu';
-import {COLORS} from '../../constants';
+import {COLORS, ROLES} from '../../constants';
 import {supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import useUserRole from '../../hooks/shared/useUserRole';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -32,12 +33,19 @@ const tabs = [
 
 function SupervisorTripHistoryPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
+  const {role} = useUserRole();
+  const isSupervisor = role === ROLES.supervisor;
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorTripHistory();
   const pagination = useClientPagination(trips, 12, statusFilter);
+  let title = 'Viajes Asignados a Mí';
   let subtitle = 'Viajes asignados a ti: revísalos y apruébalos, o recházalos con observaciones.';
+  if (!isSupervisor) {
+    title = 'Viajes de Mi Equipo';
+    subtitle = 'Viajes de quienes te tienen como jefe directo. Tu aprobación vale también como la del aprobador y el viaje pasa a tesorería.';
+  }
   if (statusFilter === 'APROBADO_VIAJE') {
     subtitle = 'Historial de los viajes que aprobaste tú, con el estado en que están ahora.';
   }
@@ -45,15 +53,21 @@ function SupervisorTripHistoryPage() {
     subtitle = 'Viajes que rechazaste y el empleado aún no corrige. Al reenviarlos a revisión salen de esta lista.';
   }
 
-  const mascotMessage = !loading && statusFilter === 'EN_REVISION_VIAJE' ? pendingMessage(user?.nombre, total, 'viaje por revisar', 'viajes por revisar') : null;
+  let mascotMessage = null;
+
+  if (!loading && statusFilter === 'EN_REVISION_VIAJE') {
+
+    mascotMessage = pendingMessage(user?.nombre, total, 'viaje por revisar', 'viajes por revisar');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Viajes Asignados a Mí" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text={title} onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Viajes Asignados a Mí" subtitle={subtitle} />
+        <PageHeader title={title} subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={tabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
@@ -63,7 +77,7 @@ function SupervisorTripHistoryPage() {
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M8 16L14 22L24 10" stroke="rgba(255,255,255,0.7)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 16L14 22L24 10" stroke={COLORS.onColorText70} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             } />
         )}
@@ -71,7 +85,7 @@ function SupervisorTripHistoryPage() {
           <div className={styles.grid}>
             {pagination.visibleItems.map((trip) => (
               <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={supervisorPendingTripPath(trip.id_viaje)} originRoute={routes.supervisorTripHistory}
-                detailLabel="Ver Detalle" onReturn={trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false ? handleReturn : null} />
+                detailLabel="Ver Detalle" onReturn={isSupervisor && trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false ? handleReturn : null} />
             ))}
           </div>
         )}
