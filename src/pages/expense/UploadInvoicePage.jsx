@@ -65,7 +65,7 @@ function UploadInvoicePage() {
           <div className={styles.card} style={{backgroundColor: COLORS.background}}>
             <p className={styles.sectionTitle} style={{color: COLORS.labels}}>Facturas Cargadas</p>
             {invoices.map((invoice, index) => (
-              <InvoicePreviewItem key={index} invoice={invoice} index={index} expanded={expandedIndex === index}
+              <InvoicePreviewItem key={invoice.id} invoice={invoice} index={index} expanded={expandedIndex === index}
                 onSelect={handleSelectInvoice} onRemove={handleRequestDelete}>
                 {invoice.loading && <p className="text-xs font-inter text-center py-4" style={{color: COLORS.labels}}>Extrayendo datos de la factura...</p>}
                 {invoice.error && <p className="text-xs font-inter italic text-center py-2" style={{color: COLORS.secondary}}>{invoice.error}</p>}
