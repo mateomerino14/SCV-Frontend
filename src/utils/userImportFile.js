@@ -1,15 +1,13 @@
 import {saveWorkbook, todayFileSuffix} from './excelExport';
 import {addListRanges} from './excelLists';
+import {thinBorder, applyOuterBorder, frameTable} from './excelBorders';
 
 const headerFill = 'FF870002';
 const headerFont = 'FFFFFFFF';
 const requiredFill = 'FFD20F12';
 const exampleFont = 'FF7F7F7F';
-const borderColor = 'FFD0D0D0';
 const sheetName = 'USUARIOS';
 const templateRows = 500;
-const thinLine = {style: 'thin', color: {argb: borderColor}};
-const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
 
 const roleNames = ['EMPLEADO', 'SUPERVISOR', 'APROBADOR', 'REVISOR', 'ADMINISTRADOR'];
 
@@ -55,7 +53,7 @@ const styleTemplateHeader = (sheet) => {
       cell.fill = solidFill(requiredFill);
     }
     cell.alignment = {horizontal: 'center', vertical: 'middle', wrapText: true};
-    cell.border = cellBorder;
+    cell.border = thinBorder;
   });
 };
 
@@ -73,7 +71,7 @@ const addValidations = (sheet, ranges) => {
     const row = sheet.getRow(rowNumber);
     importColumns.forEach((column, index) => {
       const cell = row.getCell(index + 1);
-      cell.border = cellBorder;
+      cell.border = thinBorder;
       cell.numFmt = '@';
       if (column.list) {
         cell.dataValidation = {type: 'list', allowBlank: true, formulae: [ranges[column.list]], showErrorMessage: true, errorTitle: column.header, error: 'Elige un valor de la lista'};
@@ -93,6 +91,7 @@ const addInstructionsSheet = (workbook) => {
       cell.font = {bold: true, size: 14};
     }
   });
+  frameTable(sheet, 1, instructions.length, 1, 1);
 };
 
 export const buildUserImportTemplate = (workbook, {positions = [], sections = []}) => {
@@ -106,6 +105,7 @@ export const buildUserImportTemplate = (workbook, {positions = [], sections = []
   styleTemplateHeader(sheet);
   addExampleRow(sheet, lists);
   addValidations(sheet, addListRanges(workbook, lists));
+  applyOuterBorder(sheet, 1, templateRows + 1, 1, importColumns.length);
   addInstructionsSheet(workbook);
   return sheet;
 };

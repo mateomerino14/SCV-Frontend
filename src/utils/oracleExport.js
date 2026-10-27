@@ -3,6 +3,7 @@ import {addListRanges, columnLetter} from './excelLists';
 import {toOracleExpenseType} from './expenseTypeCode';
 import {getExpenseTaxValues} from './expenseTaxValues';
 import {resolveDocumentNumber, documentSources, systemReceiptNote} from './documentNumber';
+import {thinBorder, applyOuterBorder, frameTable} from './excelBorders';
 import {oracleDefaults, oracleTaxCodes, oracleTaxLines, oracleWithholdings, oraclePaymentTerms, oracleLists} from '../constants/oracleLists';
 
 const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -286,9 +287,8 @@ const solidFill = (argb) => ({type: 'pattern', pattern: 'solid', fgColor: {argb}
 const baseFont = {name: 'Calibri', size: 10};
 const headerFont = {...baseFont, bold: true, color: {argb: 'FF262626'}};
 const autoFont = {...baseFont, italic: true, color: {argb: 'FF595959'}};
-const thinLine = {style: 'thin', color: {argb: 'FFBFBFBF'}};
 const groupLine = {style: 'medium', color: {argb: 'FF7F7F7F'}};
-const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
+const cellBorder = thinBorder;
 const oracleTabColor = 'FF2F5597';
 const legendTabColor = 'FF7F7F7F';
 const headerHeight = 42;
@@ -424,6 +424,7 @@ const writeSheet = (workbook, name, columns, rows, ranges) => {
       row.getCell(2).note = autoLineNote;
     }
   });
+  applyOuterBorder(sheet, 1, rows.length + 1, 1, columns.length);
   fitColumnWidths(sheet, columns, rows);
   sheet.autoFilter = {from: {row: 1, column: 1}, to: {row: 1, column: columns.length}};
   return pending;
@@ -470,7 +471,7 @@ const addPendingRows = (sheet, startRow, pending) => {
     const cell = sheet.getCell(rowNumber, 1);
     cell.value = 'No falta ningún dato: las hojas están listas para subir a Oracle.';
     styleLegendCell(cell, {font: {italic: true}});
-    return;
+    return rowNumber;
   }
   ['Hoja', 'Celda', 'Columna', 'Qué falta'].forEach((text, index) => {
     styleLegendCell(sheet.getCell(rowNumber, index + 1), {font: {bold: true}, alignment: {horizontal: 'center'}});
@@ -487,6 +488,7 @@ const addPendingRows = (sheet, startRow, pending) => {
     row.getCell(2).font = {...baseFont, underline: true, color: {argb: pendingFont}};
     row.getCell(2).alignment = {horizontal: 'center', vertical: 'middle'};
   });
+  return rowNumber;
 };
 
 const addLegendSheet = (workbook, {invoices, lines, pending}) => {
@@ -514,7 +516,9 @@ const addLegendSheet = (workbook, {invoices, lines, pending}) => {
   });
   const pendingTitleRow = 5 + legendRows.length + 1;
   addLegendTitle(sheet, pendingTitleRow, 'Datos por completar antes de subir a Oracle (clic en la celda para ir)');
-  addPendingRows(sheet, pendingTitleRow + 1, pending);
+  frameTable(sheet, 4, 4 + legendRows.length, 1, legendColumns.length);
+  const lastPendingRow = addPendingRows(sheet, pendingTitleRow + 1, pending);
+  frameTable(sheet, pendingTitleRow, lastPendingRow, 1, legendColumns.length);
 };
 
 export function buildOracleRows(statements) {

@@ -11,6 +11,7 @@ import {resolveDocumentNumber, documentSources, systemReceiptNote} from '../../u
 import {addListRange} from '../../utils/excelLists';
 import {saveWorkbook} from '../../utils/excelExport';
 import {amountInBsOf, originalAmountLinesOf, summarizeStatement, hasOriginCurrencyLines} from '../../utils/expenseCurrency';
+import {thinBorder, applyOuterBorder} from '../../utils/excelBorders';
 
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
@@ -20,8 +21,6 @@ const infoLabelColor = 'FF1A5276';
 const nationalRowFill = 'FFF4F9FD';
 const internationalRowFill = 'FFFDEEEE';
 const totalsFill = 'FFBFE0F5';
-const thinBorderColor = 'FFB0C4D4';
-const thickBorderColor = 'FF1B4F91';
 const totalsLabelEndCol = 3;
 const reimburseFont = 'FF9C0006';
 const originalLineHeight = 14;
@@ -32,13 +31,6 @@ const usdNumberFormat = '#,##0.00" USD"';
 const systemReceiptFill = 'FFE4DFEC';
 const systemReceiptLegend = 'N° DOCUMENTO en lila: número de recibo que asignó el sistema, porque el gasto no tiene recibo original. Sin color: número de la factura o del recibo original.';
 const footerText = '&L&8Sistema de Control de Viáticos&R&8Página &P de &N';
-
-const thinBorder = {
-  top: {style: 'thin', color: {argb: thinBorderColor}},
-  bottom: {style: 'thin', color: {argb: thinBorderColor}},
-  left: {style: 'thin', color: {argb: thinBorderColor}},
-  right: {style: 'thin', color: {argb: thinBorderColor}},
-};
 
 function cleanValue(value) {
   if (value === 'No Especificado') {
@@ -130,28 +122,6 @@ async function fetchImageAsBase64(url) {
   }
   catch {
     return null;
-  }
-}
-
-function applyOuterBorder(sheet, startRow, endRow, startCol, endCol) {
-  for (let r = startRow; r <= endRow; r++) {
-    for (let c = startCol; c <= endCol; c++) {
-      const cell = sheet.getCell(r, c);
-      const border = {...cell.border};
-      if (r === startRow) {
-        border.top = {style: 'medium', color: {argb: thickBorderColor}};
-      }
-      if (r === endRow) {
-        border.bottom = {style: 'medium', color: {argb: thickBorderColor}};
-      }
-      if (c === startCol) {
-        border.left = {style: 'medium', color: {argb: thickBorderColor}};
-      }
-      if (c === endCol) {
-        border.right = {style: 'medium', color: {argb: thickBorderColor}};
-      }
-      cell.border = border;
-    }
   }
 }
 

@@ -1,16 +1,14 @@
 import {saveAs} from 'file-saver';
 import {toDateText} from './periodRange';
 import {moveListsToEnd} from './excelLists';
+import {thinBorder, applyOuterBorder} from './excelBorders';
 
 const headerFill = 'FF870002';
 const headerFont = 'FFFFFFFF';
 const stripeFill = 'FFF3F6FF';
 const totalsFill = 'FFF2DCDB';
-const borderColor = 'FFD0D0D0';
 const headerHeight = 24;
 const rowHeight = 18;
-const thinLine = {style: 'thin', color: {argb: borderColor}};
-const cellBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
 
 export const amountFormat = '#,##0.00';
 
@@ -29,7 +27,7 @@ const styleRow = (row, columns, fill) => {
   row.height = rowHeight;
   columns.forEach((column, index) => {
     const cell = row.getCell(index + 1);
-    cell.border = cellBorder;
+    cell.border = thinBorder;
     cell.alignment = columnAlignment(column);
     if (fill) {
       cell.fill = solidFill(fill);
@@ -59,7 +57,7 @@ export const addTableSheet = (workbook, name, columns, rows) => {
   columns.forEach((column, index) => {
     const cell = header.getCell(index + 1);
     cell.fill = solidFill(headerFill);
-    cell.border = cellBorder;
+    cell.border = thinBorder;
     cell.alignment = {horizontal: 'center', vertical: 'middle', wrapText: true};
   });
   rows.forEach((row, index) => {
@@ -72,6 +70,7 @@ export const addTableSheet = (workbook, name, columns, rows) => {
   if (rows.length > 0 && columns.some((column) => column.total)) {
     addTotalsRow(sheet, columns, rows);
   }
+  applyOuterBorder(sheet, 1, sheet.rowCount, 1, columns.length);
   columns.forEach((column, index) => {
     if (column.numFmt) {
       sheet.getColumn(index + 1).numFmt = column.numFmt;
