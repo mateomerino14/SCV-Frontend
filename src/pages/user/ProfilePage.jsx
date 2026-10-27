@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import {Mail, Phone, Briefcase, LogOut, Layers, IdCard, UserCheck} from 'lucide-react';
+import {Mail, Phone, Briefcase, Layers, IdCard, UserCheck} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import MascotGreeting from '../../components/mascot/MascotGreeting';
@@ -43,7 +43,6 @@ function ProfilePage() {
   } = useProfile();
   const {showModal: showPhotoModal, open: openPhotoModal, close: closePhotoModal, handleNewPhoto, handleRemovePhoto: handleRemovePhotoModal} =
     usePhotoModal(handleChangePhoto, handleRemovePhoto, loadUser);
-  // Cierra la sesion en el servidor antes de volver al ingreso
   const handleLogout = async () => {
     await logout();
     navigate(routes.login);
@@ -61,7 +60,10 @@ function ProfilePage() {
     );
   }
 
-  const mascotMessage = menuUser ? 'Mantén tus datos al día: tu carnet de identidad aparece en tus recibos.' : null;
+  let mascotMessage = null;
+  if (menuUser) {
+    mascotMessage = 'Mantén tus datos al día: tu carnet de identidad aparece en tus recibos.';
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -96,7 +98,6 @@ function ProfilePage() {
           </div>
         </div>
         <button className={styles.logoutBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={handleLogout}>
-          <LogOut size={18} />
           Cerrar Sesión
         </button>
       </div>

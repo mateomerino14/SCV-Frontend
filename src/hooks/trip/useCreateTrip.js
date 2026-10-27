@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {createTrip} from '../../services/trip/tripService';
+import {maxTripReasonLength} from '../../constants/tripLimits';
 
 function useCreateTrip(user) {
   const [reason, setReason] = useState('');
@@ -57,7 +58,7 @@ function useCreateTrip(user) {
   };
 
   const handleReasonChange = (value) => {
-    if (value.length > 100) {
+    if (value.length > maxTripReasonLength) {
       return;
     }
     setReason(value);
@@ -169,6 +170,10 @@ function useCreateTrip(user) {
     }
     setFieldErrors({});
     setLoading(true);
+    let plate = null;
+    if (transport === 'Vehículo de Empresa') {
+      plate = vehiclePlate.trim();
+    }
     const data = await createTrip({
       motivo: reason.trim(),
       origen: origin.trim(),
@@ -177,7 +182,7 @@ function useCreateTrip(user) {
       fecha_fin: endDate,
       tipo: type,
       transporte: transport,
-      placa_vehiculo: transport === 'Vehículo de Empresa' ? vehiclePlate.trim() : null,
+      placa_vehiculo: plate,
       monto_asignado: totalAmount,
       monto_asignado_usd: totalAmountUsd,
     });

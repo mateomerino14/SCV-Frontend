@@ -47,7 +47,6 @@ function useDeadlineAuthorizationRequests() {
     return () => clearInterval(interval);
   }, [load]);
 
-
   const handleApprove = async (requestId) => {
     setSavingAction(true);
     const data = await approveRequest(requestId);

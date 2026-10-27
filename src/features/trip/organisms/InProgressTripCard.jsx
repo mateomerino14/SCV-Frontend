@@ -30,8 +30,8 @@ function InProgressTripCard({trip}) {
     return (
       <div className={styles.emptyContainer} style={{background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.title})`}}>
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.1)" />
-          <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill="rgba(255,255,255,0.6)" />
+          <circle cx="20" cy="20" r="20" fill={COLORS.onColorFill10} />
+          <path d="M12 28L16 16L20 22L25 13L28 28H12Z" fill={COLORS.onColorText60} />
         </svg>
         <p className="font-inter font-bold text-base">Sin viajes en curso</p>
         <p className="font-inter text-xs opacity-70">No tienes ningún viaje activo en este momento</p>
@@ -41,19 +41,24 @@ function InProgressTripCard({trip}) {
   return <InProgressTripContent trip={trip} navigate={navigate} />;
 }
 
-// Contenido con el viaje: va aparte para que el hook se llame siempre en el mismo orden
 function InProgressTripContent({trip, navigate}) {
   const {
-    isInternational, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,
+    isInternational, hasUsdFund, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,
     internationalExpense, assignedAmountUsd, internationalPercentage, exceedsInternational,
   } = useBudgetProgress(trip);
-  const nationalLabel = isInternational ? 'Nacional (Bs)' : 'Gasto Acumulado';
+  let nationalLabel = 'Gasto Acumulado';
+  if (hasUsdFund) {
+    nationalLabel = 'Nacional (Bs)';
+  }
+  else if (isInternational) {
+    nationalLabel = 'Fondo en Bs';
+  }
 
   return (
     <motion.div className={styles.container} whileHover={{y: -3, boxShadow: '0 12px 28px rgba(0,0,0,0.14)'}} transition={{duration: 0.18}}>
       <div className={styles.topSection} style={{backgroundColor: COLORS.backgroundSecondary}}>
         {trip.esSustitucion && (
-          <span className={styles.badge} style={{backgroundColor: 'rgba(255,255,255,0.25)', color: COLORS.background, marginBottom: 6, display: 'inline-block'}}>
+          <span className={styles.badge} style={{backgroundColor: COLORS.onColorFill25, color: COLORS.background, marginBottom: 6, display: 'inline-block'}}>
             RENDICIÓN DE {trip.nombreTitular?.toUpperCase()}
           </span>
         )}
@@ -81,7 +86,7 @@ function InProgressTripContent({trip, navigate}) {
         </div>
         <BudgetProgressBlock label={nationalLabel} expense={nationalExpense} assignedAmount={assignedAmount}
           percentage={nationalPercentage} exceeds={exceedsNational} currency="Bs" />
-        {isInternational && (
+        {hasUsdFund && (
           <>
             <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />
             <BudgetProgressBlock label="Internacional (USD)" expense={internationalExpense} assignedAmount={assignedAmountUsd}

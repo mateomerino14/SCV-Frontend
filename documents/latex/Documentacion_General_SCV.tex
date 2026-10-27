@@ -1,0 +1,1083 @@
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+\usepackage[scaled=0.95]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\IfFileExists{beramono.sty}{\usepackage[scaled=0.86]{beramono}}{}
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{xltabular}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+\PassOptionsToPackage{obeyspaces,spaces}{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
+\usepackage{needspace}
+
+\definecolor{maxamPrimario}{HTML}{870002}
+\definecolor{maxamSecundario}{HTML}{D20F12}
+\definecolor{maxamTitulo}{HTML}{500203}
+\definecolor{maxamTexto}{HTML}{2E2827}
+\definecolor{maxamEtiqueta}{HTML}{475569}
+\definecolor{maxamFondo}{HTML}{F3F6FF}
+\definecolor{maxamBorde}{HTML}{DEE2F0}
+\definecolor{maxamCampos}{HTML}{C2C6D4}
+\definecolor{codigoFondo}{HTML}{F7F8FC}
+
+\color{maxamTexto}
+
+\titleformat{\section}{\Large\bfseries\color{maxamTitulo}}{\thesection.}{0.6em}{}[{\color{maxamPrimario}\titlerule[0.8pt]}]
+\titleformat{\subsection}{\large\bfseries\color{maxamPrimario}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{maxamTitulo}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{18pt}{10pt}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{maxamEtiqueta}MAXAM FANEXA}
+\fancyhead[R]{\small\color{maxamEtiqueta}Sistema de Control de Viáticos --- Documentación General}
+\fancyfoot[C]{\small\color{maxamEtiqueta}Página \thepage\ de \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{maxamBorde}\leaders\hrule height \headrulewidth\hfill}}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=4pt,label={\color{maxamPrimario}\textbullet}}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=2pt,topsep=4pt}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.35}
+\newcommand{\cabecera}{\rowcolor{maxamPrimario}}
+\newcommand{\tth}[1]{\textcolor{white}{\textbf{#1}}}
+\newcommand{\code}[1]{\nolinkurl{#1}}
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\do\_\do\-\do\.\do\:\do\=\do\,}
+\makeatother
+
+\newtcolorbox{nota}[1][]{colback=maxamFondo,colframe=maxamPrimario,boxrule=0pt,leftrule=3pt,arc=0pt,left=8pt,right=8pt,top=6pt,bottom=6pt,#1}
+
+\lstdefinelanguage{JavaScript}{
+  keywords={const,let,var,function,return,if,else,async,await,new,try,catch,finally,throw,for,of,in,true,false,null,undefined,require,module,exports,import,from,export,default},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`
+}
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{maxamTexto},
+  keywordstyle=\color{maxamPrimario}\bfseries,
+  commentstyle=\color{maxamEtiqueta}\itshape,
+  stringstyle=\color{maxamTitulo},
+  backgroundcolor=\color{codigoFondo},
+  frame=leftline,
+  framerule=2pt,
+  rulecolor=\color{maxamPrimario},
+  xleftmargin=10pt,
+  framexleftmargin=6pt,
+  breaklines=true,
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  aboveskip=8pt,
+  belowskip=8pt,
+  literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1 {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1 {Ñ}{{\~N}}1 {—}{{---}}1 {→}{{$\rightarrow$}}1 {├}{{|}}1 {└}{{`}}1 {│}{{|}}1 {─}{{-}}1
+}
+
+\hypersetup{pdftitle={Documentación General - Sistema de Control de Viáticos},pdfauthor={Mateo Alejandro Merino Vidal}}
+
+\newcommand{\muestra}[1]{\definecolor{tmpMuestra}{HTML}{#1}\tikz[baseline=-0.6ex]\node[rectangle,fill=tmpMuestra,draw=maxamCampos,minimum width=0.9cm,minimum height=0.38cm]{};}
+\newcommand{\estado}[3]{\definecolor{tmpFondo}{HTML}{#1}\definecolor{tmpTexto}{HTML}{#2}\tikz[baseline=-0.6ex]\node[rectangle,rounded corners=5pt,fill=tmpFondo,text=tmpTexto,font=\scriptsize\bfseries,inner sep=3pt]{#3};}
+\newcommand{\campo}[3]{\item \code{#1} --- #2 (\texttt{#3}).}
+\makeatletter
+\renewcommand*\l@subsection{\@dottedtocline{2}{1.5em}{2.6em}}
+\renewcommand*\l@subsubsection{\@dottedtocline{3}{4.1em}{4.3em}}
+\makeatother
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[maxamPrimario] (current page.north west) rectangle ([yshift=-1.1cm]current page.north east);
+  \fill[maxamSecundario] ([yshift=-1.1cm]current page.north west) rectangle ([yshift=-1.3cm]current page.north east);
+  \fill[maxamPrimario] (current page.south west) rectangle ([yshift=0.9cm]current page.south east);
+\end{tikzpicture}
+\centering
+\vspace*{1.6cm}
+\IfFileExists{logo-maxam.png}{\includegraphics[width=0.55\textwidth]{logo-maxam.png}\par}{{\Huge\bfseries\color{maxamTexto}MAXAM \textcolor{maxamSecundario}{|} FANEXA}\par}
+\vspace{1.4cm}
+{\color{maxamPrimario}\rule{0.7\textwidth}{1.2pt}}\par
+\vspace{0.8cm}
+{\fontsize{26}{32}\selectfont\bfseries\color{maxamPrimario}SISTEMA DE CONTROL\\[4pt] DE VIÁTICOS}\par
+\vspace{0.5cm}
+{\LARGE\bfseries\color{maxamTitulo}Documentación General}\par
+\vspace{0.6cm}
+{\large\itshape\color{maxamEtiqueta}Gestión de viajes corporativos y rendición de gastos}\par
+\vspace{0.8cm}
+{\color{maxamPrimario}\rule{0.7\textwidth}{1.2pt}}\par
+\vfill
+\begin{tabular}{>{\bfseries\color{maxamTitulo}}r L{7.5cm}}
+Autor: & Mateo Alejandro Merino Vidal \\
+Empresa: & MAXAM FANEXA \\
+Versión: & 2.1 \\
+Fecha: & Octubre de 2026 \\
+\end{tabular}
+\vspace{1.8cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Consideraciones}
+\begin{enumerate}
+  \item El sistema contempla dos tipos de viaje según su alcance geográfico:
+  \begin{itemize}
+    \item \textbf{Nacional}: los gastos se registran íntegramente en bolivianos.
+    \item \textbf{Internacional}: cuenta además con un presupuesto en dólares. Cualquier día se puede gastar en bolivianos o en dólares. Un gasto internacional se escribe en la moneda de su factura (dólares, soles, pesos, etc.) con dos tipos de cambio que escribe el empleado: el de esa moneda a dólares y el de dólares a bolivianos. El sistema guarda el equivalente en dólares, que controla el presupuesto y va a Oracle, y la planilla lo muestra en bolivianos. Los gastos internacionales no llevan impuestos.
+  \end{itemize}
+  \item El medio de transporte se registra por viaje (terrestre, aéreo u otro), junto con la placa cuando se usa un vehículo de la empresa, y se muestra como distintivo en las vistas de revisión.
+  \item La rendición de cada viaje reúne:
+  \begin{itemize}
+    \item El memorándum del viaje (lugar, duración, medio de transporte y objetivo).
+    \item Las facturas o recibos de cada gasto, cuando corresponda.
+    \item El detalle de los gastos realizados, con su desglose en subgastos si aplica.
+  \end{itemize}
+  \item El sistema identifica automáticamente los gastos no permitidos, en particular las bebidas alcohólicas, a partir del detalle de productos facturados y de la descripción del gasto. Una rendición con alcohol pasa por una revisión adicional del aprobador.
+  \item Al registrar el viaje, el sistema calcula el monto con las tarifas diarias del cargo del empleado; tesorería lo revisa y lo ajusta al asignar los fondos.
+  \item El presupuesto se controla día por día y por moneda contra las tarifas diarias del cargo: en un viaje nacional la tarifa en bolivianos; en uno internacional, las dos tarifas por separado. Los hoteles se comparan contra el total asignado. Cada día que excede la tarifa, y el exceso en hoteles, requiere una justificación, y el sistema calcula el saldo a devolver o el importe a reembolsar en cada moneda.
+  \item Antes de aprobar o rechazar, los revisores ven la rendición completa: tablas separadas por tipo de gasto, barras de presupuesto, desglose diario y alertas.
+  \item Las categorías de gasto incorporan la cuenta contable de Oracle en su nombre, de modo que la planilla exportada resulte directamente utilizable por el área contable.
+  \item Se aplican retenciones impositivas automáticas según el tipo de comprobante, conforme a la normativa tributaria boliviana.
+  \item Existe un plazo de tolerancia de cuatro días posteriores a la finalización del viaje para completar la carga de gastos. Vencido ese plazo, se debe solicitar una ampliación al revisor.
+  \item El empleado puede pedir que otra persona de su sección rinda los gastos de su viaje en su nombre.
+  \item Al registrar un gasto sin factura, el sistema le asigna su número de recibo, haya o no recibo en papel; se puede anotar además el número impreso del recibo en papel, si lo tiene. El recibo que emite el sistema muestra los dos, La planilla y el Excel para Oracle usan el número original si existe y, si no, el del sistema, marcado en lila; las pantallas de revisión y la lista de gastos del empleado lo marcan igual, para que todos distingan cuál es cuál. Solo en los gastos internacionales (en dólares, dentro de un viaje internacional) se pueden adjuntar, además del comprobante, hasta dos respaldos para el comprobante del cambio de moneda; los revisores los ven en el detalle del gasto. Los gastos en bolivianos, con o sin factura, no piden respaldos, sea el viaje nacional o internacional.
+  \item El sistema exporta la rendición en Excel, replicando el formato institucional de la planilla de rendición de cuentas y, en el mismo archivo, las hojas FACTURAS y LINEAS con el formato que contabilidad sube a Oracle, también de varios viajes a la vez para el revisor, el tesorero y el administrador; genera en PDF el memorándum, la confirmación de fondos, los recibos y la rendición final. El administrador puede exportar además a Excel el resumen general, los usuarios, los cargos y las secciones, e importar usuarios desde una plantilla de Excel: el sistema revisa cada fila (repetidos, cargos y jefes que no existen, etc.) y solo crea las correctas.
+\end{enumerate}
+
+\section{Roles del sistema}
+El sistema contempla cinco roles y un perfil adicional que se determina por el cargo del usuario.
+
+\begin{xltabular}{\textwidth}{L{1cm} L{3.4cm} Y}
+\cabecera \tth{ID} & \tth{Rol} & \tth{Atribuciones} \\
+\endfirsthead
+\cabecera \tth{ID} & \tth{Rol} & \tth{Atribuciones} \\
+\endhead
+\rowcolor{maxamFondo} 1 & ADMINISTRADOR & Gestión de usuarios (uno por uno o importados desde Excel), cargos y secciones; historial de accesos; panel de indicadores filtrable por periodo; exportación a Excel de sus pantallas y de las planillas; días y horas de los recordatorios de pendientes. \\
+2 & SUPERVISOR & Revisión previa del viaje y revisión de la rendición de gastos de los empleados a su cargo. \\
+\rowcolor{maxamFondo} 3 & EMPLEADO & Creación de viajes, registro de gastos y facturas, solicitudes de ampliación de plazo y de reemplazo. \\
+4 & REVISOR & Revisión final de la rendición, resolución de las solicitudes de plazo y de reemplazo y exportación de planillas en grupo. \\
+\rowcolor{maxamFondo} 5 & APROBADOR & Aprobación del viaje con emisión del memorándum y revisión adicional de rendiciones con alcohol. \\
+--- & TESORERO & Asignación de fondos y exportación de planillas en grupo. Se determina por el cargo (asistente de caja y tesorería), no por el rol. \\
+\end{xltabular}
+
+El aprobador y el revisor son roles únicos. El supervisor que revisa cada viaje se determina por jerarquía: primero el jefe directo del empleado; si no lo tiene, los supervisores de su sección; y si tampoco, cualquier supervisor.
+
+\section{Flujo del sistema}
+El sistema opera mediante dos flujos de aprobación consecutivos.
+
+\begin{center}
+\begin{tikzpicture}[
+  est/.style={rectangle,rounded corners=3pt,draw=maxamPrimario,fill=maxamFondo,minimum width=3.4cm,minimum height=0.8cm,font=\scriptsize\bfseries,align=center},
+  fin/.style={est,fill=maxamPrimario,text=white},
+  rech/.style={est,draw=maxamSecundario,fill=white,text=maxamSecundario},
+  fl/.style={-{Stealth[length=2mm]},maxamTitulo,thick},
+  node distance=0.35cm]
+\node[est] (b) {BORRADOR};
+\node[est,below=of b] (rv) {EN\_REVISION\_VIAJE};
+\node[est,below=of rv] (av) {APROBADO\_VIAJE};
+\node[est,below=of av] (rt) {EN\_REVISION\_TESORERO};
+\node[fin,below=of rt] (ec) {EN\_CURSO};
+\node[est,right=2.2cm of b] (er) {EN\_REVISION};
+\node[est,below=of er] (ea) {EN\_REVISION\_APROBADOR\\(solo con alcohol)};
+\node[est,below=of ea] (as) {APROBADO\_SUPERVISOR};
+\node[fin,below=of as] (af) {APROBADO\_FINAL};
+\node[rech,below=1.1cm of af] (r) {RECHAZADO};
+\draw[fl] (b)--(rv); \draw[fl] (rv)--(av); \draw[fl] (av)--(rt); \draw[fl] (rt)--(ec);
+\draw[fl] (ec.east) -- ++(1.1,0) |- (er.west);
+\draw[fl] (er)--(ea); \draw[fl] (ea)--(as); \draw[fl] (as)--(af);
+\draw[fl,dashed,maxamSecundario] (ec.south) |- (r.west);
+\node[font=\scriptsize\bfseries,text=maxamPrimario,above=0.25cm of b] {Primer flujo: autorización};
+\node[font=\scriptsize\bfseries,text=maxamPrimario,above=0.25cm of er] {Segundo flujo: rendición};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Primer flujo: autorización del viaje}
+\begin{enumerate}
+  \item \textbf{Registro del viaje:} el empleado crea el viaje en estado \code{BORRADOR}, indicando motivo, origen, destino, fechas, tipo (nacional o internacional) y medio de transporte.
+  \item \textbf{Monto del viaje:} el sistema lo calcula con las tarifas del cargo. En un viaje nacional es días × tarifa en bolivianos; en uno internacional, el día de salida y el de regreso se calculan con la tarifa en bolivianos y los días intermedios con la tarifa en dólares.
+  \item \textbf{Envío a revisión:} el viaje pasa a \code{EN_REVISION_VIAJE}.
+  \item \textbf{Revisión del supervisor:} el supervisor que corresponde por jerarquía toma el viaje, lo evalúa y lo aprueba o lo rechaza con observaciones. Si lo aprueba, pasa a \code{APROBADO_VIAJE}.
+  \item \textbf{Aprobación y memorándum:} el aprobador confirma la solicitud y el sistema emite el memorándum del viaje, que detalla motivo, destino, fechas y transporte autorizado. El viaje pasa a \code{EN_REVISION_TESORERO}.
+  \item \textbf{Asignación de fondos:} el tesorero revisa el monto calculado y asigna los montos finales en ambas monedas. Al aprobar, el empleado recibe la confirmación del fondo, el viaje pasa a \code{EN_CURSO} y queda habilitado el registro de gastos.
+\end{enumerate}
+
+\subsection{Segundo flujo: rendición de gastos}
+\begin{enumerate}
+  \item \textbf{Registro de gastos:} durante el viaje, el empleado (o su reemplazo aprobado) registra sus gastos en tres modalidades:
+  \begin{itemize}
+    \item Gastos sin factura, con cálculo automático de retenciones y emisión de recibo.
+    \item Gastos con factura o recibo, cargando la imagen del comprobante y revisando los datos extraídos automáticamente.
+    \item Gastos internacionales en la moneda de su factura, pasados a dólares y a bolivianos con los tipos de cambio que escribe el empleado.
+  \end{itemize}
+  \item \textbf{Validación de fechas:} la fecha de cada gasto debe estar dentro del período del viaje, y la carga debe hacerse dentro del plazo de tolerancia o de la ampliación autorizada.
+  \item \textbf{Justificación de excesos:} si algún día supera el viático diario, o los hoteles superan el total asignado, el sistema exige una justificación por cada exceso antes de permitir el envío.
+  \item \textbf{Envío a revisión:} el viaje pasa a \code{EN_REVISION}. Las solicitudes de plazo o de reemplazo que hayan quedado sin responder se cierran automáticamente.
+  \item \textbf{Revisión del supervisor:} el supervisor toma la rendición y accede a la vista completa, que incluye:
+  \begin{itemize}
+    \item Datos del empleado y del viaje.
+    \item Barras de presupuesto consumido por moneda y desglose por día.
+    \item Tarjeta de liquidación con el saldo a devolver o a reembolsar.
+    \item Alertas de exceso de presupuesto y de detección de alcohol.
+    \item Tablas separadas de gastos con factura, sin factura e internacionales.
+    \item Resumen de totales e IVA crédito fiscal.
+  \end{itemize}
+  Puede observar gastos individuales, exportar la planilla en Excel y aprobar o rechazar. Si aprueba y la rendición tiene alcohol, pasa a \code{EN_REVISION_APROBADOR}; en caso contrario, a \code{APROBADO_SUPERVISOR}.
+  \item \textbf{Revisión por alcohol:} el aprobador revisa los gastos con bebidas alcohólicas y aprueba o rechaza. Si aprueba, la rendición pasa a \code{APROBADO_SUPERVISOR}.
+  \item \textbf{Revisión final:} el revisor examina la misma información y resuelve la aprobación definitiva, que lleva el viaje a \code{APROBADO_FINAL} y envía al empleado el resultado con el saldo de cada moneda, o su rechazo.
+\end{enumerate}
+
+\subsection{Rechazo y ciclos de revisión}
+En ambos flujos, el rechazo lleva el viaje al estado \code{RECHAZADO} e incrementa el ciclo de revisión, para que el empleado corrija y reenvíe. Un viaje rechazado antes de iniciarse se corrige editándolo; uno rechazado en la rendición se corrige en sus gastos y vuelve directamente a \code{EN_REVISION}. Las observaciones de ciclos anteriores se conservan como historial, pero solo se consideran las del ciclo vigente: para rechazar, cada revisor debe haber registrado al menos una observación propia en el ciclo actual.
+
+\subsection{Aprobación automática}
+Si el responsable de una etapa única (aprobador, tesorero o revisor) es el propio viajero, esa etapa se aprueba sola y los documentos lo indican como aprobación automática. En el caso del tesorero, el fondo queda con el monto calculado al registrar el viaje.
+
+\subsection{Estados del viaje}
+\begin{xltabular}{\textwidth}{L{4.6cm} L{3.6cm} Y}
+\cabecera \tth{Estado} & \tth{Etiqueta} & \tth{Significado} \\
+\endfirsthead
+\cabecera \tth{Estado} & \tth{Etiqueta} & \tth{Significado} \\
+\endhead
+\code{BORRADOR} & \estado{E5E7EB}{374151}{Borrador} & Creado, aún no enviado a revisión. \\
+\code{EN_REVISION_VIAJE} & \estado{E8D5FF}{5B00A0}{Revisión Previa} & En revisión previa del supervisor. \\
+\code{APROBADO_VIAJE} & \estado{FFE766}{7A5900}{Esperando Aprobador} & Aprobado por el supervisor, pendiente del aprobador. \\
+\code{EN_REVISION_TESORERO} & \estado{FFE3C2}{8A4B00}{Esperando Fondos} & Pendiente de asignación de fondos. \\
+\code{EN_CURSO} & \estado{D4EDDA}{155724}{En Curso} & Fondos asignados; el empleado registra gastos. \\
+\code{EN_REVISION} & \estado{E8D5FF}{5B00A0}{En Revisión} & Rendición enviada, en revisión del supervisor. \\
+\code{EN_REVISION_APROBADOR} & \estado{FFE766}{7A5900}{Revisión por Alcohol} & Rendición con alcohol en revisión del aprobador. \\
+\code{APROBADO_SUPERVISOR} & \estado{A9C6F6}{000A65}{Apr. Preliminar} & Pendiente de revisión final. \\
+\code{APROBADO_FINAL} & \estado{D4EDDA}{155724}{Aprobado} & Rendición aprobada definitivamente. \\
+\code{RECHAZADO} & \estado{FFC2C3}{500203}{Rechazado} & Rechazado en cualquiera de los dos flujos. \\
+\end{xltabular}
+
+\section{Gestión de plazos}
+El plazo de tolerancia concede cuatro días posteriores a la finalización del viaje para completar la carga de gastos. Vencido ese margen, el registro queda bloqueado y se debe pedir una ampliación al revisor, explicando el motivo del retraso. La ampliación vale para el viaje: la puede pedir el titular o su reemplazo, y la respuesta se avisa a ambos. El plazo no corre mientras el viaje está rechazado.
+
+\begin{xltabular}{\textwidth}{L{4.6cm} Y}
+\cabecera \tth{Estado de la solicitud} & \tth{Efecto} \\
+\endfirsthead
+\cabecera \tth{Estado de la solicitud} & \tth{Efecto} \\
+\endhead
+\rowcolor{maxamFondo} Sin solicitud & Registro bloqueado; se habilita el botón de solicitud. \\
+\code{PENDIENTE} & Registro bloqueado hasta la respuesta del revisor. \\
+\rowcolor{maxamFondo} \code{APROBADA} vigente & Registro habilitado durante cuatro días desde la respuesta. \\
+\code{APROBADA} vencida & Registro bloqueado; puede pedirse otra ampliación. \\
+\rowcolor{maxamFondo} \code{RECHAZADA} & Registro bloqueado; puede formularse una nueva solicitud. \\
+Cerrada automáticamente & El viaje se envió a revisión antes de la respuesta; ya no aplica. \\
+\end{xltabular}
+
+La ampliación extiende el margen para \textit{cargar} gastos, no el rango de fechas admisibles: la fecha de cada gasto debe seguir perteneciendo al período del viaje.
+
+\section{Rendición por terceros}
+Mientras el viaje está en curso o rechazado en la rendición, el empleado puede pedir que otra persona activa de su sección rinda los gastos en su nombre. El revisor aprueba o rechaza la solicitud; con la aprobación se avisa al titular y al reemplazo, y el viaje aparece en el panel del reemplazo como ``Rendición de [nombre]''. El titular conserva siempre el acceso a su viaje, y los documentos oficiales llevan su nombre.
+
+\section{Retenciones impositivas}
+El sistema calcula automáticamente las retenciones según el tipo de comprobante, conforme a la normativa boliviana. Las retenciones y el costo se calculan siempre desde lo pagado, de modo que todos los gastos, incluidos los registrados antes de un ajuste del cálculo, se muestran con la misma regla.
+
+\begin{xltabular}{\textwidth}{L{1.6cm} L{5.4cm} Y}
+\cabecera \tth{Código} & \tth{Tipo de comprobante} & \tth{Retenciones aplicadas} \\
+\endfirsthead
+\cabecera \tth{Código} & \tth{Tipo de comprobante} & \tth{Retenciones aplicadas} \\
+\endhead
+\rowcolor{maxamFondo} \code{F} & Compra de bien o servicio con factura & Ninguna; genera IVA crédito fiscal (13\% del total) \\
+\code{R} & Recibo: documento sin IVA ni retención & Ninguna; no lleva IVA \\
+\rowcolor{maxamFondo} \code{C} & Compra de bien sin factura & IUE 5\% e IT 3\% sobre la base incrementada \\
+\code{S} & Servicio o alquiler sin factura & RC-IVA 13\% e IT 3\% sobre la base incrementada \\
+\end{xltabular}
+
+Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura la empresa asume los impuestos (base incrementada): el empleado registra lo que pagó; el RC-IVA o IUE y el IT se calculan cada uno con su porcentaje sobre lo pagado $\div$ 0.84 en servicios ($\div$ 0.92 en compras), sin redondear esa división, y cada retención se redondea a centavos; la base es pagado + retenciones, como lo calcula contabilidad. Por ejemplo, con 50.00 pagados en un servicio el RC-IVA es 7.74, el IT 1.79 y la base 59.53. Si el gasto tiene subgastos, cada uno se calcula aparte y se suman, como en el recibo de papel. Lo pagado cuenta para el presupuesto y la base es el importe costo/gasto de la planilla.
+
+Todos los importes se redondean a centavos, y los medios centavos suben (1.005 se redondea a 1.01). Por ejemplo, un recibo de servicios con cuatro taxis pagados en total 240 Bs se calcula así:
+
+\begin{xltabular}{\textwidth}{Y L{1.8cm} L{1.8cm} L{2cm} L{1.6cm}}
+\cabecera \tth{Subgasto} & \tth{Pagado} & \tth{Importe} & \tth{RC-IVA 13\%} & \tth{IT 3\%} \\
+\endfirsthead
+\cabecera \tth{Subgasto} & \tth{Pagado} & \tth{Importe} & \tth{RC-IVA 13\%} & \tth{IT 3\%} \\
+\endhead
+\rowcolor{maxamFondo} Taxi domicilio -- aeropuerto & 50.00 & 59.53 & 7.74 & 1.79 \\
+Taxi aeropuerto -- centro & 80.00 & 95.24 & 12.38 & 2.86 \\
+\rowcolor{maxamFondo} Taxi centro -- aeropuerto & 60.00 & 71.43 & 9.29 & 2.14 \\
+Taxi aeropuerto -- domicilio & 50.00 & 59.53 & 7.74 & 1.79 \\
+\rowcolor{maxamFondo} \textbf{Total} & \textbf{240.00} & \textbf{285.73} & \textbf{37.15} & \textbf{8.58} \\
+\end{xltabular}
+
+Calcular sobre el total de 240 de una vez daría 285.71, que no coincide con la suma de las líneas; por eso el sistema calcula cada línea por separado, igual que contabilidad.
+
+\section{Categorías de gasto}
+Las categorías son el plan de cuentas de gastos de la empresa (planilla de Castro): 112 cuentas contables de Oracle más ``OTROS''. Cada nombre empieza con el código de la cuenta, lo que permite que la planilla exportada sea directamente utilizable por el área contable; al agregar nuevas categorías debe conservarse ese formato. Al registrar un gasto, la categoría se elige con un buscador por número de cuenta, nombre o nota de uso; las cuentas que en la planilla de Castro traen una nota de cuándo usarlas (por ejemplo, Manutención (viaje): alimentación cuando el personal está de viaje) la muestran como ayuda, y en el Excel de la planilla la columna de cuenta ofrece la misma lista.
+
+\begin{xltabular}{\textwidth}{L{5.2cm} Y}
+\cabecera \tth{Grupo} & \tth{Cuenta} \\
+\endfirsthead
+\cabecera \tth{Grupo} & \tth{Cuenta} \\
+\endhead
+\rowcolor{maxamFondo} Gastos de personal & 649001 SEGUROS ACCIDENTES PERSONAL \\
+Gastos de personal & 649200 ALIMENTACION (PERSONAL) \\
+\rowcolor{maxamFondo} Gastos de personal & 649300 TRANSPORTE PERSONAL \\
+Otros tributos & 631006 PATENTES \\
+\rowcolor{maxamFondo} Otros tributos & 631020 IMPUESTO A LA PROPIEDAD DE INMU \\
+Otros tributos & 631040 IMPUESTO A LOS VEHICULOS AUTOMO \\
+\rowcolor{maxamFondo} Otros tributos & 631070 IMPUESTO A LAS TRANSACCIONES FINANCIERAS \\
+Otros tributos & 631210 OTROS IMPUESTOS Y TASAS \\
+\rowcolor{maxamFondo} Otros tributos & 631213 MULTAS SIN \\
+Arrendamientos & 621010 ALQUILER EDIF. ADMINISTRATIVOS Y CO \\
+\rowcolor{maxamFondo} Arrendamientos & 621020 ALQUILER ALMACENES \\
+Arrendamientos & 621030 ALQUILER EDIF. SOCIALES Y VIVIENDAS \\
+\rowcolor{maxamFondo} Arrendamientos & 621050 ALQUILER MAQUINARIA \\
+Arrendamientos & 621060 ALQUILER UTILLAJE \\
+\rowcolor{maxamFondo} Arrendamientos & 621070 ALQUILER OTRAS INSTALACIONES \\
+Arrendamientos & 621080 ALQUILER MOBILIARIO \\
+\rowcolor{maxamFondo} Arrendamientos & 621090 ALQUILER EQUIP. INFORMATICOS \\
+Arrendamientos & 621100 ALQUILER ELEMEMTOS TRANSPORTE \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622010 MANTENIMIENTO EDIF. INDUSTRIALES \\
+Reparaciones y conservación & 622020 MANTENIMIENTO EDIF. ADMINISTRATIVOS \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622030 MANTENIMIENTO ALMACENES \\
+Reparaciones y conservación & 622040 MANTENIMIENTO EDIF. SOCIALES Y VIVIENDAS \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622050 MANTENIMIENTO VIAS Y CARRETERAS \\
+Reparaciones y conservación & 622060 MANTENIMIENTO INSTALACIONES TECNICAS \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622070 MANTENIMIENTO MAQUINARIA \\
+Reparaciones y conservación & 622080 MANTENIMIENTO UTILLAJE \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622090 MANTENIMIENTO OTRAS INSTALACIONES \\
+Reparaciones y conservación & 622100 MANTENIMIENTO MOBILIARIO \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622110 MANTENIMIENTO EQUIP. INFORMATICOS \\
+Reparaciones y conservación & 622120 MANTENIMIENTO ELEM. TRANSPORTE \\
+\rowcolor{maxamFondo} Reparaciones y conservación & 622121 MANTENIMIENTO VEHICULOS \\
+Reparaciones y conservación & 622130 MANTENIMIENTO INST. SEGURIDAD \\
+\rowcolor{maxamFondo} Servicios profesionales independientes & 623000 SERVICIOS DE LIMPIEZA \\
+Servicios profesionales independientes & 623040 GESTION DE RESIDUOS \\
+\rowcolor{maxamFondo} Servicios profesionales independientes & 623080 ANALISIS DE LABORATORIO \\
+Seguridad y vigilancia & 623010 SERV. SEGURIDAD Y VIGILANCIA \\
+\rowcolor{maxamFondo} Gastos Comerciales & 623160 GARANTIAS COMERCIALES \\
+Auditores y consultores & 623200 AUDITORES \\
+\rowcolor{maxamFondo} Auditores y consultores & 623220 CONSULTORIA LEGAL \\
+Auditores y consultores & 623230 CONSULTORIA TECNICA \\
+\rowcolor{maxamFondo} Auditores y consultores & 623231 GASTOS ASESORAMIENTO SEGURIDAD \\
+Auditores y consultores & 623240 CONSULTORIA COMERCIAL \\
+\rowcolor{maxamFondo} Auditores y consultores & 623250 CONSULTORIA DE GESTION \\
+Capacitación & 623800 TRAINING \\
+\rowcolor{maxamFondo} Primas de seguros & 625010 SEGURO DE PROD. TERMINADOS \\
+Primas de seguros & 625070 PRIMAS DE SEGURO \\
+\rowcolor{maxamFondo} Servicios bancarios y similares & 629320 SERVICIOS BANCARIOS \\
+Servicios bancarios y similares & 629330 COMISIONES AVALES \\
+\rowcolor{maxamFondo} Publicidad y Relaciones Públicas & 627000 PUBLICIDAD Y PROPAGANDA \\
+Publicidad y Relaciones Públicas & 627001 PUBLICACIONES \\
+\rowcolor{maxamFondo} Publicidad y Relaciones Públicas & 627010 JORNADAS TECNICAS \\
+Publicidad y Relaciones Públicas & 627020 FERIAS Y EXPOSICIONES \\
+\rowcolor{maxamFondo} Publicidad y Relaciones Públicas & 627030 GASTOS DE REPRESENTACION \\
+Publicidad y Relaciones Públicas & 627050 REUNIONES \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626000 BILLETES (VIAJE) \\
+Gastos de Viaje & 626010 TAXIS (VIAJE) --- no requiere comprobante \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626020 COCHE PROPIO-KMS (VIAJE) \\
+Gastos de Viaje & 626030 HOTELES (VIAJE) \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626040 MANUTENCION (VIAJE) \\
+Gastos de Viaje & 626050 VEHICULOS DE ALQUILER (VIAJE) \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626060 PEAJE AUTOPISTAS (VIAJE) \\
+Gastos de Viaje & 626070 APARCAMIENTO Y OTROS GASTOS (VIAJE) \\
+\rowcolor{maxamFondo} Gastos de Viaje & 626100 REUN.SINDIC.MANUTENCION/AT.TERCEROS (VIAJE) \\
+Suministros & 628000 ENERGÍA ELÉCTRICA \\
+\rowcolor{maxamFondo} Suministros & 628010 AGUA \\
+Suministros & 628020 GAS / FUEL \\
+\rowcolor{maxamFondo} Suministros & 628021 GASOLINA \\
+Suministros & 628022 GASOLEO (DIESEL) \\
+\rowcolor{maxamFondo} Suministros & 628045 OTROS FLUIDOS \\
+Suministros & 628040 SUMINISTRO MATERIALES AUXILIARE \\
+\rowcolor{maxamFondo} Otros gastos generales & 629000 TELEFONOS \\
+Otros gastos generales & 629010 FRANQUEO CORRESPONDENCIA \\
+\rowcolor{maxamFondo} Otros gastos generales & 629020 TELETRANSMISION \\
+Otros gastos generales & 629030 TELEGRAMAS Y TELETIPOS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629040 SERVICIO DE MENSAJERIA \\
+Otros gastos generales & 629060 TAXIS GESTION OFICINA (BOLIVIA) \\
+\rowcolor{maxamFondo} Otros gastos generales & 629100 SUCRIPCION PRENSA, LIBROS Y REV \\
+Otros gastos generales & 629110 CUOTAS DE ASOCIACION \\
+\rowcolor{maxamFondo} Otros gastos generales & 629130 DONACIONES-OBSEQUIOS \\
+Otros gastos generales & 629200 MATERIAL DE OFICINA \\
+\rowcolor{maxamFondo} Otros gastos generales & 629210 IMPRENTA Y FOTOCOPIAS \\
+Otros gastos generales & 629220 TRAMITES Y PERMISOS MIN. DEFENS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629300 OTROS GASTOS SERVICIOS GENERALES \\
+Otros gastos generales & 629301 MATERIAL DE ASEO Y LIMPIEZA \\
+\rowcolor{maxamFondo} Otros gastos generales & 629302 TRANSPORTE DE MATERIALES VARIOS \\
+Otros gastos generales & 629303 OTROS SERVICIOS GENERALES- MEDICAMENTOS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629304 OTROS SERVICIOS GENERALES- PERIODICOS \\
+Otros gastos generales & 629305 MATERIAL DE SEGURIDAD INDUSTRIAL \\
+\rowcolor{maxamFondo} Otros gastos generales & 629306 TRAMITES Y GASTOS LEGALES \\
+Otros gastos generales & 629307 OTROS SERVICIOS GENERALES- WORK (ROPA DE TRABAJO) \\
+\rowcolor{maxamFondo} Otros gastos generales & 629310 ATENC, CONSEJO ADMINISTRACION \\
+Otros gastos generales & 629400 MUESTRAS DE PRODUCTOS PARA PRUEBAS \\
+\rowcolor{maxamFondo} Otros gastos generales & 629401 CONTROL DE CALIDAD (BOLIVIA) \\
+Otros gastos generales & 629500 MUESTRA DE MATERIALES PARA PRUEBA CLIENTES \\
+\rowcolor{maxamFondo} Otros gastos generales & 623500 MULTAS Y PENALIZACIONES \\
+Otros gastos generales & 629350 HERRAMIENTAS Y OTROS DE RAPIDO DESGASTE \\
+\rowcolor{maxamFondo} Transporte nacional capilar (Clientes) & 624000 TRANSPORTE DE PROD. TERMINADOS (CLIENTE) \\
+Transporte nacional capilar (Clientes) & 624001 ESCOLTAS PROD. TERMINADO (CLIENTE) \\
+\rowcolor{maxamFondo} Transporte nacional capilar (Clientes) & 624002 CARGUÍOS Y DESCARGUÍOS PT (CLIENTE) \\
+Transporte nacional troncal (CD) & 624100 TRANSPORTE PROD. TERMINADO (RED COMERCIAL) \\
+\rowcolor{maxamFondo} Transporte nacional troncal (CD) & 624101 ESCOLTAS RED COMERCIAL \\
+Transporte nacional troncal (CD) & 624102 CARGUÍOS Y DESCARGUÍOS RED COMERCIAL \\
+\rowcolor{maxamFondo} Transporte internacional troncal (Grupo) & 624200 TRANSPORTE PROD. TERMINADO EXPORT GRUPO \\
+Transporte internacional troncal (Grupo) & 624201 ESCOLTAS EXPORT GRUPO \\
+\rowcolor{maxamFondo} Transporte internacional troncal (Grupo) & 624202 CARGUÍOS Y DESCARGUÍOS GRUPO \\
+Transporte internacional capilar (Resto) & 624300 TRANSPORTE PROD. TERMINADO EXPORT RESTO \\
+\rowcolor{maxamFondo} Transporte internacional capilar (Resto) & 624301 ESCOLTAS EXPORT RESTO \\
+Transporte internacional capilar (Resto) & 624302 CARGUÍOS Y DESCARGUÍOS RESTO \\
+\rowcolor{maxamFondo} Transporte compras & 600040 TRANSPORTE S/COMPRA MERCADERIAS \\
+Transporte compras & 601040 TRANSPORTE S/COMPRAS MMPP \\
+\rowcolor{maxamFondo} Comisiones y otros directos & 623120 COMISIONES SOBRE VENTA \\
+--- & 440230 OPERACIONES PENDIENTES MN \\
+\rowcolor{maxamFondo} Sin cuenta específica & OTROS \\
+\end{xltabular}
+
+\section{Importación de usuarios}
+El administrador puede dar de alta a varias personas a la vez desde Excel, en la pantalla de usuarios:
+\begin{enumerate}
+  \item \textbf{Descargar plantilla}: baja un Excel vacío con las columnas, una fila de ejemplo, instrucciones y listas para elegir el cargo, la sección y el rol entre los que ya existen en el sistema. Las columnas obligatorias (nombre, apellido paterno, correo corporativo y cargo) van en rojo.
+  \item \textbf{Llenar y subir el archivo}: hasta 500 personas. El jefe directo se indica con su correo y puede ser alguien que ya está en el sistema o alguien del mismo archivo.
+  \item \textbf{Revisar}: antes de crear nada, el sistema muestra cuántas filas están listas y cuáles tienen errores, con el motivo de cada una.
+  \item \textbf{Crear}: se crean solo las filas correctas, primero los jefes y después sus subordinados. Cada persona recibe por correo una contraseña temporal y la cambia al ingresar por primera vez.
+\end{enumerate}
+
+Una fila no se crea cuando falta un dato obligatorio o tiene un formato incorrecto, cuando el cargo o la sección no existen, cuando pide un rol o cargo que solo puede tener una persona y ya está ocupado, o cuando no se encuentra a su jefe directo. Los repetidos se tratan así:
+
+\begin{xltabular}{\textwidth}{L{4.6cm} Y}
+\cabecera \tth{Caso} & \tth{Qué hace el sistema} \\
+\endfirsthead
+\cabecera \tth{Caso} & \tth{Qué hace el sistema} \\
+\endhead
+\rowcolor{maxamFondo} Correo o CI que ya existe en el sistema & No crea la fila y no modifica al usuario que ya existe: nunca sobrescribe ni duplica a nadie. \\
+Correo o CI repetido dentro del archivo & Marca todas las filas repetidas, porque no puede saber cuál es la correcta; el administrador decide cuál corregir. \\
+\rowcolor{maxamFondo} Archivo subido dos veces & La segunda vez, las personas ya creadas salen como ``ya existe'' y no se crean de nuevo. \\
+\end{xltabular}
+
+El administrador puede crear en el momento las filas correctas y subir después las demás, ya corregidas. La importación es distinta de ``Exportar a Excel'': exportar descarga la lista de los usuarios que ya están, como reporte, y ese archivo no sirve para importar.
+
+\section{Notificaciones}
+\begin{itemize}
+  \item \textbf{Avisos inmediatos:} el empleado recibe el memorándum, la confirmación del fondo, el resultado de su rendición, los recibos y la respuesta a sus solicitudes; el revisor recibe las nuevas solicitudes de plazo y de reemplazo; el reemplazo recibe el aviso de la rendición asignada.
+  \item \textbf{Resumen de pendientes:} en los días y horas que el administrador configura en la pantalla \emph{Recordatorios} (por defecto, de lunes a viernes a las 08:00, 12:00 y 16:00, hora de Bolivia), cada supervisor, aprobador, revisor y tesorero con trabajo pendiente recibe un solo correo con una línea por tipo de pendiente.
+\end{itemize}
+
+\section{Arquitectura del sistema}
+
+\subsection{Modelo C4}
+La arquitectura del sistema se documentó siguiendo el modelo C4, que describe el software en niveles sucesivos de detalle: contexto del sistema, contenedores, componentes y código. Los diagramas pueden consultarse en el siguiente enlace:
+
+\begin{center}
+\url{https://drive.google.com/file/d/1nhu-JCIgQiKUj8bUSOvvz443vKSRAN_N/view?usp=sharing}
+\end{center}
+
+\subsection{Organización del frontend}
+El cliente web combina una organización por dominios con una jerarquía de componentes basada en Atomic Design. La presentación está separada de la lógica: los componentes visuales no llaman a la API; esa responsabilidad recae en hooks que consumen la capa de servicios.
+
+\begin{xltabular}{\textwidth}{L{3.2cm} Y}
+\cabecera \tth{Capa} & \tth{Responsabilidad} \\
+\endfirsthead
+\cabecera \tth{Capa} & \tth{Responsabilidad} \\
+\endhead
+\rowcolor{maxamFondo} Página & Invoca el hook y distribuye sus valores entre los componentes. \\
+Hook & Mantiene el estado, valida y llama a los servicios. \\
+\rowcolor{maxamFondo} Servicio & Encapsula el endpoint de la API y normaliza la respuesta. \\
+Componente & Dibuja la interfaz a partir de las propiedades recibidas. \\
+\end{xltabular}
+
+\subsection{Organización del backend}
+El servidor sigue una arquitectura en capas: la ruta declara el endpoint y encadena los middlewares; los middlewares validan la sesión, el rol y el estado del usuario; el controlador lee los parámetros y delega; y el servicio aplica las reglas de negocio y accede a los datos.
+
+\subsection{Seguridad}
+\begin{itemize}
+  \item La sesión usa un token de acceso de 15 minutos guardado en memoria y un token de renovación de 7 días en una cookie \code{httpOnly}. Cambiar el rol, suspender una cuenta o cambiar la contraseña cierra las demás sesiones al instante.
+  \item Las contraseñas temporales (cuenta nueva, clave puesta por el administrador o ingreso con código de recuperación) deben cambiarse antes de usar el sistema, y toda contraseña vence a los 90 días.
+  \item Los intentos de ingreso, de recuperación y de lectura de facturas tienen un límite por periodo. El de ingreso es por cuenta: si un usuario se equivoca muchas veces, solo su cuenta espera 15 minutos y los demás siguen entrando.
+  \item Cada ingreso, salida y cambio de contraseña queda registrado en el historial de accesos.
+  \item Los comprobantes, respaldos y fotos de perfil se guardan en un bucket público de Supabase Storage sin políticas de acceso: solo el servidor sube y borra archivos, con su clave de servicio, y los archivos que dejan de usarse se eliminan.
+  \item La importación de usuarios desde Excel es solo para el administrador, y el servidor vuelve a revisar cada fila aunque el navegador ya haya mostrado la vista previa.
+\end{itemize}
+
+\section{Diseño de interfaz}
+El flujo de pantallas se diseñó en Figma buscando una experiencia clara, moderna y consistente entre dispositivos, priorizando la legibilidad, la jerarquía visual y la coherencia en el uso de tipografías y colores.
+
+\begin{nota}
+\textbf{Alcance del prototipo.} El archivo de Figma contiene únicamente un \emph{prototipo inicial}, elaborado durante la etapa de concepción. No representa todas las pantallas ni el comportamiento definitivo de la aplicación: el sistema final incorpora muchas vistas, flujos y componentes que no figuran en el prototipo, y varios de los que sí aparecen se rediseñaron durante la implementación a medida que evolucionaron los requerimientos. Su valor documental es el de una guía visual de la identidad gráfica adoptada, no el de una especificación de la interfaz construida.
+\end{nota}
+
+\begin{center}
+\url{https://www.figma.com/design/2t3LLwLBtfypltzjqcqSGS/Pantallas_MAXAM_IT?node-id=0-1&t=P0O5UMwvyqVZ0A7N-1}
+\end{center}
+
+\subsection{Tipografías}
+\begin{itemize}
+  \item \textbf{Inter}: títulos, subtítulos, etiquetas y contenido general, con una apariencia profesional, limpia y muy legible.
+  \item \textbf{Nunito}: botones y elementos de acción, como contraste amigable frente a la tipografía del contenido.
+\end{itemize}
+
+\subsection{Tamaños de fuente}
+\begin{xltabular}{\textwidth}{L{5cm} L{4cm} Y}
+\cabecera \tth{Elemento} & \tth{Escritorio} & \tth{Móvil} \\
+\endfirsthead
+\cabecera \tth{Elemento} & \tth{Escritorio} & \tth{Móvil} \\
+\endhead
+\rowcolor{maxamFondo} Títulos & 45 px Bold & 36 px Bold \\
+Subtítulos & 36 px SemiBold & 24 px SemiBold \\
+\rowcolor{maxamFondo} Texto destacado & --- & 30 px \\
+h1 (texto importante) & 24 px & 20 px \\
+\rowcolor{maxamFondo} h2 (texto normal) & 20 px & 18 px \\
+h3 (subtexto) & 16 px & 14 px \\
+\rowcolor{maxamFondo} h4 (texto mínimo) & 14 px & 12 px \\
+Botones & --- & 16 px \\
+\end{xltabular}
+
+\subsection{Paleta de colores}
+La paleta se centraliza en un único archivo de constantes del cual todos los componentes obtienen sus valores. Ningún componente define colores sueltos, lo que garantiza la consistencia y permite modificar la identidad visual desde un solo punto.
+
+\begin{xltabular}{\textwidth}{L{1.3cm} L{4cm} L{2cm} Y}
+\cabecera \tth{Color} & \tth{Token} & \tth{Valor} & \tth{Uso} \\
+\endfirsthead
+\cabecera \tth{Color} & \tth{Token} & \tth{Valor} & \tth{Uso} \\
+\endhead
+\muestra{870002} & \code{primary} & \texttt{\#870002} & Color institucional; acciones principales y ventanas emergentes. \\
+\muestra{D20F12} & \code{secondary} & \texttt{\#D20F12} & Botón de confirmación, acciones destructivas y errores. \\
+\muestra{500203} & \code{title} & \texttt{\#500203} & Títulos y encabezados de sección. \\
+\muestra{2E2827} & \code{text} & \texttt{\#2E2827} & Texto principal. \\
+\muestra{475569} & \code{labels} & \texttt{\#475569} & Texto secundario y etiquetas de campo. \\
+\muestra{FFFFFF} & \code{background} & \texttt{\#FFFFFF} & Fondo general. \\
+\muestra{000000} & \code{backgroundSecondary} & \texttt{\#000000} & Íconos sobre círculo blanco y cabeceras de alto contraste. \\
+\muestra{F3F6FF} & \code{backgroundHeader} & \texttt{\#F3F6FF} & Tarjetas y encabezados de tabla. \\
+\muestra{DEE2F0} & \code{dataFields} & \texttt{\#DEE2F0} & Bordes y separadores. \\
+\muestra{C2C6D4} & \code{fields} & \texttt{\#C2C6D4} & Controles deshabilitados. \\
+\muestra{FDE9E9} & \code{error} & \texttt{\#FDE9E9} & Fondo de mensajes de error. \\
+\muestra{EF4444} & \code{fieldError} & \texttt{\#EF4444} & Texto de error bajo un campo. \\
+\muestra{F87171} & \code{fieldErrorBorder} & \texttt{\#F87171} & Borde de un campo con error. \\
+\muestra{155724} & \code{success} & \texttt{\#155724} & Texto de confirmación. \\
+\muestra{D4EDDA} & \code{successBackground} & \texttt{\#D4EDDA} & Fondo de confirmación. \\
+\muestra{666666} & \code{overlay} & Negro 40\% & Fondo oscuro detrás de ventanas y menú. \\
+\muestra{F2D9C5} & \code{travelTypes} & \texttt{\#F2D9C5} & Fondo del distintivo de tipo de viaje. \\
+\muestra{A45718} & \code{travelTypesText} & \texttt{\#A45718} & Texto del distintivo de tipo de viaje. \\
+\muestra{A69896} & \code{environmentTypes} & \texttt{\#A69896} & Fondo del distintivo de transporte. \\
+\muestra{47312E} & \code{environmentTypesText} & \texttt{\#47312E} & Texto del distintivo de transporte. \\
+\muestra{F1F2FF} & \code{positionRole} & \texttt{\#F1F2FF} & Fondo de distintivos de cargo y rol. \\
+\muestra{E9EBF2} & \code{footer} & \texttt{\#E9EBF2} & Fondo del pie de página. \\
+\muestra{DCDCDC} & \code{bar} & \texttt{\#DCDCDC} & Fondo de las barras de progreso. \\
+\end{xltabular}
+
+\subsection{Colores de estado}
+Cada estado tiene un único nombre y un único par de colores en todas las pantallas y roles. Los avisos de confirmación o rechazo usan el color del estado en que queda el viaje.
+
+\begin{xltabular}{\textwidth}{L{4.2cm} L{3.8cm} L{2.4cm} Y}
+\cabecera \tth{Grupo} & \tth{Muestra} & \tth{Fondo} & \tth{Texto} \\
+\endfirsthead
+\cabecera \tth{Grupo} & \tth{Muestra} & \tth{Fondo} & \tth{Texto} \\
+\endhead
+Borrador & \estado{E5E7EB}{374151}{Borrador} & \texttt{\#E5E7EB} & \texttt{\#374151} \\
+Pendiente de revisión & \estado{E8D5FF}{5B00A0}{En Revisión} & \texttt{\#E8D5FF} & \texttt{\#5B00A0} \\
+Esperando aprobador & \estado{FFE766}{7A5900}{Esperando Aprobador} & \texttt{\#FFD700AA} & \texttt{\#7A5900} \\
+Esperando fondos & \estado{FFE3C2}{8A4B00}{Esperando Fondos} & \texttt{\#FFD8A8AA} & \texttt{\#8A4B00} \\
+Pendiente de revisión final & \estado{A9C6F6}{000A65}{Apr. Preliminar} & \texttt{\#85AFF3AB} & \texttt{\#000A65} \\
+En curso y aprobado & \estado{D4EDDA}{155724}{Aprobado} & \texttt{\#D4EDDA} & \texttt{\#155724} \\
+Rechazado & \estado{FFC2C3}{500203}{Rechazado} & \texttt{\#FFA7A8AA} & \texttt{\#500203} \\
+Observado & \estado{FEF3CD}{856404}{Observado} & \texttt{\#FEF3CD} & \texttt{\#856404} \\
+\end{xltabular}
+
+En las pantallas del empleado, ``En Curso'' usa el rojo institucional porque marca su viaje activo.
+
+\subsection{Uso del color}
+\begin{itemize}
+  \item Los \textbf{fondos claros} predominan para favorecer la lectura del contenido.
+  \item El \textbf{rojo institucional} identifica las acciones principales, la tarjeta del viaje en curso y todas las ventanas emergentes, con el ícono en un círculo blanco.
+  \item El \textbf{rojo secundario} se reserva para la confirmación dentro de las ventanas, las acciones destructivas y los errores.
+  \item El \textbf{color de títulos} refuerza la jerarquía tipográfica sobre fondos neutros.
+  \item Los \textbf{colores neutros} ordenan campos, divisores y zonas de datos sin generar ruido visual.
+  \item Los \textbf{colores de estado} muestran de inmediato en qué etapa del flujo está cada viaje.
+\end{itemize}
+
+\subsection{Criterios generales de diseño}
+\begin{itemize}
+  \item \textbf{Jerarquía visual clara}: tamaños y pesos tipográficos consistentes para guiar al usuario.
+  \item \textbf{Consistencia}: los mismos colores, tipografías, contadores (``Mostrando X de Y'') y ventanas en todas las pantallas.
+  \item \textbf{Adaptabilidad}: interfaz adaptable a escritorio y celular.
+  \item \textbf{Campos obligatorios}: se marcan con un asterisco rojo junto a la etiqueta; los opcionales van sin marca.
+  \item \textbf{Comprobantes}: el comprobante, los respaldos y las fotos de facturas se muestran grandes, con la misma tarjeta y el botón para quitarlos debajo; al tocarlos se abren en tamaño completo, en todas las pantallas y roles.
+  \item \textbf{Botones}: los que tienen texto no llevan ícono; los de solo ícono (volver, ver, editar o borrar) sí, y para quitar algo se usa siempre el basurero.
+  \item \textbf{Fechas y horas}: todas las fechas se eligen con un calendario propio, con cabecera granate y los días del viaje marcados como una franja; las horas de los recordatorios, en una cuadrícula de horas frecuentes que se marcan con un toque.
+  \item \textbf{Desplazamiento}: una sola barra de desplazamiento en toda la aplicación, delgada y granate sobre un carril gris cálido.
+  \item \textbf{Legibilidad}: tipografías y contrastes elegidos para facilitar la lectura.
+  \item \textbf{Experiencia de usuario}: navegación intuitiva, actualización automática de las bandejas cada 30 segundos, respuesta inmediata a cada acción y transiciones animadas entre pantallas y ventanas.
+\end{itemize}
+
+\section{Planillas}
+Información confidencial, contenida en la documentación de Excel recibida. El formato definitivo de la planilla lo proporcionará la empresa y se incorporará cuando se reciba. El sistema replica el formato institucional al exportar la rendición, incorporando el logotipo, la tabla de simbología de comprobantes, la distinción por color entre gastos nacionales e internacionales, las listas desplegables de cuenta contable, las justificaciones de exceso y los bloques de firma de cada instancia de aprobación. El mismo archivo incluye las hojas FACTURAS y LINEAS, con las columnas de la factura y de sus líneas de distribución tal como las usa Oracle: los valores fijos (lote 900, método de pago, categoría y secuencia del documento) se completan solos, la cuenta de pasivo queda en blanco porque la completa Oracle, los campos que en Oracle son listas de valores se eligen de una lista desplegable, los que Oracle llena al subir la factura quedan en blanco y en celeste para no tocarlos, el número de recibo que asignó el sistema (cuando el gasto no tiene recibo original) va en lila, y lo que el sistema no conoce queda en rojo (o como XXX) para completarlo; por ejemplo, la descripción lleva XXX en rojo hasta que la rendición queda aprobada del todo y recibe su número de rendición del mes; la hoja LEYENDA ORACLE explica los colores, indica cuántas facturas y líneas trae el archivo y lista, con un enlace a cada celda, los datos que faltan completar. Las hojas tienen filtros, dejan fijos los títulos al desplazarse y se imprimen en una página de ancho. FACTURAS es la cabecera de cada gasto (una fila por gasto) y LINEAS su detalle contable: la línea del artículo, que es la que se carga, y de referencia las de impuesto y retención, que Oracle calcula y crea al validar la factura a partir del grupo de retención; la columna ``Fila en FACTURAS'' indica a qué factura pertenece cada línea. Por ejemplo, en un servicio sin factura de 180 Bs pagados, el artículo es 214.29 y las retenciones RC-IVA $-$27.86 e IT $-$6.43, que suman los 180.00 que se reembolsan; en una compra se retiene IUE 5\,\% en lugar de RC-IVA, y en una factura no hay retenciones sino la línea de IVA del 13\,\%. Al exportar varios viajes a la vez, una hoja Resumen muestra una fila por viaje y una fila de totales de lo asignado, gastado y el saldo en cada moneda. Como en el formato de la empresa, la primera fila de la planilla es ``SALDO ANTERIOR FONDO RECIBIDO'' con lo recibido en la columna IMPORTE (en un viaje internacional, una fila en Bs y otra en USD), y el importe de cada gasto va en IMPORTE FACT./REC. El empleado descarga además su planilla en PDF una vez aprobado el viaje, con las mismas columnas, sumas y saldos que el Excel. En un viaje internacional, la planilla va toda en bolivianos: cada gasto internacional se convierte con su tipo de cambio a bolivianos y una columna muestra el monto original (por ejemplo, 170.00 PEN = 44.97 USD con T/C 3.78, y T/C 6.96 Bs por USD); una fila aparte da el total internacional en dólares, el que se sube a Oracle. En los saldos, un gasto internacional se descuenta del fondo en dólares si el viaje lo tiene, o del fondo en bolivianos si solo se entregaron bolivianos.
+
+\section{Stack tecnológico}
+
+\subsection{Frontend}
+\begin{itemize}
+  \item \textbf{React}: biblioteca base de la interfaz.
+  \item \textbf{Vite}: compilación y servidor de desarrollo.
+  \item \textbf{Tailwind CSS}: utilidades de maquetado.
+  \item \textbf{React Router DOM}: enrutamiento y protección de rutas por rol.
+  \item \textbf{Framer Motion}: animaciones de pantallas y ventanas.
+  \item \textbf{Axios}: cliente HTTP con renovación automática de la sesión.
+  \item \textbf{Recharts}: gráficos del panel administrativo.
+  \item \textbf{ExcelJS}: generación de la planilla de rendición.
+  \item \textbf{Lucide React}: iconografía.
+  \item \textbf{Storybook}: documentación de componentes.
+  \item \textbf{Vitest} y \textbf{Playwright}: pruebas unitarias y de extremo a extremo.
+\end{itemize}
+
+\subsection{Backend}
+\begin{itemize}
+  \item \textbf{Node.js} y \textbf{Express}: entorno de ejecución y servidor de la API REST.
+  \item \textbf{jsonwebtoken} y \textbf{bcrypt}: autenticación y cifrado de contraseñas.
+  \item \textbf{Multer}: recepción de imágenes de comprobantes y fotos de perfil.
+  \item \textbf{Puppeteer 25}: generación de documentos PDF.
+  \item \textbf{node-cron}: envío programado del resumen de pendientes.
+  \item \textbf{Helmet}, \textbf{CORS} y \textbf{express-rate-limit}: cabeceras de seguridad, orígenes permitidos y límite de intentos.
+  \item \textbf{Jest} y \textbf{Supertest}: pruebas unitarias y de la API.
+\end{itemize}
+
+\subsection{Servicios externos}
+\begin{itemize}
+  \item \textbf{Supabase}: base de datos PostgreSQL y almacenamiento de archivos.
+  \item \textbf{Google Gemini}: extracción de datos de comprobantes y detección de bebidas alcohólicas.
+  \item \textbf{Brevo}: envío de correo transaccional.
+  \item \textbf{AbstractAPI}: verificación de correos antes de enviar códigos de recuperación.
+\end{itemize}
+
+\subsection{Herramientas}
+\begin{itemize}
+  \item \textbf{GitHub}: control de versiones; \textbf{GitHub Actions} ejecuta las pruebas automáticas en cada envío.
+  \item \textbf{Figma}: prototipado de la interfaz.
+  \item \textbf{dbdiagram.io}: modelado del esquema relacional.
+  \item \textbf{\LaTeX}: redacción de la documentación.
+  \item \textbf{Vercel}: despliegue del cliente web.
+  \item \textbf{Render}: despliegue del servidor durante la prueba piloto.
+\end{itemize}
+
+\section{Pruebas automáticas}
+El sistema cuenta con tres niveles de pruebas automáticas, que verifican su funcionamiento sin intervención manual:
+\begin{itemize}
+  \item \textbf{Unitarias}: comprueban reglas puntuales, como las retenciones (también por subgasto), el control diario por moneda, el IVA de facturas y recibos, las cantidades con decimales del detalle, la planilla en bolivianos con el monto original y el fondo recibido, el número de recibo original o del sistema, las hojas para Oracle y la revisión de la importación de usuarios (Jest en el servidor y Vitest en el cliente).
+  \item \textbf{De la API}: ejecutan los servicios del servidor contra una base de prueba y comprueban permisos, montos y respuestas (Jest y Supertest).
+  \item \textbf{De extremo a extremo}: recorren el sistema en un navegador real, en escritorio y celular, como lo haría cada rol, incluida la importación de usuarios desde Excel (Playwright).
+\end{itemize}
+Las pruebas se ejecutan automáticamente en GitHub Actions cada vez que se envían cambios al repositorio, sobre una base de datos temporal que se crea y se elimina en cada ejecución, sin tocar la base real.
+
+\section{Extracción de datos de comprobantes}
+Al cargar una factura, la imagen se envía al modelo de visión de Google Gemini con una instrucción que fija el contexto tributario boliviano: el término ``Importe'' corresponde al total con impuesto incluido y la alícuota del IVA es del trece por ciento. El modelo devuelve proveedor, NIT, número de factura, fecha de emisión, monto sin impuestos, IVA, total, tipo de documento y detalle de productos.
+
+\begin{enumerate}
+  \item La llamada reintenta ante errores temporales y, si el modelo principal falla o agota su cuota, usa un modelo de respaldo.
+  \item Los datos que faltan se marcan como ``No Especificado'', la fecha se valida y la cantidad de cada producto se redondea a tres decimales. En un recibo, el monto es el total pagado y no se descuenta IVA. Si un recibo o boleto no tiene número, se registra su código, que puede llevar símbolos como @ o \$.
+  \item El empleado revisa y corrige los datos en una vista de tres columnas (imagen, formulario y productos) antes de guardar, incluida la fecha de emisión por si se leyó mal. Al modificar después una factura ya guardada, la fecha queda bloqueada.
+  \item La cantidad de cada producto admite hasta tres decimales, por ejemplo 53.345 litros de combustible o 6 unidades, y el precio unitario hasta cuatro, como figura en el papel (por ejemplo 3.7456 Bs por litro). El total de la factura se registra con dos decimales.
+  \item Se lee también el CUF (código de autorización) de la factura, que el empleado puede corregir y que se usa en las hojas para Oracle.
+  \item En el formulario, tanto al escanear como al cargar una factura a mano, se registra el total que figura en el papel: en una factura el IVA es el 13\% del total y el sistema lo resta para obtener el subtotal, sin cambiar el total; en un recibo no hay IVA.
+  \item Una factura repetida (mismo número, fecha y proveedor) se rechaza.
+\end{enumerate}
+
+\section{Despliegue}
+La aplicación se distribuye en dos servicios independientes, el cliente web y el servidor de aplicaciones, cada uno en una plataforma especializada. La base de datos y el almacenamiento de archivos permanecen en Supabase.
+
+\subsection{Cliente web}
+El cliente se despliega en \textbf{Vercel}, plataforma orientada a aplicaciones de frontend que compila automáticamente a partir del repositorio y distribuye el sitio mediante una red de entrega de contenidos. Cada cambio incorporado a la rama configurada desencadena una nueva compilación y publicación.
+
+\begin{center}
+\url{https://scv-frontend-git-develop-mat13.vercel.app}
+\end{center}
+
+\subsection{Servidor de aplicaciones}
+Durante la prueba piloto, el servidor se despliega en \textbf{Render}, que ejecuta el proceso de Node.js y lo reinicia ante fallos o nuevas publicaciones. Para el uso definitivo se prevé un servidor VPS, donde el proceso queda siempre activo; el procedimiento está detallado en el manual técnico del backend.
+
+\begin{center}
+\url{https://scv-backend-7yft.onrender.com}
+\end{center}
+
+\subsection{Variables de entorno}
+Ninguna credencial se incluye en el repositorio. Ambos servicios obtienen su configuración de las variables de entorno definidas en cada plataforma.
+
+\begin{xltabular}{\textwidth}{L{5.2cm} Y L{2cm}}
+\cabecera \tth{Variable} & \tth{Propósito} & \tth{Servicio} \\
+\endfirsthead
+\cabecera \tth{Variable} & \tth{Propósito} & \tth{Servicio} \\
+\endhead
+\rowcolor{maxamFondo} \code{SUPABASE_URL} & Dirección del proyecto de base de datos. & Backend \\
+\code{SUPABASE_KEY} & Clave de servicio para el acceso a los datos. & Backend \\
+\rowcolor{maxamFondo} \code{JWT_SECRET} & Firma del token de acceso. & Backend \\
+\code{JWT_REFRESH_SECRET} & Firma del token de renovación de sesión. & Backend \\
+\rowcolor{maxamFondo} \code{GEMINI_API_KEY} & Extracción de comprobantes y detección de alcohol. & Backend \\
+\code{BREVO_API_KEY} & Envío de correo transaccional. & Backend \\
+\rowcolor{maxamFondo} \code{ABSTRACT_EMAIL_API_KEY} & Verificación de direcciones de correo. & Backend \\
+\code{FRONTEND_URL} & Enlace del botón ``Ingresar al sistema'' de los correos. & Backend \\
+\rowcolor{maxamFondo} \code{NODE_ENV} & \code{production} activa la cookie segura de sesión. & Backend \\
+\code{PORT} & Puerto del servidor. & Backend \\
+\rowcolor{maxamFondo} \code{CORS_ORIGINS} & Opcional: dominios del cliente permitidos. & Backend \\
+\code{TRUST_PROXY} & Opcional: servidor detrás de un proxy (VPS). & Backend \\
+\rowcolor{maxamFondo} \code{VITE_API_URL} & Dirección del servidor de aplicaciones. & Frontend \\
+\end{xltabular}
+
+\subsection{Consideraciones de despliegue}
+\begin{itemize}
+  \item \textbf{Orígenes permitidos}: el servidor solo acepta peticiones de los dominios del cliente declarados en su configuración. Si el cliente cambia de dominio, debe agregarse en \code{CORS_ORIGINS}; de lo contrario, el navegador rechazará las respuestas.
+  \item \textbf{Enrutamiento del cliente}: al ser una aplicación de una sola página, la plataforma debe redirigir todas las rutas al documento principal para que funcionen los enlaces directos a una pantalla interna.
+  \item \textbf{HTTPS}: la cookie de sesión exige que el servidor se publique con HTTPS cuando el cliente está en otro dominio.
+  \item \textbf{Latencia inicial}: en los planes gratuitos, el servidor puede suspenderse tras un período sin uso, lo que demora la primera petición y puede retrasar el resumen de pendientes. En un VPS esto no ocurre.
+\end{itemize}
+
+\section{Base de datos}
+
+\subsection{Herramienta de diseño}
+El esquema relacional se modeló con \textbf{dbdiagram.io}, herramienta web para construir diagramas entidad-relación a partir de definiciones en DBML, con importación directa de sentencias SQL. El diagrama del proyecto puede consultarse en:
+
+\begin{center}
+\url{https://dbdiagram.io/d/SCV-DATABASE_DIAGRAM-6aa21bcd70fd27e3c764a262}
+\end{center}
+
+\subsection{Motor de base de datos}
+El sistema utiliza \textbf{PostgreSQL}. Se aprovechan características propias del motor: \texttt{SERIAL} para generar identificadores, \texttt{DECIMAL(10,2)} y \texttt{NUMERIC} para valores monetarios con precisión fija, restricciones \texttt{CHECK} para valores enumerados y \texttt{TIMESTAMPTZ} para fechas y horas.
+
+El uso de \texttt{TIMESTAMPTZ} en lugar de \texttt{TIMESTAMP} resultó determinante: con el tipo sin zona horaria, PostgreSQL descartaba el huso al guardar el valor y el cliente lo interpretaba después como hora local, desplazando las fechas cuatro horas respecto del horario de Bolivia.
+
+\subsection{Tablas del esquema}
+El esquema está compuesto por \textbf{24 tablas}, agrupadas según las entidades principales del dominio.
+
+\begin{xltabular}{\textwidth}{L{3.2cm} Y}
+\cabecera \tth{Agrupación} & \tth{Tablas} \\
+\endfirsthead
+\cabecera \tth{Agrupación} & \tth{Tablas} \\
+\endhead
+\rowcolor{maxamFondo} Catálogo & Rol, Cargo, Seccion, Categoria\_Gasto, Impuesto, Proveedor \\
+Usuarios & Usuario, Codigo\_Verificacion, Auditoria \\
+\rowcolor{maxamFondo} Viajes & Viaje, Solicitud\_Autorizacion\_Plazo, Solicitud\_Reemplazo, Revision\_Viaje \\
+Gastos & Gasto, Gasto\_Subitem, Gasto\_Tramo\_Moneda, Imagen, Imagen\_Respaldo \\
+\rowcolor{maxamFondo} Facturas & Factura, Detalle\_Factura, Factura\_Impuestos \\
+Transversal & Comentario, Correlativo\_Recibo, Recibo, Configuracion\_Recordatorio \\
+\end{xltabular}
+
+\subsubsection{Rol}
+Roles del sistema, que determinan los permisos de cada usuario. Sus identificadores son fijos y no deben alterarse.
+\begin{itemize}
+  \campo{id_rol}{Identificador único}{SERIAL, clave primaria}
+  \campo{nombre}{Nombre del rol}{VARCHAR(20), único}
+\end{itemize}
+
+\subsubsection{Cargo}
+Puestos laborales. Cada cargo tiene un viático diario en ambas monedas, usado para el presupuesto sugerido y el control diario.
+\begin{itemize}
+  \campo{id_cargo}{Identificador único}{SERIAL, clave primaria}
+  \campo{nombre}{Nombre del cargo}{VARCHAR(100), único}
+  \campo{monto_diario}{Viático diario en bolivianos}{DECIMAL(10,2)}
+  \campo{monto_diario_usd}{Viático diario en dólares}{NUMERIC(10,2)}
+  \campo{activo}{Indica si el cargo está habilitado}{BOOLEAN}
+\end{itemize}
+
+\subsubsection{Seccion}
+Secciones de la empresa. Se usan como respaldo en la asignación del supervisor y para elegir el reemplazo.
+\begin{itemize}
+  \campo{id_seccion}{Identificador único}{SERIAL, clave primaria}
+  \campo{nombre}{Nombre de la sección}{VARCHAR(100), único}
+  \campo{codigo_seccion}{Sección en la cuenta de Oracle, por ejemplo 200}{VARCHAR(3)}
+  \campo{activo}{Indica si la sección está habilitada}{BOOLEAN}
+\end{itemize}
+
+\subsubsection{Usuario}
+Información de todos los usuarios registrados.
+\begin{itemize}
+  \campo{id_usuario}{Identificador único}{SERIAL, clave primaria}
+  \campo{email_corporativo}{Correo institucional}{VARCHAR(100), único}
+  \campo{nombre}{Nombre}{VARCHAR(30)}
+  \campo{apellido_paterno}{Primer apellido}{VARCHAR(30)}
+  \campo{apellido_materno}{Segundo apellido, opcional}{VARCHAR(30)}
+  \campo{telefono}{Teléfono de 7 u 8 dígitos, opcional}{VARCHAR(8)}
+  \campo{carnet_identidad}{Cédula de identidad}{VARCHAR(15)}
+  \campo{codigo_dependencia}{Dependencia de Oracle de los gastos de quienes lo tienen como jefe directo (y los suyos si no tiene jefe), por ejemplo 421}{VARCHAR(3)}
+  \campo{activo}{Indica si el usuario está habilitado}{BOOLEAN}
+  \campo{contrasenia}{Hash de la contraseña}{TEXT}
+  \campo{foto_perfil}{URL de la fotografía, opcional}{TEXT}
+  \campo{id_jefe_directo}{Jefe directo, para la asignación del supervisor}{INTEGER}
+  \campo{id_seccion}{Sección del usuario}{INTEGER}
+  \campo{ultima_cambio_contrasenia}{Último cambio de clave}{TIMESTAMPTZ}
+  \campo{refresh_token_invalido_desde}{Invalida las sesiones anteriores a esta marca}{TIMESTAMPTZ}
+  \campo{debe_cambiar_contrasenia}{Contraseña temporal pendiente de cambio}{BOOLEAN}
+  \campo{motivo_cambio_contrasenia}{TEMPORAL o RECUPERACION}{VARCHAR(15)}
+  \campo{id_cargo}{Cargo del usuario}{INTEGER}
+  \campo{id_rol}{Rol del usuario}{INTEGER}
+\end{itemize}
+
+\subsubsection{Viaje}
+Entidad central del sistema. Su estado gobierna ambos flujos de aprobación.
+\begin{itemize}
+  \campo{id_viaje}{Identificador único}{SERIAL, clave primaria}
+  \campo{motivo}{Propósito del viaje, hasta 500 caracteres}{VARCHAR(500)}
+  \campo{origen}{Localidad de partida, opcional}{TEXT}
+  \campo{destino}{Localidad de destino}{VARCHAR(200)}
+  \campo{fecha_inicio}{Fecha de inicio}{DATE}
+  \campo{fecha_fin}{Fecha de finalización}{DATE}
+  \campo{tipo}{Nacional o Internacional}{VARCHAR(15), CHECK}
+  \campo{transporte}{Medio de transporte}{TEXT, Terrestre por defecto}
+  \campo{placa_vehiculo}{Placa del vehículo de la empresa, opcional}{VARCHAR(20)}
+  \campo{monto_asignado}{Presupuesto en bolivianos, calculado con las tarifas del cargo y ajustado por tesorería}{DECIMAL(10,2)}
+  \campo{monto_asignado_usd}{Presupuesto en dólares, calculado con las tarifas del cargo y ajustado por tesorería}{NUMERIC(10,2)}
+  \campo{estado}{Uno de los diez estados definidos}{VARCHAR(25), CHECK}
+  \campo{fue_iniciado}{Distingue un rechazo en la autorización de uno en la rendición}{BOOLEAN}
+  \campo{ciclo_revision}{Contador de rondas de revisión}{INTEGER}
+  \campo{tiene_alcohol}{Resultado del análisis de los gastos}{BOOLEAN}
+  \campo{id_usuario}{Empleado titular}{INTEGER}
+  \campo{id_supervisor_asignado}{Supervisor que tomó la revisión}{INTEGER}
+  \campo{id_aprobador_asignado}{Aprobador asignado}{INTEGER}
+  \campo{id_revisor_asignado}{Revisor de la instancia final}{INTEGER}
+  \campo{id_tesorero_asignado}{Tesorero que asignó los fondos}{INTEGER}
+\end{itemize}
+
+\subsubsection{Solicitud\_Autorizacion\_Plazo}
+Solicitudes de ampliación del plazo de carga de gastos.
+\begin{itemize}
+  \campo{id_solicitud}{Identificador único}{SERIAL, clave primaria}
+  \campo{id_viaje}{Viaje asociado}{INTEGER, borrado en cascada}
+  \campo{id_empleado}{Quien la pidió: titular o reemplazo}{INTEGER}
+  \campo{motivo}{Justificación del retraso}{VARCHAR(500)}
+  \campo{estado}{PENDIENTE, APROBADA o RECHAZADA}{VARCHAR(20)}
+  \campo{id_revisor}{Revisor que la resolvió; vacío si se cerró automáticamente}{INTEGER}
+  \campo{observacion_revisor}{Motivo del rechazo o del cierre}{VARCHAR(500)}
+  \campo{fecha_solicitud}{Fecha de la solicitud}{TIMESTAMPTZ}
+  \campo{fecha_respuesta}{Fecha de la respuesta}{TIMESTAMPTZ}
+\end{itemize}
+
+\subsubsection{Solicitud\_Reemplazo}
+Solicitudes para que otra persona rinda los gastos de un viaje.
+\begin{itemize}
+  \campo{id_solicitud}{Identificador único}{SERIAL, clave primaria}
+  \campo{id_viaje}{Viaje asociado}{INTEGER, borrado en cascada}
+  \campo{id_solicitante}{Titular del viaje}{INTEGER}
+  \campo{id_sustituto}{Persona propuesta como reemplazo}{INTEGER}
+  \campo{estado}{PENDIENTE, APROBADA o RECHAZADA}{VARCHAR(20)}
+  \campo{id_revisor}{Revisor que la resolvió; vacío si se cerró automáticamente}{INTEGER}
+  \campo{observacion_revisor}{Motivo del rechazo o del cierre}{VARCHAR(500)}
+  \campo{fecha_solicitud}{Fecha de la solicitud}{TIMESTAMPTZ}
+  \campo{fecha_respuesta}{Fecha de la respuesta}{TIMESTAMPTZ}
+\end{itemize}
+
+\subsubsection{Revision\_Viaje}
+Historial de aprobaciones y rechazos, usado en las pestañas ``Aprobados'' y ``Rechazados'' de cada revisor.
+\begin{itemize}
+  \campo{id_revision}{Identificador único}{SERIAL, clave primaria}
+  \campo{id_viaje}{Viaje revisado}{INTEGER, borrado en cascada}
+  \campo{id_usuario}{Persona que revisó}{INTEGER}
+  \campo{etapa}{Etapa del flujo en que se revisó}{VARCHAR(20), CHECK}
+  \campo{accion}{APROBADO o RECHAZADO}{VARCHAR(10)}
+  \campo{automatica}{Etapa aprobada sola porque el responsable era el viajero}{BOOLEAN}
+  \campo{fecha}{Fecha de la revisión}{TIMESTAMPTZ}
+\end{itemize}
+
+\subsubsection{Categoria\_Gasto}
+Clasifica los gastos por concepto, con la cuenta contable de Oracle en el nombre.
+\begin{itemize}
+  \campo{id_categoria}{Identificador único}{SERIAL, clave primaria}
+  \campo{nombre}{Denominación con código contable}{VARCHAR(100), único}
+  \campo{descripcion}{Nota de cuándo usar la cuenta, de la planilla de Castro}{TEXT}
+  \campo{requiere_comprobante}{Indica si la categoría exige comprobante}{BOOLEAN}
+\end{itemize}
+
+\subsubsection{Proveedor}
+Emisores de facturas y comprobantes.
+\begin{itemize}
+  \campo{id_proveedor}{Identificador único}{SERIAL, clave primaria}
+  \campo{nombre}{Razón social o nombre}{VARCHAR(150)}
+  \campo{tipo_doc_fiscal}{NIT o CI}{VARCHAR(3), CHECK}
+  \campo{numero_doc_fiscal}{Número del documento fiscal}{VARCHAR(50)}
+\end{itemize}
+
+\subsubsection{Gasto}
+Cada gasto realizado durante un viaje. Guarda los valores de retención calculados al registrarlo.
+\begin{itemize}
+  \campo{id_gasto}{Identificador único}{SERIAL, clave primaria}
+  \campo{monto_total}{Importe total}{DECIMAL(10,2)}
+  \campo{fecha_gasto}{Fecha del gasto}{DATE}
+  \campo{descripcion}{Descripción}{VARCHAR(1000)}
+  \campo{tipo}{F, R, C o S}{CHAR(1), CHECK}
+  \campo{modificado}{Los datos extraídos se corrigieron a mano}{BOOLEAN}
+  \campo{es_gasto_internacional}{Gasto internacional; su \code{monto_total} está en dólares}{BOOLEAN}
+  \campo{moneda}{BOB, o la moneda de la factura de un gasto internacional}{VARCHAR(10)}
+  \campo{tipo_cambio}{Unidades de esa moneda por 1 dólar (1 en dólares)}{NUMERIC(10,4)}
+  \campo{monto_moneda_origen}{Importe en la moneda de la factura}{NUMERIC(10,2)}
+  \campo{tipo_cambio_bs}{Bolivianos por 1 dólar, para la planilla}{NUMERIC(10,4)}
+  \campo{base_imponible}{Base de cálculo de las retenciones}{NUMERIC(10,2)}
+  \campo{retencion_rc_iva}{Retención RC-IVA}{NUMERIC(10,2)}
+  \campo{retencion_iue}{Retención IUE}{NUMERIC(10,2)}
+  \campo{retencion_it}{Retención IT}{NUMERIC(10,2)}
+  \campo{importe_costo}{Importe imputable como costo}{NUMERIC(10,2)}
+  \campo{tiene_alcohol}{Contiene bebidas alcohólicas}{BOOLEAN}
+  \campo{numero_recibo}{Número impreso del recibo en papel de un gasto sin factura, opcional}{VARCHAR(50)}
+  \campo{id_viaje}{Viaje al que pertenece}{INTEGER}
+  \campo{id_categoria}{Categoría del gasto}{INTEGER}
+  \campo{id_proveedor}{Proveedor, opcional}{INTEGER}
+\end{itemize}
+
+\subsubsection{Gasto\_Subitem}
+Desglose de un gasto en varios conceptos. Cuando existen, el monto total del gasto es su suma.
+\begin{itemize}
+  \campo{id_subitem}{Identificador único}{SERIAL, clave primaria}
+  \campo{id_gasto}{Gasto al que pertenece}{INTEGER, borrado en cascada}
+  \campo{descripcion}{Concepto}{VARCHAR(255)}
+  \campo{monto}{Importe}{NUMERIC(10,2)}
+\end{itemize}
+
+\subsubsection{Gasto\_Tramo\_Moneda}
+Conversión a dólares de un gasto internacional en otra moneda, que muestran el detalle, las listas y los recibos. Los gastos registrados antes del cambio pueden tener varios tramos.
+\begin{itemize}
+  \campo{id_tramo}{Identificador único}{SERIAL, clave primaria}
+  \campo{id_gasto}{Gasto al que pertenece}{INTEGER, borrado en cascada}
+  \campo{moneda}{Moneda de origen}{VARCHAR(10)}
+  \campo{monto_origen}{Importe en la moneda de origen}{NUMERIC(12,2)}
+  \campo{tipo_cambio}{Tipo de cambio aplicado (unidades por 1 dólar)}{NUMERIC(12,4)}
+  \campo{monto_usd}{Equivalente en dólares}{NUMERIC(12,2)}
+\end{itemize}
+
+\subsubsection{Imagen}
+Comprobante adjunto a un gasto.
+\begin{itemize}
+  \campo{id_imagen}{Identificador único}{SERIAL, clave primaria}
+  \campo{url_archivo}{URL del archivo}{TEXT}
+  \campo{id_gasto}{Gasto al que pertenece}{INTEGER, único}
+\end{itemize}
+
+\subsubsection{Imagen\_Respaldo}
+Respaldos extra de un gasto internacional (hasta 2), para el comprobante del cambio de moneda.
+\begin{itemize}
+  \campo{id_respaldo}{Identificador único}{SERIAL, clave primaria}
+  \campo{url_archivo}{URL del archivo}{TEXT}
+  \campo{id_gasto}{Gasto al que pertenece; se borra con él}{INTEGER}
+\end{itemize}
+
+\subsubsection{Factura}
+Factura vinculada a un gasto, en relación uno a uno.
+\begin{itemize}
+  \campo{id_factura}{Identificador único}{SERIAL, clave primaria}
+  \campo{numero_factura}{Número del comprobante o, en recibos y boletos sin número, su código (admite símbolos)}{VARCHAR(50)}
+  \campo{fecha_emision}{Fecha de emisión}{DATE}
+  \campo{monto_parcial}{Importe sin impuestos}{DECIMAL(10,2)}
+  \campo{cuf}{Código de autorización (CUF) de la factura, para Oracle}{VARCHAR(100)}
+  \campo{id_gasto}{Gasto asociado}{INTEGER, único}
+  \campo{id_proveedor}{Proveedor emisor}{INTEGER}
+  \item Unicidad sobre \code{(numero_factura, fecha_emision, id_proveedor)} para evitar duplicados.
+\end{itemize}
+
+\subsubsection{Detalle\_Factura}
+Productos o servicios incluidos en una factura.
+\begin{itemize}
+  \campo{id_detalle}{Identificador único}{SERIAL, clave primaria}
+  \campo{nombre_producto}{Nombre del ítem}{VARCHAR(255)}
+  \campo{cantidad}{Cantidad, con hasta tres decimales (litros, kilos o unidades)}{NUMERIC(12,3)}
+  \campo{precio}{Precio unitario, con hasta cuatro decimales}{NUMERIC(12,4)}
+  \campo{id_factura}{Factura a la que pertenece}{INTEGER}
+\end{itemize}
+
+\subsubsection{Impuesto y Factura\_Impuestos}
+Catálogo de impuestos aplicables (\code{id_impuesto}, \code{nombre}, \code{porcentaje}) y tabla pivote que los relaciona con las facturas, con clave primaria compuesta \code{(id_factura, id_impuesto)}.
+
+\subsubsection{Comentario}
+Observaciones de las revisiones y justificaciones de exceso.
+\begin{itemize}
+  \campo{id_comentario}{Identificador único}{SERIAL, clave primaria}
+  \campo{descripcion}{Contenido}{VARCHAR(300)}
+  \campo{fecha}{Fecha de registro}{TIMESTAMPTZ}
+  \campo{tipo}{JUSTIFICACION u OBSERVACION}{VARCHAR(20)}
+  \campo{ciclo_revision}{Ronda en que se emitió}{INTEGER}
+  \campo{fecha_justificada}{Día justificado; vacío para el exceso en hoteles}{DATE}
+  \campo{id_usuario}{Autor}{INTEGER}
+  \campo{id_viaje}{Viaje al que se refiere}{INTEGER}
+  \campo{id_gasto}{Gasto observado; si se borra el gasto, la observación se conserva}{INTEGER}
+\end{itemize}
+
+\subsubsection{Codigo\_Verificacion}
+Códigos de un solo uso para la recuperación de cuenta, válidos por cinco minutos.
+\begin{itemize}
+  \campo{id_codigo}{Identificador único}{SERIAL, clave primaria}
+  \campo{codigo}{Código}{VARCHAR(7)}
+  \campo{expiracion}{Vencimiento}{TIMESTAMPTZ}
+  \campo{activo}{Indica si sigue siendo válido}{BOOLEAN}
+  \campo{id_usuario}{Usuario al que pertenece}{INTEGER}
+\end{itemize}
+
+\subsubsection{Auditoria}
+Eventos de acceso y de seguridad, con fines de trazabilidad.
+\begin{itemize}
+  \campo{id_auditoria}{Identificador único}{SERIAL, clave primaria}
+  \campo{fecha}{Fecha del evento}{TIMESTAMPTZ}
+  \campo{tipo}{INGRESO, SALIDA o CAMBIO\_CLAVE}{VARCHAR(15)}
+  \campo{id_usuario}{Usuario que generó el evento}{INTEGER}
+\end{itemize}
+
+\subsubsection{Correlativo\_Recibo y Recibo}
+\code{Correlativo_Recibo} es una tabla de una sola fila con el último número de recibo emitido. Su incremento lo hace una función almacenada que actualiza y devuelve el nuevo valor en una sola operación, evitando que dos emisiones simultáneas obtengan el mismo número. \code{Correlativo_Rendicion} guarda el último número de rendición de cada mes: cuando una rendición queda aprobada del todo, un trigger le asigna el siguiente número del mes de sus comprobantes, que aparece en la descripción del Excel para Oracle (por ejemplo ``F 10-41''). \code{Recibo} guarda el número de cada gasto sin factura, asignado al registrarlo, y el de cada recibo agrupado; se reutiliza al enviar o reenviar el recibo.
+\begin{itemize}
+  \campo{id_recibo}{Identificador único}{SERIAL, clave primaria}
+  \campo{numero}{Número del recibo}{INTEGER, único}
+  \campo{id_viaje}{Viaje}{INTEGER}
+  \campo{id_gasto}{Gasto, vacío en los recibos agrupados}{INTEGER}
+  \campo{tipo}{C (compra) o S (servicio)}{CHAR(1)}
+  \campo{es_gasto_internacional}{Recibo de gastos en dólares}{BOOLEAN}
+  \campo{enviado}{El recibo ya se envió al empleado}{BOOLEAN}
+  \campo{fecha_emision}{Fecha de emisión}{TIMESTAMPTZ}
+\end{itemize}
+
+\subsubsection{Configuracion\_Recordatorio}
+Tabla de una sola fila con los días y horas en que se envía el resumen de pendientes. El administrador la modifica desde la pantalla \emph{Recordatorios} y el servidor reprograma los envíos al guardar, sin reiniciarse. Si la fila no existe, se usa la configuración por defecto (lunes a viernes, 08:00, 12:00 y 16:00).
+\begin{itemize}
+  \campo{id}{Siempre 1}{SMALLINT, clave primaria}
+  \campo{activo}{Indica si los envíos automáticos están activos}{BOOLEAN}
+  \campo{dias}{Días de la semana (0 domingo a 6 sábado)}{SMALLINT[]}
+  \campo{horas}{Horas de envío en formato HH:MM, hasta cuatro}{TEXT[]}
+  \campo{fecha_actualizacion}{Fecha del último cambio}{TIMESTAMPTZ}
+  \campo{id_usuario_actualizacion}{Administrador que hizo el último cambio}{INTEGER}
+\end{itemize}
+
+\subsection{Índices}
+Se definieron índices sobre las columnas más usadas para filtrar o unir: las claves foráneas de las tablas dependientes, el estado del viaje, el supervisor asignado, el jefe directo y la sección del usuario, el estado de las solicitudes y el historial de revisión por persona y etapa.
+
+\subsection{Seguridad a nivel de fila}
+Se habilitó \textbf{Row Level Security} en las 24 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
+
+\subsection{Scripts de base de datos}
+El repositorio incluye los scripts para reconstruir el esquema desde cero, que se ejecutan en este orden:
+
+\begin{xltabular}{\textwidth}{L{5.4cm} Y}
+\cabecera \tth{Archivo} & \tth{Contenido} \\
+\endfirsthead
+\cabecera \tth{Archivo} & \tth{Contenido} \\
+\endhead
+\rowcolor{maxamFondo} \code{01_schema.sql} & Tablas, restricciones, claves foráneas e índices. \\
+\code{02_functions.sql} & Función de incremento del correlativo de recibos. \\
+\rowcolor{maxamFondo} \code{03_seed.sql} & Datos iniciales: roles, cargos, categorías, impuestos y configuración de recordatorios. \\
+\code{04_rls_hardening.sql} & Activación de la seguridad a nivel de fila. \\
+\rowcolor{maxamFondo} \code{testing_*.sql} & Limpieza y organización de prueba; solo para entornos de prueba y para las pruebas automáticas. \\
+\end{xltabular}
+
+\subsection{Acceso a la base de datos}
+La base de datos está alojada en \textbf{Supabase}, plataforma de backend como servicio construida sobre PostgreSQL que ofrece administración visual de tablas, autenticación, almacenamiento y acceso mediante API REST. El panel de administración del proyecto está disponible en:
+
+\begin{center}
+\url{https://supabase.com/dashboard/project/ubxqgumxpflxzsigdcxj}
+\end{center}
+
+Las credenciales de la base de datos y las claves de los servicios externos se gestionan mediante variables de entorno y no se incluyen en esta documentación.
+
+\end{document}

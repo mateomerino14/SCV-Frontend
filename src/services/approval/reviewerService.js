@@ -6,7 +6,7 @@ export const getReviewerEmployees = async () => {
     return response.data;
   }
   catch (error) {
-    return {error: 'Error al obtener empleados'};
+    return {error: error.response?.data?.error || 'Error al obtener empleados'};
   }
 };
 

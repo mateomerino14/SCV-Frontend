@@ -49,7 +49,6 @@ const statusBackgrounds = {
   RECHAZADO: statusPalette.RECHAZADO.bg,
 };
 
-// Mismo nombre que en el resto del sistema, en mayusculas para la etiqueta compacta
 const statusLabels = Object.fromEntries(Object.entries(tripStatusLabels).map(([state, label]) => [state, label.toUpperCase()]));
 
 function RecentTripItem({trip, from}) {

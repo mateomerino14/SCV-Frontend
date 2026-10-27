@@ -1,10 +1,11 @@
 import {createPortal} from 'react-dom';
 import {motion, AnimatePresence} from 'framer-motion';
-import DropdownTrigger from '../../../components/ui/DropdownTrigger';
-import DropdownSearchInput from '../../../components/ui/DropdownSearchInput';
-import DropdownListItem from '../../../components/ui/DropdownListItem';
-import {COLORS} from '../../../constants';
-import useSearchableSelector from '../hooks/useSearchableSelector';
+import DropdownTrigger from './DropdownTrigger';
+import DropdownSearchInput from './DropdownSearchInput';
+import DropdownListItem from './DropdownListItem';
+import {COLORS} from '../../constants';
+import useSearchableSelector from '../../hooks/shared/useSearchableSelector';
+import FieldLabel from './FieldLabel';
 
 const styles = {
   wrapper: 'relative',
@@ -20,9 +21,11 @@ const dropdownVariants = {
   visible: {opacity: 1, y: 0, scaleY: 1},
 };
 
-// Selector con buscador; emptyOption agrega una opcion sin asignar arriba de la lista
-function SearchableSelector({label, options, value, onChange, placeholder, searchPlaceholder, emptyOption, error}) {
-  const allOptions = emptyOption ? [emptyOption, ...options] : options;
+function SearchableSelector({label, required = false, options, value, onChange, placeholder, searchPlaceholder, emptyOption, error}) {
+  let allOptions = options;
+  if (emptyOption) {
+    allOptions = [emptyOption, ...options];
+  }
   const {
     open, search, setSearch, menuPosition, wrapperRef, triggerRef, menuRef, inputRef, selectedOption,
     filteredOptions, handleToggle, handleSelect,
@@ -30,10 +33,10 @@ function SearchableSelector({label, options, value, onChange, placeholder, searc
   const hasValue = !!selectedOption && selectedOption !== emptyOption && selectedOption.value !== '';
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
-      <p className={styles.label} style={{color: COLORS.labels}}>{label}</p>
+      <FieldLabel text={label} required={required} className={styles.label} />
       <DropdownTrigger triggerRef={triggerRef} open={open} onClick={handleToggle} error={error}
         hasValue={hasValue} label={selectedOption ? selectedOption.label : placeholder} />
-      {error && <p className={styles.fieldError} style={{color: '#ef4444'}}>{error}</p>}
+      {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}
       {createPortal(
         <AnimatePresence>
           {open && menuPosition && (
@@ -49,7 +52,7 @@ function SearchableSelector({label, options, value, onChange, placeholder, searc
                   <p className={styles.empty} style={{color: COLORS.labels}}>Sin resultados</p>
                 ) : (
                   filteredOptions.map((option) => (
-                    <DropdownListItem key={String(option.value)} label={option.label}
+                    <DropdownListItem key={String(option.value)} label={option.label} description={option.description}
                       selected={String(value ?? '') === String(option.value)} onClick={() => handleSelect(option)} />
                   ))
                 )}

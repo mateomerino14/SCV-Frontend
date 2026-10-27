@@ -39,7 +39,6 @@ const texts = {
   },
 };
 
-// reason: TEMPORAL, RECUPERACION o VENCIDA; solo con VENCIDA se pide la contrasena actual
 function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, loading, error: externalError}) {
   const isTemporary = reason === 'TEMPORAL' || reason === 'RECUPERACION';
   const text = texts[reason] || texts.VENCIDA;
@@ -51,7 +50,7 @@ function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, 
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div className={styles.overlay} style={{backgroundColor: 'rgba(0,0,0,0.7)'}}
+        <motion.div className={styles.overlay} style={{backgroundColor: COLORS.overlayStrong}}
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
@@ -60,22 +59,22 @@ function PasswordExpiredModal({isOpen, reason = 'VENCIDA', onConfirm, onLogout, 
             <p className={styles.subtitle} style={{color: COLORS.backgroundHeader}}>{text.subtitle}</p>
             {!isTemporary && (
               <div className={styles.fieldRow}>
-                <PasswordField label="Contraseña Actual" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)}
+                <PasswordField required label="Contraseña Actual" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)}
                   borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                   backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
               </div>
             )}
             <div className={styles.fieldRow}>
-              <PasswordField label="Nueva Contraseña" value={newPassword} onChange={(event) => setNewPassword(event.target.value)}
+              <PasswordField required label="Nueva Contraseña" value={newPassword} onChange={(event) => setNewPassword(event.target.value)}
                 borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                 backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
-              {fieldErrors.newPassword && <p className={styles.fieldError} style={{color: '#ffd4d4'}}>{fieldErrors.newPassword}</p>}
+              {fieldErrors.newPassword && <p className={styles.fieldError} style={{color: COLORS.dangerLight}}>{fieldErrors.newPassword}</p>}
             </div>
             <div className={styles.fieldRow}>
-              <PasswordField label="Confirmar Nueva Contraseña" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)}
+              <PasswordField required label="Confirmar Nueva Contraseña" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)}
                 borderColor={COLORS.backgroundOnColorBorder} labelColor={COLORS.backgroundOnColorText} textColor={COLORS.background}
                 backgroundColor={COLORS.backgroundOnColorFill} iconColor={COLORS.backgroundOnColorText} />
-              {fieldErrors.confirmPassword && <p className={styles.fieldError} style={{color: '#ffd4d4'}}>{fieldErrors.confirmPassword}</p>}
+              {fieldErrors.confirmPassword && <p className={styles.fieldError} style={{color: COLORS.dangerLight}}>{fieldErrors.confirmPassword}</p>}
               {confirmPassword && newPassword && !fieldErrors.confirmPassword && (
                 <p className={styles.fieldError} style={{color: COLORS.background}}>Las contraseñas coinciden</p>
               )}

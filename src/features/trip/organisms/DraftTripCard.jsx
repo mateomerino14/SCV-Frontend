@@ -1,6 +1,6 @@
 import {motion} from 'framer-motion';
 import {useNavigate} from 'react-router-dom';
-import {Pencil, Send, Calendar, Wallet, Globe} from 'lucide-react';
+import {Calendar, Wallet, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {routes, editTripPath} from '../../../constants/routes';
 import {formatDateRange} from '../../../utils/dateFormatter';
@@ -56,12 +56,10 @@ function DraftTripCard({trip, onSubmit, submitting}) {
       <div className={styles.buttonsRow}>
         <button className={styles.button} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}
           onClick={() => navigate(editTripPath(trip.id_viaje), {state: {from: routes.employeeDashboard}})}>
-          <Pencil size={14} />
           Editar
         </button>
         <button className={styles.button} disabled={submitting} onClick={() => onSubmit(trip.id_viaje)}
           style={{backgroundColor: submitting ? COLORS.fields : COLORS.secondary, color: COLORS.background, borderColor: submitting ? COLORS.fields : COLORS.secondary}}>
-          <Send size={14} />
           {submitting ? 'Enviando...' : 'Enviar a Revisión'}
         </button>
       </div>

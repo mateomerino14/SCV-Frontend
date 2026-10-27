@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, MessageSquare, List, Receipt, FolderOpen, ArrowLeftRight} from 'lucide-react';
+import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, List, Receipt, FolderOpen, ArrowLeftRight} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseFieldTag from '../atoms/ExpenseFieldTag';
@@ -9,6 +9,8 @@ import ReceiptSendingModal from './ReceiptSendingModal';
 import useExpenseReceipt from '../hooks/useExpenseReceipt';
 import useExpenseObservations from '../hooks/useExpenseObservations';
 import useExpenseNavigation from '../hooks/useExpenseNavigation';
+import {conversionLabelOf} from '../../../utils/expenseCurrency';
+import {resolveDocumentNumber, documentSources, systemReceiptNote} from '../../../utils/documentNumber';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -33,12 +35,19 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
   const displayName = expense.Proveedor?.nombre || expense.Categoria_Gasto?.nombre || 'Sin proveedor';
   const isInternational = !!expense.es_gasto_internacional;
   const canGenerateReceipt = (expense.tipo === 'C' || expense.tipo === 'S') && isFinalApproved;
-  const accentColor = isInternational ? COLORS.primary : COLORS.title;
+  let accentColor = COLORS.title;
+  if (isInternational) {
+    accentColor = COLORS.primary;
+  }
   const expenseDate = expense.Factura?.fecha_emision || expense.fecha_gasto;
   const subitems = expense.Gasto_Subitem || [];
   const hasSubitems = subitems.length > 0;
-  const conversionsCount = isInternational ? (expense.Gasto_Tramo_Moneda || []).length : 0;
+  let conversions = [];
+  if (isInternational) {
+    conversions = expense.Gasto_Tramo_Moneda || [];
+  }
   const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
+  const documentInfo = resolveDocumentNumber(expense);
   const expenseObservations = observations.filter((observation) => observation.id_gasto === expense.id_gasto);
 
   return (
@@ -54,6 +63,13 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
         {expenseDate && <ExpenseFieldTag icon={Calendar} text={formatDateShort(expenseDate)} color={accentColor} />}
         <ExpenseFieldTag icon={Tag} text={typeLabels[expense.tipo] || expense.tipo} color={accentColor} />
         {expense.Factura?.numero_factura && <ExpenseFieldTag icon={FileText} text={`N° ${expense.Factura.numero_factura}`} color={accentColor} />}
+        {!expense.Factura && documentInfo.source === documentSources.original && <ExpenseFieldTag icon={FileText} text={`Recibo N° ${documentInfo.number}`} color={accentColor} />}
+        {documentInfo.source === documentSources.system && (
+          <span title={systemReceiptNote} style={{...badgeStyle, backgroundColor: COLORS.systemReceipt, color: COLORS.systemReceiptText}}>
+            <FileText size={10} />
+            Recibo N° {documentInfo.number} · Sistema
+          </span>
+        )}
         {expense.Categoria_Gasto?.nombre && expense.Proveedor?.nombre && <ExpenseFieldTag icon={FolderOpen} text={expense.Categoria_Gasto.nombre} color={accentColor} />}
         {docLabel && <span style={{fontSize: 11, color: COLORS.labels, fontFamily: 'Inter, sans-serif'}}>{docLabel}</span>}
       </div>
@@ -65,10 +81,10 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
               {parseFloat(expense.monto_total).toFixed(2)} USD
             </span>
           )}
-          {conversionsCount > 0 && (
+          {conversions.length > 0 && (
             <span style={{...badgeStyle, backgroundColor: COLORS.primary + '15', color: COLORS.primary}}>
               <ArrowLeftRight size={10} />
-              {conversionsCount} conversi{conversionsCount !== 1 ? 'ones' : 'ón'} de moneda
+              {conversionLabelOf(conversions)}
             </span>
           )}
           {hasSubitems && (
@@ -84,7 +100,6 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
       )}
       {expenseObservations.length > 0 && (
         <button onClick={open} style={{display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', backgroundColor: COLORS.error, color: COLORS.secondary, padding: '4px 9px', borderRadius: 8, width: 'fit-content', cursor: 'pointer', border: 'none'}}>
-          <MessageSquare size={12} />
           {expenseObservations.length} Observación{expenseObservations.length !== 1 ? 'es' : ''}
         </button>
       )}

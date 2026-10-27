@@ -5,7 +5,6 @@ import {avatarDefault} from '../../../constants/defaultImages';
 import {statusColors} from '../../../constants/tripStatusColors';
 import {statusLabels, getStatusBadge} from '../../../constants/tripStatusLabels';
 
-
 const styles = {
   card: 'rounded-2xl p-5 mb-4 shadow-md',
   employeeRow: 'flex flex-wrap items-start gap-3 mb-4',

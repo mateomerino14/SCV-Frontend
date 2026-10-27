@@ -32,7 +32,6 @@ function useLogin() {
     setCodeError('');
   };
 
-  // Tras iniciar sesion, cada rol empieza en la primera opcion de su menu
   const redirectByRole = (token) => {
     const decoded = jwtDecode(token);
     window.location.href = getHomeRoute(decoded.id_rol);

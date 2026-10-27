@@ -1,3 +1,5 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useStatementsExport from '../../hooks/approval/useStatementsExport';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import MascotGreeting from '../../components/mascot/MascotGreeting';
@@ -36,6 +38,7 @@ function ReviewerReviewsPage() {
     trips, totalMyPending, employees, sections, loading, applyingFilters, error, filters, setFilters,
     tab, setTab, applyFilters, clearFilters,
   } = useReviewerReviews();
+  const {exporting, exportError, exportStatements} = useStatementsExport();
   const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Rendiciones aprobadas por el supervisor: haz la revisión final para aprobarlas o rechazarlas.';
   if (tab === 'APROBADOS') {
@@ -45,7 +48,13 @@ function ReviewerReviewsPage() {
     subtitle = 'Rendiciones que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
-  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalMyPending, 'rendición por revisar', 'rendiciones por revisar');
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = pendingMessage(user?.nombre, totalMyPending, 'rendición por revisar', 'rendiciones por revisar');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -56,6 +65,9 @@ function ReviewerReviewsPage() {
         <PageHeader title="Rendiciones por Revisar" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
+        <ExportButton onClick={() => exportStatements({ids: trips.map((trip) => trip.id_viaje).join(',')}, 'RENDICIONES_REVISION')}
+          exporting={exporting} disabled={loading || trips.length === 0} label="Exportar planillas a Excel" />
+        {exportError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{exportError}</p>}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="rendición" plural="rendiciones" />}
         {loading && <SkeletonList count={3} />}
@@ -63,7 +75,7 @@ function ReviewerReviewsPage() {
           <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M8 16L14 22L24 10" stroke="rgba(255,255,255,0.7)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 16L14 22L24 10" stroke={COLORS.onColorText70} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             } />
         )}

@@ -7,7 +7,6 @@ import {getToken, setToken} from '../../services/shared/tokenStore';
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-// Motivo del cambio de contrasena segun el token: TEMPORAL, RECUPERACION, VENCIDA o null
 function readPasswordChangeReason() {
   const token = getToken();
   if (!token) {
@@ -66,15 +65,12 @@ function usePasswordExpiredCheck() {
       setError(data.error);
       return;
     }
-    // El servidor entrega una sesion nueva (las anteriores quedan cerradas)
     if (data.token) {
       setToken(data.token);
     }
-    // Recarga la pantalla de fondo, que pudo quedar sin datos
     window.location.reload();
   };
 
-  // Cierra la sesion para quien no recuerda su contrasena
   const handleLogout = async () => {
     await logout();
     window.location.href = '/';

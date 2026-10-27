@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {AlertCircle} from 'lucide-react';
 import ModalBase from './ModalBase';
 import Button from '../../../components/ui/Button';
+import {COLORS} from '../../../constants';
 
 const styles = {
   icon: "rounded-full p-5 border-4 border-white",
@@ -22,12 +23,12 @@ function ErrorModal({isOpen, onClose, onResend}) {
 
   return (
     <ModalBase isOpen={isOpen}>
-      <div className={styles.icon} style={{backgroundColor: '#000000'}}>
+      <div className={styles.icon} style={{backgroundColor: COLORS.backgroundSecondary}}>
         <AlertCircle size={36} color="white" />
       </div>
       <h2 className={styles.title}>Error de Confirmación</h2>
       <p className={styles.description}>El código de verificación es incorrecto</p>
-      <div className={styles.alertBox} style={{backgroundColor: 'rgba(255,255,255,0.15)'}}>
+      <div className={styles.alertBox} style={{backgroundColor: COLORS.onColorFill15}}>
         <AlertCircle size={16} color="white" className="shrink-0" />
         <p className={styles.alertText}>Por favor revisa que el código sea el que llegó a tu correo.</p>
       </div>

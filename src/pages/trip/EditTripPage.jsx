@@ -13,6 +13,9 @@ import useCurrentUser from '../../hooks/user/useCurrentUser';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import {maxTripReasonLength} from '../../constants/tripLimits';
+import AutoResizeTextarea from '../../components/ui/AutoResizeTextarea';
+import DatePickerInput from '../../components/ui/DatePickerInput';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -115,11 +118,14 @@ function EditTripPage() {
         </div>
         <div className={styles.grid}>
           <div className={styles.formCard} style={{backgroundColor: COLORS.background}}>
-            <InputField label="Motivo" icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
-              <input type="text" placeholder="Inspección técnica y de producción..." maxLength={100} className={styles.input} style={{color: COLORS.text}}
-                value={reason} onChange={(event) => handleReasonChange(event.target.value)} />
-            </InputField>
-            <InputField label="Origen" error={fieldErrors.origin}
+            <div>
+              <InputField label="Motivo" required alignTop icon={<Target size={16} style={{color: COLORS.primary}} />} error={fieldErrors.reason}>
+                <AutoResizeTextarea placeholder="Inspección técnica y de producción..." maxLength={maxTripReasonLength} style={{color: COLORS.text}}
+                  value={reason} onChange={(event) => handleReasonChange(event.target.value)} />
+              </InputField>
+              <p className="text-[11px] font-inter text-right mt-1" style={{color: COLORS.labels}}>{reason.length}/{maxTripReasonLength}</p>
+            </div>
+            <InputField label="Origen" required error={fieldErrors.origin}
               icon={
                 <button type="button" onClick={handleUseCurrentLocation} disabled={loadingLocation} title="Usar mi ubicación actual">
                   <LocateFixed size={16} style={{color: loadingLocation ? COLORS.labels : COLORS.primary, cursor: loadingLocation ? 'default' : 'pointer'}} />
@@ -128,16 +134,16 @@ function EditTripPage() {
               <input type="text" placeholder={loadingLocation ? 'Obteniendo ubicación...' : 'Ciudad de origen...'} maxLength={200}
                 className={styles.input} style={{color: COLORS.text}} value={origin} onChange={(event) => handleOriginChange(event.target.value)} />
             </InputField>
-            <InputField label="Destino" icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
+            <InputField label="Destino" required icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
               <input type="text" placeholder="¿A dónde se dirige?" maxLength={200} className={styles.input} style={{color: COLORS.text}}
                 value={destination} onChange={(event) => handleDestinationChange(event.target.value)} />
             </InputField>
             <div className={styles.dateRow}>
-              <InputField label="Fecha Inicio" error={fieldErrors.startDate}>
-                <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={startDate} onChange={(event) => handleStartDateChange(event.target.value)} />
+              <InputField label="Fecha Inicio" required error={fieldErrors.startDate}>
+                <DatePickerInput value={startDate} min={today} rangeStart={startDate} rangeEnd={endDate} onChange={handleStartDateChange} />
               </InputField>
-              <InputField label="Fecha Fin" error={fieldErrors.endDate}>
-                <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={endDate} onChange={(event) => handleEndDateChange(event.target.value)} />
+              <InputField label="Fecha Fin" required error={fieldErrors.endDate}>
+                <DatePickerInput value={endDate} min={today} rangeStart={startDate} rangeEnd={endDate} onChange={handleEndDateChange} />
               </InputField>
             </div>
             <div className={styles.radioRow}>
@@ -165,7 +171,7 @@ function EditTripPage() {
               </div>
             </div>
             {transport === 'Vehículo de Empresa' && (
-              <InputField label="Placa del Vehículo" error={fieldErrors.vehiclePlate}>
+              <InputField label="Placa del Vehículo" required error={fieldErrors.vehiclePlate}>
                 <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
                   value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
               </InputField>

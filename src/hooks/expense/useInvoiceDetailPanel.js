@@ -1,5 +1,7 @@
 import {useState} from 'react';
 
+const maxPriceDecimals = 4;
+
 function useInvoiceDetailPanel(detail, onAdd, onRemove) {
   const [item, setItem] = useState({nombre_producto: '', precio: '', cantidad: 1});
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -22,14 +24,21 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
       if (parts.length > 2) {
         return;
       }
-      if (parts.length === 2 && parts[1].length > 2) {
+      if (parts.length === 2 && parts[1].length > maxPriceDecimals) {
         return;
       }
       setItem((prev) => ({...prev, [key]: validDecimal}));
     }
     else if (key === 'cantidad') {
-      const onlyIntegers = value.replace(/[^0-9]/g, '');
-      setItem((prev) => ({...prev, [key]: onlyIntegers}));
+      const validQuantity = String(value).replace(',', '.').replace(/[^0-9.]/g, '');
+      const parts = validQuantity.split('.');
+      if (parts.length > 2) {
+        return;
+      }
+      if (parts.length === 2 && parts[1].length > 3) {
+        return;
+      }
+      setItem((prev) => ({...prev, [key]: validQuantity}));
     }
     else if (key === 'nombre_producto') {
       if (value.length > 50) {
@@ -51,7 +60,7 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     if (!item.precio || parseFloat(item.precio) <= 0) {
       errors.precio = 'El precio es requerido y debe ser mayor a 0';
     }
-    if (!item.cantidad || parseInt(item.cantidad) <= 0) {
+    if (!item.cantidad || !(parseFloat(item.cantidad) > 0)) {
       errors.cantidad = 'La cantidad debe ser mayor a 0';
     }
     return errors;
@@ -65,8 +74,8 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     }
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
-      precio: parseFloat(parseFloat(item.precio).toFixed(2)),
-      cantidad: parseInt(item.cantidad),
+      precio: parseFloat(parseFloat(item.precio).toFixed(maxPriceDecimals)),
+      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(3)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
     setSelectedIndex(null);
@@ -85,8 +94,8 @@ function useInvoiceDetailPanel(detail, onAdd, onRemove) {
     onRemove(selectedIndex);
     onAdd({
       nombre_producto: item.nombre_producto.trim(),
-      precio: parseFloat(parseFloat(item.precio).toFixed(2)),
-      cantidad: parseInt(item.cantidad),
+      precio: parseFloat(parseFloat(item.precio).toFixed(maxPriceDecimals)),
+      cantidad: parseFloat(parseFloat(item.cantidad).toFixed(3)),
     });
     setItem({nombre_producto: '', precio: '', cantidad: 1});
     setSelectedIndex(null);

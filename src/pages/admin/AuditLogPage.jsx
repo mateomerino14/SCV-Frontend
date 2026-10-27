@@ -1,4 +1,5 @@
-import {Download, LogIn, LogOut, KeyRound} from 'lucide-react';
+import {LogIn, LogOut, KeyRound} from 'lucide-react';
+import ExportButton from '../../components/ui/ExportButton';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -29,7 +30,6 @@ const styles = {
   fieldLabel: 'text-xs font-inter uppercase mb-1',
   buttonsRow: 'flex gap-2 mt-3',
   filterBtn: 'flex-1 py-2.5 rounded-xl text-sm font-bold font-nunito cursor-pointer border transition-colors text-center',
-  exportBtn: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4',
   row: 'flex items-center gap-3 rounded-2xl p-3 mb-2',
   iconWrap: 'w-9 h-9 rounded-full flex items-center justify-center shrink-0',
   rowInfo: 'flex flex-col flex-1 min-w-0',
@@ -53,7 +53,7 @@ const typeIcon = {
 };
 
 const typeColor = {
-  INGRESO: '#155724',
+  INGRESO: COLORS.success,
   SALIDA: COLORS.labels,
   CAMBIO_CLAVE: COLORS.primary,
 };
@@ -86,8 +86,8 @@ function AuditLogPage() {
           {preset === 'rango' && (
             <div className={styles.fieldGroup}>
               <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
-                onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
-                onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
+                onStartDateChange={(value) => setFilters((prev) => ({...prev, fecha_inicio: value}))}
+                onEndDateChange={(value) => setFilters((prev) => ({...prev, fecha_fin: value}))} />
             </div>
           )}
           <div className={styles.fieldGroup}>
@@ -116,11 +116,7 @@ function AuditLogPage() {
           </div>
         </div>
 
-        <button className={styles.exportBtn} onClick={exportToExcel} disabled={loading || exporting || audits.length === 0}
-          style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: audits.length === 0 || exporting ? 0.6 : 1}}>
-          <Download size={16} />
-          {exporting ? 'Exportando...' : 'Exportar a Excel'}
-        </button>
+        <ExportButton onClick={exportToExcel} exporting={exporting} disabled={loading || audits.length === 0} />
 
         <p className={styles.periodCaption} style={{color: COLORS.labels}}>{periodCaption}</p>
 
@@ -158,8 +154,8 @@ function AuditLogPage() {
           <EmptyState title="Sin registros" subtitle="No se encontraron eventos con los filtros aplicados"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="10" stroke="rgba(255,255,255,0.7)" strokeWidth="2" />
-                <path d="M16 10V16L20 19" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="16" cy="16" r="10" stroke={COLORS.onColorText70} strokeWidth="2" />
+                <path d="M16 10V16L20 19" stroke={COLORS.onColorText80} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}

@@ -25,7 +25,7 @@ const styles = {
 
 function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport}) {
   const isInternational = type === 'Internacional';
-  const borderColor = 'rgba(255,255,255,0.2)';
+  const borderColor = COLORS.onColorFill20;
 
   return (
     <div className={styles.wrapper}>
@@ -55,8 +55,8 @@ function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, tota
             <p className={styles.amount}>{totalAmount.toFixed(2)} <span className={styles.amountSub}>Bs</span></p>
           </>
         )}
-        <div className={styles.infoBox} style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
-          <span style={{color: 'rgba(255,255,255,0.7)', fontSize: 16}}>ⓘ</span>
+        <div className={styles.infoBox} style={{backgroundColor: COLORS.onColorFill10}}>
+          <span style={{color: COLORS.onColorText70, fontSize: 16}}>ⓘ</span>
           <p className={styles.infoText}>
             {isInternational
               ? 'Para viajes internacionales, el primer y último día se calculan en Bs. Los días intermedios en USD.'

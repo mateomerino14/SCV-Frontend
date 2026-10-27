@@ -1,3 +1,6 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
+import useStatementsExport from '../../hooks/approval/useStatementsExport';
 import {Users, Briefcase} from 'lucide-react';
 import {PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid} from 'recharts';
 import Navbar from '../../layouts/Navbar';
@@ -21,6 +24,7 @@ const styles = {
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 max-w-8xl mx-auto w-full',
   subtitle: 'text-sm font-inter mb-6',
+  exportRow: 'grid grid-cols-1 md:grid-cols-2 gap-x-3',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl mb-4',
   grid2: 'grid grid-cols-2 gap-3 mb-6',
   statCard: 'rounded-2xl p-4 shadow-sm flex flex-col gap-1',
@@ -49,9 +53,8 @@ function renderPieLabel({cx, cy, midAngle, innerRadius, outerRadius, percent}) {
   );
 }
 
-const roleColors = [COLORS.primary, '#4a7fd4', '#2d7a3a', COLORS.secondary, COLORS.title];
+const roleColors = [COLORS.primary, COLORS.chartBlue, COLORS.successStrong, COLORS.secondary, COLORS.title];
 
-// Tooltip del grafico por seccion: viajes, monto en Bs y, si hay viajes internacionales, en USD
 function SectionTooltip({active, payload, label}) {
   if (!active || !payload?.length) {
     return null;
@@ -70,10 +73,25 @@ function SectionTooltip({active, payload, label}) {
 function DashboardAdminPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {data, loading, error, preset, selectPreset, customRange, setCustomRange, applyCustomRange, rangeError, appliedPeriod} = useAdminDashboard();
+  const {exporting, exportError, exportDashboard} = useAdminExcelExport();
+  const {exporting: exportingStatements, exportError: statementsError, exportStatements} = useStatementsExport();
+  const exportPeriodStatements = () => {
+    let period = {fecha_inicio: '1900-01-01', fecha_fin: '2999-12-31'};
+    if (appliedPeriod.fecha_inicio && appliedPeriod.fecha_fin) {
+      period = appliedPeriod;
+    }
+    exportStatements(period, 'RENDICIONES_PERIODO');
+  };
   const approvalTotal = approvalPhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
   const expenseTotal = expensePhaseStats.reduce((sum, stat) => sum + (data?.[stat.key] || 0), 0);
 
-  const mascotMessage = loading ? null : `${greetingFor(user?.nombre)} Aquí tienes el resumen del sistema.`;
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = `${greetingFor(user?.nombre)} Aquí tienes el resumen del sistema.`;
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -84,6 +102,11 @@ function DashboardAdminPage() {
         <PageHeader title="Resumen General" subtitle="Indicadores de viajes, gastos y usuarios del sistema." />
         <DashboardPeriodFilter options={periodOptions} preset={preset} onSelectPreset={selectPreset} customRange={customRange}
           onCustomRangeChange={setCustomRange} onApply={applyCustomRange} rangeError={rangeError} appliedPeriod={appliedPeriod} />
+        <div className={styles.exportRow}>
+          <ExportButton onClick={() => exportDashboard(data, appliedPeriod)} exporting={exporting} disabled={loading || !data} label="Exportar resumen a Excel" />
+          <ExportButton onClick={exportPeriodStatements} exporting={exportingStatements} disabled={loading} label="Exportar planillas del periodo" />
+        </div>
+        {(exportError || statementsError) && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{exportError || statementsError}</p>}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {loading ? (
           <SkeletonCard lines={6} />
@@ -93,8 +116,8 @@ function DashboardAdminPage() {
               <div className={styles.statCard} style={{backgroundColor: COLORS.primary}}>
                 <Users size={20} style={{color: COLORS.background}} />
                 <p className={styles.statValue} style={{color: COLORS.background}}>{data?.totalUsuarios || 0}</p>
-                <p className={styles.statLabel} style={{color: 'rgba(255,255,255,0.7)'}}>Usuarios</p>
-                <p className={styles.statSub} style={{color: 'rgba(255,255,255,0.6)'}}>{data?.usuariosActivos || 0} activos</p>
+                <p className={styles.statLabel} style={{color: COLORS.onColorText70}}>Usuarios</p>
+                <p className={styles.statSub} style={{color: COLORS.onColorText60}}>{data?.usuariosActivos || 0} activos</p>
               </div>
               <div className={styles.statCard} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <Briefcase size={20} style={{color: COLORS.primary}} />

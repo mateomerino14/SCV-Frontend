@@ -160,7 +160,6 @@ export const getDashboard = async (period = {}) => {
   }
 };
 
-// Con page y limit devuelve {registros, total}; sin ellos, todos los registros filtrados
 export const getAudits = async (filters = {}, page = null, limit = null) => {
   try {
     const params = {};
@@ -224,5 +223,25 @@ export const sendReminderDigestNow = async () => {
   }
   catch (error) {
     return {error: error.response?.data?.error || 'Error al enviar el resumen de pendientes'};
+  }
+};
+
+export const previewUserImport = async (rows) => {
+  try {
+    const response = await apiClient.post('/user/import/preview', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al revisar el archivo'};
+  }
+};
+
+export const importUsers = async (rows) => {
+  try {
+    const response = await apiClient.post('/user/import', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al importar los usuarios'};
   }
 };

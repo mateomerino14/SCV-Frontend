@@ -3,7 +3,6 @@ import {COLORS} from '../../../constants';
 import ProfileRoleBadge from '../molecules/ProfileRoleBadge';
 import {avatarDefault} from '../../../constants/defaultImages';
 
-
 const styles = {
   card: 'rounded-2xl p-6 shadow-sm border flex flex-col items-center h-fit',
   avatarContainer: 'relative',

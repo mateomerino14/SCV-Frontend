@@ -1,4 +1,4 @@
-import {ArrowLeft, PlusCircle, Upload, Globe, Navigation, MapPin, AlertTriangle, Users, Building2, Car} from 'lucide-react';
+import {ArrowLeft, Globe, Navigation, MapPin, Building2, Car} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {registerExpensePath, uploadInvoicePath} from '../../../constants/routes';
 import {formatDateRange, formatDateShort} from '../../../utils/dateFormatter';
@@ -8,9 +8,11 @@ import TripTypeBadge from '../atoms/TripTypeBadge';
 import TripTransportBadge from '../atoms/TripTransportBadge';
 import BudgetBar from '../molecules/BudgetBar';
 import DailyBreakdownCard from '../molecules/DailyBreakdownCard';
+import {describeDayExcess} from '../constants/dailyLimitStatus';
 import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import TripObservationsList from '../molecules/TripObservationsList';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
+import {showsUsdFund} from '../../../utils/expenseCurrency';
 
 const styles = {
   backBtn: 'flex items-center gap-1 cursor-pointer mb-4 w-fit',
@@ -58,6 +60,8 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
   } = deadline;
 
   const isRejectedExpenses = trip.estado === 'RECHAZADO' && !!trip.fue_iniciado;
+  const dailyRate = parseFloat(trip.Usuario?.Cargo?.monto_diario || 0);
+  const dailyRateUsd = parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0);
   const generalObservations = observations.filter((observation) => !observation.id_gasto);
   const showObservations = trip.estado === 'RECHAZADO' && generalObservations.length > 0;
   const actionsDisabled = deadlineExpired && !hasActiveExtension;
@@ -118,12 +122,13 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
         <BudgetBar accumulatedExpense={accumulatedExpense} assignedAmount={trip.monto_asignado} isUsd={false} />
       </div>
-      {isInternational && (
+      {showsUsdFund(trip) && (
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
           <BudgetBar accumulatedExpense={accumulatedExpenseUsd} assignedAmount={trip.monto_asignado_usd} isUsd />
         </div>
       )}
-      <DailyBreakdownCard dailyBreakdown={dailyBreakdown} dailyRate={parseFloat(trip.Usuario?.Cargo?.monto_diario || 0)} dailyRateUsd={parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0)} />
+      <DailyBreakdownCard dailyBreakdown={dailyBreakdown} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} isInternational={isInternational}
+        justifiedDays={Object.keys(dayJustifications).filter((key) => dayJustifications[key]?.trim())} />
       <div className="flex items-center gap-2 mt-2 mb-6 px-1">
         <Building2 size={13} style={{color: COLORS.labels, flexShrink: 0}} />
         <p className="text-xs font-inter" style={{color: COLORS.labels}}>
@@ -134,11 +139,9 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       {tripInProgress && !isInternational && (
         <div className={styles.actionRow}>
           <button className={styles.actionBtn} style={primaryActionStyle} onClick={() => !actionsDisabled && navigateToRegister()} disabled={actionsDisabled}>
-            <PlusCircle size={16} />
             Registrar Gasto
           </button>
           <button className={styles.actionBtn} style={secondaryActionStyle} onClick={() => !actionsDisabled && navigateToUpload()} disabled={actionsDisabled}>
-            <Upload size={16} />
             Subir Facturas
           </button>
         </div>
@@ -149,18 +152,15 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <p className={styles.internationalLabel} style={{color: COLORS.labels}}>Gastos Nacionales (Bs)</p>
           <div className={styles.actionRow}>
             <button className={styles.actionBtn} style={primaryActionStyle} onClick={() => !actionsDisabled && navigateToRegister()} disabled={actionsDisabled}>
-              <PlusCircle size={16} />
               Gasto sin Factura
             </button>
             <button className={styles.actionBtn} style={secondaryActionStyle} onClick={() => !actionsDisabled && navigateToUpload()} disabled={actionsDisabled}>
-              <Upload size={16} />
               Subir Facturas
             </button>
           </div>
           <p className={styles.internationalLabel} style={{color: COLORS.labels}}>Gastos Internacionales (USD)</p>
           <div className={styles.actionRow}>
             <button className={styles.actionBtn} style={primaryActionStyle} onClick={() => !actionsDisabled && navigateToRegisterInternational()} disabled={actionsDisabled}>
-              <Globe size={16} />
               Gasto Internacional
             </button>
           </div>
@@ -230,7 +230,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           {exceededDays.map((day) => (
             <div key={day.fecha} className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>
-                {formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)
+                {formatDateShort(day.fecha)} — {describeDayExcess(day, dailyRate, dailyRateUsd)}
               </p>
               <textarea className={styles.textarea} rows={4} maxLength={300} placeholder="Detalle el motivo del exceso de este día..."
                 value={dayJustifications[day.fecha] || ''} onChange={(event) => setDayJustification(day.fecha, event.target.value)} disabled={actionsDisabled}
@@ -253,16 +253,16 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
           <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Excesos</p>
           {exceededDays.map((day) => dayJustifications[day.fecha] && (
             <div key={day.fecha} className={styles.justificationItem}>
-              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)</p>
+              <p className={styles.excessAmount} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {describeDayExcess(day, dailyRate, dailyRateUsd)}</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
-                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+                style={{backgroundColor: COLORS.onColorSubtle, borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           ))}
           {exceedsHotels && dayJustifications.HOTEL && (
             <div className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>Hoteles</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications.HOTEL} readOnly
-                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+                style={{backgroundColor: COLORS.onColorSubtle, borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           )}
         </div>
@@ -275,32 +275,32 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       )}
 
       {isRejectedExpenses && (
-        <div className={styles.alertBox} style={{backgroundColor: '#ffa7a8aa'}}>
-          <p style={{color: '#500203', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.rejectedHighlight}}>
+          <p style={{color: COLORS.title, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tu rendición de gastos fue rechazada. Revisa las observaciones, corrige los gastos y vuelve a enviar.
           </p>
         </div>
       )}
 
       {hasActiveExtension && tripInProgress && (
-        <div className={styles.alertBox} style={{backgroundColor: '#d4edda'}}>
-          <p style={{color: '#155724', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.successBackground}}>
+          <p style={{color: COLORS.success, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tienes una autorización de plazo activa. Puedes registrar gastos hasta el {deadlineRequest?.limite_extendido?.split('-').reverse().join('/')}.
           </p>
         </div>
       )}
 
       {actionsDisabled && tripInProgress && (
-        <div className={styles.alertBox} style={{backgroundColor: '#fef3cd'}}>
-          <p style={{color: '#856404', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.warningBackground}}>
+          <p style={{color: COLORS.warningText, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             El plazo para registrar gastos ha vencido. Solicita una autorización al revisor para continuar.
           </p>
         </div>
       )}
 
       {deadlinePending && (
-        <div className={styles.alertBox} style={{backgroundColor: '#ffd700aa'}}>
-          <p style={{color: '#7a5900', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.alertBox} style={{backgroundColor: COLORS.pendingHighlight}}>
+          <p style={{color: COLORS.warningStrong, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.
           </p>
         </div>
@@ -320,7 +320,6 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       {canRequestDeadline && !deadlinePending && tripInProgress && (
         <button className={styles.requestBtn} style={{backgroundColor: COLORS.secondary, color: COLORS.background}}
           onClick={() => setShowDeadlineModal(true)}>
-          <AlertTriangle size={15} />
           Solicitar Autorización al Revisor
         </button>
       )}
@@ -328,30 +327,29 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       {tripInProgress && !isSubstitution && substitution?.canRequest && (
         <button className={styles.requestBtn} style={{backgroundColor: COLORS.title, color: COLORS.background}}
           onClick={substitution.openModal}>
-          <Users size={15} />
           Solicitar que Otra Persona Rinda por Mí
         </button>
       )}
 
       {tripInProgress && !isSubstitution && substitution?.isPending && (
-        <div className={styles.noticeBox} style={{backgroundColor: '#ffd700aa'}}>
-          <p style={{color: '#7a5900', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.noticeBox} style={{backgroundColor: COLORS.pendingHighlight}}>
+          <p style={{color: COLORS.warningStrong, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tienes una solicitud de reemplazo pendiente de revisión.
           </p>
         </div>
       )}
 
       {tripInProgress && !isSubstitution && substitution?.isApproved && (
-        <div className={styles.noticeBox} style={{backgroundColor: '#d4edda'}}>
-          <p style={{color: '#155724', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.noticeBox} style={{backgroundColor: COLORS.successBackground}}>
+          <p style={{color: COLORS.success, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Tu solicitud de reemplazo fue aprobada.
           </p>
         </div>
       )}
 
       {isSubstitution && (
-        <div className={styles.noticeBox} style={{backgroundColor: '#e0e7ff'}}>
-          <p style={{color: '#3730a3', fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
+        <div className={styles.noticeBox} style={{backgroundColor: COLORS.infoBackground}}>
+          <p style={{color: COLORS.infoText, fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 700}}>
             Estás rindiendo este viaje en nombre de {trip.Usuario?.nombre} {trip.Usuario?.apellido_paterno}.
           </p>
         </div>

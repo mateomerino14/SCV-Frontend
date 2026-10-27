@@ -10,13 +10,19 @@ export const getCategories = async () => {
   }
 };
 
-export const registerExpense = async (data, imageFile) => {
+const buildExpenseForm = (data, imageFile, backupFiles) => {
+  const formData = new FormData();
+  formData.append('datos', JSON.stringify(data));
+  if (imageFile) {
+    formData.append('imagen', imageFile);
+  }
+  backupFiles.forEach((file) => formData.append('respaldos', file));
+  return formData;
+};
+
+export const registerExpense = async (data, imageFile, backupFiles = []) => {
   try {
-    const formData = new FormData();
-    formData.append('datos', JSON.stringify(data));
-    if (imageFile) {
-      formData.append('imagen', imageFile);
-    }
+    const formData = buildExpenseForm(data, imageFile, backupFiles);
     const response = await apiClient.post('/expense/register', formData);
     return response.data;
   }
@@ -38,13 +44,9 @@ export const getExpenseDetail = async (expenseId) => {
   }
 };
 
-export const updateExpense = async (expenseId, data, imageFile) => {
+export const updateExpense = async (expenseId, data, imageFile, backupFiles = []) => {
   try {
-    const formData = new FormData();
-    formData.append('datos', JSON.stringify(data));
-    if (imageFile) {
-      formData.append('imagen', imageFile);
-    }
+    const formData = buildExpenseForm(data, imageFile, backupFiles);
     const response = await apiClient.put(`/expense/${expenseId}/update`, formData);
     return response.data;
   }

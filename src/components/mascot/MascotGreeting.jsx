@@ -17,7 +17,6 @@ const styles = {
 const appearDelay = 1500;
 const visibleTime = 9000;
 
-// Casquito saluda una vez por pantalla y sesion, salvo que se desactive o se pida menos movimiento
 function MascotGreeting({pageKey, message}) {
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);

@@ -95,7 +95,10 @@ function useSupervisorExpenseReviewDetail(tripId) {
       return;
     }
     setShowApprove(false);
-    const nextState = data?.viaje?.tiene_alcohol ? 'EN_REVISION_APROBADOR' : 'APROBADO_SUPERVISOR';
+    let nextState = 'APROBADO_SUPERVISOR';
+    if (data?.viaje?.tiene_alcohol) {
+      nextState = 'EN_REVISION_APROBADOR';
+    }
     setActionCompleted(nextState);
     setData((prev) => ({...prev, viaje: {...prev.viaje, estado: nextState}}));
   };

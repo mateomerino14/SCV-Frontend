@@ -1,11 +1,9 @@
-// Imagen de ingreso local (src/assets/foto-login.jpg); si no existe se usa la anterior
 const localLoginImage = Object.values(import.meta.glob('../assets/foto-login.jpg', {eager: true, import: 'default'}))[0];
 const fallbackLoginImage = "https://media.licdn.com/dms/image/v2/D4E22AQE0FhfcXcva3w/feedshare-shrink_800/feedshare-shrink_800/0/1729181878955?e=2147483647&v=beta&t=8I4JqWT7e4UXjTX56rdge-w7HBCEqQL6iYiFCenBJiY";
 
 export const LOGIN_IMAGE = localLoginImage || fallbackLoginImage;
 export const MAXAM_LOGO = "https://upload.wikimedia.org/wikipedia/commons/b/b9/Maxam_logo.jpg";
 
-// Paleta de colores principales
 export const COLORS = {
   primary: '#870002',
   secondary: '#D20F12',
@@ -26,11 +24,65 @@ export const COLORS = {
   positionRole: '#F1F2FF',
   element: '#eceded6a',
   error: '#fde9e9',
+  success: '#155724',
+  fieldError: '#ef4444',
+  fieldErrorBorder: '#f87171',
+  overlay: 'rgba(0,0,0,0.4)',
+  successBackground: '#d4edda',
   comments: '#f5d6d622',
+  primarySoft: '#F7ECEC',
+  menuGroup: '#F7F5F4',
+  systemReceipt: '#ECE6F7',
+  systemReceiptText: '#5B3FA0',
+  // Estados, avisos y acentos
+  warningBackground: '#fef3cd',
+  warningText: '#856404',
+  warningStrong: '#7a5900',
+  pendingHighlight: '#ffd700aa',
+  rejectedHighlight: '#ffa7a8aa',
+  neutralBackground: '#e5e7eb',
+  neutralText: '#374151',
+  successStrong: '#2d7a3a',
+  dangerBackground: '#f8d7da',
+  dangerText: '#721c24',
+  dangerLight: '#ffd4d4',
+  danger: '#dc2626',
+  invoiceReady: '#008330',
+  chartBlue: '#4a7fd4',
+  infoBackground: '#e0e7ff',
+  infoText: '#3730a3',
+  accentBlue: '#3b4fd4',
+  successLight: '#e6f4ea',
+  amber: '#f59e0b',
+  errorSoft: '#fca5a5',
+  alertBackground: '#ffe1e2aa',
+  adminBadge: '#85aff3ab',
+  adminBadgeText: '#000a65',
+  mascotRed: '#a3161a',
+  iconRed: '#8b0000',
+  brownText: '#5a413d',
+  onColorFill10: 'rgba(255,255,255,0.1)',
+  onColorFill15: 'rgba(255,255,255,0.15)',
+  onColorFill20: 'rgba(255,255,255,0.2)',
+  onColorFill25: 'rgba(255,255,255,0.25)',
+  onColorFill30: 'rgba(255,255,255,0.3)',
+  onColorText60: 'rgba(255,255,255,0.6)',
+  onColorText70: 'rgba(255,255,255,0.7)',
+  onColorText80: 'rgba(255,255,255,0.8)',
+  onColorText90: 'rgba(255,255,255,0.9)',
+  onColorSubtle: 'rgba(243,243,243,0.13)',
+  overlayStrong: 'rgba(0,0,0,0.7)',
+  overlaySoft: 'rgba(0, 0, 0, 0.3)',
+  onColorText50: 'rgba(255,255,255,0.5)',
+  onColorText55: 'rgba(255,255,255,0.55)',
+  shadowSoft: 'rgba(0,0,0,0.12)',
+  mascotBlush: 'rgba(255,190,190,0.7)',
   // Variantes de "background" (blanco) con transparencia, para usar sobre fondos de color (modales rojos, etc.)
   backgroundOnColorBorder: 'rgba(255,255,255,0.4)',
   backgroundOnColorFill: 'rgba(255,255,255,0.12)',
   backgroundOnColorText: 'rgba(255,255,255,0.85)',
 };
 
-// Tamaños de pantalla: sm 640px, md 768px, lg 1024px, xl 1280px, 2xl 1536px
+export const ROLES = {admin: 1, supervisor: 2, employee: 3, reviewer: 4, approver: 5};
+
+export const TEAM_REVIEW_ROLES = [ROLES.supervisor, ROLES.approver];

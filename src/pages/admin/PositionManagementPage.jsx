@@ -1,3 +1,5 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
@@ -16,7 +18,6 @@ import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import ListCount from '../../components/ui/ListCount';
-
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -49,6 +50,7 @@ function PositionManagementPage() {
     showSuccess, setShowSuccess, successMessage, formData, setFormData, suggestions,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
   } = usePositionManagement();
+  const {exporting, exportError, exportPositions} = useAdminExcelExport();
   const pagination = useClientPagination(positions, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -62,6 +64,8 @@ function PositionManagementPage() {
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Puesto y Salario Diario</p>
+        <ExportButton onClick={() => exportPositions(positions)} exporting={exporting} disabled={loading || positions.length === 0} />
+        {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
           <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="cargo" plural="cargos" />
@@ -77,14 +81,14 @@ function PositionManagementPage() {
               )}
             </div>
             <div className={styles.actionsRow}>
-              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? '#d4edda' : COLORS.error}}>
-                <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: position.activo ? '#2d7a3a' : COLORS.secondary}} />
+              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? COLORS.successBackground : COLORS.error}}>
+                <div style={{width: 8, height: 8, borderRadius: '50%', backgroundColor: position.activo ? COLORS.successStrong : COLORS.secondary}} />
               </div>
               <div className={styles.actionBtn} style={{backgroundColor: COLORS.primary}} onClick={() => openEdit(position)}>
                 <Pencil size={14} style={{color: COLORS.background}} />
               </div>
-              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? COLORS.error : '#d4edda'}} onClick={() => openSuspend(position)}>
-                {position.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: '#2d7a3a'}} />}
+              <div className={styles.actionBtn} style={{backgroundColor: position.activo ? COLORS.error : COLORS.successBackground}} onClick={() => openSuspend(position)}>
+                {position.activo ? <Ban size={14} style={{color: COLORS.secondary}} /> : <CheckCircle size={14} style={{color: COLORS.successStrong}} />}
               </div>
             </div>
           </div>
@@ -94,9 +98,9 @@ function PositionManagementPage() {
           <EmptyState title="Sin cargos registrados" subtitle="No se encontraron cargos con los filtros aplicados"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <rect x="8" y="10" width="16" height="12" rx="2" fill="rgba(255,255,255,0.4)" />
-                <path d="M12 10V8C12 6.9 12.9 6 14 6H18C19.1 6 20 6.9 20 8V10" stroke="rgba(255,255,255,0.7)" strokeWidth="2" />
-                <path d="M12 16H20" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round" />
+                <rect x="8" y="10" width="16" height="12" rx="2" fill={COLORS.backgroundOnColorBorder} />
+                <path d="M12 10V8C12 6.9 12.9 6 14 6H18C19.1 6 20 6.9 20 8V10" stroke={COLORS.onColorText70} strokeWidth="2" />
+                <path d="M12 16H20" stroke={COLORS.onColorText80} strokeWidth="2" strokeLinecap="round" />
               </svg>
             } />
         )}

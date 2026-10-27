@@ -2,6 +2,7 @@ import {Eye, MapPin} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseObsButton from '../atoms/ExpenseObsButton';
+import {getExpenseInvoiceVat} from '../../../utils/invoiceAmounts';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -32,22 +33,28 @@ function ExpenseInvoicedTable({expenses, onViewExpense, countObservations, onOpe
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos respaldados con factura o recibo oficial</p>
       {hasAlcohol && (
-        <p className={styles.subtitle} style={{color: '#856404'}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen bebidas alcohólicas</p>
       )}
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <table className={styles.table}>
           <thead>
             <tr style={{backgroundColor: COLORS.primary}}>
               {['#', 'Fecha', 'Proveedor', 'Descripción', 'Tipo', 'N° Doc.', 'NIT/CI', 'Importe (Bs)', 'IVA (Bs)', 'Obs.', ''].map((header) => (
-                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: 'rgba(255,255,255,0.2)'}}>{header}</th>
+                <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: COLORS.onColorFill20}}>{header}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {expenses.map((expense, index) => {
               const amount = parseFloat(expense.monto_total || 0);
-              const vat = Math.max(0, amount - parseFloat(expense.Factura?.monto_parcial || 0));
-              const bg = expense.tiene_alcohol ? '#fef3cd' : (index % 2 === 0 ? COLORS.background : COLORS.backgroundHeader);
+              const vat = getExpenseInvoiceVat(expense);
+              let bg = COLORS.backgroundHeader;
+              if (expense.tiene_alcohol) {
+                bg = COLORS.warningBackground;
+              }
+              else if (index % 2 === 0) {
+                bg = COLORS.background;
+              }
               return (
                 <tr key={expense.id_gasto} style={{backgroundColor: bg}}>
                   <td className={styles.td} style={cell({color: COLORS.labels})}>{index + 1}</td>

@@ -13,7 +13,6 @@ function TripActionButtons({detailRoute, originRoute, onTake, taking, onReturn, 
   const navigate = useNavigate();
   const [confirmReturn, setConfirmReturn] = useState(false);
   const [returning, setReturning] = useState(false);
-  // Devolver pide confirmacion y queda bloqueado mientras se procesa (evita el doble clic)
   const handleConfirmReturn = async () => {
     setReturning(true);
     await onReturn();

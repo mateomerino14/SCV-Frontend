@@ -26,5 +26,4 @@ function SkeletonCard({lines = 3}) {
   );
 }
 
-export {SkeletonLine};
 export default SkeletonCard;

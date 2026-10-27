@@ -24,12 +24,12 @@ const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity
 
 function PositionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel, formData, setFormData, loading, error, fieldErrors = {}, setFieldErrors, suggestions = []}) {
   const {showSuggestions, setShowSuggestions, handleNameChange, handleAmountChange, handleAmountKeyDown, handleSelectSuggestion} = usePositionFormModal(setFormData, setFieldErrors);
-  const monthlyImpact = formData.monto_diario ? (parseFloat(formData.monto_diario) * 30).toFixed(2) : '0.00';
-  const monthlyImpactUsd = formData.monto_diario_usd ? (parseFloat(formData.monto_diario_usd) * 30).toFixed(2) : '0.00';
+  const monthlyImpact = ((parseFloat(formData.monto_diario) || 0) * 30).toFixed(2);
+  const monthlyImpactUsd = ((parseFloat(formData.monto_diario_usd) || 0) * 30).toFixed(2);
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div className={styles.overlay} style={{backgroundColor: 'rgba(0,0,0,0.4)'}}
+        <motion.div className={styles.overlay} style={{backgroundColor: COLORS.overlay}}
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.scrollWrapper} style={{backgroundColor: COLORS.background}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
@@ -38,7 +38,7 @@ function PositionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabe
               <p className={styles.title} style={{color: COLORS.text}}>{title}</p>
               <p className={styles.subtitle} style={{color: COLORS.labels}}>{subtitle}</p>
               <div>
-                <FormField label="Nombre del Cargo" placeholder="Ej: Especialista de Marketing" maxLength={50}
+                <FormField label="Nombre del Cargo" required placeholder="Ej: Especialista de Marketing" maxLength={50}
                   value={formData.nombre} onChange={handleNameChange} error={fieldErrors.nombre}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
                 {showSuggestions && suggestions.length > 0 && (
@@ -46,10 +46,10 @@ function PositionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabe
                 )}
               </div>
               <div className={styles.currencyGrid}>
-                <FormField label="Tarifa/Día (Bs.)" type="text" inputMode="decimal" placeholder="0.00"
+                <FormField label="Tarifa/Día (Bs.)" required type="text" inputMode="decimal" placeholder="0.00"
                   value={formData.monto_diario} onChange={handleAmountChange('monto_diario')} onKeyDown={handleAmountKeyDown}
                   error={fieldErrors.monto_diario} helperText={parseFloat(formData.monto_diario) > 0 ? `~Bs. ${monthlyImpact}/mes` : null} />
-                <FormField label="Tarifa/Día (USD)" type="text" inputMode="decimal" placeholder="0.00"
+                <FormField label="Tarifa/Día (USD)" required type="text" inputMode="decimal" placeholder="0.00"
                   value={formData.monto_diario_usd || ''} onChange={handleAmountChange('monto_diario_usd')} onKeyDown={handleAmountKeyDown}
                   error={fieldErrors.monto_diario_usd} helperText={parseFloat(formData.monto_diario_usd) > 0 ? `~USD ${monthlyImpactUsd}/mes` : null} />
               </div>

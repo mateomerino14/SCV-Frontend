@@ -1,9 +1,9 @@
 import {useState, useEffect, useRef} from 'react';
 import ExcelJS from 'exceljs';
-import {saveAs} from 'file-saver';
 import {getAudits} from '../../services/admin/adminService';
 import {getEmployees} from '../../services/user/userService';
-import {getPresetRange, toDateText} from '../../utils/periodRange';
+import {getPresetRange} from '../../utils/periodRange';
+import {addTableSheet, saveWorkbook, todayFileSuffix} from '../../utils/excelExport';
 
 const typeLabels = {
   INGRESO: 'Ingreso',
@@ -108,25 +108,18 @@ function useAuditLog() {
       return;
     }
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Auditoría');
-    sheet.columns = [
+    addTableSheet(workbook, 'Auditoría', [
       {header: 'Fecha', key: 'fecha', width: 22},
       {header: 'Usuario', key: 'usuario', width: 30},
       {header: 'Correo', key: 'correo', width: 32},
       {header: 'Evento', key: 'evento', width: 22},
-    ];
-    sheet.getRow(1).font = {bold: true, color: {argb: 'FFFFFFFF'}};
-    sheet.getRow(1).fill = {type: 'pattern', pattern: 'solid', fgColor: {argb: 'FF870002'}};
-    allAudits.forEach((audit) => {
-      sheet.addRow({
-        fecha: new Date(audit.fecha).toLocaleString('es-BO'),
-        usuario: audit.Usuario ? `${audit.Usuario.nombre} ${audit.Usuario.apellido_paterno}` : '',
-        correo: audit.Usuario?.email_corporativo || '',
-        evento: typeLabels[audit.tipo] || audit.tipo,
-      });
-    });
-    const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), `Auditoria_${toDateText(new Date())}.xlsx`);
+    ], allAudits.map((audit) => ({
+      fecha: new Date(audit.fecha).toLocaleString('es-BO'),
+      usuario: audit.Usuario ? `${audit.Usuario.nombre} ${audit.Usuario.apellido_paterno}` : '',
+      correo: audit.Usuario?.email_corporativo || '',
+      evento: typeLabels[audit.tipo] || audit.tipo,
+    })));
+    await saveWorkbook(workbook, `Auditoria_${todayFileSuffix()}.xlsx`);
     setExporting(false);
   };
 

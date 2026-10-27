@@ -57,7 +57,6 @@ function useReviewerReviews() {
     return () => clearInterval(polling);
   }, []);
 
-
   const applyFilters = async () => {
     setApplyingFilters(true);
     await load(filters, false);

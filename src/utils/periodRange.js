@@ -7,7 +7,6 @@ export const periodOptions = [
 
 const pad = (number) => String(number).padStart(2, '0');
 
-// Fecha local en formato YYYY-MM-DD (sin pasar por UTC)
 export const toDateText = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
 export const getPresetRange = (preset) => {

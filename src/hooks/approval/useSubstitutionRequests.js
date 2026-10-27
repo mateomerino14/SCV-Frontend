@@ -47,7 +47,6 @@ function useSubstitutionRequests() {
     return () => clearInterval(interval);
   }, [load]);
 
-
   const handleApprove = async (requestId) => {
     setSavingAction(true);
     const data = await approveSubstitution(requestId);

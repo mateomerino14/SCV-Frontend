@@ -65,7 +65,6 @@ function useSupervisorTripHistory() {
     load(emptyFilters);
   };
 
-  // Devuelve un viaje tomado por error para que otro supervisor pueda revisarlo
   const handleReturn = async (tripId) => {
     const data = await returnTripReview(tripId);
     if (data.error) {

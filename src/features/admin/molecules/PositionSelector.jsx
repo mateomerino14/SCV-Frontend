@@ -1,4 +1,4 @@
-import SearchableSelector from './SearchableSelector';
+import SearchableSelector from '../../../components/ui/SearchableSelector';
 
 function PositionSelector({positions, positionId, onChange, error}) {
   const options = positions
@@ -6,7 +6,7 @@ function PositionSelector({positions, positionId, onChange, error}) {
     .sort((first, second) => first.nombre.localeCompare(second.nombre))
     .map((position) => ({value: position.id_cargo, label: position.nombre}));
   return (
-    <SearchableSelector label="Cargo" options={options} value={positionId} onChange={onChange} error={error}
+    <SearchableSelector label="Cargo" required options={options} value={positionId} onChange={onChange} error={error}
       placeholder="Seleccionar cargo" searchPlaceholder="Buscar cargo..." />
   );
 }

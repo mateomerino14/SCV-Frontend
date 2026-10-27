@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {Globe, MapPin, Calendar, AlertTriangle, CheckCircle2} from 'lucide-react';
+import {Calendar, AlertTriangle, CheckCircle2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateRange} from '../../../utils/dateFormatter';
 import {tripStatusConfig, reviewStatusConfig} from '../hooks/useTripStatusConfig';
@@ -10,7 +10,6 @@ import TripActionButtons from '../molecules/TripActionButtons';
 import {avatarDefault} from '../../../constants/defaultImages';
 import {getStatusBadge} from '../../../constants/tripStatusLabels';
 
-
 const statusPendingByField = {
   id_supervisor_asignado: 'EN_REVISION_VIAJE',
   id_aprobador_asignado: 'APROBADO_VIAJE',
@@ -20,7 +19,7 @@ const statusPendingByField = {
 const styles = {
   container: "flex flex-col p-5 shadow-sm border mb-3 rounded-2xl gap-4",
   info: "flex flex-col min-w-0 gap-2",
-  reason: "text-sm font-bold font-inter leading-tight break-words",
+  reason: "text-sm font-bold font-inter leading-tight break-words line-clamp-3",
   dateRow: "flex items-center gap-1",
   dateText: "text-xs font-nunito",
   badgesRow: "flex gap-1 flex-wrap",

@@ -1,4 +1,4 @@
-import {ArrowLeft, Globe, Download} from 'lucide-react';
+import {ArrowLeft, Globe} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {tripStatusConfig, tripStatusMessages} from '../hooks/useTripStatusConfig';
 import TripInfoCard from '../molecules/TripInfoCard';
@@ -60,20 +60,19 @@ function TripFinalApprovedView({trip, tripId, isInternational, originRoute, navi
             <div key={day.fecha} className={styles.justificationItem}>
               <p className={styles.itemLabel} style={{color: COLORS.secondary}}>{formatDateShort(day.fecha)} — {day.excedeBs ? `${day.montoBs.toFixed(2)} Bs` : `${day.montoUsd.toFixed(2)} USD`} (excede la cuota diaria)</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications[day.fecha]} readOnly
-                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+                style={{backgroundColor: COLORS.onColorSubtle, borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           ))}
           {exceedsHotels && dayJustifications.HOTEL && (
             <div className={styles.justificationItem}>
               <p className={styles.itemLabel} style={{color: COLORS.secondary}}>Hoteles</p>
               <textarea className={styles.textarea} rows={3} value={dayJustifications.HOTEL} readOnly
-                style={{backgroundColor: 'rgba(243,243,243,0.13)', borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
+                style={{backgroundColor: COLORS.onColorSubtle, borderColor: COLORS.dataFields, color: COLORS.text, cursor: 'default'}} />
             </div>
           )}
         </div>
       )}
       <button className={styles.exportBtn} style={{backgroundColor: downloading ? COLORS.fields : COLORS.primary, color: COLORS.background}} onClick={handleDownload} disabled={downloading}>
-        <Download size={16} />
         {downloading ? 'Generando PDF...' : 'Descargar Planilla PDF'}
       </button>
       {downloadError && <p className={styles.downloadError} style={{color: COLORS.secondary}}>{downloadError}</p>}

@@ -1,3 +1,5 @@
+import ExportButton from '../../components/ui/ExportButton';
+import useStatementsExport from '../../hooks/approval/useStatementsExport';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import MascotGreeting from '../../components/mascot/MascotGreeting';
@@ -36,6 +38,7 @@ function TreasurerReviewsPage() {
     trips, totalPending, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
   } = useTreasurerReviews();
+  const {exporting, exportError, exportStatements} = useStatementsExport();
   const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Viajes aprobados que esperan fondos: revisa o ajusta los montos y apruébalos.';
   if (tab === 'APROBADOS') {
@@ -45,7 +48,13 @@ function TreasurerReviewsPage() {
     subtitle = 'Viajes que rechazaste en la asignación de fondos y el empleado aún no corrige.';
   }
 
-  const mascotMessage = loading ? null : pendingMessage(user?.nombre, totalPending, 'viaje esperando fondos', 'viajes esperando fondos');
+  let mascotMessage = null;
+
+  if (!loading) {
+
+    mascotMessage = pendingMessage(user?.nombre, totalPending, 'viaje esperando fondos', 'viajes esperando fondos');
+
+  }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -56,6 +65,9 @@ function TreasurerReviewsPage() {
         <PageHeader title="Asignación de Fondos" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
+        <ExportButton onClick={() => exportStatements({ids: trips.map((trip) => trip.id_viaje).join(',')}, 'RENDICIONES_TESORERIA')}
+          exporting={exporting} disabled={loading || trips.length === 0} label="Exportar planillas a Excel" />
+        {exportError && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{exportError}</p>}
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="viaje" plural="viajes" />}
         {loading && <SkeletonList count={3} />}
@@ -63,7 +75,7 @@ function TreasurerReviewsPage() {
           <EmptyState title="Sin solicitudes en esta categoría" subtitle="No se encontraron viajes con el filtro seleccionado"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M8 16L14 22L24 10" stroke="rgba(255,255,255,0.7)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8 16L14 22L24 10" stroke={COLORS.onColorText70} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             } />
         )}

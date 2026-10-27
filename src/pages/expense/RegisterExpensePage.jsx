@@ -1,5 +1,5 @@
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
-import {ArrowLeft, Plus, AlertTriangle} from 'lucide-react';
+import {ArrowLeft} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -31,17 +31,17 @@ function RegisterExpensePage() {
   const fechaFin = location.state?.fechaFin;
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    items, expandedId, categories, isInternationalExpense, savingAll, error, saveSummary,
+    items, expandedId, categories, isInternationalExpense, tripRange, savingAll, saveSummary,
     hasRequiresAuthorization, allSaved, pendingToSave, currencies,
     finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
-    handleTypeChange, handleDateChange, handleSupplierChange, handleAmountChange,
-    handleDescriptionChange, handleCategoryChange, handleImageChange, handleRemoveImage,
-    handleToggleOtherCurrency, handleAddInstallment, handleRemoveInstallment, handleInstallmentCurrencyChange, handleInstallmentAmountChange, handleInstallmentExchangeRateChange,
+    handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
+    handleDescriptionChange, handleCategoryChange, handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
   } = useRegisterExpense(id);
-  const {isPending, isRejected, canRequest, showModal: showDeadlineModal, setShowModal: setShowDeadlineModal, submitting: submittingDeadline, error: deadlineError, handleRequest} = useDeadlineAuthorization(id, fechaFin);
+  const {isPending, isRejected, canRequest, showModal: showDeadlineModal, setShowModal: setShowDeadlineModal, submitting: submittingDeadline, modalError: deadlineError, handleRequest} = useDeadlineAuthorization(id, fechaFin);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -57,43 +57,40 @@ function RegisterExpensePage() {
           subtitle={isInternationalExpense ? 'Registra los gastos realizados fuera de Bolivia.' : 'Ingresa los datos de los gastos de tu viaje.'}
         />
         {isPending && (
-          <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2" style={{backgroundColor: '#ffd700aa', color: '#7a5900'}}>
+          <p className="text-sm font-bold font-inter text-center py-2 px-3 rounded-xl mt-2" style={{backgroundColor: COLORS.pendingHighlight, color: COLORS.warningStrong}}>
             Tienes una solicitud de autorización de plazo pendiente de revisión.
           </p>
         )}
         {items.map((item, index) => (
           <ExpenseFormCard key={item.id} item={item} index={index} expanded={expandedId === item.id} onSelect={handleSelectItem}
             onRemove={handleRemoveItem} onDuplicate={handleDuplicateItem} canRemove={items.length > 1} categories={categories}
-            isInternationalExpense={isInternationalExpense} currencies={currencies} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
-            onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onAmountChange={handleAmountChange}
+            isInternationalExpense={isInternationalExpense} currencies={currencies} tripRange={tripRange} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
+            onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onReceiptNumberChange={handleReceiptNumberChange} onAmountChange={handleAmountChange}
             onDescriptionChange={handleDescriptionChange} onCategoryChange={handleCategoryChange} onImageChange={handleImageChange} onRemoveImage={handleRemoveImage}
-            onToggleOtherCurrency={handleToggleOtherCurrency} onAddInstallment={handleAddInstallment} onRemoveInstallment={handleRemoveInstallment}
-            onInstallmentCurrencyChange={handleInstallmentCurrencyChange} onInstallmentAmountChange={handleInstallmentAmountChange} onInstallmentExchangeRateChange={handleInstallmentExchangeRateChange}
+            onAddBackup={handleAddBackup} onRemoveBackup={handleRemoveBackup}
+            onCurrencyChange={handleCurrencyChange} onExchangeRateChange={handleExchangeRateChange} onBsRateChange={handleBsRateChange}
             onToggleSubitems={handleToggleSubitems} onAddSubitem={handleAddSubitem} onRemoveSubitem={handleRemoveSubitem}
             onSubitemDescriptionChange={handleSubitemDescriptionChange} onSubitemAmountChange={handleSubitemAmountChange} />
         ))}
         <button className={styles.addItemBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}} onClick={handleAddItem}>
-          <Plus size={16} />
           Agregar otro gasto
         </button>
         {saveSummary && (
-          <div className="rounded-2xl px-4 py-3 mt-3 mb-3 text-center" style={{backgroundColor: saveSummary.failed > 0 ? '#fef3cd' : '#d4edda'}}>
+          <div className="rounded-2xl px-4 py-3 mt-3 mb-3 text-center" style={{backgroundColor: saveSummary.failed > 0 ? COLORS.warningBackground : COLORS.successBackground}}>
             {saveSummary.saved > 0 && (
-              <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? '#856404' : '#155724'}}>
+              <p className="text-sm font-bold font-inter" style={{color: saveSummary.failed > 0 ? COLORS.warningText : COLORS.success}}>
                 {saveSummary.saved} gasto{saveSummary.saved !== 1 ? 's' : ''} guardado{saveSummary.saved !== 1 ? 's' : ''} correctamente
               </p>
             )}
             {saveSummary.failed > 0 && (
-              <p className={`font-inter ${saveSummary.saved > 0 ? 'text-xs mt-1' : 'text-sm font-bold'}`} style={{color: '#856404'}}>
+              <p className={`font-inter ${saveSummary.saved > 0 ? 'text-xs mt-1' : 'text-sm font-bold'}`} style={{color: COLORS.warningText}}>
                 {saveSummary.failed} gasto{saveSummary.failed !== 1 ? 's' : ''} con error — revisa las tarjetas marcadas en rojo
               </p>
             )}
           </div>
         )}
-        {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {hasRequiresAuthorization && canRequest && !isPending && (
           <button className={styles.solicitudBtn} style={{backgroundColor: COLORS.secondary, color: COLORS.background}} onClick={() => setShowDeadlineModal(true)}>
-            <AlertTriangle size={16} />
             Solicitar Autorización al Revisor
           </button>
         )}

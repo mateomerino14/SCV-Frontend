@@ -1,11 +1,9 @@
 import {useState, useRef, useEffect} from 'react';
 
-// Quita tildes y mayusculas para que "tesoreria" encuentre "Tesorería"
 export function normalizeSearchText(text) {
   return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
-// Lista desplegable con buscador. options: [{value, label, searchText?}]
 function useSearchableSelector(options, selectedValue, onChange) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');

@@ -24,8 +24,12 @@ export const Interactive = {
   },
 };
 
+export const Required = {
+  args: {value: '', required: true},
+};
+
 export const WithError = {
-  args: {value: '', error: 'Este campo es requerido'},
+  args: {value: '', required: true, error: 'Este campo es requerido'},
 };
 
 export const WithHelperText = {

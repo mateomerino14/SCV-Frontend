@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import {Send, Mail} from 'lucide-react';
 import ModalBase from './ModalBase';
 import Button from '../../../components/ui/Button';
+import {COLORS} from '../../../constants';
 
 const styles = {
   icon: "rounded-full p-5 border-4 border-white",
@@ -43,14 +44,14 @@ function EmailModal({isOpen, onClose, onSend}) {
 
   return (
     <ModalBase isOpen={isOpen}>
-      <div className={styles.icon} style={{backgroundColor: '#000000'}}>
+      <div className={styles.icon} style={{backgroundColor: COLORS.backgroundSecondary}}>
         <Send size={36} color="white" />
       </div>
       <h2 className={styles.title}>Ingresa tu correo electrónico</h2>
-      <div className={styles.inputWrapper} style={{backgroundColor: '#DEE2F0'}}>
-        <Mail size={18} className="shrink-0" style={{color: '#475569'}} />
+      <div className={styles.inputWrapper} style={{backgroundColor: COLORS.dataFields}}>
+        <Mail size={18} className="shrink-0" style={{color: COLORS.labels}} />
         <input type="email" placeholder="nombre@empresa.com" value={emailValue} disabled={sending}
-          onChange={(event) => setEmailValue(event.target.value)} className={styles.input} style={{color: '#5A413D'}} />
+          onChange={(event) => setEmailValue(event.target.value)} className={styles.input} style={{color: COLORS.brownText}} />
       </div>
       {errorMessage && <p className={styles.errorMsg}>{errorMessage}</p>}
       <div className="w-full flex flex-col gap-3">

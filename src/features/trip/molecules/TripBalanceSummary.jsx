@@ -1,5 +1,6 @@
 import {COLORS} from '../../../constants';
 import TripBalanceRow from '../atoms/TripBalanceRow';
+import {showsUsdFund} from '../../../utils/expenseCurrency';
 
 const styles = {
   card: 'rounded-2xl p-5 shadow-md mb-4 border',
@@ -16,6 +17,11 @@ function TripBalanceSummary({trip, accumulatedExpense, accumulatedExpenseUsd, ex
     nationalLabel = 'Exceso a reembolsar';
     nationalColor = COLORS.secondary;
   }
+  const hasUsdFund = isInternational && showsUsdFund(trip);
+  let spentLabel = 'Gasto nacional';
+  if (isInternational && !hasUsdFund) {
+    spentLabel = 'Gasto total (nacional e internacional)';
+  }
   let usdLabel = 'Saldo a devolver';
   let usdColor = COLORS.primary;
   if (exceedsBudgetUsd) {
@@ -27,9 +33,9 @@ function TripBalanceSummary({trip, accumulatedExpense, accumulatedExpenseUsd, ex
     <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
       <p className={styles.sectionTitle} style={{color: COLORS.text_enviroment_types}}>Balance</p>
       <TripBalanceRow label="Fondo recibido (Bs)" value={`${parseFloat(trip.monto_asignado).toFixed(2)} Bs`} color={COLORS.text} />
-      <TripBalanceRow label="Gasto nacional" value={`${accumulatedExpense.toFixed(2)} Bs`} color={COLORS.text} />
+      <TripBalanceRow label={spentLabel} value={`${accumulatedExpense.toFixed(2)} Bs`} color={COLORS.text} />
       <TripBalanceRow label={nationalLabel} value={`${Math.abs(nationalBalance).toFixed(2)} Bs`} color={nationalColor} />
-      {isInternational && (
+      {hasUsdFund && (
         <>
           <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />
           <TripBalanceRow label="Fondo recibido (USD)" value={`${parseFloat(trip.monto_asignado_usd || 0).toFixed(2)} USD`} color={COLORS.text} />

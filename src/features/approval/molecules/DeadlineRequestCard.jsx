@@ -5,7 +5,6 @@ import {formatDateTime, formatDateRange} from '../../../utils/dateFormatter';
 import TripRoute from '../../trip/atoms/TripRoute';
 import {avatarDefault} from '../../../constants/defaultImages';
 
-
 const styles = {
   card: "rounded-2xl p-4 shadow-sm flex flex-col h-full",
   headerRow: "flex items-start gap-3 mb-3",
@@ -31,20 +30,22 @@ const styles = {
 };
 
 const statusConfig = {
-  PENDIENTE: {label: 'Pendiente', bg: '#ffd700aa', color: '#7a5900'},
-  APROBADA: {label: 'Aprobada', bg: '#d4edda', color: '#155724'},
-  RECHAZADA: {label: 'Rechazada', bg: '#ffa7a8aa', color: '#500203'},
-  // Cerrada por el sistema (sin revisor): el viaje se envio a revision antes de responderla
-  CERRADA: {label: 'Cerrada', bg: '#e5e7eb', color: '#374151'},
+  PENDIENTE: {label: 'Pendiente', bg: COLORS.pendingHighlight, color: COLORS.warningStrong},
+  APROBADA: {label: 'Aprobada', bg: COLORS.successBackground, color: COLORS.success},
+  RECHAZADA: {label: 'Rechazada', bg: COLORS.rejectedHighlight, color: COLORS.title},
+  CERRADA: {label: 'Cerrada', bg: COLORS.neutralBackground, color: COLORS.neutralText},
 };
 
 function DeadlineRequestCard({request, onApprove, onReject, savingAction, showActions}) {
   const [showRejectBox, setShowRejectBox] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const closedAutomatically = request.estado === 'RECHAZADA' && !request.id_revisor;
-  const config = statusConfig[closedAutomatically ? 'CERRADA' : request.estado] || statusConfig.PENDIENTE;
+  let statusKey = request.estado;
+  if (closedAutomatically) {
+    statusKey = 'CERRADA';
+  }
+  const config = statusConfig[statusKey] || statusConfig.PENDIENTE;
   const employee = request.Viaje?.Usuario;
-  // La pidio el reemplazo aprobado, no el titular del viaje
   const requestedBySubstitute = request.Solicitante && request.Viaje?.id_usuario && request.Solicitante.id_usuario !== request.Viaje.id_usuario;
 
   const handleConfirmReject = () => {

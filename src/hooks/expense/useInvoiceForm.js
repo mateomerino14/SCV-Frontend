@@ -1,34 +1,24 @@
-import {useEffect} from 'react';
+import {splitInvoiceTotal} from '../../utils/invoiceAmounts';
+import {removeControlCharacters} from '../../utils/textCleaner';
 
 const maxSupplier = 50;
 const maxInvoiceNumber = 50;
 const maxTaxId = 10;
+const maxCuf = 100;
 const maxAmount = 99999.99;
-const vatPercentage = 0.13;
 
-function useInvoiceForm(data, onChange, saved = false) {
-  const amount = parseFloat(data.monto || 0);
-  const vat = parseFloat(data.iva || 0);
-  const totalAmount = amount + vat;
+function useInvoiceForm(data, onChange) {
+  const totalAmount = parseFloat(data.monto_total || 0);
   let vatPercentageDisplay = 0;
   if (data.tipo_doc === 'F') {
     vatPercentageDisplay = 13;
   }
-  useEffect(() => {
-    if (saved) {
-      return;
-    }
-    const isInvoice = data.tipo_doc === 'F';
-    let calculatedVat = 0;
-    if (isInvoice) {
-      calculatedVat = parseFloat((amount * vatPercentage).toFixed(2));
-    }
-    const currentVat = parseFloat(data.iva || 0);
-    if (Math.abs(calculatedVat - currentVat) > 0.001) {
-      onChange('iva', calculatedVat.toFixed(2), true);
-      onChange('monto_total', (amount + calculatedVat).toFixed(2), true);
-    }
-  }, [amount, data.tipo_doc, saved]);
+
+  const applyTotal = (total, docType) => {
+    const {subtotal, vat} = splitInvoiceTotal(total, docType);
+    onChange('monto', subtotal.toFixed(2), true);
+    onChange('iva', vat.toFixed(2), true);
+  };
 
   const validateDecimal = (value) => {
     const validDecimal = value.replace(',', '.').replace(/[^0-9.]/g, '');
@@ -43,7 +33,7 @@ function useInvoiceForm(data, onChange, saved = false) {
   };
 
   const handleFieldChange = (field, value) => {
-    if (field === 'monto') {
+    if (field === 'monto_total') {
       const validatedValue = validateDecimal(value);
       if (validatedValue === null) {
         return;
@@ -52,14 +42,7 @@ function useInvoiceForm(data, onChange, saved = false) {
         return;
       }
       onChange(field, validatedValue);
-      const newAmount = parseFloat(validatedValue || 0);
-      const isInvoice = data.tipo_doc === 'F';
-      let newVat = 0;
-      if (isInvoice) {
-        newVat = parseFloat((newAmount * vatPercentage).toFixed(2));
-      }
-      onChange('iva', newVat.toFixed(2), true);
-      onChange('monto_total', (newAmount + newVat).toFixed(2), true);
+      applyTotal(validatedValue, data.tipo_doc);
       return;
     }
 
@@ -69,9 +52,14 @@ function useInvoiceForm(data, onChange, saved = false) {
       return;
     }
 
+    if (field === 'cuf') {
+      onChange(field, value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, maxCuf));
+      return;
+    }
+
     if (field === 'numero_factura') {
-      const onlyAlphanumeric = value.replace(/[^a-zA-Z0-9\-\/]/g, '').slice(0, maxInvoiceNumber);
-      onChange(field, onlyAlphanumeric);
+      const invoiceCode = removeControlCharacters(value).slice(0, maxInvoiceNumber);
+      onChange(field, invoiceCode);
       return;
     }
 
@@ -86,14 +74,11 @@ function useInvoiceForm(data, onChange, saved = false) {
   };
 
   const handleDocTypeChange = (docType) => {
-    onChange('tipo_doc', docType);
-    const isInvoice = docType === 'F';
-    let newVat = 0;
-    if (isInvoice) {
-      newVat = parseFloat((amount * vatPercentage).toFixed(2));
+    if (docType === data.tipo_doc) {
+      return;
     }
-    onChange('iva', newVat.toFixed(2), true);
-    onChange('monto_total', (amount + newVat).toFixed(2), true);
+    onChange('tipo_doc', docType);
+    applyTotal(totalAmount, docType);
   };
 
   return {
