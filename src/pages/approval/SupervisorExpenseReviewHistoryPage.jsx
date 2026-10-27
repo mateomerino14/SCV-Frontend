@@ -29,13 +29,18 @@ const styles = {
 function SupervisorExpenseReviewHistoryPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {role} = useUserRole();
-  const canReturnReviews = role === ROLES.supervisor;
+  const isSupervisor = role === ROLES.supervisor;
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorExpenseReviewHistory();
   const pagination = useClientPagination(trips, 12, statusFilter);
+  let title = 'Rendiciones Asignadas a Mí';
   let subtitle = 'Rendiciones asignadas a ti: revisa los gastos, deja observaciones y apruébalas o recházalas.';
+  if (!isSupervisor) {
+    title = 'Rendiciones de Mi Equipo';
+    subtitle = 'Rendiciones de quienes te tienen como jefe directo. Al aprobarlas pasan directo a la revisión final, aunque tengan alcohol.';
+  }
   if (statusFilter === 'APROBADO_SUPERVISOR') {
     subtitle = 'Historial de las rendiciones que aprobaste tú, con el estado en que están ahora.';
   }
@@ -54,10 +59,10 @@ function SupervisorExpenseReviewHistoryPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Rendiciones Asignadas a Mí" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text={title} onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Rendiciones Asignadas a Mí" subtitle={subtitle} />
+        <PageHeader title={title} subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={historyTabsDefault} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
@@ -75,7 +80,7 @@ function SupervisorExpenseReviewHistoryPage() {
           <div className={styles.grid}>
             {pagination.visibleItems.map((trip) => (
               <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={supervisorTripReviewPath(trip.id_viaje)} originRoute={routes.supervisorExpenseReviewHistory}
-                onReturn={canReturnReviews && trip.estado === 'EN_REVISION' ? handleReturn : null} />
+                onReturn={isSupervisor && trip.estado === 'EN_REVISION' ? handleReturn : null} />
             ))}
           </div>
         )}

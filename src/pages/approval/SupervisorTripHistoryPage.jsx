@@ -34,13 +34,18 @@ const tabs = [
 function SupervisorTripHistoryPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {role} = useUserRole();
-  const canReturnReviews = role === ROLES.supervisor;
+  const isSupervisor = role === ROLES.supervisor;
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
   } = useSupervisorTripHistory();
   const pagination = useClientPagination(trips, 12, statusFilter);
+  let title = 'Viajes Asignados a Mí';
   let subtitle = 'Viajes asignados a ti: revísalos y apruébalos, o recházalos con observaciones.';
+  if (!isSupervisor) {
+    title = 'Viajes de Mi Equipo';
+    subtitle = 'Viajes de quienes te tienen como jefe directo. Tu aprobación vale también como la del aprobador y el viaje pasa a tesorería.';
+  }
   if (statusFilter === 'APROBADO_VIAJE') {
     subtitle = 'Historial de los viajes que aprobaste tú, con el estado en que están ahora.';
   }
@@ -59,10 +64,10 @@ function SupervisorTripHistoryPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Viajes Asignados a Mí" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text={title} onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Viajes Asignados a Mí" subtitle={subtitle} />
+        <PageHeader title={title} subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={statusFilter} setStatusFilter={setStatusFilter}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={tabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
@@ -80,7 +85,7 @@ function SupervisorTripHistoryPage() {
           <div className={styles.grid}>
             {pagination.visibleItems.map((trip) => (
               <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={supervisorPendingTripPath(trip.id_viaje)} originRoute={routes.supervisorTripHistory}
-                detailLabel="Ver Detalle" onReturn={canReturnReviews && trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false ? handleReturn : null} />
+                detailLabel="Ver Detalle" onReturn={isSupervisor && trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false ? handleReturn : null} />
             ))}
           </div>
         )}

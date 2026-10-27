@@ -6,17 +6,16 @@ import {treasurySection, personalSection, accountSection} from './menuSections';
 const sections = [
   {
     label: 'Aprobación de Viajes',
-    options: [{path: routes.approverReviews, label: 'Viajes por Aprobar', icon: ClipboardCheck}],
+    options: [
+      {path: routes.approverReviews, label: 'Viajes por Aprobar', icon: ClipboardCheck},
+      {path: routes.supervisorTripHistory, label: 'Viajes de Mi Equipo', icon: FileCheck},
+    ],
   },
   {
     label: 'Revisión de Rendiciones',
-    options: [{path: routes.approverAlcoholReviews, label: 'Rendiciones con Alcohol', icon: Wine}],
-  },
-  {
-    label: 'Mi Equipo',
     options: [
-      {path: routes.supervisorTripHistory, label: 'Viajes de Mi Equipo', icon: FileCheck},
       {path: routes.supervisorExpenseReviewHistory, label: 'Rendiciones de Mi Equipo', icon: BookOpen},
+      {path: routes.approverAlcoholReviews, label: 'Rendiciones con Alcohol', icon: Wine},
     ],
   },
   treasurySection,
