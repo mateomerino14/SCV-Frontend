@@ -7,6 +7,7 @@ import TripRoute from '../../trip/atoms/TripRoute';
 import TransportIcon from '../atoms/TransportIcon';
 import TripActionButtons from '../molecules/TripActionButtons';
 import {avatarDefault} from '../../../constants/defaultImages';
+import {showsUsdFund} from '../../../utils/expenseCurrency';
 
 const styles = {
   card: 'rounded-2xl shadow-sm overflow-hidden flex flex-col',
@@ -101,7 +102,7 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
             </div>
           </div>
         </div>
-        {isInternational && (
+        {showsUsdFund(trip) && (
           <div className={styles.infoRow}>
             <div className={styles.infoItem}>
               <p className={styles.infoLabel} style={{color: COLORS.primary}}><Globe size={11} style={{color: COLORS.primary}} />Monto Internacional</p>

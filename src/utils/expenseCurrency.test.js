@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {convertForeignAmount, validateForeignCurrency, buildForeignCurrencyPayload, isAmountInput, isExchangeRateInput, hasOriginCurrencyLines, conversionLabelOf} from './expenseCurrency';
+import {convertForeignAmount, validateForeignCurrency, buildForeignCurrencyPayload, isAmountInput, isExchangeRateInput, hasOriginCurrencyLines, conversionLabelOf, hasUsdFund, showsUsdFund, spentAgainstFunds, summarizeStatement} from './expenseCurrency';
 
 describe('Moneda de un gasto internacional', () => {
   it('pasa el monto en soles a USD y a Bs con los tipos de cambio del empleado', () => {
@@ -31,5 +31,26 @@ describe('Moneda de un gasto internacional', () => {
     expect(hasOriginCurrencyLines({es_gasto_internacional: true, moneda: 'PEN', tipo_cambio_bs: null})).toBe(false);
     expect(conversionLabelOf([{monto_origen: '170', moneda: 'PEN'}])).toBe('170.00 PEN');
     expect(conversionLabelOf([{}, {}])).toBe('2 tramos de cambio');
+  });
+});
+
+describe('fondo de un viaje internacional', () => {
+  const expenses = [
+    {monto_total: '100', es_gasto_internacional: false},
+    {monto_total: '50', tipo_cambio_bs: '10', es_gasto_internacional: true},
+  ];
+
+  it('descuenta los gastos internacionales del fondo en Bs si no hay fondo en USD', () => {
+    const trip = {tipo: 'Internacional', monto_asignado: 1000, monto_asignado_usd: 0};
+    expect(hasUsdFund(trip)).toBe(false);
+    expect(showsUsdFund(trip)).toBe(false);
+    expect(spentAgainstFunds(trip, expenses)).toEqual({spentBs: 600, spentUsd: 0, internationalUsd: 50});
+    expect(summarizeStatement(trip, expenses).balanceRows[2]).toEqual(['Saldo en mi poder', 400, 0]);
+  });
+
+  it('sigue usando el fondo en USD cuando el viaje lo tiene', () => {
+    const trip = {tipo: 'Internacional', monto_asignado: 1000, monto_asignado_usd: 80};
+    expect(showsUsdFund(trip)).toBe(true);
+    expect(spentAgainstFunds(trip, expenses)).toEqual({spentBs: 100, spentUsd: 50, internationalUsd: 50});
   });
 });

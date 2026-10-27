@@ -32,3 +32,23 @@ test('el control diario de un viaje internacional muestra Bs y USD por separado'
   await page.getByText('Control Diario').click();
   await expect(page.getByText(/Excede en 10\.00 USD/).first()).toBeVisible();
 });
+
+test('con el fondo solo en Bs el gasto en el exterior se descuenta en Bs con el tipo de cambio de la casa de cambio', async ({page}) => {
+  const {tripId, employee} = await createFundedTrip({tipo: 'Internacional', monto_asignado: 2000, monto_asignado_usd: 0});
+  await employee.postForm('/expense/register', {
+    id_viaje: tripId,
+    monto_total: 50,
+    fecha_gasto: boliviaDate(),
+    tipo: 'S',
+    descripcion: 'Taxi en Lima',
+    id_categoria: 1,
+    es_gasto_internacional: true,
+    tipo_cambio_bs: 10,
+  });
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto(`/dashboard/empleado/viaje/${tripId}`);
+  await expect(page.getByText('Gasto total (nacional e internacional)')).toBeVisible();
+  await expect(page.getByText('500.00 Bs').first()).toBeVisible();
+  await expect(page.getByText('1500.00 Bs').first()).toBeVisible();
+  await expect(page.getByText('Fondo recibido (USD)')).toHaveCount(0);
+});

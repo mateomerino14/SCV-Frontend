@@ -12,6 +12,7 @@ import {describeDayExcess} from '../constants/dailyLimitStatus';
 import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import TripObservationsList from '../molecules/TripObservationsList';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
+import {showsUsdFund} from '../../../utils/expenseCurrency';
 
 const styles = {
   backBtn: 'flex items-center gap-1 cursor-pointer mb-4 w-fit',
@@ -121,7 +122,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
       <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
         <BudgetBar accumulatedExpense={accumulatedExpense} assignedAmount={trip.monto_asignado} isUsd={false} />
       </div>
-      {isInternational && (
+      {showsUsdFund(trip) && (
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
           <BudgetBar accumulatedExpense={accumulatedExpenseUsd} assignedAmount={trip.monto_asignado_usd} isUsd />
         </div>

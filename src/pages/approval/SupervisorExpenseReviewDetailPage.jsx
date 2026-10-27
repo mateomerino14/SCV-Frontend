@@ -31,6 +31,7 @@ import {supervisorExpenseDetailPath, supervisorTripReviewPath} from '../../const
 import {getStatusColors} from '../../constants/tripStatusColors';
 import ReturnReviewButton from '../../features/approval/molecules/ReturnReviewButton';
 import {getExpenseInvoiceVat} from '../../utils/invoiceAmounts';
+import {showsUsdFund} from '../../utils/expenseCurrency';
 
 const styles = {
   page: 'min-h-screen flex flex-col',
@@ -108,6 +109,7 @@ function SupervisorExpenseReviewDetailPage() {
   const trip = data.viaje;
   const expenses = data.gastos || [];
   const isInternational = trip.tipo === 'Internacional';
+  const hasUsdFund = showsUsdFund(trip);
   const nationalExpenses = expenses.filter((expense) => !expense.es_gasto_internacional);
   const internationalExpenses = expenses.filter((expense) => !!expense.es_gasto_internacional);
   const invoicedExpenses = nationalExpenses.filter((expense) => !!expense.Factura);
@@ -145,7 +147,7 @@ function SupervisorExpenseReviewDetailPage() {
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseBudgetBar accumulated={data.gastoAcumulado} assignedAmount={parseFloat(trip.monto_asignado)} isUsd={false} />
         </div>
-        {isInternational && (
+        {hasUsdFund && (
           <div className={styles.card} style={{backgroundColor: COLORS.background}}>
             <ExpenseBudgetBar accumulated={data.gastoAcumuladoUsd} assignedAmount={parseFloat(trip.monto_asignado_usd || 0)} isUsd />
           </div>
@@ -156,7 +158,7 @@ function SupervisorExpenseReviewDetailPage() {
 
         <ExpenseSettlementCard
           amount={data.excedeTotal ? data.gastoAcumulado - parseFloat(trip.monto_asignado) : parseFloat(trip.monto_asignado) - data.gastoAcumulado}
-          exceeds={data.excedeTotal} isInternational={isInternational}
+          exceeds={data.excedeTotal} isInternational={hasUsdFund}
           amountUsd={data.excedeTotalUsd ? data.gastoAcumuladoUsd - parseFloat(trip.monto_asignado_usd || 0) : parseFloat(trip.monto_asignado_usd || 0) - data.gastoAcumuladoUsd}
           exceedsUsd={data.excedeTotalUsd} exceededDays={data.diasExcedidos} exceedsHotels={data.excedeHoteles} dayJustifications={dayJustifications} />
         <ExpenseAlertsRow alerts={data.alertas} />
@@ -168,7 +170,7 @@ function SupervisorExpenseReviewDetailPage() {
           <ExpenseInternationalTable expenses={internationalExpenses} onViewExpense={goToExpenseDetail}
             countObservations={countExpenseObservations} onOpenObservations={openExpenseObservations} />
         )}
-        <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={isInternational} netBalanceUsd={data.gastoAcumuladoUsd} />
+        <ExpenseSummaryCard totalVat={totalVat} netBalance={data.gastoAcumulado} isInternational={hasUsdFund} netBalanceUsd={data.gastoAcumuladoUsd} />
         {expenses.length > 0 && (
           <button className={styles.exportBtn} style={{backgroundColor: COLORS.primary, color: COLORS.background}} onClick={() => exportToExcel(trip, expenses, dayJustificationsList)}>
             Exportar Planilla Excel

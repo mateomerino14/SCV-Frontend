@@ -118,33 +118,41 @@ export const originalAmountLinesOf = (expense) => {
   return lines;
 };
 
-export const summarizeStatement = (trip, expenses) => {
-  const fundBs = parseFloat(trip.monto_asignado) || 0;
-  const fundUsd = parseFloat(trip.monto_asignado_usd) || 0;
+export const hasUsdFund = (trip) => (parseFloat(trip?.monto_asignado_usd) || 0) > 0;
+
+export const showsUsdFund = (trip) => trip?.tipo === 'Internacional' && hasUsdFund(trip);
+
+export const spentAgainstFunds = (trip, expenses) => {
+  const usdFund = hasUsdFund(trip);
   let spentBs = 0;
   let spentUsd = 0;
   let internationalUsd = 0;
-  expenses.forEach((expense) => {
-    const amountBs = amountInBsOf(expense);
+  (expenses || []).forEach((expense) => {
+    const amount = parseFloat(expense.monto_total) || 0;
     if (!expense.es_gasto_internacional) {
-      spentBs += amountBs;
+      spentBs += amount;
       return;
     }
-    const amountUsd = parseFloat(expense.monto_total) || 0;
-    internationalUsd += amountUsd;
-    if (fundUsd > 0 || amountBs === null) {
-      spentUsd += amountUsd;
+    internationalUsd += amount;
+    const amountBs = amountInBsOf(expense);
+    if (usdFund || amountBs === null) {
+      spentUsd += amount;
     }
     else {
       spentBs += amountBs;
     }
   });
-  spentBs = roundCents(spentBs);
-  spentUsd = roundCents(spentUsd);
+  return {spentBs: roundCents(spentBs), spentUsd: roundCents(spentUsd), internationalUsd: roundCents(internationalUsd)};
+};
+
+export const summarizeStatement = (trip, expenses) => {
+  const fundBs = parseFloat(trip.monto_asignado) || 0;
+  const fundUsd = parseFloat(trip.monto_asignado_usd) || 0;
+  const {spentBs, spentUsd, internationalUsd} = spentAgainstFunds(trip, expenses);
   const remainingBs = roundCents(fundBs - spentBs);
   const remainingUsd = roundCents(fundUsd - spentUsd);
   return {
-    internationalUsd: roundCents(internationalUsd),
+    internationalUsd,
     balanceRows: [
       ['Fondo Recibido', fundBs, fundUsd],
       ['Total Gastado', spentBs, spentUsd],

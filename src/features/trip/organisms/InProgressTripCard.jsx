@@ -43,12 +43,15 @@ function InProgressTripCard({trip}) {
 
 function InProgressTripContent({trip, navigate}) {
   const {
-    isInternational, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,
+    isInternational, hasUsdFund, nationalExpense, assignedAmount, nationalPercentage, exceedsNational,
     internationalExpense, assignedAmountUsd, internationalPercentage, exceedsInternational,
   } = useBudgetProgress(trip);
   let nationalLabel = 'Gasto Acumulado';
-  if (isInternational) {
+  if (hasUsdFund) {
     nationalLabel = 'Nacional (Bs)';
+  }
+  else if (isInternational) {
+    nationalLabel = 'Fondo en Bs';
   }
 
   return (
@@ -83,7 +86,7 @@ function InProgressTripContent({trip, navigate}) {
         </div>
         <BudgetProgressBlock label={nationalLabel} expense={nationalExpense} assignedAmount={assignedAmount}
           percentage={nationalPercentage} exceeds={exceedsNational} currency="Bs" />
-        {isInternational && (
+        {hasUsdFund && (
           <>
             <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />
             <BudgetProgressBlock label="Internacional (USD)" expense={internationalExpense} assignedAmount={assignedAmountUsd}
