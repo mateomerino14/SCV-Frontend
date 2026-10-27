@@ -11,11 +11,6 @@ const drawerVariants = {
   visible: {x: 0},
 };
 
-const listVariants = {
-  hidden: {},
-  visible: {transition: {staggerChildren: 0.04, delayChildren: 0.1}},
-};
-
 function MenuShell({isOpen, onClose, backgroundColor, children}) {
   return (
     <AnimatePresence>
@@ -35,5 +30,4 @@ function MenuShell({isOpen, onClose, backgroundColor, children}) {
   );
 }
 
-export {listVariants};
 export default MenuShell;

@@ -31,6 +31,7 @@ export const COLORS = {
   successBackground: '#d4edda',
   comments: '#f5d6d622',
   primarySoft: '#F7ECEC',
+  menuGroup: '#F7F5F4',
   systemReceipt: '#ECE6F7',
   systemReceiptText: '#5B3FA0',
   // Estados, avisos y acentos
