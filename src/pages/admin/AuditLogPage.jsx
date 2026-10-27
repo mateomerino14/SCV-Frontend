@@ -86,8 +86,8 @@ function AuditLogPage() {
           {preset === 'rango' && (
             <div className={styles.fieldGroup}>
               <DateRangeFilter startDate={filters.fecha_inicio} endDate={filters.fecha_fin}
-                onStartDateChange={(event) => setFilters((prev) => ({...prev, fecha_inicio: event.target.value}))}
-                onEndDateChange={(event) => setFilters((prev) => ({...prev, fecha_fin: event.target.value}))} />
+                onStartDateChange={(value) => setFilters((prev) => ({...prev, fecha_inicio: value}))}
+                onEndDateChange={(value) => setFilters((prev) => ({...prev, fecha_fin: value}))} />
             </div>
           )}
           <div className={styles.fieldGroup}>

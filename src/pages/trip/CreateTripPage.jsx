@@ -16,6 +16,7 @@ import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import AutoResizeTextarea from '../../components/ui/AutoResizeTextarea';
+import DatePickerInput from '../../components/ui/DatePickerInput';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -101,10 +102,10 @@ function CreateTripPage() {
             </InputField>
             <div className={styles.dateRow}>
               <InputField label="Fecha Inicio" required error={fieldErrors.startDate}>
-                <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={startDate} onChange={(event) => handleStartDateChange(event.target.value)} />
+                <DatePickerInput value={startDate} min={today} rangeStart={startDate} rangeEnd={endDate} onChange={handleStartDateChange} />
               </InputField>
               <InputField label="Fecha Fin" required error={fieldErrors.endDate}>
-                <input type="date" min={today} className={styles.input} style={{color: COLORS.text}} value={endDate} onChange={(event) => handleEndDateChange(event.target.value)} />
+                <DatePickerInput value={endDate} min={today} rangeStart={startDate} rangeEnd={endDate} onChange={handleEndDateChange} />
               </InputField>
             </div>
             <div className={styles.radioRow}>

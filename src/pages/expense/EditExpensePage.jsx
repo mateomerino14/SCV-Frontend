@@ -30,7 +30,7 @@ function EditExpensePage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
     type, setType, date, supplier, receiptNumber, amount, description, categoryId, categories, imagePreview, backups, loading, loadingData,
-    error, fieldErrors, saved, tripId, isInternationalExpense, currency, exchangeRate, bsRate,
+    error, fieldErrors, saved, tripId, isInternationalExpense, currency, exchangeRate, bsRate, tripDateRange,
     finalAmount, usesSubitems, subitems, validSubitems, subitemErrors,
     currencies, withholdings, hasWithholdings,
     handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup, handleAmountChange,
@@ -63,7 +63,7 @@ function EditExpensePage() {
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseEditForm type={type} date={date} supplier={supplier} receiptNumber={receiptNumber} amount={amount} description={description} categoryId={categoryId}
             categories={categories} imagePreview={imagePreview} backups={backups} fieldErrors={fieldErrors} saved={saved} isInternationalExpense={isInternationalExpense}
-            currency={currency} exchangeRate={exchangeRate} bsRate={bsRate} usesSubitems={usesSubitems} subitems={subitems} validSubitems={validSubitems} subitemErrors={subitemErrors}
+            currency={currency} exchangeRate={exchangeRate} bsRate={bsRate} tripDateRange={tripDateRange} usesSubitems={usesSubitems} subitems={subitems} validSubitems={validSubitems} subitemErrors={subitemErrors}
             currencies={currencies} withholdings={withholdings} hasWithholdings={hasWithholdings} finalAmount={finalAmount}
             handleTypeChange={setType} handleDateChange={handleDateChange} handleSupplierChange={handleSupplierChange} handleReceiptNumberChange={handleReceiptNumberChange} handleAmountChange={handleAmountChange}
             handleDescriptionChange={handleDescriptionChange} handleCategoryChange={handleCategoryChange}

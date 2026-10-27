@@ -1,5 +1,5 @@
 import {test, expect} from '@playwright/test';
-import {loginInBrowser, boliviaDate, createFundedTrip} from './support/helpers';
+import {loginInBrowser, boliviaDate, createFundedTrip, pickDate} from './support/helpers';
 
 test('el sistema calcula el monto del viaje con la tarifa del cargo @celular', async ({page}) => {
   await loginInBrowser(page, 'juan.empleado');
@@ -7,9 +7,8 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo @celular', a
   await page.getByPlaceholder('Inspección técnica y de producción...').fill('Prueba de monto');
   await page.getByPlaceholder(/Ciudad de origen|Obteniendo ubicación/).fill('La Paz');
   await page.getByPlaceholder('¿A dónde se dirige?').fill('Santa Cruz');
-  const dates = page.locator('input[type=date]');
-  await dates.nth(0).fill(boliviaDate(5));
-  await dates.nth(1).fill(boliviaDate(7));
+  await pickDate(page, 0, boliviaDate(5));
+  await pickDate(page, 1, boliviaDate(7));
   await expect(page.getByText('Monto Total Estimado').first()).toBeVisible();
   await expect(page.getByText(/900\.00/).first()).toBeVisible();
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();

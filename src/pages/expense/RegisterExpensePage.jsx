@@ -1,5 +1,5 @@
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
-import {ArrowLeft, Plus, AlertTriangle} from 'lucide-react';
+import {ArrowLeft} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -31,7 +31,7 @@ function RegisterExpensePage() {
   const fechaFin = location.state?.fechaFin;
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
   const {
-    items, expandedId, categories, isInternationalExpense, savingAll, saveSummary,
+    items, expandedId, categories, isInternationalExpense, tripRange, savingAll, saveSummary,
     hasRequiresAuthorization, allSaved, pendingToSave, currencies,
     finalAmountOf, withholdingsOf, hasWithholdingsOf,
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
@@ -64,7 +64,7 @@ function RegisterExpensePage() {
         {items.map((item, index) => (
           <ExpenseFormCard key={item.id} item={item} index={index} expanded={expandedId === item.id} onSelect={handleSelectItem}
             onRemove={handleRemoveItem} onDuplicate={handleDuplicateItem} canRemove={items.length > 1} categories={categories}
-            isInternationalExpense={isInternationalExpense} currencies={currencies} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
+            isInternationalExpense={isInternationalExpense} currencies={currencies} tripRange={tripRange} finalAmount={finalAmountOf(item)} withholdings={withholdingsOf(item)} hasWithholdings={hasWithholdingsOf(item)}
             onTypeChange={handleTypeChange} onDateChange={handleDateChange} onSupplierChange={handleSupplierChange} onReceiptNumberChange={handleReceiptNumberChange} onAmountChange={handleAmountChange}
             onDescriptionChange={handleDescriptionChange} onCategoryChange={handleCategoryChange} onImageChange={handleImageChange} onRemoveImage={handleRemoveImage}
             onAddBackup={handleAddBackup} onRemoveBackup={handleRemoveBackup}
@@ -73,7 +73,6 @@ function RegisterExpensePage() {
             onSubitemDescriptionChange={handleSubitemDescriptionChange} onSubitemAmountChange={handleSubitemAmountChange} />
         ))}
         <button className={styles.addItemBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}} onClick={handleAddItem}>
-          <Plus size={16} />
           Agregar otro gasto
         </button>
         {saveSummary && (
@@ -92,7 +91,6 @@ function RegisterExpensePage() {
         )}
         {hasRequiresAuthorization && canRequest && !isPending && (
           <button className={styles.solicitudBtn} style={{backgroundColor: COLORS.secondary, color: COLORS.background}} onClick={() => setShowDeadlineModal(true)}>
-            <AlertTriangle size={16} />
             Solicitar Autorización al Revisor
           </button>
         )}

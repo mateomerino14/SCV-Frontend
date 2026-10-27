@@ -359,7 +359,7 @@ function useEditExpense(expenseId) {
     date, supplier, receiptNumber, amount, description,
     categoryId, categories,
     imagePreview, backups, loading, loadingData,
-    error, fieldErrors, saved, tripId,
+    error, fieldErrors, saved, tripId, tripDateRange,
     isInternationalExpense,
     currency, exchangeRate, bsRate, finalAmount,
     usesSubitems, subitems, validSubitems, subitemErrors,

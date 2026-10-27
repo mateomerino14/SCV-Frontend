@@ -1,11 +1,11 @@
 import {test, expect} from '@playwright/test';
-import {loginInBrowser, boliviaDate, createFundedTrip} from './support/helpers';
+import {loginInBrowser, boliviaDate, createFundedTrip, pickDate} from './support/helpers';
 
 test('el empleado escribe el gasto en soles y ve su equivalente en USD y Bs', async ({page}) => {
   const {tripId} = await createFundedTrip({tipo: 'Internacional'});
   await loginInBrowser(page, 'juan.empleado');
   await page.goto(`/dashboard/empleado/viaje/${tripId}/registrar-gasto?internacional=true`);
-  await page.locator('input[type=date]').first().fill(boliviaDate());
+  await pickDate(page, 0, boliviaDate());
   await page.getByText('USD — Dólar estadounidense').first().click();
   await page.getByText('PEN — Sol peruano').first().click();
   await page.locator('input[placeholder="0.00"]').first().fill('375');

@@ -64,3 +64,23 @@ export const createFundedTrip = async (tripOverrides = {}) => {
   await treasurer.post(`/treasurer/${trip.id_viaje}/approve`);
   return {tripId: trip.id_viaje, employee, position: me.Cargo};
 };
+
+export const pickDate = async (page, index, isoDate) => {
+  await page.locator('[data-date-field]').nth(index).click();
+  const dialog = page.getByRole('dialog', {name: 'Elegir fecha'});
+  const target = isoDate.slice(0, 7);
+  for (let step = 0; step < 24; step++) {
+    const shown = await dialog.getAttribute('data-month');
+    if (shown === target) {
+      break;
+    }
+    if (shown < target) {
+      await dialog.getByRole('button', {name: 'Mes siguiente'}).click();
+    }
+    else {
+      await dialog.getByRole('button', {name: 'Mes anterior'}).click();
+    }
+  }
+  await dialog.locator(`[data-date="${isoDate}"]`).click();
+  await dialog.getByRole('button', {name: 'Aceptar'}).click();
+};

@@ -54,6 +54,7 @@ function useRegisterExpense(tripId) {
   const [expandedId, setExpandedId] = useState(items[0].id);
   const [categories, setCategories] = useState([]);
   const [isInternational, setIsInternational] = useState(false);
+  const [tripRange, setTripRange] = useState({start: null, end: null});
   const [savingAll, setSavingAll] = useState(false);
   const [saveSummary, setSaveSummary] = useState(null);
   const amountLimit = amountLimitOf(isInternationalExpense);
@@ -71,7 +72,11 @@ function useRegisterExpense(tripId) {
   useEffect(() => {
     const loadTrip = async () => {
       const data = await getTripDetail(tripId);
-      if (!data.error && data.viaje?.tipo === 'Internacional') {
+      if (data.error) {
+        return;
+      }
+      setTripRange({start: data.viaje?.fecha_inicio?.slice(0, 10) || null, end: data.viaje?.fecha_fin?.slice(0, 10) || null});
+      if (data.viaje?.tipo === 'Internacional') {
         setIsInternational(true);
       }
     };
@@ -473,6 +478,7 @@ function useRegisterExpense(tripId) {
     categories,
     isInternational,
     isInternationalExpense,
+    tripRange,
     savingAll,
     saveSummary,
     hasRequiresAuthorization,

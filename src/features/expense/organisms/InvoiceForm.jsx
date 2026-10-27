@@ -2,6 +2,7 @@ import {COLORS} from '../../../constants';
 import ExpenseField from '../atoms/ExpenseField';
 import CategorySelector from '../molecules/CategorySelector';
 import useInvoiceForm from '../../../hooks/expense/useInvoiceForm';
+import DatePickerInput from '../../../components/ui/DatePickerInput';
 
 const styles = {
   wrapper: "flex flex-col gap-4 mt-4 p-5 shadow-md rounded-lg",
@@ -53,9 +54,12 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
         }
         return (
           <ExpenseField key={key} label={fieldLabel} required={required} error={fieldErrors[key]}>
-            <input value={data[key] || ''} type={type} inputMode={key === 'monto_total' ? 'decimal' : 'text'} disabled={saved || isLockedDate}
+            {type === 'date' && (
+              <DatePickerInput value={data[key] || ''} disabled={saved || isLockedDate} onChange={(value) => handleFieldChange(key, value)} />
+            )}
+            {type !== 'date' && <input value={data[key] || ''} type={type} inputMode={key === 'monto_total' ? 'decimal' : 'text'} disabled={saved || isLockedDate}
               className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, opacity: (saved || isLockedDate) ? 0.6 : 1}}
-              onChange={(event) => handleFieldChange(key, event.target.value)} />
+              onChange={(event) => handleFieldChange(key, event.target.value)} />}
           </ExpenseField>
         );
       })}

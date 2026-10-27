@@ -63,13 +63,6 @@ function EmployeeDashboardPage() {
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-      <style>{`
-        .scroll-trips::-webkit-scrollbar { height: 6px; }
-        .scroll-trips::-webkit-scrollbar-track { background: transparent; }
-        .scroll-trips::-webkit-scrollbar-thumb { background: ${COLORS.dataFields}; border-radius: 999px; }
-        .scroll-trips::-webkit-scrollbar-thumb:hover { background: ${COLORS.labels}; }
-        .scroll-trips { scrollbar-width: thin; scrollbar-color: ${COLORS.dataFields} transparent; }
-      `}</style>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
       <Navbar text="Mis Viajes" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
@@ -86,7 +79,7 @@ function EmployeeDashboardPage() {
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes sin Enviar</p>
         {draftTrips.length > 0 ? (
           <div className="relative mb-2">
-            <div className={`${styles.scrollRow} scroll-trips`}>
+            <div className={styles.scrollRow}>
               {draftTrips.map((trip) => (
                 <div key={trip.id_viaje} className="snap-start shrink-0 w-full md:w-[450px] flex flex-col">
                   <DraftTripCard trip={trip} onSubmit={handleRequestSubmitReview} submitting={submittingReview === trip.id_viaje} />
@@ -106,7 +99,7 @@ function EmployeeDashboardPage() {
         )}
         <p className={styles.sectionLabel} style={{color: COLORS.title}}>Viajes en Curso</p>
         <div className="relative">
-          <div className={`${styles.scrollRow} scroll-trips`}>
+          <div className={styles.scrollRow}>
             {inProgressTrips.length > 0 || substitutionTrips.length > 0 ? (
               [...inProgressTrips, ...substitutionTrips].map((trip) => (
                 <div key={trip.id_viaje} className="snap-start shrink-0 w-full md:w-[450px] flex flex-col">
