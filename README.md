@@ -97,7 +97,7 @@ src/
 │   ├── admin/  approval/  expense/  trip/  user/
 │   └── shared/apiClient.js
 ├── layouts/             Navbar, Footer y menús por rol
-│   └── menu/
+│   └── menu/            MenuLayout (cabecera granate, opciones agrupadas en bloques y Cerrar Sesión), MenuShell, MenuOption, secciones comunes y un archivo por rol con sus secciones
 ├── utils/               Funciones auxiliares puras (fechas y calendario, cantidades, retenciones, IVA de facturas, moneda y subgastos de un gasto, N° de documento, limpieza de texto, Excel, hojas para Oracle, plantilla de usuarios)
 ├── constants/           Paleta, rutas, inicio por rol, monedas, límites de texto, nombres y colores de estado
 ├── test/setup.js        Configuración de las pruebas unitarias
@@ -190,6 +190,7 @@ La paleta se centraliza en `constants/index.js`. Ningún componente define color
 | `success` | `#155724` | Texto de confirmación (filas listas al importar usuarios) |
 | `successBackground` | `#d4edda` | Fondo de confirmación |
 | `overlay` | `rgba(0,0,0,0.4)` | Fondo oscuro detrás de ventanas y menú |
+| `menuGroup` | `#F7F5F4` | Fondo gris cálido de cada grupo del menú lateral |
 | `systemReceipt` / `systemReceiptText` | `#ECE6F7` / `#5B3FA0` | Número de recibo que asignó el sistema (lila) |
 | `warningBackground` / `warningText` | `#fef3cd` / `#856404` | Avisos (alcohol, plazos pendientes) |
 | `dangerBackground` / `dangerText` | `#f8d7da` / `#721c24` | Alertas de exceso o rechazo |
@@ -299,7 +300,7 @@ npm run storybook
 | Tipo | Qué prueba | Comando | Dónde |
 |---|---|---|---|
 | Unitarias | Componentes y utilidades: estados del control diario, periodos, Excel, hojas para Oracle, plantilla y lectura del Excel de usuarios, retenciones, cantidades con decimales del detalle de factura, conversión de un gasto internacional a USD y Bs, planilla en Excel toda en Bs con el monto original y las filas del fondo recibido, N° de documento (original primero, el del sistema en lila), subgastos, limpieza de caracteres invisibles, alineación y cuenta de pasivo de FACTURAS | `npm test` | Junto a cada archivo (`*.test.js`, `*.test.jsx`) |
-| De extremo a extremo | El sistema completo en un navegador real: ingreso por rol, monto calculado del viaje, control diario, gasto en soles con su equivalente en USD y Bs, fechas con el calendario propio (`pickDate`), respaldos de los gastos internacionales (y que los gastos en bolivianos no los piden), exportaciones e importación de usuarios desde Excel | `npm run test:e2e` | `e2e/` |
+| De extremo a extremo | El sistema completo en un navegador real: ingreso por rol, monto calculado del viaje, control diario, gasto en soles con su equivalente en USD y Bs, fechas con el calendario propio (`pickDate`), respaldos de los gastos internacionales (y que los gastos en bolivianos no los piden), exportaciones, importación de usuarios desde Excel, que la edición de un usuario guarde la dependencia y el apellido materno (y no los borre al volver a guardar) y que el menú del administrador entre sin barra de desplazamiento | `npm run test:e2e` | `e2e/` |
 
 Las pruebas unitarias no necesitan nada más. Las de extremo a extremo necesitan el backend y el frontend levantados con la base de prueba (organización de `testing_02_organizacion_prueba.sql`); `E2E_BASE_URL` y `E2E_API_URL` indican dónde están (por defecto `localhost:5173` y `localhost:5055`). La primera vez hay que instalar el navegador con `npx playwright install chromium`.
 
