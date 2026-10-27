@@ -14,7 +14,7 @@ const styles = {
   headerRow: 'flex items-center gap-3',
   title: 'text-lg font-bold font-inter leading-tight',
   subtitle: 'text-xs font-inter mt-0.5',
-  listWrapper: 'flex flex-col gap-2 max-h-52 overflow-y-auto pr-1 obs-scroll',
+  listWrapper: 'flex flex-col gap-2 max-h-52 overflow-y-auto pr-1 scroll-on-color',
   empty: 'text-xs font-inter text-center py-3',
 };
 
@@ -35,11 +35,6 @@ function ExpenseObservationsModal({isOpen, onClose, expenseName, observations, c
     <AnimatePresence>
       {isOpen && (
         <motion.div className={styles.overlay} variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
-          <style>{`
-            .obs-scroll::-webkit-scrollbar { width: 6px; }
-            .obs-scroll::-webkit-scrollbar-track { background: transparent; }
-            .obs-scroll::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.4); border-radius: 10px; }
-          `}</style>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
             <div className={styles.headerRow}>
