@@ -14,10 +14,10 @@ const dropdownVariants = {
   visible: {opacity: 1, y: 0, scaleY: 1},
 };
 
-function InlineDropdown({wrapperRef, triggerRef, open, opensUpward, onToggle, label, options, selectedValue, onSelect}) {
+function InlineDropdown({wrapperRef, triggerRef, open, opensUpward, onToggle, label, options, selectedValue, onSelect, hasValue = true, error, icon, asField = false}) {
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
-      <DropdownTrigger triggerRef={triggerRef} open={open} onClick={onToggle} hasValue label={label} />
+      <DropdownTrigger triggerRef={triggerRef} open={open} onClick={onToggle} hasValue={hasValue} label={label} error={error} icon={icon} asField={asField} />
       <AnimatePresence>
         {open && (
           <motion.div className={styles.dropdown}

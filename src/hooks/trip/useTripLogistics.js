@@ -20,7 +20,7 @@ function useTripLogistics(transport) {
   };
 
   const handleFuelChange = (value) => {
-    if (String(value).length > 12) {
+    if (String(value).length > 9 || !/^\d*\.?\d{0,2}$/.test(String(value))) {
       return;
     }
     setFuelAmount(value);
