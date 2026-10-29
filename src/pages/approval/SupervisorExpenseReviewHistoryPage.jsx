@@ -39,7 +39,7 @@ function SupervisorExpenseReviewHistoryPage() {
   let subtitle = 'Rendiciones asignadas a ti: revisa los gastos, deja observaciones y apruébalas o recházalas.';
   if (!isSupervisor) {
     title = 'Rendiciones de Mi Equipo';
-    subtitle = 'Rendiciones de quienes te tienen como jefe directo. Al aprobarlas pasan directo a la revisión final, aunque tengan alcohol.';
+    subtitle = 'Rendiciones de quienes te tienen como jefe directo. Al aprobarlas pasan directo a la revisión final, aunque tengan gastos no deducibles.';
   }
   if (statusFilter === 'APROBADO_SUPERVISOR') {
     subtitle = 'Historial de las rendiciones que aprobaste tú, con el estado en que están ahora.';

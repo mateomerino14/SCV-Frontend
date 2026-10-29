@@ -41,7 +41,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos varios sin respaldo de factura oficial</p>
       {hasAlcohol && (
-        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen gastos no deducibles (alcohol o propinas)</p>
       )}
       {hasSystemNumbers && (
         <p className={styles.subtitle} style={{color: COLORS.systemReceiptText}}>Los N° de recibo en lila los asignó el sistema: el gasto no tiene recibo original</p>

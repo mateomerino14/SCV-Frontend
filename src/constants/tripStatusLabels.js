@@ -7,7 +7,7 @@ export const statusLabels = {
   EN_REVISION_TESORERO: 'Esperando Fondos',
   EN_CURSO: 'En Curso',
   EN_REVISION: 'En Revisión',
-  EN_REVISION_APROBADOR: 'Revisión por Alcohol',
+  EN_REVISION_APROBADOR: 'Revisión de No Deducibles',
   APROBADO_SUPERVISOR: 'Apr. Preliminar',
   APROBADO_FINAL: 'Aprobado',
   RECHAZADO: 'Rechazado',

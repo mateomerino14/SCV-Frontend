@@ -33,7 +33,7 @@ function ExpenseInvoicedTable({expenses, onViewExpense, countObservations, onOpe
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos respaldados con factura o recibo oficial</p>
       {hasAlcohol && (
-        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen bebidas alcohólicas</p>
+        <p className={styles.subtitle} style={{color: COLORS.warningText}}>Las filas resaltadas contienen gastos no deducibles (alcohol o propinas)</p>
       )}
       <div className={styles.tableWrapper} style={{borderColor: COLORS.dataFields}}>
         <table className={styles.table}>

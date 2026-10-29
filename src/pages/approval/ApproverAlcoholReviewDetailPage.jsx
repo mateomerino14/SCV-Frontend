@@ -80,7 +80,7 @@ function ApproverAlcoholReviewDetailPage() {
   if (loading) {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
-        <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Gastos no deducibles" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.content}><SkeletonCard lines={6} /></div>
         <Footer />
@@ -91,7 +91,7 @@ function ApproverAlcoholReviewDetailPage() {
     return (
       <div className={styles.page} style={{backgroundColor: COLORS.background}}>
         <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-        <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+        <Navbar text="Gastos no deducibles" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
         <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
         <div className={styles.blockedWrapper}>
           <div className={styles.blockedIcon} style={{backgroundColor: COLORS.error}}>
@@ -137,7 +137,7 @@ function ApproverAlcoholReviewDetailPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Gastos no deducibles" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
