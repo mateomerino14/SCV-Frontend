@@ -10,7 +10,7 @@ import {addOracleSheets} from '../../utils/oracleExport';
 import {resolveDocumentNumber, documentSources, systemReceiptNote} from '../../utils/documentNumber';
 import {addListRange} from '../../utils/excelLists';
 import {saveWorkbook} from '../../utils/excelExport';
-import {amountInBsOf, originalAmountLinesOf, summarizeStatement, hasOriginCurrencyLines} from '../../utils/expenseCurrency';
+import {amountInBsOf, originalAmountLinesOf, summarizeStatement, hasOriginCurrencyLines, isRenderedInUsd} from '../../utils/expenseCurrency';
 import {thinBorder, applyOuterBorder} from '../../utils/excelBorders';
 
 const headerFill = 'FF4A90D9';
@@ -304,7 +304,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   headerRow.height = 32;
   const oracleOptions = buildOracleAccountOptions(expenses);
   const oracleFormula = addListRange(workbook, oracleOptions);
-  const {internationalUsd, balanceRows} = summarizeStatement(trip, expenses);
+  const {renderedUsd, balanceRows} = summarizeStatement(trip, expenses);
   const [, fundBs, fundUsd] = balanceRows[0];
   let currentRow = headerRowNumber + 1;
   let fundRows = [[fundLabel, fundBs, amountNumberFormat]];
@@ -337,7 +337,8 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     if (isInternational) {
       shownCost = amountBs;
     }
-    if (amountBs === null) {
+    const renderedInUsd = isRenderedInUsd(trip, expense);
+    if (renderedInUsd) {
       shownAmount = amount;
       shownCost = amount;
       amountFormat = usdNumberFormat;
@@ -388,7 +389,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       row.getCell(col.document).note = systemReceiptNote;
     }
     row.height = Math.max(estimateRowHeight(heightEntries), originalRowHeight(expense));
-    if (amountBs !== null) {
+    if (!renderedInUsd) {
       totalImporteBs += shownAmount;
       totalCostBs += shownCost;
     }
@@ -430,8 +431,8 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   if (isInternationalTrip) {
     const totalsUsdRow = sheet.getRow(currentRow);
     sheet.mergeCells(currentRow, 1, currentRow, col.nit);
-    totalsUsdRow.getCell(1).value = 'Gastos internacionales en USD, para Oracle';
-    totalsUsdRow.getCell(col.invoiceAmount).value = internationalUsd;
+    totalsUsdRow.getCell(1).value = 'Gastos internacionales rendidos en USD';
+    totalsUsdRow.getCell(col.invoiceAmount).value = renderedUsd;
     totalsUsdRow.getCell(col.amount).value = fundUsd;
     for (let column = 1; column <= totalCols; column++) {
       const cell = totalsUsdRow.getCell(column);

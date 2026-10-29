@@ -13,6 +13,10 @@ test('el empleado escribe el gasto en soles y ve su equivalente en USD y Bs', as
   await page.locator('input[placeholder="6.9600"]').first().fill('6.96');
   await expect(page.getByText('100.00 USD').first()).toBeVisible();
   await expect(page.getByText('696.00 Bs').first()).toBeVisible();
+  const usdOption = page.getByRole('radio', {name: 'Dólares (USD)'}).first();
+  await expect(usdOption).toHaveAttribute('aria-checked', 'true');
+  await page.getByRole('radio', {name: 'Bolivianos (Bs)'}).first().click();
+  await expect(page.getByRole('radio', {name: 'Bolivianos (Bs)'}).first()).toHaveAttribute('aria-checked', 'true');
 });
 
 test('el control diario de un viaje internacional muestra Bs y USD por separado', async ({page}) => {

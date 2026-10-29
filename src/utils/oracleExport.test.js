@@ -68,6 +68,8 @@ describe('Excel para Oracle', () => {
     expect(international.missing).toEqual(['numeroFactura']);
     expect(international.values).toMatchObject({fechaCambio: '', claseTipoCambio: '', tipoCambio: ''});
     expect(international.lines).toHaveLength(1);
+    const inBs = buildOracleInvoice(trip, {...lodging, es_gasto_internacional: true, monto_total: 50, tipo_cambio_bs: 6.96, moneda_rendicion: 'BOB'});
+    expect(inBs.values).toMatchObject({divisaFactura: 'BOB', importeFactura: 348});
   });
 
   it('relaciona cada línea con su fila de factura', () => {

@@ -43,9 +43,20 @@ describe('Planilla de rendición en Excel', () => {
     expect(sheet.getCell(11, 6).fill.fgColor.argb).toBe('FFE4DFEC');
     expect(findRow(sheet, 'Sumas Totales').getCell(8).value).toBe(362.99);
     expect(findRow(sheet, 'Sumas Totales').getCell(10).value).toBe(1000);
-    expect(findRow(sheet, 'Gastos internacionales').getCell(8).value).toBe(44.97);
+    expect(findRow(sheet, 'Gastos internacionales').getCell(8).value).toBe(0);
     expect(sheet.getCell(14, 7).value).toMatch(/^N° DOCUMENTO en lila/);
     expect(findRow(sheet, 'Total Gastado').getCell(6).value).toBe(362.99);
     expect(findRow(sheet, 'Saldo en mi poder').getCell(6).value).toBe(637.01);
+  });
+
+  it('el gasto internacional que el empleado rinde en USD sale en USD y fuera de las sumas en Bs', async () => {
+    const workbook = new ExcelJS.Workbook();
+    await addStatementSheet(workbook, trip, [expenses[0], {...expenses[1], moneda_rendicion: 'USD'}]);
+    const sheet = workbook.getWorksheet('RENDICION');
+    expect(sheet.getCell(11, 8).value).toBe(44.97);
+    expect(sheet.getCell(11, 8).numFmt).toBe('#,##0.00" USD"');
+    expect(findRow(sheet, 'Sumas Totales').getCell(8).value).toBe(50);
+    expect(findRow(sheet, 'Gastos internacionales').getCell(8).value).toBe(44.97);
+    expect(findRow(sheet, 'Total Gastado').getCell(6).value).toBe(50);
   });
 });

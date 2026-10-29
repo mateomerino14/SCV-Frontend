@@ -16,7 +16,13 @@ const styles = {
   summaryCell: 'flex flex-col gap-0.5',
   summaryLabel: 'text-[11px] font-inter',
   summaryValue: 'text-lg font-bold font-inter',
+  renditionRow: 'flex flex-col gap-2',
+  renditionLabel: 'text-xs font-bold font-inter uppercase',
+  renditionButtons: 'flex gap-2 flex-wrap',
+  renditionButton: 'px-3 py-2 rounded-xl border cursor-pointer font-inter text-sm font-bold transition-colors',
 };
+
+const renditionOptions = [{value: 'USD', label: 'Dólares (USD)'}, {value: 'BOB', label: 'Bolivianos (Bs)'}];
 
 function ConversionValue({label, value, suffix, divided}) {
   let text = '—';
@@ -35,7 +41,7 @@ function ConversionValue({label, value, suffix, divided}) {
   );
 }
 
-function ForeignCurrencyFields({currencies, currency, exchangeRate, bsRate, amount, errors = {}, disabled, onCurrencyChange, onExchangeRateChange, onBsRateChange}) {
+function ForeignCurrencyFields({currencies, currency, exchangeRate, bsRate, amount, errors = {}, disabled, onCurrencyChange, onExchangeRateChange, onBsRateChange, renditionCurrency, onRenditionCurrencyChange}) {
   const {usd, bs} = convertForeignAmount(amount, currency, exchangeRate, bsRate);
   return (
     <div className={styles.card} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
@@ -63,6 +69,21 @@ function ForeignCurrencyFields({currencies, currency, exchangeRate, bsRate, amou
         <ConversionValue label="En dólares" value={usd} suffix="USD" />
         <ConversionValue label="En bolivianos" value={bs} suffix="Bs" divided />
       </div>
+      {onRenditionCurrencyChange && (
+        <div className={styles.renditionRow} role="radiogroup" aria-label="Rendir el gasto en">
+          <span className={styles.renditionLabel} style={{color: COLORS.labels}}>Rendir el gasto en</span>
+          <div className={styles.renditionButtons}>
+            {renditionOptions.map((option) => (
+              <button key={option.value} type="button" role="radio" aria-checked={renditionCurrency === option.value} disabled={disabled}
+                className={styles.renditionButton} onClick={() => onRenditionCurrencyChange(option.value)}
+                style={{backgroundColor: renditionCurrency === option.value ? COLORS.primary : COLORS.dataFields, borderColor: renditionCurrency === option.value ? COLORS.primary : COLORS.fields, color: renditionCurrency === option.value ? COLORS.background : COLORS.labels}}>
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <p className={styles.note} style={{color: COLORS.labels}}>Así sale en el Excel y el PDF de la rendición y se descuenta de ese fondo. El control diario siempre compara con tu tarifa en USD.</p>
+        </div>
+      )}
     </div>
   );
 }

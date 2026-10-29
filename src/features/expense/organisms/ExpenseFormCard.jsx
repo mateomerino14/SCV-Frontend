@@ -32,7 +32,7 @@ function ExpenseFormCard({
   finalAmount, withholdings, hasWithholdings,
   onTypeChange, onDateChange, onSupplierChange, onReceiptNumberChange, onAmountChange, onDescriptionChange, onCategoryChange,
   onImageChange, onRemoveImage, onAddBackup, onRemoveBackup,
-  onCurrencyChange, onExchangeRateChange, onBsRateChange,
+  onCurrencyChange, onExchangeRateChange, onBsRateChange, onRenditionCurrencyChange, defaultRenditionCurrency = 'USD',
   onToggleSubitems, onAddSubitem, onRemoveSubitem, onSubitemDescriptionChange, onSubitemAmountChange,
 }) {
   const [subitemsExpanded, setSubitemsExpanded] = useState(true);
@@ -83,7 +83,8 @@ function ExpenseFormCard({
           {isInternationalExpense && (
             <ForeignCurrencyFields currencies={currencies} currency={item.currency} exchangeRate={item.exchangeRate} bsRate={item.bsRate} amount={finalAmount}
               errors={item.fieldErrors} disabled={item.saved} onCurrencyChange={(value) => onCurrencyChange(item.id, value)}
-              onExchangeRateChange={(value) => onExchangeRateChange(item.id, value)} onBsRateChange={(value) => onBsRateChange(item.id, value)} />
+              onExchangeRateChange={(value) => onExchangeRateChange(item.id, value)} onBsRateChange={(value) => onBsRateChange(item.id, value)}
+              renditionCurrency={item.renditionCurrency || defaultRenditionCurrency} onRenditionCurrencyChange={(value) => onRenditionCurrencyChange(item.id, value)} />
           )}
           <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} required={!automaticAmount} suffix={amountSuffix} error={item.fieldErrors.amount}>
             <input type="text" inputMode="decimal" placeholder="0.00" disabled={item.saved || automaticAmount}
