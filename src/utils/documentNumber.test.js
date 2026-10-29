@@ -9,4 +9,8 @@ describe('N° de documento de un gasto', () => {
     expect(resolveDocumentNumber({tipo: 'S', Recibo: []}, [{id_gasto: null, tipo: 'S', numero: 7, es_gasto_internacional: false}])).toEqual({number: '000007', source: 'system'});
     expect(resolveDocumentNumber({Factura: {numero_factura: 'No Especificado'}})).toEqual({number: '', source: 'none'});
   });
+
+  it('el número del sistema lleva su mes porque el correlativo vuelve a 1 cada mes', () => {
+    expect(resolveDocumentNumber({Recibo: [{numero: 12, periodo: '2026-10'}]})).toEqual({number: '000012/10-2026', source: 'system'});
+  });
 });

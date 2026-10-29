@@ -132,9 +132,9 @@ function ExpenseDetailPage() {
           {expense.Categoria_Gasto && <ExpenseFieldRow icon={Tag} label="Categoría" value={expense.Categoria_Gasto.nombre} />}
           {expense.Proveedor && <ExpenseFieldRow icon={User} label="Proveedor" value={expense.Proveedor.nombre} />}
           {expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo original (va en la planilla y en Oracle)" value={expense.numero_recibo} />}
-          {systemReceipt && expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema" value={formatReceiptNumber(systemReceipt.numero)} />}
+          {systemReceipt && expense.numero_recibo && <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema" value={formatReceiptNumber(systemReceipt.numero, systemReceipt.periodo)} />}
           {systemReceipt && !expense.numero_recibo && (
-            <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema (no tiene recibo original)" value={formatReceiptNumber(systemReceipt.numero)}
+            <ExpenseFieldRow icon={FileText} label="N° de Recibo del sistema (no tiene recibo original)" value={formatReceiptNumber(systemReceipt.numero, systemReceipt.periodo)}
               iconBg={COLORS.systemReceipt} iconColor={COLORS.systemReceiptText} valueColor={COLORS.systemReceiptText} />
           )}
           {expense.Proveedor?.numero_doc_fiscal && (
