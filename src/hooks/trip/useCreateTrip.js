@@ -15,7 +15,6 @@ function useCreateTrip(user) {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [loadingLocation, setLoadingLocation] = useState(false);
   const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
   const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
 
@@ -99,43 +98,6 @@ function useCreateTrip(user) {
     setFieldErrors((prev) => ({...prev, vehiclePlate: undefined}));
   };
 
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      showError('Tu navegador no permite obtener la ubicación actual');
-      return;
-    }
-    setLoadingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const {latitude, longitude} = position.coords;
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=es`
-          );
-          const data = await response.json();
-          const address = data?.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-          if (address.length > 200) {
-            setOrigin(address.slice(0, 200));
-          }
-          else {
-            setOrigin(address);
-          }
-          setFieldErrors((prev) => ({...prev, origin: undefined}));
-        }
-        catch {
-          showError('No se pudo obtener la dirección de tu ubicación actual');
-        }
-        finally {
-          setLoadingLocation(false);
-        }
-      },
-      () => {
-        setLoadingLocation(false);
-        showError('No se pudo acceder a tu ubicación. Revisa los permisos del navegador.');
-      }
-    );
-  };
-
   const validate = () => {
     const errors = {};
     if (!reason.trim()) {
@@ -213,13 +175,11 @@ function useCreateTrip(user) {
     dailyRate, dailyRateUsd,
     loading, error, fieldErrors,
     showConfirmation, setShowConfirmation,
-    loadingLocation,
     handleReasonChange,
     handleOriginChange,
     handleDestinationChange,
     handleStartDateChange,
     handleEndDateChange,
-    handleUseCurrentLocation,
     handleSaveDraft,
   };
 }

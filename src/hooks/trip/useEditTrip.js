@@ -19,7 +19,6 @@ function useEditTrip(tripId, user) {
   const [loadError, setLoadError] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const [loadingLocation, setLoadingLocation] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -132,43 +131,6 @@ function useEditTrip(tripId, user) {
     setFieldErrors((prev) => ({...prev, vehiclePlate: undefined}));
   };
 
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      showError('Tu navegador no permite obtener la ubicación actual');
-      return;
-    }
-    setLoadingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const {latitude, longitude} = position.coords;
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=es`
-          );
-          const data = await response.json();
-          const address = data?.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-          if (address.length > 200) {
-            setOrigin(address.slice(0, 200));
-          }
-          else {
-            setOrigin(address);
-          }
-          setFieldErrors((prev) => ({...prev, origin: undefined}));
-        }
-        catch {
-          showError('No se pudo obtener la dirección de tu ubicación actual');
-        }
-        finally {
-          setLoadingLocation(false);
-        }
-      },
-      () => {
-        setLoadingLocation(false);
-        showError('No se pudo acceder a tu ubicación. Revisa los permisos del navegador.');
-      }
-    );
-  };
-
   const validate = () => {
     const errors = {};
     if (!reason.trim()) {
@@ -243,10 +205,8 @@ function useEditTrip(tripId, user) {
     dailyRate, dailyRateUsd,
     originalStatus,
     loading, loadingData, loadError, error, fieldErrors,
-    loadingLocation,
     handleReasonChange, handleOriginChange, handleDestinationChange,
     handleStartDateChange, handleEndDateChange,
-    handleUseCurrentLocation,
     handleSave,
   };
 }

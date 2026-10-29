@@ -1,5 +1,5 @@
 import {useNavigate} from 'react-router-dom';
-import {ArrowLeft, Target, MapPin, LocateFixed} from 'lucide-react';
+import {ArrowLeft, Target, MapPin, Navigation} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
@@ -50,9 +50,9 @@ function CreateTripPage() {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     vehiclePlate, handleVehiclePlateChange,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd,
-    loading, error, fieldErrors, showConfirmation, setShowConfirmation, loadingLocation,
+    loading, error, fieldErrors, showConfirmation, setShowConfirmation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
-    handleUseCurrentLocation, handleSaveDraft,
+    handleSaveDraft,
   } = useCreateTrip(user);
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const today = new Date().toISOString().split('T')[0];
@@ -87,13 +87,8 @@ function CreateTripPage() {
               </InputField>
               <p className="text-[11px] font-inter text-right mt-1" style={{color: COLORS.labels}}>{reason.length}/{maxTripReasonLength}</p>
             </div>
-            <InputField label="Origen" required error={fieldErrors.origin}
-              icon={
-                <button type="button" onClick={handleUseCurrentLocation} disabled={loadingLocation} title="Usar mi ubicación actual">
-                  <LocateFixed size={16} style={{color: loadingLocation ? COLORS.labels : COLORS.primary, cursor: loadingLocation ? 'default' : 'pointer'}} />
-                </button>
-              }>
-              <input type="text" placeholder={loadingLocation ? 'Obteniendo ubicación...' : 'Ciudad de origen...'} maxLength={200}
+            <InputField label="Origen" required icon={<Navigation size={16} style={{color: COLORS.primary}} />} error={fieldErrors.origin}>
+              <input type="text" placeholder="Ciudad de origen..." maxLength={200}
                 className={styles.input} style={{color: COLORS.text}} value={origin} onChange={(event) => handleOriginChange(event.target.value)} />
             </InputField>
             <InputField label="Destino" required icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
