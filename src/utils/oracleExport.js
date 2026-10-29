@@ -201,8 +201,10 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
   const taxLine = oracleTaxLines[taxCode];
   const lines = [
     {values: article, missing: [...missingIfEmpty(article.cuenta && accountSegments.dependency && accountSegments.section, 'cuenta'), ...missingIfEmpty(trip.numero_rendicion, 'descripcion')]},
-    {values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true},
   ];
+  if (vat > 0) {
+    lines.push({values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true});
+  }
   if (withholding) {
     const mainAmount = roundAmount(tax.rcIva + tax.iue);
     const mainAccount = buildOracleAccount(withholding.mainAccount);
