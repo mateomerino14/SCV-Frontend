@@ -40,7 +40,7 @@ const styles = {
   alertBadge: 'text-xs font-bold font-inter px-2.5 py-1 rounded-lg flex items-center gap-1',
 };
 
-function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, taking}) {
+function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, taking, stageLabel}) {
   const isObserved = trip.estadoRevision === 'OBSERVADO';
   const isInternational = trip.tipo === 'Internacional';
   const statusConfig = tripStatusConfig[trip.estado];
@@ -68,8 +68,11 @@ function ExpenseReviewItem({trip, detailRoute, originRoute, onTake, onReturn, ta
         <p className={styles.reason} style={{color: COLORS.text}}>{trip.motivo}</p>
         <p className={styles.placeLabel} style={{color: COLORS.secondary}}>{trip.origen ? 'Ruta' : 'Lugar'}</p>
         <TripRoute origin={trip.origen} destination={trip.destino} size={10} maxWidth={180} />
-        {(isInternational || trip.transporte) && (
+        {(isInternational || trip.transporte || stageLabel) && (
           <div className={styles.badgesRow}>
+            {stageLabel && (
+              <span className={styles.transportBadge} style={{backgroundColor: COLORS.backgroundHeader, color: COLORS.primary}}>{stageLabel}</span>
+            )}
             {isInternational && (
               <span className={styles.internationalBadge} style={{backgroundColor: COLORS.primary + '20', color: COLORS.primary}}>
                 <Globe size={11} />
