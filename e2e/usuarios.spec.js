@@ -49,3 +49,13 @@ test('el menú del administrador entra completo sin barra de desplazamiento @cel
   const overflow = await nav.evaluate((element) => element.parentElement.scrollHeight - element.parentElement.clientHeight);
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+test('en un celular de pantalla baja el menú del aprobador muestra Cerrar Sesión sin mover la página @celular', async ({page}) => {
+  await page.setViewportSize({width: 360, height: 560});
+  await loginInBrowser(page, 'pedro.aprobador');
+  await page.getByRole('button', {name: 'Abrir menú'}).click();
+  const logout = page.getByRole('button', {name: 'Cerrar Sesión'});
+  await expect(logout).toBeInViewport({ratio: 1});
+  const bodyOverflow = await page.evaluate(() => document.body.style.overflow);
+  expect(bodyOverflow).toBe('hidden');
+});
