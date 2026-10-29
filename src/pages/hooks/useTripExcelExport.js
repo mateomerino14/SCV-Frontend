@@ -554,11 +554,9 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     applyOuterBorder(sheet, justificationHeaderRow, currentRow - 1, 1, totalCols);
   }
   const signatureBlocks = [
-    {startCol: 1, endCol: 3, label: 'Preparado por', role: 'Responsable'},
-    {startCol: 4, endCol: 6, label: 'Vo/ Bo', role: 'Jefe de Area'},
-    {startCol: 7, endCol: 9, label: 'Vo/ Bo', role: 'Gerente de Area'},
-    {startCol: 10, endCol: 11, label: 'Verificado por', role: 'Contabilidad'},
-    {startCol: 12, endCol: totalCols, label: 'Aprobado por', role: 'Gerencia Administrativa'},
+    {startCol: 1, endCol: 4, label: 'Preparado por', role: 'Responsable'},
+    {startCol: 6, endCol: 9, label: 'Vo/ Bo', role: 'Jefe de Area'},
+    {startCol: 11, endCol: totalCols, label: 'Vo/ Bo', role: 'Gerente de Area'},
   ];
   currentRow += 6;
   const lineRow = currentRow;
