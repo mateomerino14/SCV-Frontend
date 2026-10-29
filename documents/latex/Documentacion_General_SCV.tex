@@ -145,16 +145,18 @@ Fecha: & Octubre de 2026 \\
   \item El sistema contempla dos tipos de viaje según su alcance geográfico:
   \begin{itemize}
     \item \textbf{Nacional}: los gastos se registran íntegramente en bolivianos.
-    \item \textbf{Internacional}: cuenta además con un presupuesto en dólares. Cualquier día se puede gastar en bolivianos o en dólares. Un gasto internacional se escribe en la moneda de su factura (dólares, soles, pesos, etc.) con dos tipos de cambio que escribe el empleado: el de esa moneda a dólares y el de dólares a bolivianos. El sistema guarda el equivalente en dólares, que controla el presupuesto y va a Oracle, y la planilla lo muestra en bolivianos. Los gastos internacionales no llevan impuestos.
+    \item \textbf{Internacional}: cuenta además con un presupuesto en dólares. Cualquier día se puede gastar en bolivianos o en dólares. Un gasto internacional se escribe en la moneda de su factura (dólares, soles, pesos, etc.) con dos tipos de cambio que escribe el empleado: el de esa moneda a dólares y el de dólares a bolivianos. El sistema guarda el equivalente en dólares, que controla el presupuesto diario. El empleado elige si el gasto se rinde en dólares o en bolivianos: así sale en la planilla, en el Excel para Oracle y se descuenta de ese fondo. Los gastos internacionales no llevan impuestos.
   \end{itemize}
-  \item El medio de transporte se registra por viaje (terrestre, aéreo u otro), junto con la placa cuando se usa un vehículo de la empresa, y se muestra como distintivo en las vistas de revisión.
+  \item El medio de transporte se registra por viaje (terrestre, aéreo o vehículo de la empresa) y se muestra como distintivo en las vistas de revisión. Con vehículo de la empresa se elige uno de la flota que registra el administrador: solo se ofrecen los libres, y un vehículo se libera cuando el empleado termina su viaje. En ese caso se puede pedir un fondo aparte para combustible, que no cuenta en el control diario.
+  \item Cada viaje indica quién gestiona el hospedaje: la empresa o el propio empleado.
+  \item El código del viaje es VIA-número/año y el número vuelve a 1 cada año; el número de recibo del sistema vuelve a 1 cada mes y se muestra con su mes (000012/10-2026).
   \item La rendición de cada viaje reúne:
   \begin{itemize}
-    \item El memorándum del viaje (lugar, duración, medio de transporte y objetivo).
+    \item El memorándum del viaje, con membrete de MAXAM FANEXA: autoriza el viaje, pide la compra de pasajes aéreos o terrestres (o el uso del vehículo y su combustible) e indica quién gestiona el hospedaje; lo recibe también el empleado.
     \item Las facturas o recibos de cada gasto, cuando corresponda.
     \item El detalle de los gastos realizados, con su desglose en subgastos si aplica.
   \end{itemize}
-  \item El sistema identifica automáticamente los gastos no permitidos, en particular las bebidas alcohólicas, a partir del detalle de productos facturados y de la descripción del gasto. Una rendición con alcohol pasa por una revisión adicional del aprobador.
+  \item El sistema identifica automáticamente los gastos no deducibles (bebidas alcohólicas y propinas) a partir del detalle de productos facturados y de la descripción del gasto. Una rendición con gastos no deducibles pasa por una revisión adicional del aprobador.
   \item Al registrar el viaje, el sistema calcula el monto con las tarifas diarias del cargo del empleado; tesorería lo revisa y lo ajusta al asignar los fondos.
   \item El presupuesto se controla día por día y por moneda contra las tarifas diarias del cargo: en un viaje nacional la tarifa en bolivianos; en uno internacional, las dos tarifas por separado. Los hoteles se comparan contra el total asignado. Cada día que excede la tarifa, y el exceso en hoteles, requiere una justificación, y el sistema calcula el saldo a devolver o el importe a reembolsar en cada moneda.
   \item Antes de aprobar o rechazar, los revisores ven la rendición completa: tablas separadas por tipo de gasto, barras de presupuesto, desglose diario y alertas.
@@ -178,7 +180,7 @@ El sistema contempla cinco roles y un perfil adicional que se determina por el c
 2 & SUPERVISOR & Revisión previa del viaje y revisión de la rendición de gastos de los empleados a su cargo. \\
 \rowcolor{maxamFondo} 3 & EMPLEADO & Creación de viajes, registro de gastos y facturas, solicitudes de ampliación de plazo y de reemplazo. \\
 4 & REVISOR & Revisión final de la rendición, resolución de las solicitudes de plazo y de reemplazo y exportación de planillas en grupo. \\
-\rowcolor{maxamFondo} 5 & APROBADOR & Aprobación del viaje con emisión del memorándum y revisión adicional de rendiciones con alcohol. \\
+\rowcolor{maxamFondo} 5 & APROBADOR & Aprobación del viaje con emisión del memorándum y revisión adicional de rendiciones con gastos no deducibles. Trabaja con dos bandejas únicas: viajes por aprobar y rendiciones por revisar, que reúnen lo de su equipo (como jefe directo) y lo que le llega como aprobador. \\
 --- & TESORERO & Asignación de fondos y exportación de planillas en grupo. Se determina por el cargo (asistente de caja y tesorería), no por el rol. \\
 \end{xltabular}
 
@@ -200,7 +202,7 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
 \node[est,below=of av] (rt) {EN\_REVISION\_TESORERO};
 \node[fin,below=of rt] (ec) {EN\_CURSO};
 \node[est,right=2.2cm of b] (er) {EN\_REVISION};
-\node[est,below=of er] (ea) {EN\_REVISION\_APROBADOR\\(solo con alcohol)};
+\node[est,below=of er] (ea) {EN\_REVISION\_APROBADOR\\(solo con no deducibles)};
 \node[est,below=of ea] (as) {APROBADO\_SUPERVISOR};
 \node[fin,below=of as] (af) {APROBADO\_FINAL};
 \node[rech,below=1.1cm of af] (r) {RECHAZADO};
@@ -215,11 +217,11 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
 
 \subsection{Primer flujo: autorización del viaje}
 \begin{enumerate}
-  \item \textbf{Registro del viaje:} el empleado crea el viaje en estado \code{BORRADOR}, indicando motivo, origen, destino, fechas, tipo (nacional o internacional) y medio de transporte.
+  \item \textbf{Registro del viaje:} el empleado crea el viaje en estado \code{BORRADOR}, indicando motivo, origen, destino, fechas, tipo (nacional o internacional), medio de transporte (con el vehículo y el combustible si es de la empresa) y quién gestiona el hospedaje.
   \item \textbf{Monto del viaje:} el sistema lo calcula con las tarifas del cargo. En un viaje nacional es días × tarifa en bolivianos; en uno internacional, el día de salida y el de regreso se calculan con la tarifa en bolivianos y los días intermedios con la tarifa en dólares.
   \item \textbf{Envío a revisión:} el viaje pasa a \code{EN_REVISION_VIAJE}.
   \item \textbf{Revisión del supervisor:} el supervisor que corresponde por jerarquía toma el viaje, lo evalúa y lo aprueba o lo rechaza con observaciones. Si lo aprueba, pasa a \code{APROBADO_VIAJE}.
-  \item \textbf{Aprobación y memorándum:} el aprobador confirma la solicitud y el sistema emite el memorándum del viaje, que detalla motivo, destino, fechas y transporte autorizado. El viaje pasa a \code{EN_REVISION_TESORERO}.
+  \item \textbf{Aprobación y memorándum:} el aprobador confirma la solicitud y el sistema emite el memorándum del viaje, que detalla motivo, ruta, fechas, transporte, hospedaje y fondo, y lo envía a tesorería, a las áreas correspondientes y al empleado. El viaje pasa a \code{EN_REVISION_TESORERO}.
   \item \textbf{Asignación de fondos:} el tesorero revisa el monto calculado y asigna los montos finales en ambas monedas. Al aprobar, el empleado recibe la confirmación del fondo, el viaje pasa a \code{EN_CURSO} y queda habilitado el registro de gastos.
 \end{enumerate}
 
@@ -239,12 +241,12 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
     \item Datos del empleado y del viaje.
     \item Barras de presupuesto consumido por moneda y desglose por día.
     \item Tarjeta de liquidación con el saldo a devolver o a reembolsar.
-    \item Alertas de exceso de presupuesto y de detección de alcohol.
+    \item Alertas de exceso de presupuesto y de gastos no deducibles.
     \item Tablas separadas de gastos con factura, sin factura e internacionales.
     \item Resumen de totales e IVA crédito fiscal.
   \end{itemize}
-  Puede observar gastos individuales, exportar la planilla en Excel y aprobar o rechazar. Si aprueba y la rendición tiene alcohol, pasa a \code{EN_REVISION_APROBADOR}; en caso contrario, a \code{APROBADO_SUPERVISOR}.
-  \item \textbf{Revisión por alcohol:} el aprobador revisa los gastos con bebidas alcohólicas y aprueba o rechaza. Si aprueba, la rendición pasa a \code{APROBADO_SUPERVISOR}.
+  Puede observar gastos individuales, exportar la planilla en Excel y aprobar o rechazar. Si aprueba y la rendición tiene gastos no deducibles, pasa a \code{EN_REVISION_APROBADOR}; en caso contrario, a \code{APROBADO_SUPERVISOR}.
+  \item \textbf{Revisión de gastos no deducibles:} el aprobador revisa los gastos con alcohol o propinas y aprueba o rechaza. Si aprueba, la rendición pasa a \code{APROBADO_SUPERVISOR}.
   \item \textbf{Revisión final:} el revisor examina la misma información y resuelve la aprobación definitiva, que lleva el viaje a \code{APROBADO_FINAL} y envía al empleado el resultado con el saldo de cada moneda, o su rechazo.
 \end{enumerate}
 
@@ -266,7 +268,7 @@ Si el responsable de una etapa única (aprobador, tesorero o revisor) es el prop
 \code{EN_REVISION_TESORERO} & \estado{FFE3C2}{8A4B00}{Esperando Fondos} & Pendiente de asignación de fondos. \\
 \code{EN_CURSO} & \estado{D4EDDA}{155724}{En Curso} & Fondos asignados; el empleado registra gastos. \\
 \code{EN_REVISION} & \estado{E8D5FF}{5B00A0}{En Revisión} & Rendición enviada, en revisión del supervisor. \\
-\code{EN_REVISION_APROBADOR} & \estado{FFE766}{7A5900}{Revisión por Alcohol} & Rendición con alcohol en revisión del aprobador. \\
+\code{EN_REVISION_APROBADOR} & \estado{FFE766}{7A5900}{Revisión de No Deducibles} & Rendición con gastos no deducibles en revisión del aprobador. \\
 \code{APROBADO_SUPERVISOR} & \estado{A9C6F6}{000A65}{Apr. Preliminar} & Pendiente de revisión final. \\
 \code{APROBADO_FINAL} & \estado{D4EDDA}{155724}{Aprobado} & Rendición aprobada definitivamente. \\
 \code{RECHAZADO} & \estado{FFC2C3}{500203}{Rechazado} & Rechazado en cualquiera de los dos flujos. \\
@@ -307,7 +309,7 @@ El sistema calcula automáticamente las retenciones según el tipo de comprobant
 \code{S} & Servicio o alquiler sin factura & RC-IVA 13\% e IT 3\% sobre la base incrementada \\
 \end{xltabular}
 
-Los gastos internacionales quedan exentos de retenciones. Los gastos con alcohol pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura la empresa asume los impuestos (base incrementada): el empleado registra lo que pagó; el RC-IVA o IUE y el IT se calculan cada uno con su porcentaje sobre lo pagado $\div$ 0.84 en servicios ($\div$ 0.92 en compras), sin redondear esa división, y cada retención se redondea a centavos; la base es pagado + retenciones, como lo calcula contabilidad. Por ejemplo, con 50.00 pagados en un servicio el RC-IVA es 7.74, el IT 1.79 y la base 59.53. Si el gasto tiene subgastos, cada uno se calcula aparte y se suman, como en el recibo de papel. Lo pagado cuenta para el presupuesto y la base es el importe costo/gasto de la planilla.
+Los gastos internacionales quedan exentos de retenciones. Los gastos no deducibles (alcohol o propinas) pierden toda retención y crédito fiscal y se imputan íntegros como costo. En las facturas (\code{F}), el IVA es el 13\% del total y se resta de él, igual que las retenciones; al empleado se le reconoce el total, y en la planilla el IVA figura en su columna como crédito fiscal de la empresa y el importe costo/gasto es el total menos el IVA. Los recibos (\code{R}) no llevan IVA: el monto es el total pagado y la planilla muestra IVA cero. En los gastos sin factura la empresa asume los impuestos (base incrementada): el empleado registra lo que pagó; el RC-IVA o IUE y el IT se calculan cada uno con su porcentaje sobre lo pagado $\div$ 0.84 en servicios ($\div$ 0.92 en compras), sin redondear esa división, y cada retención se redondea a centavos; la base es pagado + retenciones, como lo calcula contabilidad. Por ejemplo, con 50.00 pagados en un servicio el RC-IVA es 7.74, el IT 1.79 y la base 59.53. Si el gasto tiene subgastos, cada uno se calcula aparte y se suman, como en el recibo de papel. Lo pagado cuenta para el presupuesto y la base es el importe costo/gasto de la planilla.
 
 Todos los importes se redondean a centavos, y los medios centavos suben (1.005 se redondea a 1.01). Por ejemplo, un recibo de servicios con cuatro taxis pagados en total 240 Bs se calcula así:
 
@@ -723,7 +725,7 @@ Ninguna credencial se incluye en el repositorio. Ambos servicios obtienen su con
 \code{SUPABASE_KEY} & Clave de servicio para el acceso a los datos. & Backend \\
 \rowcolor{maxamFondo} \code{JWT_SECRET} & Firma del token de acceso. & Backend \\
 \code{JWT_REFRESH_SECRET} & Firma del token de renovación de sesión. & Backend \\
-\rowcolor{maxamFondo} \code{GEMINI_API_KEY} & Extracción de comprobantes y detección de alcohol. & Backend \\
+\rowcolor{maxamFondo} \code{GEMINI_API_KEY} & Extracción de comprobantes y detección de gastos no deducibles. & Backend \\
 \code{BREVO_API_KEY} & Envío de correo transaccional. & Backend \\
 \rowcolor{maxamFondo} \code{ABSTRACT_EMAIL_API_KEY} & Verificación de direcciones de correo. & Backend \\
 \code{FRONTEND_URL} & Enlace del botón ``Ingresar al sistema'' de los correos. & Backend \\
@@ -757,19 +759,19 @@ El sistema utiliza \textbf{PostgreSQL}. Se aprovechan características propias d
 El uso de \texttt{TIMESTAMPTZ} en lugar de \texttt{TIMESTAMP} resultó determinante: con el tipo sin zona horaria, PostgreSQL descartaba el huso al guardar el valor y el cliente lo interpretaba después como hora local, desplazando las fechas cuatro horas respecto del horario de Bolivia.
 
 \subsection{Tablas del esquema}
-El esquema está compuesto por \textbf{24 tablas}, agrupadas según las entidades principales del dominio.
+El esquema está compuesto por \textbf{28 tablas}, agrupadas según las entidades principales del dominio.
 
 \begin{xltabular}{\textwidth}{L{3.2cm} Y}
 \cabecera \tth{Agrupación} & \tth{Tablas} \\
 \endfirsthead
 \cabecera \tth{Agrupación} & \tth{Tablas} \\
 \endhead
-\rowcolor{maxamFondo} Catálogo & Rol, Cargo, Seccion, Categoria\_Gasto, Impuesto, Proveedor \\
+\rowcolor{maxamFondo} Catálogo & Rol, Cargo, Seccion, Categoria\_Gasto, Impuesto, Proveedor, Vehiculo \\
 Usuarios & Usuario, Codigo\_Verificacion, Auditoria \\
 \rowcolor{maxamFondo} Viajes & Viaje, Solicitud\_Autorizacion\_Plazo, Solicitud\_Reemplazo, Revision\_Viaje \\
 Gastos & Gasto, Gasto\_Subitem, Gasto\_Tramo\_Moneda, Imagen, Imagen\_Respaldo \\
 \rowcolor{maxamFondo} Facturas & Factura, Detalle\_Factura, Factura\_Impuestos \\
-Transversal & Comentario, Correlativo\_Recibo, Recibo, Configuracion\_Recordatorio \\
+Transversal & Comentario, Correlativo\_Recibo, Correlativo\_Rendicion, Correlativo\_Viaje, Recibo, Configuracion\_Recordatorio \\
 \end{xltabular}
 
 \subsubsection{Rol}
@@ -833,8 +835,13 @@ Entidad central del sistema. Su estado gobierna ambos flujos de aprobación.
   \campo{fecha_fin}{Fecha de finalización}{DATE}
   \campo{tipo}{Nacional o Internacional}{VARCHAR(15), CHECK}
   \campo{transporte}{Medio de transporte}{TEXT, Terrestre por defecto}
-  \campo{placa_vehiculo}{Placa del vehículo de la empresa, opcional}{VARCHAR(20)}
-  \campo{monto_asignado}{Presupuesto en bolivianos, calculado con las tarifas del cargo y ajustado por tesorería}{DECIMAL(10,2)}
+  \campo{placa_vehiculo}{Placa que tenía el vehículo de la empresa al usarlo}{VARCHAR(20)}
+  \campo{id_vehiculo}{Vehículo de la empresa, opcional}{INTEGER}
+  \campo{gestion_hospedaje}{Empresa o Propio}{VARCHAR(10), CHECK}
+  \campo{numero_viaje}{Número del viaje en su año, para VIA-número/año}{INTEGER}
+  \campo{anio_viaje}{Año del número del viaje}{SMALLINT}
+  \campo{monto_asignado}{Presupuesto en bolivianos, calculado con las tarifas del cargo y ajustado por tesorería; incluye el combustible}{DECIMAL(10,2)}
+  \campo{monto_combustible}{Parte del presupuesto para combustible del vehículo de la empresa}{NUMERIC(10,2)}
   \campo{monto_asignado_usd}{Presupuesto en dólares, calculado con las tarifas del cargo y ajustado por tesorería}{NUMERIC(10,2)}
   \campo{estado}{Uno de los diez estados definidos}{VARCHAR(25), CHECK}
   \campo{fue_iniciado}{Distingue un rechazo en la autorización de uno en la rendición}{BOOLEAN}
@@ -919,6 +926,7 @@ Cada gasto realizado durante un viaje. Guarda los valores de retención calculad
   \campo{tipo_cambio}{Unidades de esa moneda por 1 dólar (1 en dólares)}{NUMERIC(10,4)}
   \campo{monto_moneda_origen}{Importe en la moneda de la factura}{NUMERIC(10,2)}
   \campo{tipo_cambio_bs}{Bolivianos por 1 dólar, para la planilla}{NUMERIC(10,4)}
+  \campo{moneda_rendicion}{Moneda en que se rinde el gasto internacional: USD o BOB}{CHAR(3)}
   \campo{base_imponible}{Base de cálculo de las retenciones}{NUMERIC(10,2)}
   \campo{retencion_rc_iva}{Retención RC-IVA}{NUMERIC(10,2)}
   \campo{retencion_iue}{Retención IUE}{NUMERIC(10,2)}
@@ -1026,11 +1034,21 @@ Eventos de acceso y de seguridad, con fines de trazabilidad.
   \campo{id_usuario}{Usuario que generó el evento}{INTEGER}
 \end{itemize}
 
+\subsubsection{Vehiculo}
+Flota de vehículos de la empresa que gestiona el administrador. Al crear un viaje en vehículo de la empresa solo se ofrecen los activos que no están en otro viaje en revisión, aprobado, en tesorería o en curso; un índice único parcial lo garantiza en la base.
+\begin{itemize}
+  \campo{id_vehiculo}{Identificador único}{SERIAL, clave primaria}
+  \campo{placa}{Placa del vehículo}{VARCHAR(20), única}
+  \campo{descripcion}{Marca y modelo, opcional}{VARCHAR(100)}
+  \campo{activo}{Si se ofrece al crear viajes}{BOOLEAN}
+\end{itemize}
+
 \subsubsection{Correlativo\_Recibo y Recibo}
-\code{Correlativo_Recibo} es una tabla de una sola fila con el último número de recibo emitido. Su incremento lo hace una función almacenada que actualiza y devuelve el nuevo valor en una sola operación, evitando que dos emisiones simultáneas obtengan el mismo número. \code{Correlativo_Rendicion} guarda el último número de rendición de cada mes: cuando una rendición queda aprobada del todo, un trigger le asigna el siguiente número del mes de sus comprobantes, que aparece en la descripción del Excel para Oracle (por ejemplo ``F 10-41''). \code{Recibo} guarda el número de cada gasto sin factura, asignado al registrarlo, y el de cada recibo agrupado; se reutiliza al enviar o reenviar el recibo.
+\code{Correlativo_Recibo} guarda el último número de recibo de cada mes: el correlativo vuelve a 1 cada mes. Su incremento lo hace una función almacenada que actualiza y devuelve el nuevo valor en una sola operación, evitando que dos emisiones simultáneas obtengan el mismo número. \code{Correlativo_Viaje} guarda el último número de viaje de cada año, que un trigger asigna al crear el viaje. \code{Correlativo_Rendicion} guarda el último número de rendición de cada mes: cuando una rendición queda aprobada del todo, un trigger le asigna el siguiente número del mes de sus comprobantes, que aparece en la descripción del Excel para Oracle (por ejemplo ``F 10-41''). \code{Recibo} guarda el número de cada gasto sin factura, asignado al registrarlo, y el de cada recibo agrupado; se reutiliza al enviar o reenviar el recibo.
 \begin{itemize}
   \campo{id_recibo}{Identificador único}{SERIAL, clave primaria}
-  \campo{numero}{Número del recibo}{INTEGER, único}
+  \campo{numero}{Número del recibo en su mes}{INTEGER}
+  \campo{periodo}{Mes del correlativo (AAAA-MM); número y mes son únicos juntos}{CHAR(7)}
   \campo{id_viaje}{Viaje}{INTEGER}
   \campo{id_gasto}{Gasto, vacío en los recibos agrupados}{INTEGER}
   \campo{tipo}{C (compra) o S (servicio)}{CHAR(1)}
@@ -1054,7 +1072,7 @@ Tabla de una sola fila con los días y horas en que se envía el resumen de pend
 Se definieron índices sobre las columnas más usadas para filtrar o unir: las claves foráneas de las tablas dependientes, el estado del viaje, el supervisor asignado, el jefe directo y la sección del usuario, el estado de las solicitudes y el historial de revisión por persona y etapa.
 
 \subsection{Seguridad a nivel de fila}
-Se habilitó \textbf{Row Level Security} en las 24 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
+Se habilitó \textbf{Row Level Security} en las 28 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
 
 \subsection{Scripts de base de datos}
 El repositorio incluye los scripts para reconstruir el esquema desde cero, que se ejecutan en este orden:
