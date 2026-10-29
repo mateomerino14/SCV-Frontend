@@ -19,13 +19,17 @@ export const getLimitStatus = (amount, limit) => {
   return 'OK';
 };
 
+export const dayLimitBs = (day, dailyRate) => day.limiteBs ?? dailyRate;
+
+export const dayLimitUsd = (day, dailyRateUsd) => day.limiteUsd ?? dailyRateUsd;
+
 export const describeDayExcess = (day, dailyRate, dailyRateUsd) => {
   const parts = [];
   if (day.excedeBs) {
-    parts.push(`${day.montoBs.toFixed(2)} Bs (límite ${dailyRate.toFixed(2)})`);
+    parts.push(`${day.montoBs.toFixed(2)} Bs (límite ${dayLimitBs(day, dailyRate).toFixed(2)})`);
   }
   if (day.excedeUsd) {
-    parts.push(`${day.montoUsd.toFixed(2)} USD (límite ${dailyRateUsd.toFixed(2)})`);
+    parts.push(`${day.montoUsd.toFixed(2)} USD (límite ${dayLimitUsd(day, dailyRateUsd).toFixed(2)})`);
   }
   return parts.join(' y ');
 };

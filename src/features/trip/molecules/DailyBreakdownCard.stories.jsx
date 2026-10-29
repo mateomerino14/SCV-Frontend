@@ -44,3 +44,18 @@ export const International = {
 export const Collapsed = {
   args: {...International.args, defaultOpen: false},
 };
+
+export const InternationalOnlyBs = {
+  name: 'Internacional con fondo solo en Bs',
+  args: {
+    dailyRate: 300,
+    dailyRateUsd: 100,
+    isInternational: true,
+    defaultOpen: true,
+    dailyBreakdown: [
+      {fecha: '2026-10-20', montoBs: 180, montoUsd: 0, limiteBs: 300, limiteUsd: 100, soloBs: true, tipoCambio: null},
+      {fecha: '2026-10-21', montoBs: 750, montoUsd: 0, limiteBs: 696, limiteUsd: 100, soloBs: true, tipoCambio: 6.96},
+      {fecha: '2026-10-22', montoBs: 410, montoUsd: 0, limiteBs: 696, limiteUsd: 100, soloBs: true, tipoCambio: 6.96},
+    ],
+  },
+};

@@ -81,7 +81,7 @@ function ForeignCurrencyFields({currencies, currency, exchangeRate, bsRate, amou
               </button>
             ))}
           </div>
-          <p className={styles.note} style={{color: COLORS.labels}}>Así sale en el Excel y el PDF de la rendición y se descuenta de ese fondo. El control diario siempre compara con tu tarifa en USD.</p>
+          <p className={styles.note} style={{color: COLORS.labels}}>Así sale en el Excel y el PDF de la rendición y se descuenta de ese fondo. El control diario va en USD si tu viaje tiene fondo en dólares, o en Bs si recibiste todo en bolivianos.</p>
         </div>
       )}
     </div>

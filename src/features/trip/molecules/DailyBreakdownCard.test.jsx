@@ -33,4 +33,13 @@ describe('DailyBreakdownCard', () => {
     const {container} = render(<DailyBreakdownCard dailyBreakdown={[]} dailyRate={250} />);
     expect(container).toBeEmptyDOMElement();
   });
+
+  it('con fondo solo en Bs muestra una barra en Bs con el límite del día pasado a Bs', () => {
+    const onlyBs = [{fecha: '2026-10-21', montoBs: 1200, montoUsd: 0, limiteBs: 696, limiteUsd: 100, soloBs: true, tipoCambio: 6.96, excedeBs: true, excedeUsd: false}];
+    render(<DailyBreakdownCard dailyBreakdown={onlyBs} dailyRate={250} dailyRateUsd={100} isInternational defaultOpen />);
+    expect(screen.queryByText('USD')).not.toBeInTheDocument();
+    expect(screen.getByText('límite 696.00')).toBeInTheDocument();
+    expect(screen.getByText('Excede en 504.00 Bs')).toBeInTheDocument();
+    expect(screen.getByText(/Fondo solo en Bs: límite de 100.00 USD × T\/C 6.9600/)).toBeInTheDocument();
+  });
 });
