@@ -17,6 +17,7 @@ const DashboardAdminPage = lazy(() => import('./pages/admin/DashboardAdminPage')
 const UserManagementPage = lazy(() => import('./pages/admin/UserManagementPage'));
 const PositionManagementPage = lazy(() => import('./pages/admin/PositionManagementPage'));
 const SectionManagementPage = lazy(() => import('./pages/admin/SectionManagementPage'));
+const VehicleManagementPage = lazy(() => import('./pages/admin/VehicleManagementPage'));
 const AuditLogPage = lazy(() => import('./pages/admin/AuditLogPage'));
 const ReminderSettingsPage = lazy(() => import('./pages/admin/ReminderSettingsPage'));
 const EmployeeDashboardPage = lazy(() => import('./pages/trip/EmployeeDashboardPage'));
@@ -160,6 +161,7 @@ function App() {
         <Route path="/dashboard/administrador/usuarios" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><UserManagementPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/cargos" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><PositionManagementPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/secciones" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><SectionManagementPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/dashboard/administrador/vehiculos" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><VehicleManagementPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/historial-accesos" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><AuditLogPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/recordatorios" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><ReminderSettingsPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/administrador/perfil" element={<ProtectedRoute allowedRoles={[1]}><PageTransition><ProfilePage /></PageTransition></ProtectedRoute>} />
