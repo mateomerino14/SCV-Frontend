@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import {getTripDetail, editTrip} from '../../services/trip/tripService';
 import {maxTripReasonLength} from '../../constants/tripLimits';
+import useTripLogistics, {companyVehicle} from './useTripLogistics';
 
 const EDITABLE_STATUSES = ['BORRADOR', 'RECHAZADO'];
 
@@ -12,13 +13,15 @@ function useEditTrip(tripId, user) {
   const [endDate, setEndDate] = useState('');
   const [type, setType] = useState('Nacional');
   const [transport, setTransport] = useState('Terrestre');
-  const [vehiclePlate, setVehiclePlate] = useState('');
   const [originalStatus, setOriginalStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+
+  const logistics = useTripLogistics(transport);
+  const {loadLogistics} = logistics;
 
   useEffect(() => {
     const load = async () => {
@@ -42,20 +45,19 @@ function useEditTrip(tripId, user) {
       setEndDate(trip.fecha_fin || '');
       setType(trip.tipo || 'Nacional');
       setTransport(trip.transporte || 'Terrestre');
-      setVehiclePlate(trip.placa_vehiculo || '');
+      loadLogistics(trip);
       setOriginalStatus(trip.estado || null);
     };
     load();
-  }, [tripId]);
+  }, [tripId, loadLogistics]);
 
   const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
   const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
 
   const handleTypeChange = (newType) => {
     setType(newType);
-    if (newType === 'Internacional' && transport === 'Vehículo de Empresa') {
+    if (newType === 'Internacional' && transport === companyVehicle) {
       setTransport('Terrestre');
-      setVehiclePlate('');
     }
   };
 
@@ -123,14 +125,6 @@ function useEditTrip(tripId, user) {
     setFieldErrors((prev) => ({...prev, endDate: undefined}));
   };
 
-  const handleVehiclePlateChange = (value) => {
-    if (value.length > 20) {
-      return;
-    }
-    setVehiclePlate(value);
-    setFieldErrors((prev) => ({...prev, vehiclePlate: undefined}));
-  };
-
   const validate = () => {
     const errors = {};
     if (!reason.trim()) {
@@ -151,10 +145,7 @@ function useEditTrip(tripId, user) {
     if (startDate && endDate && calculateDays() <= 0) {
       errors.endDate = 'La fecha fin debe ser posterior a la fecha de inicio';
     }
-    if (transport === 'Vehículo de Empresa' && !vehiclePlate.trim()) {
-      errors.vehiclePlate = 'La placa del vehículo es requerida';
-    }
-    return errors;
+    return {...errors, ...logistics.validateLogistics()};
   };
 
   const handleSave = async (onSuccess) => {
@@ -168,10 +159,6 @@ function useEditTrip(tripId, user) {
     }
     setFieldErrors({});
     setLoading(true);
-    let plate = null;
-    if (transport === 'Vehículo de Empresa') {
-      plate = vehiclePlate.trim();
-    }
     const data = await editTrip(tripId, {
       motivo: reason.trim(),
       origen: origin.trim(),
@@ -180,9 +167,9 @@ function useEditTrip(tripId, user) {
       fecha_fin: endDate,
       tipo: type,
       transporte: transport,
-      placa_vehiculo: plate,
-      monto_asignado: totalAmount,
+      monto_asignado: totalAmount + logistics.fuelValue,
       monto_asignado_usd: totalAmountUsd,
+      ...logistics.logisticsPayload(),
     });
     setLoading(false);
     if (data.error) {
@@ -199,7 +186,7 @@ function useEditTrip(tripId, user) {
     startDate, endDate,
     type, setType, handleTypeChange,
     transport, setTransport,
-    vehiclePlate, handleVehiclePlateChange,
+    logistics,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,

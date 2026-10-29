@@ -23,8 +23,9 @@ const styles = {
   citySubtitle: "text-white font-inter text-xs opacity-70 uppercase",
 };
 
-function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport}) {
+function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport, fuelAmount = 0}) {
   const isInternational = type === 'Internacional';
+  const hasFuel = !isInternational && fuelAmount > 0;
   const borderColor = COLORS.onColorFill20;
 
   return (
@@ -51,8 +52,14 @@ function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, tota
         ) : (
           <>
             <TripBudgetRow label="Días de viaje" value={`${nationalDays} día${nationalDays !== 1 ? 's' : ''}`} borderColor={borderColor} />
+            {hasFuel && (
+              <>
+                <TripBudgetRow label="Viáticos" value={`${totalAmount.toFixed(2)} Bs`} borderColor={borderColor} />
+                <TripBudgetRow label="Combustible (aparte)" value={`${fuelAmount.toFixed(2)} Bs`} borderColor={borderColor} />
+              </>
+            )}
             <p className={styles.amountLabel}>Monto Total Estimado</p>
-            <p className={styles.amount}>{totalAmount.toFixed(2)} <span className={styles.amountSub}>Bs</span></p>
+            <p className={styles.amount}>{(totalAmount + (hasFuel ? fuelAmount : 0)).toFixed(2)} <span className={styles.amountSub}>Bs</span></p>
           </>
         )}
         <div className={styles.infoBox} style={{backgroundColor: COLORS.onColorFill10}}>

@@ -5,6 +5,7 @@ import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
+import TripLogisticsSection from '../../features/trip/organisms/TripLogisticsSection';
 import TripPolicies from '../../features/trip/molecules/TripPolicies';
 import TripCreatedModal from '../../features/trip/organisms/TripCreatedModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
@@ -48,7 +49,7 @@ function CreateTripPage() {
   const {user} = useCurrentUser();
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
-    vehiclePlate, handleVehiclePlateChange,
+    logistics,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd,
     loading, error, fieldErrors, showConfirmation, setShowConfirmation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
@@ -127,12 +128,7 @@ function CreateTripPage() {
                 </div>
               </div>
             </div>
-            {transport === 'Vehículo de Empresa' && (
-              <InputField label="Placa del Vehículo" required error={fieldErrors.vehiclePlate}>
-                <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
-                  value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
-              </InputField>
-            )}
+            <TripLogisticsSection logistics={logistics} tripId={null} />
             {type === 'Internacional' && days > 0 && (
               <div className={styles.internationalBadge} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <span style={{color: COLORS.primary, fontSize: 17}}>ⓘ</span>
@@ -150,7 +146,8 @@ function CreateTripPage() {
           </div>
           <div className={styles.rightCol}>
             <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
-              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport} />
+              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport}
+              fuelAmount={logistics.fuelValue} />
           </div>
         </div>
       </div>

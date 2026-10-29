@@ -103,3 +103,17 @@ export const getStatementsForExport = async (params) => {
     return {error: error.response?.data?.error || 'No se pudieron obtener las planillas'};
   }
 };
+
+export const getAvailableVehicles = async (tripId) => {
+  try {
+    const params = {};
+    if (tripId) {
+      params.viaje = tripId;
+    }
+    const response = await apiClient.get('/vehicle/available', {params});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener los vehículos disponibles'};
+  }
+};

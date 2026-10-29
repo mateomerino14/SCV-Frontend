@@ -5,6 +5,7 @@ import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
+import TripLogisticsSection from '../../features/trip/organisms/TripLogisticsSection';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import InputField from '../../components/ui/InputField';
@@ -51,7 +52,7 @@ function EditTripPage() {
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
-    vehiclePlate, handleVehiclePlateChange,
+    logistics,
     nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
     loading, loadingData, loadError, error, fieldErrors,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
@@ -165,12 +166,7 @@ function EditTripPage() {
                 </div>
               </div>
             </div>
-            {transport === 'Vehículo de Empresa' && (
-              <InputField label="Placa del Vehículo" required error={fieldErrors.vehiclePlate}>
-                <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
-                  value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
-              </InputField>
-            )}
+            <TripLogisticsSection logistics={logistics} tripId={id} />
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
             <div style={{marginTop: 'auto'}}>
               <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}}
@@ -184,7 +180,8 @@ function EditTripPage() {
           </div>
           <div className={styles.rightCol}>
             <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
-              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport} />
+              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport}
+              fuelAmount={logistics.fuelValue} />
           </div>
         </div>
       </div>

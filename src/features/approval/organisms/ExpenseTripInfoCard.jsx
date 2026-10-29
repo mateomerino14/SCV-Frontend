@@ -3,6 +3,7 @@ import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {avatarDefault} from '../../../constants/defaultImages';
 import {getStatusBadge} from '../../../constants/tripStatusLabels';
+import {lodgingLabel, fuelAmountOf} from '../../../utils/tripLogistics';
 
 const styles = {
   card: 'rounded-2xl p-5 mb-4 shadow-md',
@@ -73,6 +74,16 @@ function ExpenseTripInfoCard({trip}) {
             {isInternational && parseFloat(trip.monto_asignado_usd || 0) > 0 && ` / USD ${parseFloat(trip.monto_asignado_usd).toFixed(2)}`}
           </p>
         </div>
+        <div>
+          <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Hospedaje</p>
+          <p className={styles.infoValue} style={{color: COLORS.text}}>{lodgingLabel(trip)}</p>
+        </div>
+        {fuelAmountOf(trip) > 0 && (
+          <div>
+            <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Combustible (incluido)</p>
+            <p className={styles.infoValue} style={{color: COLORS.text}}>Bs {fuelAmountOf(trip).toFixed(2)}</p>
+          </div>
+        )}
         <div className={styles.routeFull}>
           <p className={styles.infoLabel} style={{color: COLORS.secondary}}>{trip.origen ? 'Ruta' : 'Lugar'}</p>
           {trip.origen ? (
