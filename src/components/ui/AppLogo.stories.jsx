@@ -6,7 +6,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Logo institucional de MAXAM. Solo visible en pantallas de escritorio (oculto en móvil).',
+        component: 'Logo institucional de MAXAM FANEXA. Solo visible en pantallas de escritorio (oculto en móvil).',
       },
     },
   },
