@@ -1083,11 +1083,13 @@ El repositorio incluye los scripts para reconstruir el esquema desde cero, que s
 \endfirsthead
 \cabecera \tth{Archivo} & \tth{Contenido} \\
 \endhead
-\rowcolor{maxamFondo} \code{01_schema.sql} & Tablas, restricciones, claves foráneas e índices. \\
-\code{02_functions.sql} & Función de incremento del correlativo de recibos. \\
-\rowcolor{maxamFondo} \code{03_seed.sql} & Datos iniciales: roles, cargos, categorías, impuestos y configuración de recordatorios. \\
-\code{04_rls_hardening.sql} & Activación de la seguridad a nivel de fila. \\
-\rowcolor{maxamFondo} \code{testing_*.sql} & Limpieza y organización de prueba; solo para entornos de prueba y para las pruebas automáticas. \\
+\rowcolor{maxamFondo} \code{01_esquema.sql} & Tablas, restricciones, claves foráneas e índices. \\
+\code{02_funciones.sql} & Correlativo de recibos por mes y triggers de numeración (código VIA por año y rendición por mes). \\
+\rowcolor{maxamFondo} \code{03_datos_iniciales.sql} & Datos iniciales: roles, cargos, categorías, impuestos y configuración de recordatorios. \\
+\code{04_seguridad_rls.sql} & Activación de la seguridad a nivel de fila. \\
+\rowcolor{maxamFondo} \code{05_demo_usuarios_ficticios.sql} & Organización de demostración con personas ficticias y vehículos. \\
+\code{reconstruir_base_completa.sql} & Todos los pasos juntos para ejecutar de una vez en Supabase. \\
+\rowcolor{maxamFondo} \code{mantenimiento/} y \code{pruebas/} & Borrado, limpieza y organización de prueba; solo para entornos de prueba y para las pruebas automáticas. \\
 \end{xltabular}
 
 \subsection{Acceso a la base de datos}
