@@ -7,16 +7,16 @@ import MenuShell from './MenuShell';
 import {avatarDefault} from '../../constants/defaultImages';
 
 const styles = {
-  header: 'flex items-center gap-3 px-4 py-[18px] shrink-0',
+  header: 'flex items-center gap-3 px-4 py-[18px] [@media(max-height:700px)]:py-3 shrink-0',
   avatar: 'w-[42px] h-[42px] rounded-full object-cover shrink-0',
   headerInfo: 'flex flex-col min-w-0',
   headerName: 'text-sm font-bold font-inter truncate',
   headerPosition: 'text-[11px] font-inter uppercase truncate',
-  navScroll: 'flex-1 overflow-y-auto',
-  nav: 'flex flex-col gap-2 p-2.5',
+  navScroll: 'flex-1 min-h-0 overflow-y-auto overscroll-contain',
+  nav: 'flex flex-col gap-2 p-2.5 [@media(max-height:700px)]:gap-1.5 [@media(max-height:700px)]:p-2',
   group: 'flex flex-col gap-px p-1.5 rounded-xl',
   groupLabel: 'text-[10px] font-bold font-inter uppercase tracking-[.06em] px-2 pt-1 pb-0.5',
-  logoutBtn: 'mx-2.5 mb-3 mt-1 h-10 rounded-[10px] border text-[13px] font-bold font-inter cursor-pointer shrink-0',
+  logoutBtn: 'mx-2.5 mb-[max(12px,env(safe-area-inset-bottom))] mt-1 h-10 rounded-[10px] border text-[13px] font-bold font-inter cursor-pointer shrink-0',
 };
 
 const listVariants = {

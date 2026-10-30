@@ -1,13 +1,13 @@
 import {Send} from 'lucide-react';
-import ConfirmDialog from '../../../components/ui/ConfirmDialog';
+import SignatureDialog from '../../../components/ui/SignatureDialog';
 import {COLORS} from '../../../constants';
 
-function SubmitReviewConfirmModal({isOpen, onClose, onConfirm}) {
+function SubmitReviewConfirmModal({isOpen, onClose, onConfirm, loading}) {
   return (
-    <ConfirmDialog isOpen={isOpen} icon={Send} iconColor={COLORS.backgroundSecondary} iconBackgroundColor={COLORS.background}
-      title="Confirmar Finalización" message="¿Estás seguro de que deseas finalizar el viaje y enviar tus gastos a revisión?"
+    <SignatureDialog isOpen={isOpen} icon={Send} iconColor={COLORS.backgroundSecondary}
+      title="Confirmar Finalización" message="Firma como responsable de la rendición (casillero Preparado por de la planilla) para enviar tus gastos a revisión."
       warning="Una vez enviado no podrás registrar ni modificar gastos hasta que sea revisado."
-      confirmText="Enviar" onConfirm={onConfirm} onCancel={onClose} />
+      confirmText="Firmar y enviar" loading={loading} onConfirm={onConfirm} onCancel={onClose} />
   );
 }
 

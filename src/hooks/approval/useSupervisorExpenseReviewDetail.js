@@ -86,9 +86,9 @@ function useSupervisorExpenseReviewDetail(tripId) {
 
   const closeAlreadyTakenModal = () => setAlreadyTaken(false);
 
-  const handleApprove = async () => {
+  const handleApprove = async (signature = null) => {
     setSavingAction(true);
-    const result = await approveExpenseReview(tripId);
+    const result = await approveExpenseReview(tripId, signature);
     setSavingAction(false);
     if (result.error) {
       showError(result.error);

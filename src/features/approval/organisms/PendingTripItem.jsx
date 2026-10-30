@@ -30,7 +30,7 @@ const styles = {
   reviewBadge: "text-xs font-bold font-inter px-2 py-1 rounded-lg text-center whitespace-nowrap flex items-center gap-1",
 };
 
-function PendingTripItem({trip, detailRoute, originRoute, onTake, onReturn, taking, assignedField = 'id_supervisor_asignado', detailLabel = 'Ver Detalle'}) {
+function PendingTripItem({trip, detailRoute, originRoute, onTake, onReturn, taking, assignedField = 'id_supervisor_asignado', detailLabel = 'Ver Detalle', stageLabel}) {
   const status = tripStatusConfig[trip.estado] || getStatusBadge(trip.estado);
   const isInternational = trip.tipo === 'Internacional';
   const unassigned = !trip[assignedField];
@@ -71,6 +71,9 @@ function PendingTripItem({trip, detailRoute, originRoute, onTake, onReturn, taki
         </div>
         <TripRoute origin={trip.origen} destination={trip.destino} size={10} maxWidth={100} />
         <div className={styles.badgesRow}>
+          {stageLabel && (
+            <span className={styles.transportBadge} style={{backgroundColor: COLORS.backgroundHeader, color: COLORS.primary}}>{stageLabel}</span>
+          )}
           <TripTypeBadge isInternational={isInternational} />
           {trip.transporte && (
             <span className={styles.transportBadge} style={{backgroundColor: COLORS.title + '15', color: COLORS.title}}>

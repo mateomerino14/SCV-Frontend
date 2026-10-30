@@ -120,7 +120,8 @@ function ApproverTripReviewDetailPage() {
           </div>
         )}
       </div>
-      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction} />
+      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction}
+        signatureMessage="Firma para aprobar el viaje: tu firma va en el memorándum que se envía al empleado y a tesorería." />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <AddCommentModal isOpen={showAddComment} onClose={() => {setShowAddComment(false); editObservation(0, '');}} onConfirm={handleAddComment} observations={observations} onEdit={editObservation} loading={savingAction} error={modalError} />

@@ -34,7 +34,7 @@ describe('Excel para Oracle', () => {
     expect(lines.map((line) => !!line.auto)).toEqual([false, true]);
   });
 
-  it('arma el gasto sin factura con base incrementada y retenciones', () => {
+  it('arma el gasto sin factura con base incrementada y retenciones, sin la línea de impuesto en cero', () => {
     const {values, lines} = buildOracleInvoice(trip, lodging);
     expect(values).toMatchObject({
       numeroFactura: '046870', importeFactura: 214.29, codigoImpuesto: 'EMP-SIN-IVA', grupoRetencion: 'SERVICIOS Y ALQUILERES', importeRetenido: '',
@@ -42,7 +42,6 @@ describe('Excel para Oracle', () => {
     });
     expect(lines.map((line) => [line.values.tipo, line.values.importe, line.values.codigoImpuesto, line.values.cuenta])).toEqual([
       ['Artículo', 214.29, 'EMP-SIN-IVA', '76.8.421.626030.000000.200.000.000'],
-      ['Impuesto', 0, 'EMP-SIN-IVA', '76.8.900.472000.000000.000.000.000'],
       ['Retención de Impuestos', -27.86, '13 RCIVA RET', '76.8.900.475196.000000.000.000.000'],
       ['Retención de Impuestos', -6.43, '3 IT RET', '76.8.900.475195.000000.000.000.000'],
     ]);
@@ -52,8 +51,8 @@ describe('Excel para Oracle', () => {
   it('deja sin marcar la cuenta del IUE de la línea que crea Oracle y el tipo de cambio del gasto internacional', () => {
     const purchase = buildOracleInvoice(trip, {...lodging, tipo: 'C'});
     expect(purchase.values.grupoRetencion).toBe('RETENCIONES COMPRAS');
-    expect(purchase.lines[2].missing).toEqual([]);
-    expect(purchase.lines[2].values.cuenta).toBe('');
+    expect(purchase.lines[1].missing).toEqual([]);
+    expect(purchase.lines[1].values.cuenta).toBe('');
     const alcohol = buildOracleInvoice(trip, {...fuelInvoice, tiene_alcohol: true}).values;
     expect(alcohol).toMatchObject({codigoImpuesto: 'EMP-SIN-IVA', condiciones: 'Contado', grupoPago: 'TRANS-EMPLEADOS', importeFactura: 144.98, flexfield: 'Lote de Facturas: 900\nContexto: Factura Estándar'});
     expect(alcohol.descripcion.startsWith('R 10-40')).toBe(true);
@@ -68,13 +67,15 @@ describe('Excel para Oracle', () => {
     expect(international.values).toMatchObject({divisaFactura: 'USD', importeFactura: 50, grupoRetencion: ''});
     expect(international.missing).toEqual(['numeroFactura']);
     expect(international.values).toMatchObject({fechaCambio: '', claseTipoCambio: '', tipoCambio: ''});
-    expect(international.lines).toHaveLength(2);
+    expect(international.lines).toHaveLength(1);
+    const inBs = buildOracleInvoice(trip, {...lodging, es_gasto_internacional: true, monto_total: 50, tipo_cambio_bs: 6.96, moneda_rendicion: 'BOB'});
+    expect(inBs.values).toMatchObject({divisaFactura: 'BOB', importeFactura: 348});
   });
 
   it('relaciona cada línea con su fila de factura', () => {
     const {invoices, lines} = buildOracleRows([{trip, expenses: [fuelInvoice, lodging]}]);
     expect(invoices).toHaveLength(2);
-    expect(lines.map((line) => line.values.filaFactura)).toEqual([2, 2, 3, 3, 3, 3]);
+    expect(lines.map((line) => line.values.filaFactura)).toEqual([2, 2, 3, 3, 3]);
     const topManager = buildOracleInvoice({...trip, Usuario: {...trip.Usuario, Jefe: null}}, lodging);
     expect(topManager.lines[0].values.cuenta).toBe('76.8.530.626030.000000.200.000.000');
     const noCodes = buildOracleInvoice({...trip, Usuario: {...trip.Usuario, Jefe: {codigo_dependencia: null}, Seccion: {}}}, lodging);

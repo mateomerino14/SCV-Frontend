@@ -5,16 +5,23 @@ export const documentSources = {invoice: 'invoice', original: 'original', system
 
 export const systemReceiptNote = 'Número de recibo del sistema: el gasto no tiene recibo original';
 
-export const formatReceiptNumber = (number) => String(number).padStart(receiptNumberDigits, '0');
+export const formatReceiptNumber = (number, period) => {
+  const digits = String(number).padStart(receiptNumberDigits, '0');
+  if (!period) {
+    return digits;
+  }
+  const [year, month] = String(period).split('-');
+  return `${digits}/${month}-${year}`;
+};
 
 const systemReceiptOf = (expense, tripReceipts) => {
   const own = (expense.Recibo || [])[0];
   if (own) {
-    return formatReceiptNumber(own.numero);
+    return formatReceiptNumber(own.numero, own.periodo);
   }
   const grouped = (tripReceipts || []).find((receipt) => !receipt.id_gasto && receipt.tipo === expense.tipo && !!receipt.es_gasto_internacional === !!expense.es_gasto_internacional);
   if (grouped) {
-    return formatReceiptNumber(grouped.numero);
+    return formatReceiptNumber(grouped.numero, grouped.periodo);
   }
   return '';
 };

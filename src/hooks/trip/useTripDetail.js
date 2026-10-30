@@ -124,7 +124,7 @@ function useTripDetail(tripId) {
     setShowSubmitReviewModal(true);
   };
 
-  const handleConfirmSubmitReview = async () => {
+  const handleConfirmSubmitReview = async (signature) => {
     setShowSubmitReviewModal(false);
     setSubmittingReview(true);
     const justificationsToSend = [];
@@ -138,7 +138,7 @@ function useTripDetail(tripId) {
     if (exceedsHotels && hotelText) {
       justificationsToSend.push({fecha: null, descripcion: hotelText});
     }
-    const data = await confirmCompletion(tripId, justificationsToSend);
+    const data = await confirmCompletion(tripId, justificationsToSend, signature);
     setSubmittingReview(false);
     if (data.error) {
       showError(data.error);

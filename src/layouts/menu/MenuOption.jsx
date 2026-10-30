@@ -2,7 +2,7 @@ import {motion} from 'framer-motion';
 import {COLORS} from '../../constants';
 
 const styles = {
-  option: 'flex items-center gap-2.5 px-2.5 py-2 rounded-[9px] cursor-pointer transition-colors',
+  option: 'flex items-center gap-2.5 px-2.5 py-2 [@media(max-height:700px)]:py-1.5 rounded-[9px] cursor-pointer transition-colors',
   optionLabel: 'text-[13px] font-semibold font-inter',
 };
 

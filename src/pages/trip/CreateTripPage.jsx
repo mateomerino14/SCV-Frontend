@@ -1,10 +1,11 @@
 import {useNavigate} from 'react-router-dom';
-import {ArrowLeft, Target, MapPin, LocateFixed} from 'lucide-react';
+import {ArrowLeft, Target, MapPin, Navigation} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
+import TripLogisticsSection from '../../features/trip/organisms/TripLogisticsSection';
 import TripPolicies from '../../features/trip/molecules/TripPolicies';
 import TripCreatedModal from '../../features/trip/organisms/TripCreatedModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
@@ -48,11 +49,11 @@ function CreateTripPage() {
   const {user} = useCurrentUser();
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
-    vehiclePlate, handleVehiclePlateChange,
+    logistics,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd,
-    loading, error, fieldErrors, showConfirmation, setShowConfirmation, loadingLocation,
+    loading, error, fieldErrors, showConfirmation, setShowConfirmation,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
-    handleUseCurrentLocation, handleSaveDraft,
+    handleSaveDraft,
   } = useCreateTrip(user);
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const today = new Date().toISOString().split('T')[0];
@@ -87,13 +88,8 @@ function CreateTripPage() {
               </InputField>
               <p className="text-[11px] font-inter text-right mt-1" style={{color: COLORS.labels}}>{reason.length}/{maxTripReasonLength}</p>
             </div>
-            <InputField label="Origen" required error={fieldErrors.origin}
-              icon={
-                <button type="button" onClick={handleUseCurrentLocation} disabled={loadingLocation} title="Usar mi ubicación actual">
-                  <LocateFixed size={16} style={{color: loadingLocation ? COLORS.labels : COLORS.primary, cursor: loadingLocation ? 'default' : 'pointer'}} />
-                </button>
-              }>
-              <input type="text" placeholder={loadingLocation ? 'Obteniendo ubicación...' : 'Ciudad de origen...'} maxLength={200}
+            <InputField label="Origen" required icon={<Navigation size={16} style={{color: COLORS.primary}} />} error={fieldErrors.origin}>
+              <input type="text" placeholder="Ciudad de origen..." maxLength={200}
                 className={styles.input} style={{color: COLORS.text}} value={origin} onChange={(event) => handleOriginChange(event.target.value)} />
             </InputField>
             <InputField label="Destino" required icon={<MapPin size={16} style={{color: COLORS.primary}} />} error={fieldErrors.destination}>
@@ -132,12 +128,7 @@ function CreateTripPage() {
                 </div>
               </div>
             </div>
-            {transport === 'Vehículo de Empresa' && (
-              <InputField label="Placa del Vehículo" required error={fieldErrors.vehiclePlate}>
-                <input type="text" placeholder="Ej: 1234-ABC" maxLength={20} className={styles.input} style={{color: COLORS.text}}
-                  value={vehiclePlate} onChange={(event) => handleVehiclePlateChange(event.target.value)} />
-              </InputField>
-            )}
+            <TripLogisticsSection logistics={logistics} tripId={null} />
             {type === 'Internacional' && days > 0 && (
               <div className={styles.internationalBadge} style={{backgroundColor: COLORS.backgroundHeader}}>
                 <span style={{color: COLORS.primary, fontSize: 17}}>ⓘ</span>
@@ -155,7 +146,8 @@ function CreateTripPage() {
           </div>
           <div className={styles.rightCol}>
             <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
-              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport} />
+              totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport}
+              fuelAmount={logistics.fuelValue} />
           </div>
         </div>
       </div>

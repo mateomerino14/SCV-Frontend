@@ -19,10 +19,12 @@ export const Interactive = {
     const [currency, setCurrency] = useState('PEN');
     const [exchangeRate, setExchangeRate] = useState('3.78');
     const [bsRate, setBsRate] = useState('6.96');
+    const [renditionCurrency, setRenditionCurrency] = useState('BOB');
     return (
       <div style={{width: 360}}>
         <ForeignCurrencyFields currencies={currencies} currency={currency} exchangeRate={exchangeRate} bsRate={bsRate} amount={170}
-          onCurrencyChange={setCurrency} onExchangeRateChange={setExchangeRate} onBsRateChange={setBsRate} />
+          onCurrencyChange={setCurrency} onExchangeRateChange={setExchangeRate} onBsRateChange={setBsRate}
+          renditionCurrency={renditionCurrency} onRenditionCurrencyChange={setRenditionCurrency} />
       </div>
     );
   },

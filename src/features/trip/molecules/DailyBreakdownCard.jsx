@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {ChevronDown, ChevronUp, CalendarDays} from 'lucide-react';
 import DailyLimitBar from '../atoms/DailyLimitBar';
-import {dailyLimitStatus, getLimitStatus} from '../constants/dailyLimitStatus';
+import {dailyLimitStatus, getLimitStatus, dayLimitBs, dayLimitUsd} from '../constants/dailyLimitStatus';
 import {COLORS} from '../../../constants';
 
 const styles = {
@@ -17,6 +17,7 @@ const styles = {
   dayLabel: 'text-sm font-bold font-inter capitalize',
   badge: 'inline-flex items-center gap-1 text-[11px] font-bold font-inter rounded-full px-2 py-0.5 whitespace-nowrap',
   excess: 'text-xs font-inter',
+  note: 'text-[11px] font-inter -mt-1',
 };
 
 const formatDayLabel = (dateText) => {
@@ -24,10 +25,12 @@ const formatDayLabel = (dateText) => {
   return new Date(year, month - 1, day).toLocaleDateString('es-ES', {weekday: 'short', day: 'numeric', month: 'short'});
 };
 
+const showsUsdBar = (day, isInternational) => isInternational && (!day.soloBs || day.montoUsd > 0);
+
 const buildDayStatus = (day, dailyRate, dailyRateUsd, isInternational, justified) => {
-  const statuses = [getLimitStatus(day.montoBs, dailyRate)];
-  if (isInternational) {
-    statuses.push(getLimitStatus(day.montoUsd, dailyRateUsd));
+  const statuses = [getLimitStatus(day.montoBs, dayLimitBs(day, dailyRate))];
+  if (showsUsdBar(day, isInternational)) {
+    statuses.push(getLimitStatus(day.montoUsd, dayLimitUsd(day, dailyRateUsd)));
   }
   if (statuses.includes('EXCEEDED')) {
     if (justified) {
@@ -43,11 +46,13 @@ const buildDayStatus = (day, dailyRate, dailyRateUsd, isInternational, justified
 
 const buildExcessText = (day, dailyRate, dailyRateUsd, isInternational) => {
   const parts = [];
-  if (dailyRate > 0 && day.montoBs > dailyRate) {
-    parts.push(`${(day.montoBs - dailyRate).toFixed(2)} Bs`);
+  const limitBs = dayLimitBs(day, dailyRate);
+  const limitUsd = dayLimitUsd(day, dailyRateUsd);
+  if (limitBs > 0 && day.montoBs > limitBs) {
+    parts.push(`${(day.montoBs - limitBs).toFixed(2)} Bs`);
   }
-  if (isInternational && dailyRateUsd > 0 && day.montoUsd > dailyRateUsd) {
-    parts.push(`${(day.montoUsd - dailyRateUsd).toFixed(2)} USD`);
+  if (isInternational && limitUsd > 0 && day.montoUsd > limitUsd) {
+    parts.push(`${(day.montoUsd - limitUsd).toFixed(2)} USD`);
   }
   if (parts.length === 0) {
     return '';
@@ -105,8 +110,13 @@ function DailyBreakdownCard({dailyBreakdown = [], dailyRate = 0, dailyRateUsd = 
                     {status.label}
                   </span>
                 </div>
-                <DailyLimitBar currency="Bs" amount={day.montoBs} limit={dailyRate} />
-                {isInternational && <DailyLimitBar currency="USD" amount={day.montoUsd} limit={dailyRateUsd} />}
+                <DailyLimitBar currency="Bs" amount={day.montoBs} limit={dayLimitBs(day, dailyRate)} />
+                {day.tipoCambio && (
+                  <p className={styles.note} style={{color: COLORS.labels}}>
+                    Fondo solo en Bs: límite de {dayLimitUsd(day, dailyRateUsd).toFixed(2)} USD × T/C {day.tipoCambio.toFixed(4)}
+                  </p>
+                )}
+                {showsUsdBar(day, isInternational) && <DailyLimitBar currency="USD" amount={day.montoUsd} limit={dayLimitUsd(day, dailyRateUsd)} />}
                 {excessText && <p className={styles.excess} style={{color: status.color}}>{excessText}</p>}
               </div>
             );

@@ -1,5 +1,6 @@
 import {useState, useEffect, useRef} from 'react';
 import {getMyTrips} from '../../services/approval/approverService';
+import {getMyTripReviews} from '../../services/approval/reviewService';
 import {getEmployees} from '../../services/user/userService';
 import {getSections} from '../../services/admin/adminService';
 
@@ -7,6 +8,7 @@ const pollingInterval = 30 * 1000;
 
 function useApproverReviews() {
   const [myTrips, setMyTrips] = useState([]);
+  const [teamTrips, setTeamTrips] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ function useApproverReviews() {
     if (showLoading) {
       setLoading(true);
     }
-    const myTripsData = await getMyTrips(currentFilters);
+    const [myTripsData, teamTripsData] = await Promise.all([getMyTrips(currentFilters), getMyTripReviews(currentFilters)]);
     if (showLoading) {
       setLoading(false);
     }
@@ -33,7 +35,10 @@ function useApproverReviews() {
       return;
     }
     setError('');
-    setMyTrips(myTripsData);
+    setMyTrips(myTripsData.map((trip) => ({...trip, etapa: 'APROBACION'})));
+    if (!teamTripsData.error) {
+      setTeamTrips(teamTripsData.map((trip) => ({...trip, etapa: 'JEFE'})));
+    }
   };
 
   useEffect(() => {
@@ -65,10 +70,17 @@ function useApproverReviews() {
     load(emptyFilters, true);
   };
 
-  const isPendingForMe = (trip) => trip.estado === 'APROBADO_VIAJE' && trip.asignado_a_mi !== false;
-  const approvedTrips = myTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip));
-  const rejectedTrips = myTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO');
-  const myPendingTrips = myTrips.filter(isPendingForMe);
+  const isPendingForMe = (trip) => {
+    if (trip.etapa === 'JEFE') {
+      return trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false;
+    }
+    return trip.estado === 'APROBADO_VIAJE' && trip.asignado_a_mi !== false;
+  };
+  const withoutRepeats = (trips) => trips.filter((trip, index) => trips.findIndex((other) => other.id_viaje === trip.id_viaje) === index);
+  const allTrips = [...myTrips, ...teamTrips];
+  const approvedTrips = withoutRepeats(allTrips.filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip)));
+  const rejectedTrips = withoutRepeats(allTrips.filter((trip) => trip.resultado_revision === 'RECHAZADO'));
+  const myPendingTrips = withoutRepeats(allTrips.filter(isPendingForMe));
   let displayedTrips = myPendingTrips;
   if (tab === 'APROBADOS') {
     displayedTrips = approvedTrips;

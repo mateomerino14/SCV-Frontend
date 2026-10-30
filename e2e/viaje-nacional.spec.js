@@ -5,7 +5,7 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo @celular', a
   await loginInBrowser(page, 'juan.empleado');
   await page.goto('/dashboard/empleado/crear-viaje');
   await page.getByPlaceholder('Inspección técnica y de producción...').fill('Prueba de monto');
-  await page.getByPlaceholder(/Ciudad de origen|Obteniendo ubicación/).fill('La Paz');
+  await page.getByPlaceholder('Ciudad de origen...').fill('La Paz');
   await page.getByPlaceholder('¿A dónde se dirige?').fill('Santa Cruz');
   await pickDate(page, 0, boliviaDate(5));
   await pickDate(page, 1, boliviaDate(7));
@@ -35,4 +35,25 @@ test('un día que pasa la tarifa se marca en el control diario y pide justificac
   await page.getByPlaceholder('Detalle el motivo del exceso de este día...').fill('Reunión extendida con el cliente');
   await page.getByText('Control Diario').click();
   await expect(page.getByText(/1 día justificado/)).toBeVisible();
+});
+
+test('en vehículo de la empresa elige un vehículo libre, el combustible aparte y quién gestiona el hospedaje @celular', async ({page}) => {
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto('/dashboard/empleado/crear-viaje');
+  await page.getByPlaceholder('Inspección técnica y de producción...').fill('Visita en camioneta');
+  await page.getByPlaceholder('Ciudad de origen...').fill('Cochabamba');
+  await page.getByPlaceholder('¿A dónde se dirige?').fill('Oruro');
+  await pickDate(page, 0, boliviaDate(5));
+  await pickDate(page, 1, boliviaDate(7));
+  await page.getByRole('button', {name: 'Vehículo de Empresa'}).click();
+  await page.getByRole('button', {name: 'Guardar Borrador'}).click();
+  await expect(page.getByText('Elige el vehículo de la empresa')).toBeVisible();
+  await page.getByRole('button', {name: 'Elige un vehículo libre'}).click();
+  await page.getByText('3456-BCD — Vagoneta Nissan Patrol').click();
+  await page.getByLabel('Fondo para combustible').fill('400');
+  await expect(page.getByText('Combustible (aparte)')).toBeVisible();
+  await expect(page.getByText(/1300\.00/).first()).toBeVisible();
+  await page.getByRole('radio', {name: 'Empresa'}).click();
+  await page.getByRole('button', {name: 'Guardar Borrador'}).click();
+  await expect(page.getByText('Se registró el viaje correctamente')).toBeVisible();
 });

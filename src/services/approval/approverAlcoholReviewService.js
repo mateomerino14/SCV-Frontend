@@ -53,9 +53,9 @@ export const getAlcoholReviewDetail = async (tripId) => {
   }
 };
 
-export const approveAlcoholReview = async (tripId) => {
+export const approveAlcoholReview = async (tripId, signature = null) => {
   try {
-    const response = await apiClient.post(`/approver/alcohol-review/${tripId}/approve`);
+    const response = await apiClient.post(`/approver/alcohol-review/${tripId}/approve`, {firma: signature});
     return response.data;
   }
   catch (error) {

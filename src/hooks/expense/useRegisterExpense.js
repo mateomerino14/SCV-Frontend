@@ -38,6 +38,7 @@ function newItem() {
     currency: usdCurrency,
     exchangeRate: '',
     bsRate: '',
+    renditionCurrency: '',
     usesSubitems: false,
     subitems: [newSubitem()],
     fieldErrors: {},
@@ -56,6 +57,7 @@ function useRegisterExpense(tripId) {
   const [categories, setCategories] = useState([]);
   const [isInternational, setIsInternational] = useState(false);
   const [tripRange, setTripRange] = useState({start: null, end: null});
+  const [defaultRenditionCurrency, setDefaultRenditionCurrency] = useState(usdCurrency);
   const [savingAll, setSavingAll] = useState(false);
   const [saveSummary, setSaveSummary] = useState(null);
   const amountLimit = amountLimitOf(isInternationalExpense);
@@ -79,6 +81,9 @@ function useRegisterExpense(tripId) {
       setTripRange({start: data.viaje?.fecha_inicio?.slice(0, 10) || null, end: data.viaje?.fecha_fin?.slice(0, 10) || null});
       if (data.viaje?.tipo === 'Internacional') {
         setIsInternational(true);
+      }
+      if (!(parseFloat(data.viaje?.monto_asignado_usd) > 0)) {
+        setDefaultRenditionCurrency('BOB');
       }
     };
     loadTrip();
@@ -132,6 +137,7 @@ function useRegisterExpense(tripId) {
       currency: original.currency,
       exchangeRate: original.exchangeRate,
       bsRate: original.bsRate,
+      renditionCurrency: original.renditionCurrency,
     };
     setItems((prev) => {
       const index = prev.findIndex((item) => item.id === itemId);
@@ -297,6 +303,14 @@ function useRegisterExpense(tripId) {
 
   const handleExchangeRateChange = (itemId, value) => handleRateChange(itemId, 'exchangeRate', value);
   const handleBsRateChange = (itemId, value) => handleRateChange(itemId, 'bsRate', value);
+  const handleRenditionCurrencyChange = (itemId, value) => {
+    setItems((prev) => prev.map((item) => {
+      if (item.id === itemId) {
+        return {...item, renditionCurrency: value};
+      }
+      return item;
+    }));
+  };
 
   const handleToggleSubitems = (itemId) => {
     setItems((prev) => prev.map((item) => {
@@ -440,7 +454,7 @@ function useRegisterExpense(tripId) {
         es_gasto_internacional: isInternationalExpense,
       };
       if (isInternationalExpense) {
-        Object.assign(payload, buildForeignCurrencyPayload(finalAmount, item.currency, item.exchangeRate, item.bsRate));
+        Object.assign(payload, buildForeignCurrencyPayload(finalAmount, item.currency, item.exchangeRate, item.bsRate), {moneda_rendicion: item.renditionCurrency || defaultRenditionCurrency});
       }
       if (item.usesSubitems && validSubitems.length > 0) {
         payload.subitems = buildSubitemsPayload(validSubitems);
@@ -491,7 +505,7 @@ function useRegisterExpense(tripId) {
     handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange,
     handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
-    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange, handleRenditionCurrencyChange, defaultRenditionCurrency,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
   };

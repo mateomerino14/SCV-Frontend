@@ -21,7 +21,7 @@ const tripStatusMessages = {
   EN_REVISION_TESORERO: 'Tu viaje fue aprobado y está esperando la asignación de fondos por tesorería',
   EN_CURSO: 'Viaje aprobado — registra tus gastos',
   EN_REVISION: 'Gastos enviados a revisión',
-  EN_REVISION_APROBADOR: 'Tu rendición contiene alcohol y está en revisión adicional del aprobador',
+  EN_REVISION_APROBADOR: 'Tu rendición contiene gastos no deducibles y está en revisión adicional del aprobador',
   APROBADO_SUPERVISOR: 'Gastos aprobados por supervisor — en espera de revisión final',
   APROBADO_FINAL: 'Este viaje fue aprobado definitivamente',
   RECHAZADO: 'Este viaje fue rechazado',

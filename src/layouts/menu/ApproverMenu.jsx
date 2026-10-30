@@ -1,4 +1,4 @@
-import {ClipboardCheck, Wine, FileCheck, BookOpen} from 'lucide-react';
+import {ClipboardCheck, ReceiptText} from 'lucide-react';
 import {routes} from '../../constants/routes';
 import MenuLayout from './MenuLayout';
 import {treasurySection, personalSection, accountSection} from './menuSections';
@@ -8,14 +8,12 @@ const sections = [
     label: 'Aprobación de Viajes',
     options: [
       {path: routes.approverReviews, label: 'Viajes por Aprobar', icon: ClipboardCheck},
-      {path: routes.supervisorTripHistory, label: 'Viajes de Mi Equipo', icon: FileCheck},
     ],
   },
   {
     label: 'Revisión de Rendiciones',
     options: [
-      {path: routes.supervisorExpenseReviewHistory, label: 'Rendiciones de Mi Equipo', icon: BookOpen},
-      {path: routes.approverAlcoholReviews, label: 'Rendiciones con Alcohol', icon: Wine},
+      {path: routes.approverAlcoholReviews, label: 'Rendiciones por Revisar', icon: ReceiptText},
     ],
   },
   treasurySection,

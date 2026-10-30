@@ -21,5 +21,5 @@ export const reviewStatusConfig = {
 
 export const alertConfig = {
   EXCESO_PRESUPUESTO: {label: 'Exceso Detectado', color: COLORS.warningText, bg: COLORS.warningBackground},
-  ALCOHOL: {label: 'Alcohol', color: COLORS.dangerText, bg: COLORS.dangerBackground},
+  ALCOHOL: {label: 'No deducible', color: COLORS.dangerText, bg: COLORS.dangerBackground},
 };

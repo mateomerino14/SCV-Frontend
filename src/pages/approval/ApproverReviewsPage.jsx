@@ -12,7 +12,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useApproverReviews from '../../hooks/approval/useApproverReviews';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
-import {approverPendingTripPath, routes} from '../../constants/routes';
+import {approverPendingTripPath, supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
@@ -37,7 +37,7 @@ function ApproverReviewsPage() {
     filters, setFilters, applyFilters, clearFilters,
   } = useApproverReviews();
   const pagination = useClientPagination(trips, 12, tab);
-  let subtitle = 'Viajes aprobados por el supervisor: al aprobarlos se genera el memorándum y pasan a tesorería.';
+  let subtitle = 'Bandeja única: viajes de tu equipo (como jefe directo) y viajes ya revisados por otro supervisor. Al aprobarlos se genera el memorándum y pasan a tesorería.';
   if (tab === 'APROBADOS') {
     subtitle = 'Historial de los viajes que aprobaste, con el estado en que están ahora.';
   }
@@ -76,8 +76,10 @@ function ApproverReviewsPage() {
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {pagination.visibleItems.map((trip) => (
-              <PendingTripItem key={trip.id_viaje} trip={trip} detailRoute={approverPendingTripPath(trip.id_viaje)} originRoute={routes.approverReviews}
-                assignedField="id_aprobador_asignado" detailLabel="Ver Detalle" />
+              <PendingTripItem key={trip.id_viaje} trip={trip} originRoute={routes.approverReviews} detailLabel="Ver Detalle"
+                detailRoute={trip.etapa === 'JEFE' ? supervisorPendingTripPath(trip.id_viaje) : approverPendingTripPath(trip.id_viaje)}
+                assignedField={trip.etapa === 'JEFE' ? 'id_supervisor_asignado' : 'id_aprobador_asignado'}
+                stageLabel={trip.etapa === 'JEFE' ? 'Mi equipo' : 'Aprobación'} />
             ))}
           </div>
         )}

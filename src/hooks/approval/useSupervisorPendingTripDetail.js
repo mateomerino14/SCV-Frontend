@@ -59,10 +59,10 @@ function useSupervisorPendingTripDetail(tripId) {
     setTimeout(() => setModalError(''), 3000);
   };
 
-  const handleApprove = async () => {
+  const handleApprove = async (signature = null) => {
     setShowApprove(false);
     setSavingAction(true);
-    const result = await approveTripReview(tripId);
+    const result = await approveTripReview(tripId, signature);
     setSavingAction(false);
     if (result.error) {
       showError(result.error);
