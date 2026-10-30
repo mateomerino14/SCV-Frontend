@@ -149,6 +149,7 @@ Fecha: & Octubre de 2026 \\
   \end{itemize}
   \item El medio de transporte se registra por viaje (terrestre, aéreo o vehículo de la empresa) y se muestra como distintivo en las vistas de revisión. Con vehículo de la empresa se elige uno de la flota que registra el administrador: solo se ofrecen los libres, y un vehículo se libera cuando el empleado termina su viaje. En ese caso se puede pedir un fondo aparte para combustible, que no cuenta en el control diario.
   \item Cada viaje indica quién gestiona el hospedaje: la empresa o el propio empleado.
+  \item Las aprobaciones que equivalen a firmar un papel se firman en pantalla, en un recuadro, en el momento: el gerente al aprobar el viaje (memorándum), el empleado al enviar su rendición (Preparado por), el jefe directo al aprobarla (Vo/ Bo Jefe de Área) y el gerente al aprobar los gastos no deducibles (Vo/ Bo Gerente de Área). No se suben fotos de firmas. Todos los documentos en PDF llevan un código QR que abre una página pública donde se comprueba que son auténticos y quién los firmó. Es una firma electrónica simple con registro de quién, cuándo y desde dónde; una firma digital con validez legal plena requeriría certificados de ADSIB.
   \item El código del viaje es VIA-número/año y el número vuelve a 1 cada año; el número de recibo del sistema vuelve a 1 cada mes y se muestra con su mes (000012/10-2026).
   \item La rendición de cada viaje reúne:
   \begin{itemize}
@@ -759,7 +760,7 @@ El sistema utiliza \textbf{PostgreSQL}. Se aprovechan características propias d
 El uso de \texttt{TIMESTAMPTZ} en lugar de \texttt{TIMESTAMP} resultó determinante: con el tipo sin zona horaria, PostgreSQL descartaba el huso al guardar el valor y el cliente lo interpretaba después como hora local, desplazando las fechas cuatro horas respecto del horario de Bolivia.
 
 \subsection{Tablas del esquema}
-El esquema está compuesto por \textbf{28 tablas}, agrupadas según las entidades principales del dominio.
+El esquema está compuesto por \textbf{30 tablas}, agrupadas según las entidades principales del dominio.
 
 \begin{xltabular}{\textwidth}{L{3.2cm} Y}
 \cabecera \tth{Agrupación} & \tth{Tablas} \\
@@ -771,7 +772,7 @@ Usuarios & Usuario, Codigo\_Verificacion, Auditoria \\
 \rowcolor{maxamFondo} Viajes & Viaje, Solicitud\_Autorizacion\_Plazo, Solicitud\_Reemplazo, Revision\_Viaje \\
 Gastos & Gasto, Gasto\_Subitem, Gasto\_Tramo\_Moneda, Imagen, Imagen\_Respaldo \\
 \rowcolor{maxamFondo} Facturas & Factura, Detalle\_Factura, Factura\_Impuestos \\
-Transversal & Comentario, Correlativo\_Recibo, Correlativo\_Rendicion, Correlativo\_Viaje, Recibo, Configuracion\_Recordatorio \\
+Transversal & Comentario, Firma, Documento\_Emitido, Correlativo\_Recibo, Correlativo\_Rendicion, Correlativo\_Viaje, Recibo, Configuracion\_Recordatorio \\
 \end{xltabular}
 
 \subsubsection{Rol}
@@ -1072,7 +1073,7 @@ Tabla de una sola fila con los días y horas en que se envía el resumen de pend
 Se definieron índices sobre las columnas más usadas para filtrar o unir: las claves foráneas de las tablas dependientes, el estado del viaje, el supervisor asignado, el jefe directo y la sección del usuario, el estado de las solicitudes y el historial de revisión por persona y etapa.
 
 \subsection{Seguridad a nivel de fila}
-Se habilitó \textbf{Row Level Security} en las 28 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
+Se habilitó \textbf{Row Level Security} en las 30 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
 
 \subsection{Scripts de base de datos}
 El repositorio incluye los scripts para reconstruir el esquema desde cero, que se ejecutan en este orden:

@@ -488,6 +488,7 @@ const handleRequestSubmitReview = () => {
 \code{ListCount}, \code{LoadMoreButton} & ``Mostrando X de Y'' y paginación \\
 \rowcolor{maxamFondo} \code{SkeletonCard}, \code{SkeletonList} & Indicadores de carga \\
 \code{EmptyState}, \code{InlineAlert}, \code{SuccessModal} & Estados vacíos y avisos \\
+\rowcolor{maxamFondo} \code{SignaturePad}, \code{SignatureDialog} & Firma dibujada al aprobar o enviar \\
 \rowcolor{maxamFondo} \code{PageHeader}, \code{AppHeader}, \code{AppLogo} & Encabezados \\
 \code{CommentCard} & Observación de un revisor \\
 \rowcolor{maxamFondo} \code{ExportButton} & Botón ``Exportar a Excel'' con estado de carga \\
@@ -596,6 +597,9 @@ La categoría se elige entre el plan de cuentas de la empresa (112 cuentas de la
 
 \subsection{Vehículo, combustible y hospedaje}
 Al crear o editar un viaje, \code{TripLogisticsSection} agrega los datos de logística. Con transporte ``Vehículo de Empresa'' (solo viajes nacionales) aparece la lista de vehículos activos y libres (\code{useAvailableVehicles}, que al editar cuenta como libre el del propio viaje) y el \emph{Fondo para Combustible (Bs)}, un monto aparte que se suma al total del viaje y que \code{TripBudgetSummary} muestra en su propia fila. Siempre se elige la \emph{Gestión de Hospedaje}: Empresa (la empresa reserva el hotel) o Propio. El código del viaje es \code{VIA-numero/año} con el número anual que asigna la base (\code{utils/tripCode.js}) y el número de recibo del sistema lleva su mes, porque el correlativo vuelve a 1 cada mes (\code{000012/10-2026}).
+
+\subsection{Firmas dibujadas}
+\code{SignaturePad} es un recuadro donde se firma con el dedo o el mouse; \code{SignatureDialog} lo muestra dentro de la ventana de confirmación y habilita el botón solo cuando hay firma. Se usa al aprobar el viaje (memorándum), al enviar la rendición, al dar el Vo/ Bo como jefe y al aprobar el gerente los gastos no deducibles. La ruta pública \code{/verificar/:codigo} (\code{DocumentVerificationPage}) consulta el código del QR que llevan todos los PDF y muestra si el documento es auténtico, sus datos y quién firmó.
 
 \subsection{Menú lateral en celulares}
 \code{MenuShell} usa la altura visible de la pantalla (\code{h-dvh}), no la de la ventana completa, así la barra del navegador del celular no tapa el final del menú; mientras está abierto bloquea el desplazamiento de la página, y en pantallas bajas (menos de 700 px) reduce los espacios. Solo la lista de opciones se desplaza si no entra, y \emph{Cerrar Sesión} queda siempre a la vista.
