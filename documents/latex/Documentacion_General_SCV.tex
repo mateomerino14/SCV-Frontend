@@ -734,11 +734,13 @@ Ninguna credencial se incluye en el repositorio. Ambos servicios obtienen su con
 \code{PORT} & Puerto del servidor. & Backend \\
 \rowcolor{maxamFondo} \code{CORS_ORIGINS} & Opcional: dominios del cliente permitidos. & Backend \\
 \code{TRUST_PROXY} & Opcional: servidor detrás de un proxy (VPS). & Backend \\
-\rowcolor{maxamFondo} \code{VITE_API_URL} & Dirección del servidor de aplicaciones. & Frontend \\
+\rowcolor{maxamFondo} \code{REMINDERS_ENABLED} & Opcional: \code{false} apaga los recordatorios en ese servidor. & Backend \\
+\code{VITE_API_URL} & Dirección del servidor de aplicaciones. & Frontend \\
 \end{xltabular}
 
 \subsection{Consideraciones de despliegue}
 \begin{itemize}
+  \item \textbf{Dos ambientes}: la rama \code{main} se publica en el servicio \code{SCV-Backend} de Render y en el entorno \emph{Production} de Vercel; la rama \code{develop}, en el servicio \code{scv-backend} y en los despliegues \emph{Preview}. Ambos usan la misma base de datos; por eso el servidor de develop lleva \code{REMINDERS_ENABLED=false}, para que cada resumen de pendientes se envíe una sola vez, y los dos tienen \code{FRONTEND_URL} con la web de producción, que es pública, para que los códigos QR se puedan verificar.
   \item \textbf{Orígenes permitidos}: el servidor solo acepta peticiones de los dominios del cliente declarados en su configuración. Si el cliente cambia de dominio, debe agregarse en \code{CORS_ORIGINS}; de lo contrario, el navegador rechazará las respuestas.
   \item \textbf{Enrutamiento del cliente}: al ser una aplicación de una sola página, la plataforma debe redirigir todas las rutas al documento principal para que funcionen los enlaces directos a una pantalla interna.
   \item \textbf{HTTPS}: la cookie de sesión exige que el servidor se publique con HTTPS cuando el cliente está en otro dominio.
