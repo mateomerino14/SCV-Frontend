@@ -295,13 +295,3 @@ export const activateVehicle = async (id) => {
     return {error: error.response?.data?.error || 'Error al activar el vehículo'};
   }
 };
-
-export const deleteVehicle = async (id) => {
-  try {
-    const response = await apiClient.delete(`/vehicle/${id}`);
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al eliminar el vehículo'};
-  }
-};
