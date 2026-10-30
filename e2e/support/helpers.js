@@ -95,3 +95,13 @@ export const pickDate = async (page, index, isoDate) => {
   await dialog.locator(`[data-date="${isoDate}"]`).click();
   await dialog.waitFor({state: 'hidden'});
 };
+
+export const drawSignature = async (page) => {
+  const box = await page.getByLabel('Recuadro para firmar').boundingBox();
+  await page.mouse.move(box.x + 20, box.y + box.height - 40);
+  await page.mouse.down();
+  for (let step = 1; step <= 20; step++) {
+    await page.mouse.move(box.x + 20 + step * 10, box.y + box.height - 40 - (step % 2) * 40);
+  }
+  await page.mouse.up();
+};

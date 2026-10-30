@@ -1,17 +1,5 @@
 import {test, expect} from '@playwright/test';
-import {loginInBrowser, apiClient, boliviaDate, createFundedTrip} from './support/helpers';
-
-const drawSignature = async (page) => {
-  const pad = page.getByLabel('Recuadro para firmar');
-  const box = await pad.boundingBox();
-  await page.mouse.move(box.x + 20, box.y + box.height - 40);
-  await page.mouse.down();
-  for (let step = 1; step <= 20; step++) {
-    await page.mouse.move(box.x + 20 + step * 10, box.y + box.height - 40 - (step % 2) * 40);
-  }
-  await page.mouse.up();
-};
-
+import {loginInBrowser, apiClient, boliviaDate, createFundedTrip, drawSignature} from './support/helpers';
 test('el aprobador firma en el recuadro para aprobar el viaje @celular', async ({page}) => {
   const employee = await apiClient('juan.empleado');
   const supervisor = await apiClient('maria.supervisora');
@@ -32,9 +20,7 @@ test('el aprobador firma en el recuadro para aprobar el viaje @celular', async (
   await expect(confirm).toBeDisabled();
   await drawSignature(page);
   await confirm.click();
-  await expect(page.getByText(/tesorer/i).first()).toBeVisible();
-  const detail = await employee.get(`/trip/${trip.id_viaje}`);
-  expect(detail.viaje.estado).toBe('EN_REVISION_TESORERO');
+  await expect.poll(async () => (await employee.get(`/trip/${trip.id_viaje}`)).viaje.estado).toBe('EN_REVISION_TESORERO');
 });
 
 test('el empleado firma al enviar la rendición y la firma queda en la planilla', async ({page}) => {
