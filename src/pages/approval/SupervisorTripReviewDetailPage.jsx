@@ -18,7 +18,8 @@ import useSupervisorPendingTripDetail from '../../hooks/approval/useSupervisorPe
 import useTakeTripReview from '../../features/approval/hooks/useTakeTripReview';
 import useMenu from '../../hooks/shared/useMenu';
 import getCurrentUserId from '../../utils/getCurrentUserId';
-import {COLORS} from '../../constants';
+import useUserRole from '../../hooks/shared/useUserRole';
+import {COLORS, ROLES} from '../../constants';
 import {getStatusColors} from '../../constants/tripStatusColors';
 
 const styles = {
@@ -42,6 +43,7 @@ const styles = {
 
 function SupervisorTripReviewDetailPage() {
   const {id} = useParams();
+  const {role} = useUserRole();
   const navigate = useNavigate();
   const location = useLocation();
   const originRoute = location.state?.from || '/dashboard/supervisor';
@@ -139,7 +141,8 @@ function SupervisorTripReviewDetailPage() {
           </div>
         )}
       </div>
-      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction} />
+      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction}
+        signatureMessage={role === ROLES.approver ? 'Firma para aprobar el viaje: como eres el aprobador, tu firma va en el memorándum que se envía al empleado y a tesorería.' : null} />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <AddCommentModal isOpen={showAddComment} onClose={() => {setShowAddComment(false); editObservation(0, '');}} onConfirm={handleAddComment} observations={observations} onEdit={editObservation} loading={savingAction} error={modalError} />

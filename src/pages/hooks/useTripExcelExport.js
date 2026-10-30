@@ -12,6 +12,7 @@ import {addListRange} from '../../utils/excelLists';
 import {saveWorkbook} from '../../utils/excelExport';
 import {amountInBsOf, originalAmountLinesOf, summarizeStatement, hasOriginCurrencyLines, isRenderedInUsd} from '../../utils/expenseCurrency';
 import {thinBorder, applyOuterBorder} from '../../utils/excelBorders';
+import {getStatementSignatures} from '../../services/trip/tripService';
 
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
@@ -166,7 +167,7 @@ function getLogoBase64() {
   return logoPromise;
 }
 
-async function addStatementSheet(workbook, trip, expenses, dayJustifications = [], sheetName = 'RENDICION') {
+async function addStatementSheet(workbook, trip, expenses, dayJustifications = [], sheetName = 'RENDICION', signatures = {}) {
   const sheet = workbook.addWorksheet(sheetName);
   const isInternationalTrip = trip.tipo === 'Internacional';
   const col = {number: 1, date: 2, oracle: 3, detail: 4, type: 5, document: 6, nit: 7, invoiceAmount: 8, original: null, amount: 9};
@@ -555,12 +556,26 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
     applyOuterBorder(sheet, justificationHeaderRow, currentRow - 1, 1, totalCols);
   }
   const signatureBlocks = [
-    {startCol: 1, endCol: 4, label: 'Preparado por', role: 'Responsable'},
-    {startCol: 6, endCol: 9, label: 'Vo/ Bo', role: 'Jefe de Area'},
-    {startCol: 11, endCol: totalCols, label: 'Vo/ Bo', role: 'Gerente de Area'},
+    {startCol: 1, endCol: 4, label: 'Preparado por', role: 'Responsable', signature: signatures?.preparado},
+    {startCol: 6, endCol: 9, label: 'Vo/ Bo', role: 'Jefe de Area', signature: signatures?.jefe},
+    {startCol: 11, endCol: totalCols, label: 'Vo/ Bo', role: 'Gerente de Area', signature: signatures?.gerente},
   ];
   currentRow += 6;
   const lineRow = currentRow;
+  signatureBlocks.forEach(({startCol, endCol, signature}) => {
+    if (signature?.imagen && !signature.automatica) {
+      const imageId = workbook.addImage({base64: signature.imagen, extension: 'png'});
+      const blockWidth = endCol - startCol + 1;
+      sheet.addImage(imageId, {tl: {col: startCol - 1 + Math.max(blockWidth / 2 - 1, 0), row: lineRow - 4}, ext: {width: 150, height: 50}});
+    }
+    else if (signature?.automatica) {
+      sheet.mergeCells(lineRow - 1, startCol, lineRow - 1, endCol);
+      const autoCell = sheet.getCell(lineRow - 1, startCol);
+      autoCell.value = 'Aprobación automática';
+      autoCell.font = {italic: true, size: 8, color: {argb: 'FF595959'}};
+      autoCell.alignment = {horizontal: 'center', vertical: 'bottom'};
+    }
+  });
   signatureBlocks.forEach(({startCol, endCol}) => {
     sheet.mergeCells(lineRow, startCol, lineRow, endCol);
     const cell = sheet.getCell(lineRow, startCol);
@@ -578,13 +593,21 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   });
   currentRow += 1;
   const roleRow = currentRow;
-  signatureBlocks.forEach(({startCol, endCol, role}) => {
+  let hasSigner = false;
+  signatureBlocks.forEach(({startCol, endCol, role, signature}) => {
     sheet.mergeCells(roleRow, startCol, roleRow, endCol);
     const cell = sheet.getCell(roleRow, startCol);
     cell.value = role;
+    if (signature) {
+      hasSigner = true;
+      cell.value = `${signature.nombre}\n${signature.cargo || role}\nFirmado electrónicamente el ${signature.fecha}`;
+    }
     cell.font = {size: 8};
-    cell.alignment = {horizontal: 'center', vertical: 'middle'};
+    cell.alignment = {horizontal: 'center', vertical: 'top', wrapText: true};
   });
+  if (hasSigner) {
+    sheet.getRow(roleRow).height = 36;
+  }
 }
 
 const fileSafeText = (text) => String(text || 'viaje').replace(/\s+/g, '_').replace(/[^\w-]/g, '').slice(0, 60);
@@ -592,7 +615,14 @@ const fileSafeText = (text) => String(text || 'viaje').replace(/\s+/g, '_').repl
 function useTripExcelExport() {
   const exportToExcel = async (trip, expenses, dayJustifications = []) => {
     const workbook = new ExcelJS.Workbook();
-    await addStatementSheet(workbook, trip, expenses, dayJustifications);
+    let signatures = {};
+    if (trip.id_viaje) {
+      const data = await getStatementSignatures(trip.id_viaje);
+      if (!data.error) {
+        signatures = data;
+      }
+    }
+    await addStatementSheet(workbook, trip, expenses, dayJustifications, 'RENDICION', signatures);
     addOracleSheets(workbook, [{trip, expenses}]);
     await saveWorkbook(workbook, `RENDICION_${trip.id_viaje}_${fileSafeText(trip.motivo)}.xlsx`);
   };

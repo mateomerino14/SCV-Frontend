@@ -55,9 +55,9 @@ export const downloadStatementPdf = async (tripId) => {
   }
 };
 
-export const confirmCompletion = async (tripId, justifications) => {
+export const confirmCompletion = async (tripId, justifications, signature = null) => {
   try {
-    const response = await apiClient.put(`/trip/${tripId}/confirm-completion`, {justificaciones: justifications});
+    const response = await apiClient.put(`/trip/${tripId}/confirm-completion`, {justificaciones: justifications, firma: signature});
     return response.data;
   }
   catch (error) {
@@ -115,5 +115,15 @@ export const getAvailableVehicles = async (tripId) => {
   }
   catch (error) {
     return {error: error.response?.data?.error || 'Error al obtener los vehículos disponibles'};
+  }
+};
+
+export const getStatementSignatures = async (tripId) => {
+  try {
+    const response = await apiClient.get(`/trip/${tripId}/firmas-planilla`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener las firmas de la planilla'};
   }
 };
