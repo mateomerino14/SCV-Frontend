@@ -30,14 +30,14 @@ function TermsModal({isOpen, onClose}) {
             <div className={styles.iconWrapper} style={{backgroundColor: COLORS.onColorFill15}}>
               <Shield size={36} style={{color: COLORS.background}} />
             </div>
-            <p className={styles.title} style={{color: COLORS.background}}>MAXAM</p>
+            <p className={styles.title} style={{color: COLORS.background}}>MAXAM FANEXA</p>
             <p className={styles.subtitle} style={{color: COLORS.onColorText70}}>Sistema de Gestión Corporativa</p>
             <div className={styles.sectionWrapper} style={{backgroundColor: COLORS.onColorFill10}}>
               <div className={styles.sectionIcon} style={{backgroundColor: COLORS.secondary}}>
                 <p className="text-sm font-bold font-inter px-1" style={{color: COLORS.background}}>C</p>
               </div>
               <div>
-                <p className="text-sm font-bold font-inter" style={{color: COLORS.background}}>© 2026 Maxam</p>
+                <p className="text-sm font-bold font-inter" style={{color: COLORS.background}}>© 2026 MAXAM FANEXA</p>
                 <p className={styles.sectionText} style={{color: COLORS.backgroundOnColorText}}>
                   Todos los derechos reservados. El uso no autorizado de esta aplicación está estrictamente prohibido y sujeto a sanciones legales.
                 </p>
@@ -45,7 +45,7 @@ function TermsModal({isOpen, onClose}) {
             </div>
             <p className={styles.noticeLabel} style={{color: COLORS.onColorText70}}>Aviso Legal y Privacidad</p>
             <p className={styles.noticeText} style={{color: COLORS.backgroundOnColorText}}>
-              Esta plataforma es de uso exclusivo para empleados y contratistas autorizados del Grupo Maxam. Toda la información contenida es confidencial y propiedad intelectual del Grupo.
+              Esta plataforma es de uso exclusivo para empleados y contratistas autorizados de MAXAM FANEXA. Toda la información contenida es confidencial y propiedad intelectual del Grupo.
             </p>
             <p className={styles.noticeText} style={{color: COLORS.backgroundOnColorText}}>
               El acceso y uso están restringidos únicamente a personal autorizado. Queda prohibida la divulgación, reproducción o distribución sin permiso previo.

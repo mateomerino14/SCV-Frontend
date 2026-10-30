@@ -4,6 +4,7 @@ import {formatDateRange} from '../../../utils/dateFormatter';
 import TripTypeBadge from '../atoms/TripTypeBadge';
 import TripTransportBadge from '../atoms/TripTransportBadge';
 import TripStatusBadge from '../atoms/TripStatusBadge';
+import {lodgingLabel, fuelAmountOf} from '../../../utils/tripLogistics';
 
 const styles = {
   card: 'rounded-2xl p-5 shadow-md mb-4 border',
@@ -42,6 +43,16 @@ function TripInfoCard({trip, isInternational}) {
             {isInternational && trip.monto_asignado_usd > 0 && ` / USD ${parseFloat(trip.monto_asignado_usd).toFixed(2)}`}
           </p>
         </div>
+        <div>
+          <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Hospedaje</p>
+          <p className={styles.infoValue} style={{color: COLORS.text}}>{lodgingLabel(trip)}</p>
+        </div>
+        {fuelAmountOf(trip) > 0 && (
+          <div>
+            <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Combustible (incluido)</p>
+            <p className={styles.infoValue} style={{color: COLORS.text}}>Bs {fuelAmountOf(trip).toFixed(2)}</p>
+          </div>
+        )}
         {trip.origen && (
           <div style={{gridColumn: '1 / -1'}}>
             <p className={styles.infoLabel} style={{color: COLORS.secondary}}>Ruta</p>

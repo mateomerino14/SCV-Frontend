@@ -108,7 +108,7 @@ function TripDetailPage() {
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>{content}</div>
       <DeleteExpenseConfirmModal isOpen={tripDetail.showDeleteModal} onClose={tripDetail.handleCancelDelete} onConfirm={tripDetail.handleConfirmDelete} loading={tripDetail.deletingExpense} />
-      <SubmitReviewConfirmModal isOpen={tripDetail.showSubmitReviewModal} onClose={tripDetail.handleCancelSubmitReview} onConfirm={tripDetail.handleConfirmSubmitReview} />
+      <SubmitReviewConfirmModal isOpen={tripDetail.showSubmitReviewModal} onClose={tripDetail.handleCancelSubmitReview} onConfirm={tripDetail.handleConfirmSubmitReview} loading={tripDetail.submittingReview} />
       <ConfirmDialog isOpen={!!tripDetail.alertMessage} compact icon={AlertCircle} iconColor={COLORS.primary}
         title="No se pudo continuar" message={tripDetail.alertMessage} confirmText="Entendido" hideCancel onConfirm={tripDetail.closeAlert} />
       <DeadlineExpiredNoticeModal isOpen={deadline.showExpiredNotice} onClose={deadline.closeExpiredNotice} />

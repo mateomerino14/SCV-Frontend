@@ -2,6 +2,7 @@ import buildTripCode from './tripCode';
 import {addListRanges, columnLetter} from './excelLists';
 import {toOracleExpenseType} from './expenseTypeCode';
 import {getExpenseTaxValues} from './expenseTaxValues';
+import {isRenderedInUsd, amountInBsOf} from './expenseCurrency';
 import {resolveDocumentNumber, documentSources, systemReceiptNote} from './documentNumber';
 import {thinBorder, applyOuterBorder, frameTable} from './excelBorders';
 import {oracleDefaults, oracleTaxCodes, oracleTaxLines, oracleWithholdings, oraclePaymentTerms, oracleLists} from '../constants/oracleLists';
@@ -201,8 +202,10 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
   const taxLine = oracleTaxLines[taxCode];
   const lines = [
     {values: article, missing: [...missingIfEmpty(article.cuenta && accountSegments.dependency && accountSegments.section, 'cuenta'), ...missingIfEmpty(trip.numero_rendicion, 'descripcion')]},
-    {values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true},
   ];
+  if (vat > 0) {
+    lines.push({values: {...base, tipo: 'Impuesto', importe: vat, codigoImpuesto: taxCode, cuenta: buildOracleAccount(taxLine.account), descripcion: taxLine.description}, missing: [], auto: true});
+  }
   if (withholding) {
     const mainAmount = roundAmount(tax.rcIva + tax.iue);
     const mainAccount = buildOracleAccount(withholding.mainAccount);
@@ -223,7 +226,11 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
 export function buildOracleInvoice(trip, expense) {
   const tax = getExpenseTaxValues(expense);
   const isInternational = !!expense.es_gasto_internacional;
-  const paid = roundAmount(expense.monto_total);
+  const inUsd = isRenderedInUsd(trip, expense);
+  let paid = roundAmount(expense.monto_total);
+  if (isInternational && !inUsd) {
+    paid = roundAmount(amountInBsOf(expense));
+  }
   const vat = roundAmount(tax.vat);
   const isVatInvoice = vat > 0;
   const withholdingType = getWithholdingType(expense);
@@ -241,7 +248,7 @@ export function buildOracleInvoice(trip, expense) {
     payment = oraclePaymentTerms.invoice;
   }
   let currency = oracleDefaults.functionalCurrency;
-  if (isInternational) {
+  if (inUsd) {
     currency = 'USD';
   }
   const invoiceDate = formatOracleDate(documentDate(expense));

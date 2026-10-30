@@ -37,7 +37,7 @@ function RegisterExpensePage() {
     handleAddItem, handleDuplicateItem, handleRemoveItem, handleSelectItem,
     handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange, handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
-    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange, handleRenditionCurrencyChange, defaultRenditionCurrency,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
   } = useRegisterExpense(id);
@@ -69,6 +69,7 @@ function RegisterExpensePage() {
             onDescriptionChange={handleDescriptionChange} onCategoryChange={handleCategoryChange} onImageChange={handleImageChange} onRemoveImage={handleRemoveImage}
             onAddBackup={handleAddBackup} onRemoveBackup={handleRemoveBackup}
             onCurrencyChange={handleCurrencyChange} onExchangeRateChange={handleExchangeRateChange} onBsRateChange={handleBsRateChange}
+            onRenditionCurrencyChange={handleRenditionCurrencyChange} defaultRenditionCurrency={defaultRenditionCurrency}
             onToggleSubitems={handleToggleSubitems} onAddSubitem={handleAddSubitem} onRemoveSubitem={handleRemoveSubitem}
             onSubitemDescriptionChange={handleSubitemDescriptionChange} onSubitemAmountChange={handleSubitemAmountChange} />
         ))}

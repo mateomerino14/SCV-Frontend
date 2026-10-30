@@ -122,8 +122,19 @@ export const hasUsdFund = (trip) => (parseFloat(trip?.monto_asignado_usd) || 0) 
 
 export const showsUsdFund = (trip) => trip?.tipo === 'Internacional' && hasUsdFund(trip);
 
+export const renditionCurrencyOf = (trip, expense) => {
+  if (expense.moneda_rendicion === usdCurrency || expense.moneda_rendicion === 'BOB') {
+    return expense.moneda_rendicion;
+  }
+  if (hasUsdFund(trip)) {
+    return usdCurrency;
+  }
+  return 'BOB';
+};
+
+export const isRenderedInUsd = (trip, expense) => !!expense.es_gasto_internacional && (renditionCurrencyOf(trip, expense) === usdCurrency || amountInBsOf(expense) === null);
+
 export const spentAgainstFunds = (trip, expenses) => {
-  const usdFund = hasUsdFund(trip);
   let spentBs = 0;
   let spentUsd = 0;
   let internationalUsd = 0;
@@ -134,12 +145,11 @@ export const spentAgainstFunds = (trip, expenses) => {
       return;
     }
     internationalUsd += amount;
-    const amountBs = amountInBsOf(expense);
-    if (usdFund || amountBs === null) {
+    if (isRenderedInUsd(trip, expense)) {
       spentUsd += amount;
     }
     else {
-      spentBs += amountBs;
+      spentBs += amountInBsOf(expense);
     }
   });
   return {spentBs: roundCents(spentBs), spentUsd: roundCents(spentUsd), internationalUsd: roundCents(internationalUsd)};
@@ -149,10 +159,12 @@ export const summarizeStatement = (trip, expenses) => {
   const fundBs = parseFloat(trip.monto_asignado) || 0;
   const fundUsd = parseFloat(trip.monto_asignado_usd) || 0;
   const {spentBs, spentUsd, internationalUsd} = spentAgainstFunds(trip, expenses);
+  const renderedUsd = spentUsd;
   const remainingBs = roundCents(fundBs - spentBs);
   const remainingUsd = roundCents(fundUsd - spentUsd);
   return {
     internationalUsd,
+    renderedUsd,
     balanceRows: [
       ['Fondo Recibido', fundBs, fundUsd],
       ['Total Gastado', spentBs, spentUsd],

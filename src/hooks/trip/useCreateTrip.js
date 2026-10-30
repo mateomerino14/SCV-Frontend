@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {createTrip} from '../../services/trip/tripService';
 import {maxTripReasonLength} from '../../constants/tripLimits';
+import useTripLogistics, {companyVehicle} from './useTripLogistics';
 
 function useCreateTrip(user) {
   const [reason, setReason] = useState('');
@@ -10,20 +11,18 @@ function useCreateTrip(user) {
   const [endDate, setEndDate] = useState('');
   const [type, setType] = useState('Nacional');
   const [transport, setTransport] = useState('Terrestre');
-  const [vehiclePlate, setVehiclePlate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [loadingLocation, setLoadingLocation] = useState(false);
+  const logistics = useTripLogistics(transport);
   const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
   const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
 
   const handleTypeChange = (newType) => {
     setType(newType);
-    if (newType === 'Internacional' && transport === 'Vehículo de Empresa') {
+    if (newType === 'Internacional' && transport === companyVehicle) {
       setTransport('Terrestre');
-      setVehiclePlate('');
     }
   };
 
@@ -91,51 +90,6 @@ function useCreateTrip(user) {
     setFieldErrors((prev) => ({...prev, endDate: undefined}));
   };
 
-  const handleVehiclePlateChange = (value) => {
-    if (value.length > 20) {
-      return;
-    }
-    setVehiclePlate(value);
-    setFieldErrors((prev) => ({...prev, vehiclePlate: undefined}));
-  };
-
-  const handleUseCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      showError('Tu navegador no permite obtener la ubicación actual');
-      return;
-    }
-    setLoadingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const {latitude, longitude} = position.coords;
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=es`
-          );
-          const data = await response.json();
-          const address = data?.display_name || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-          if (address.length > 200) {
-            setOrigin(address.slice(0, 200));
-          }
-          else {
-            setOrigin(address);
-          }
-          setFieldErrors((prev) => ({...prev, origin: undefined}));
-        }
-        catch {
-          showError('No se pudo obtener la dirección de tu ubicación actual');
-        }
-        finally {
-          setLoadingLocation(false);
-        }
-      },
-      () => {
-        setLoadingLocation(false);
-        showError('No se pudo acceder a tu ubicación. Revisa los permisos del navegador.');
-      }
-    );
-  };
-
   const validate = () => {
     const errors = {};
     if (!reason.trim()) {
@@ -156,10 +110,7 @@ function useCreateTrip(user) {
     if (startDate && endDate && calculateDays() <= 0) {
       errors.endDate = 'La fecha fin debe ser posterior a la fecha de inicio';
     }
-    if (transport === 'Vehículo de Empresa' && !vehiclePlate.trim()) {
-      errors.vehiclePlate = 'La placa del vehículo es requerida';
-    }
-    return errors;
+    return {...errors, ...logistics.validateLogistics()};
   };
 
   const handleSaveDraft = async () => {
@@ -170,10 +121,6 @@ function useCreateTrip(user) {
     }
     setFieldErrors({});
     setLoading(true);
-    let plate = null;
-    if (transport === 'Vehículo de Empresa') {
-      plate = vehiclePlate.trim();
-    }
     const data = await createTrip({
       motivo: reason.trim(),
       origen: origin.trim(),
@@ -182,9 +129,9 @@ function useCreateTrip(user) {
       fecha_fin: endDate,
       tipo: type,
       transporte: transport,
-      placa_vehiculo: plate,
-      monto_asignado: totalAmount,
+      monto_asignado: totalAmount + logistics.fuelValue,
       monto_asignado_usd: totalAmountUsd,
+      ...logistics.logisticsPayload(),
     });
     setLoading(false);
     if (data.error) {
@@ -199,7 +146,7 @@ function useCreateTrip(user) {
     setEndDate('');
     setType('Nacional');
     setTransport('Terrestre');
-    setVehiclePlate('');
+    logistics.resetLogistics();
   };
 
   return {
@@ -207,19 +154,17 @@ function useCreateTrip(user) {
     startDate, endDate,
     type, setType, handleTypeChange,
     transport, setTransport,
-    vehiclePlate, handleVehiclePlateChange,
+    logistics,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,
     loading, error, fieldErrors,
     showConfirmation, setShowConfirmation,
-    loadingLocation,
     handleReasonChange,
     handleOriginChange,
     handleDestinationChange,
     handleStartDateChange,
     handleEndDateChange,
-    handleUseCurrentLocation,
     handleSaveDraft,
   };
 }

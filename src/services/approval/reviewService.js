@@ -86,9 +86,9 @@ export const getTripReviewDetail = async (tripId) => {
   }
 };
 
-export const approveTripReview = async (tripId) => {
+export const approveTripReview = async (tripId, signature = null) => {
   try {
-    const response = await apiClient.post(`/review/trip-review/${tripId}/approve`);
+    const response = await apiClient.post(`/review/trip-review/${tripId}/approve`, {firma: signature});
     return response.data;
   }
   catch (error) {
@@ -212,9 +212,9 @@ export const getExpenseReviewDetail = async (tripId) => {
   }
 };
 
-export const approveExpenseReview = async (tripId) => {
+export const approveExpenseReview = async (tripId, signature = null) => {
   try {
-    const response = await apiClient.post(`/review/expense-review/${tripId}/approve`);
+    const response = await apiClient.post(`/review/expense-review/${tripId}/approve`, {firma: signature});
     return response.data;
   }
   catch (error) {

@@ -1,4 +1,4 @@
-import {ArrowLeft, Globe, Navigation, MapPin, Building2, Car} from 'lucide-react';
+import {ArrowLeft, Globe, Navigation, MapPin, Building2, Car, BedDouble, Fuel} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {registerExpensePath, uploadInvoicePath} from '../../../constants/routes';
 import {formatDateRange, formatDateShort} from '../../../utils/dateFormatter';
@@ -13,6 +13,7 @@ import TripBalanceSummary from '../molecules/TripBalanceSummary';
 import TripObservationsList from '../molecules/TripObservationsList';
 import ExpenseItem from '../../expense/organisms/ExpenseItem';
 import {showsUsdFund} from '../../../utils/expenseCurrency';
+import {lodgingLabel, fuelAmountOf} from '../../../utils/tripLogistics';
 
 const styles = {
   backBtn: 'flex items-center gap-1 cursor-pointer mb-4 w-fit',
@@ -105,6 +106,16 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
         <p className={styles.plate} style={{color: COLORS.labels}}>
           <Car size={12} style={{color: COLORS.labels, flexShrink: 0}} />
           Placa del vehículo: <span style={{color: COLORS.text}}>{trip.placa_vehiculo}</span>
+        </p>
+      )}
+      <p className={styles.plate} style={{color: COLORS.labels}}>
+        <BedDouble size={12} style={{color: COLORS.labels, flexShrink: 0}} />
+        Hospedaje: <span style={{color: COLORS.text}}>{lodgingLabel(trip)}</span>
+      </p>
+      {fuelAmountOf(trip) > 0 && (
+        <p className={styles.plate} style={{color: COLORS.labels}}>
+          <Fuel size={12} style={{color: COLORS.labels, flexShrink: 0}} />
+          Fondo para combustible: <span style={{color: COLORS.text}}>Bs {fuelAmountOf(trip).toFixed(2)}</span>
         </p>
       )}
       {trip.origen ? (

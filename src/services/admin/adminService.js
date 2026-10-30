@@ -245,3 +245,63 @@ export const importUsers = async (rows) => {
     return {error: error.response?.data?.error || 'Error al importar los usuarios'};
   }
 };
+
+export const getVehicles = async () => {
+  try {
+    const response = await apiClient.get('/vehicle');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener vehículos'};
+  }
+};
+
+export const createVehicle = async (vehicle) => {
+  try {
+    const response = await apiClient.post('/vehicle', vehicle);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al registrar el vehículo'};
+  }
+};
+
+export const updateVehicle = async (id, data) => {
+  try {
+    const response = await apiClient.put(`/vehicle/${id}`, data);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al actualizar el vehículo'};
+  }
+};
+
+export const suspendVehicle = async (id) => {
+  try {
+    const response = await apiClient.patch(`/vehicle/${id}/suspend`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al suspender el vehículo'};
+  }
+};
+
+export const activateVehicle = async (id) => {
+  try {
+    const response = await apiClient.patch(`/vehicle/${id}/activate`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al activar el vehículo'};
+  }
+};
+
+export const deleteVehicle = async (id) => {
+  try {
+    const response = await apiClient.delete(`/vehicle/${id}`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al eliminar el vehículo'};
+  }
+};

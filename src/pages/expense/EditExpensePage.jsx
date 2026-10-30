@@ -34,7 +34,7 @@ function EditExpensePage() {
     finalAmount, usesSubitems, subitems, validSubitems, subitemErrors,
     currencies, withholdings, hasWithholdings,
     handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup, handleAmountChange,
-    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange, renditionCurrency, setRenditionCurrency,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSupplierChange, handleReceiptNumberChange, handleDescriptionChange, handleDateChange, handleCategoryChange, handleSave,
   } = useEditExpense(id);
@@ -69,6 +69,7 @@ function EditExpensePage() {
             handleDescriptionChange={handleDescriptionChange} handleCategoryChange={handleCategoryChange}
             handleImageChange={handleImageChange} handleRemoveImage={handleRemoveImage} handleAddBackup={handleAddBackup} handleRemoveBackup={handleRemoveBackup}
             handleCurrencyChange={handleCurrencyChange} handleExchangeRateChange={handleExchangeRateChange} handleBsRateChange={handleBsRateChange}
+            renditionCurrency={renditionCurrency} setRenditionCurrency={setRenditionCurrency}
             handleToggleSubitems={handleToggleSubitems} handleAddSubitem={handleAddSubitem} handleRemoveSubitem={handleRemoveSubitem}
             handleSubitemDescriptionChange={handleSubitemDescriptionChange} handleSubitemAmountChange={handleSubitemAmountChange} />
           {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}

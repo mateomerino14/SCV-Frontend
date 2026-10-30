@@ -12,7 +12,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import useApproverAlcoholReviews from '../../hooks/approval/useApproverAlcoholReviews';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
-import {approverAlcoholReviewPath, routes} from '../../constants/routes';
+import {approverAlcoholReviewPath, supervisorTripReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
@@ -37,36 +37,36 @@ function ApproverAlcoholReviewsPage() {
     tab, setTab, filters, setFilters, applyFilters, clearFilters,
   } = useApproverAlcoholReviews();
   const pagination = useClientPagination(trips, 12, tab);
-  let subtitle = 'Rendiciones con gastos de alcohol que necesitan tu revisión antes de pasar a la revisión final.';
+  let subtitle = 'Bandeja única: rendiciones de tu equipo (como jefe directo) y rendiciones con gastos no deducibles (alcohol o propinas) que necesitan tu revisión.';
   if (tab === 'APROBADOS') {
-    subtitle = 'Historial de las rendiciones con alcohol que aprobaste, con el estado en que están ahora.';
+    subtitle = 'Historial de las rendiciones que aprobaste, con el estado en que están ahora.';
   }
   else if (tab === 'RECHAZADOS') {
-    subtitle = 'Rendiciones con alcohol que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
+    subtitle = 'Rendiciones que rechazaste y el empleado aún no corrige. Al reenviarlas salen de esta lista.';
   }
 
   let mascotMessage = null;
 
   if (!loading) {
 
-    mascotMessage = pendingMessage(user?.nombre, totalMyPending, 'rendición con alcohol por revisar', 'rendiciones con alcohol por revisar');
+    mascotMessage = pendingMessage(user?.nombre, totalMyPending, 'rendición por revisar', 'rendiciones por revisar');
 
   }
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
-      <Navbar text="Rendiciones con Alcohol" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
+      <Navbar text="Rendiciones por Revisar" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <DynamicMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Rendiciones con Alcohol" subtitle={subtitle} />
+        <PageHeader title="Rendiciones por Revisar" subtitle={subtitle} />
         <ReviewFilters filters={filters} setFilters={setFilters} statusFilter={tab} setStatusFilter={setTab}
           onApply={applyFilters} onClear={clearFilters} employees={employees} sections={sections} tabs={mainTabs} applyingFilters={applyingFilters} />
         {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
         {!loading && <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="rendición" plural="rendiciones" />}
         {loading && <SkeletonList count={3} />}
         {!loading && trips.length === 0 && (
-          <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron rendiciones con alcohol con el filtro seleccionado"
+          <EmptyState title="Sin viajes en esta categoría" subtitle="No se encontraron rendiciones con el filtro seleccionado"
             icon={
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
                 <path d="M8 16L14 22L24 10" stroke={COLORS.onColorText70} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -76,7 +76,9 @@ function ApproverAlcoholReviewsPage() {
         {!loading && trips.length > 0 && (
           <div className={styles.grid}>
             {pagination.visibleItems.map((trip) => (
-              <ExpenseReviewItem key={trip.id_viaje} trip={trip} detailRoute={approverAlcoholReviewPath(trip.id_viaje)} originRoute={routes.approverAlcoholReviews} />
+              <ExpenseReviewItem key={trip.id_viaje} trip={trip} originRoute={routes.approverAlcoholReviews}
+                detailRoute={trip.etapa === 'JEFE' ? supervisorTripReviewPath(trip.id_viaje) : approverAlcoholReviewPath(trip.id_viaje)}
+                stageLabel={trip.etapa === 'JEFE' ? 'Mi equipo' : 'No deducibles'} />
             ))}
           </div>
         )}

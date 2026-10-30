@@ -33,9 +33,9 @@ export const getTripReviewDetail = async (tripId) => {
   }
 };
 
-export const approveTripReview = async (tripId) => {
+export const approveTripReview = async (tripId, signature = null) => {
   try {
-    const response = await apiClient.post(`/approver/trip/${tripId}/approve`);
+    const response = await apiClient.post(`/approver/trip/${tripId}/approve`, {firma: signature});
     return response.data;
   }
   catch (error) {

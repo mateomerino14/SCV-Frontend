@@ -13,6 +13,10 @@ test('el empleado escribe el gasto en soles y ve su equivalente en USD y Bs', as
   await page.locator('input[placeholder="6.9600"]').first().fill('6.96');
   await expect(page.getByText('100.00 USD').first()).toBeVisible();
   await expect(page.getByText('696.00 Bs').first()).toBeVisible();
+  const usdOption = page.getByRole('radio', {name: 'Dólares (USD)'}).first();
+  await expect(usdOption).toHaveAttribute('aria-checked', 'true');
+  await page.getByRole('radio', {name: 'Bolivianos (Bs)'}).first().click();
+  await expect(page.getByRole('radio', {name: 'Bolivianos (Bs)'}).first()).toHaveAttribute('aria-checked', 'true');
 });
 
 test('el control diario de un viaje internacional muestra Bs y USD por separado', async ({page}) => {
@@ -51,4 +55,17 @@ test('con el fondo solo en Bs el gasto en el exterior se descuenta en Bs con el 
   await expect(page.getByText('500.00 Bs').first()).toBeVisible();
   await expect(page.getByText('1500.00 Bs').first()).toBeVisible();
   await expect(page.getByText('Fondo recibido (USD)')).toHaveCount(0);
+});
+
+test('con el fondo solo en Bs el control diario de un día intermedio va en Bs con la tarifa en USD pasada a Bs', async ({page}) => {
+  const {tripId, employee, position} = await createFundedTrip({tipo: 'Internacional', fecha_inicio: boliviaDate(-1), fecha_fin: boliviaDate(1), monto_asignado: 3000, monto_asignado_usd: 0});
+  const usdRate = parseFloat(position.monto_diario_usd);
+  await employee.postForm('/expense/register', {
+    id_viaje: tripId, monto_total: usdRate + 10, fecha_gasto: boliviaDate(), tipo: 'S', descripcion: 'Almuerzo en Lima', id_categoria: 1, es_gasto_internacional: true, tipo_cambio_bs: 10,
+  });
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto(`/dashboard/empleado/viaje/${tripId}`);
+  await page.getByText('Control Diario').click();
+  await expect(page.getByText('Excede en 100.00 Bs').first()).toBeVisible();
+  await expect(page.getByText(`Fondo solo en Bs: límite de ${usdRate.toFixed(2)} USD × T/C 10.0000`).first()).toBeVisible();
 });
