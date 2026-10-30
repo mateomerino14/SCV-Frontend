@@ -18,6 +18,7 @@ const UserManagementPage = lazy(() => import('./pages/admin/UserManagementPage')
 const PositionManagementPage = lazy(() => import('./pages/admin/PositionManagementPage'));
 const SectionManagementPage = lazy(() => import('./pages/admin/SectionManagementPage'));
 const VehicleManagementPage = lazy(() => import('./pages/admin/VehicleManagementPage'));
+const DocumentVerificationPage = lazy(() => import('./pages/document/DocumentVerificationPage'));
 const AuditLogPage = lazy(() => import('./pages/admin/AuditLogPage'));
 const ReminderSettingsPage = lazy(() => import('./pages/admin/ReminderSettingsPage'));
 const EmployeeDashboardPage = lazy(() => import('./pages/trip/EmployeeDashboardPage'));
@@ -145,6 +146,8 @@ function App() {
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
         <Route path="/" element={<LoginRoute><PageTransition><LoginPage /></PageTransition></LoginRoute>} />
+        <Route path="/verificar" element={<PageTransition><DocumentVerificationPage /></PageTransition>} />
+        <Route path="/verificar/:codigo" element={<PageTransition><DocumentVerificationPage /></PageTransition>} />
         <Route path="/dashboard/empleado" element={<ProtectedRoute><PageTransition><EmployeeDashboardPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/empleado/crear-viaje" element={<ProtectedRoute><PageTransition><CreateTripPage /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/empleado/viaje/:id" element={<ProtectedRoute><PageTransition><TripDetailPage /></PageTransition></ProtectedRoute>} />
