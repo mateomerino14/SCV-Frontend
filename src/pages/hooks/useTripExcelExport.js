@@ -558,20 +558,27 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   const signatureBlocks = [
     {startCol: 1, endCol: 4, label: 'Preparado por', role: 'Responsable', signature: signatures?.preparado},
     {startCol: 6, endCol: 9, label: 'Vo/ Bo', role: 'Jefe de Area', signature: signatures?.jefe},
-    {startCol: 11, endCol: totalCols, label: 'Vo/ Bo', role: 'Gerente de Area', signature: signatures?.gerente},
+    {startCol: 11, endCol: totalCols, label: 'Vo/ Bo', role: 'Gerente de Area', signature: signatures?.gerente, notRequired: !!signatures?.gerenteNoRequerido},
   ];
   currentRow += 6;
   const lineRow = currentRow;
-  signatureBlocks.forEach(({startCol, endCol, signature}) => {
+  signatureBlocks.forEach(({startCol, endCol, signature, notRequired}) => {
+    let legend = '';
+    if (signature?.automatica) {
+      legend = 'Aprobación automática';
+    }
+    else if (!signature && notRequired) {
+      legend = 'No requiere Vo/ Bo de gerencia';
+    }
     if (signature?.imagen && !signature.automatica) {
       const imageId = workbook.addImage({base64: signature.imagen, extension: 'png'});
       const blockWidth = endCol - startCol + 1;
       sheet.addImage(imageId, {tl: {col: startCol - 1 + Math.max(blockWidth / 2 - 1, 0), row: lineRow - 4}, ext: {width: 150, height: 50}});
     }
-    else if (signature?.automatica) {
+    else if (legend) {
       sheet.mergeCells(lineRow - 1, startCol, lineRow - 1, endCol);
       const autoCell = sheet.getCell(lineRow - 1, startCol);
-      autoCell.value = 'Aprobación automática';
+      autoCell.value = legend;
       autoCell.font = {italic: true, size: 8, color: {argb: 'FF595959'}};
       autoCell.alignment = {horizontal: 'center', vertical: 'bottom'};
     }
