@@ -19,7 +19,7 @@ Crear un archivo `.env` en la raíz del proyecto:
 VITE_API_URL=http://localhost:5000
 ```
 
-`VITE_API_URL` es la dirección del backend en cada etapa: `http://localhost:5000` en local, la URL del servicio de Render en el piloto y el dominio de la API (por ejemplo `https://api.tuempresa.com`) en el VPS. En Vercel se configura en las variables de entorno del proyecto y requiere volver a desplegar.
+`VITE_API_URL` es la dirección del backend en cada etapa: `http://localhost:5000` en local, la URL del servicio de Render en el piloto y el dominio de la API (por ejemplo `https://api.tuempresa.com`) en el VPS. En Vercel se configura en las variables de entorno del proyecto y requiere volver a desplegar. Tiene un valor por entorno: **Production** (rama `main`) usa `https://scv-backend.onrender.com` y **Preview** (`develop` y las demás ramas) usa `https://scv-backend-7yft.onrender.com`, el backend de develop.
 
 ## Ejecución
 
