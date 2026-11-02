@@ -5,7 +5,7 @@ const outlineLine = {style: 'medium', color: {argb: outlineBorderColor}};
 
 export const thinBorder = {top: thinLine, bottom: thinLine, left: thinLine, right: thinLine};
 
-export const borderRange = (sheet, startRow, endRow, startCol, endCol) => {
+const borderRange = (sheet, startRow, endRow, startCol, endCol) => {
   for (let row = startRow; row <= endRow; row++) {
     for (let column = startCol; column <= endCol; column++) {
       const cell = sheet.getCell(row, column);

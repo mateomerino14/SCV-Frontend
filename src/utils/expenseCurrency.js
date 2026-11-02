@@ -8,9 +8,9 @@ export const renditionModes = [
   {value: bsCurrency, label: 'Bolivianos (Bs)'},
   {value: bothCurrencies, label: 'Ambos'},
 ];
-export const maxNationalAmount = 99999.99;
-export const maxForeignAmount = 9999999.99;
-export const maxExchangeRate = 9999.9999;
+const maxNationalAmount = 99999.99;
+const maxForeignAmount = 9999999.99;
+const maxExchangeRate = 9999.9999;
 
 const amountPattern = /^\d*\.?\d{0,2}$/;
 const exchangeRatePattern = /^\d*\.?\d{0,4}$/;
@@ -36,7 +36,7 @@ export const amountLimitOf = (isInternationalExpense) => {
   return maxNationalAmount;
 };
 
-export const usdRateOf = (currency, exchangeRate) => {
+const usdRateOf = (currency, exchangeRate) => {
   if (currency === usdCurrency) {
     return 1;
   }
@@ -177,7 +177,7 @@ export const originalAmountLinesOf = (expense) => {
   return lines;
 };
 
-export const defaultFundExchangeRate = 6.96;
+const defaultFundExchangeRate = 6.96;
 
 export const fundExchangeRateOf = (trip) => parseFloat(trip?.tipo_cambio_fondo) || defaultFundExchangeRate;
 

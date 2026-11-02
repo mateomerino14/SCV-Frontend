@@ -4,6 +4,7 @@ const pngHeightOffset = 20;
 const alphaThreshold = 16;
 const trimPadding = 4;
 const digitWidthPx = 7;
+const defaultColumnWidth = 10;
 const pointsToPixels = 4 / 3;
 const defaultRowHeightPt = 15;
 const emuPerPixel = 9525;
@@ -53,11 +54,9 @@ export const strokeBoundsOf = (pixels, width, height) => {
   };
 };
 
-const canTrimInBrowser = () => typeof document !== 'undefined' && typeof createImageBitmap === 'function';
-
 export const trimSignature = async (dataUrl) => {
   const original = {image: dataUrl, ...pngSizeOf(dataUrl)};
-  if (!canTrimInBrowser()) {
+  if (typeof createImageBitmap !== 'function') {
     return original;
   }
   try {
@@ -85,16 +84,13 @@ export const trimSignature = async (dataUrl) => {
 };
 
 export const fitInside = (width, height, maxWidth, maxHeight) => {
-  if (!width || !height) {
-    return {width: maxWidth, height: maxHeight};
-  }
   const scale = Math.min(maxWidth / width, maxHeight / height, 1);
   return {width: Math.round(width * scale), height: Math.round(height * scale)};
 };
 
-export const columnPixels = (sheet, column) => Math.round((sheet.getColumn(column).width || 10) * digitWidthPx);
+export const columnPixels = (sheet, column) => Math.round((sheet.getColumn(column).width || defaultColumnWidth) * digitWidthPx);
 
-export const rowPixels = (sheet, row) => Math.round((sheet.getRow(row).height || defaultRowHeightPt) * pointsToPixels);
+const rowPixels = (sheet, row) => Math.round((sheet.getRow(row).height || defaultRowHeightPt) * pointsToPixels);
 
 const nativePosition = (sizeOf, start, offsetPx) => {
   let index = start;
