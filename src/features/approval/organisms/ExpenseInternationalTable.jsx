@@ -4,7 +4,7 @@ import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseObsButton from '../atoms/ExpenseObsButton';
 import DocumentNumberBadge from '../../expense/atoms/DocumentNumberBadge';
 import {resolveDocumentNumber, documentSources} from '../../../utils/documentNumber';
-import {conversionLabelOf} from '../../../utils/expenseCurrency';
+import {conversionLabelOf, isAmountInBs, amountLabelOf} from '../../../utils/expenseCurrency';
 
 const styles = {
   section: 'mb-6',
@@ -23,13 +23,22 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
   }
   const cell = (extra = {}) => ({...extra, borderColor: COLORS.dataFields});
   const hasSystemNumbers = expenses.some((expense) => resolveDocumentNumber(expense).source === documentSources.system);
-  const total = expenses.reduce((sum, expense) => sum + parseFloat(expense.monto_total || 0), 0);
+  const totalOf = (rows) => rows.reduce((sum, expense) => sum + parseFloat(expense.monto_total || 0), 0);
+  const totalUsd = totalOf(expenses.filter((expense) => !isAmountInBs(expense)));
+  const totalBs = totalOf(expenses.filter((expense) => isAmountInBs(expense)));
+  const totalParts = [];
+  if (totalUsd > 0 || totalBs === 0) {
+    totalParts.push(`${totalUsd.toFixed(2)} USD`);
+  }
+  if (totalBs > 0) {
+    totalParts.push(`${totalBs.toFixed(2)} Bs`);
+  }
 
   return (
     <div className={styles.section}>
       <p className={styles.title} style={{color: COLORS.primary}}>
         <Globe size={14} style={{color: COLORS.primary}} />
-        Gastos Internacionales (USD)
+        Gastos Internacionales
       </p>
       <p className={styles.subtitle} style={{color: COLORS.labels}}>Gastos realizados en el extranjero</p>
       {hasSystemNumbers && (
@@ -39,7 +48,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
         <table className={styles.table}>
           <thead>
             <tr style={{backgroundColor: COLORS.primary}}>
-              {['#', 'Fecha', 'Concepto', 'Descripción', 'N° Recibo', 'Conversión', 'Importe (USD)', 'Obs.', ''].map((header) => (
+              {['#', 'Fecha', 'Concepto', 'Descripción', 'N° Recibo', 'Conversión', 'Importe', 'Obs.', ''].map((header) => (
                 <th key={header} className={styles.th} style={{color: COLORS.background, borderColor: COLORS.onColorFill20}}>{header}</th>
               ))}
             </tr>
@@ -66,7 +75,12 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
               let conversion = 'USD directo';
               let conversionColor = COLORS.labels;
               let conversionWeight = 'normal';
-              if (hasInstallments) {
+              if (isAmountInBs(expense)) {
+                conversion = `${parseFloat(expense.monto_moneda_origen).toFixed(2)} ${expense.moneda} → Bs`;
+                conversionColor = COLORS.secondary;
+                conversionWeight = 'bold';
+              }
+              else if (hasInstallments) {
                 conversion = conversionLabelOf(installments);
                 conversionColor = COLORS.secondary;
                 conversionWeight = 'bold';
@@ -79,7 +93,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
                   <td className={styles.td} style={cell({color: descriptionColor, fontWeight: descriptionWeight})}>{description}</td>
                   <td className={styles.td} style={cell()}><DocumentNumberBadge {...resolveDocumentNumber(expense)} /></td>
                   <td className={styles.td} style={cell({color: conversionColor, fontWeight: conversionWeight})}>{conversion}</td>
-                  <td className={styles.td} style={cell({color: COLORS.primary})}>{amount.toFixed(2)}</td>
+                  <td className={styles.td} style={cell({color: COLORS.primary})}>{amount.toFixed(2)} {amountLabelOf(expense)}</td>
                   <td className={styles.td} style={cell({width: 36})}>
                     <ExpenseObsButton count={countObservations(expense.id_gasto)} accentColor={COLORS.primary} onClick={() => onOpenObservations(expense.id_gasto)} />
                   </td>
@@ -93,7 +107,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
             })}
             <tr style={{backgroundColor: COLORS.backgroundHeader}}>
               <td colSpan={6} className={styles.td} style={cell({color: COLORS.primary, fontWeight: 'bold'})}>TOTAL</td>
-              <td className={styles.td} style={cell({color: COLORS.primary, fontWeight: 'bold'})}>{total.toFixed(2)}</td>
+              <td className={styles.td} style={cell({color: COLORS.primary, fontWeight: 'bold'})}>{totalParts.join(' + ')}</td>
               <td colSpan={2} className={styles.td} style={cell()} />
             </tr>
           </tbody>

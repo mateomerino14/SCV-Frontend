@@ -8,6 +8,7 @@ import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
 import TripLogisticsSection from '../../features/trip/organisms/TripLogisticsSection';
 import TripPolicies from '../../features/trip/molecules/TripPolicies';
 import TripCreatedModal from '../../features/trip/organisms/TripCreatedModal';
+import SubmitTripConfirmModal from '../../features/trip/organisms/SubmitTripConfirmModal';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import InputField from '../../components/ui/InputField';
 import useCreateTrip from '../../hooks/trip/useCreateTrip';
@@ -38,6 +39,7 @@ const styles = {
   radioBtns: "flex gap-2 flex-wrap",
   radioBtn: "flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer font-inter text-sm font-bold transition-colors",
   confirmBtn: "w-full py-3 rounded-xl font-bold font-nunito text-white text-base cursor-pointer transition-colors mt-3",
+  submitBtn: "w-full py-3 rounded-xl font-bold font-nunito text-base cursor-pointer transition-colors mt-2 border-2 bg-transparent",
   errorMsg: "text-xs font-inter italic text-center mt-3",
   rightCol: "flex flex-col gap-4",
   policiesWrapper: "px-5 pb-6 max-w-8xl mx-auto w-full",
@@ -51,7 +53,8 @@ function CreateTripPage() {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     logistics,
     days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd,
-    loading, error, fieldErrors, showConfirmation, setShowConfirmation,
+    loading, error, fieldErrors, showConfirmation, setShowConfirmation, createdMessage,
+    showSubmitConfirm, setShowSubmitConfirm, handleRequestSubmit, handleConfirmSubmit,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleSaveDraft,
   } = useCreateTrip(user);
@@ -143,6 +146,10 @@ function CreateTripPage() {
             <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}} onClick={handleSaveDraft} disabled={loading}>
               {loading ? 'Guardando...' : 'Guardar Borrador'}
             </button>
+            <button className={styles.submitBtn} style={{borderColor: loading ? COLORS.fields : COLORS.primary, color: loading ? COLORS.fields : COLORS.primary}}
+              onClick={handleRequestSubmit} disabled={loading}>
+              Enviar a Revisión
+            </button>
           </div>
           <div className={styles.rightCol}>
             <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
@@ -154,7 +161,8 @@ function CreateTripPage() {
       <div className={styles.policiesWrapper}>
         <TripPolicies />
       </div>
-      <TripCreatedModal isOpen={showConfirmation} onClose={() => {setShowConfirmation(false); navigate(routes.employeeDashboard);}} />
+      <TripCreatedModal isOpen={showConfirmation} message={createdMessage} onClose={() => {setShowConfirmation(false); navigate(routes.employeeDashboard);}} />
+      <SubmitTripConfirmModal isOpen={showSubmitConfirm} onClose={() => setShowSubmitConfirm(false)} onConfirm={handleConfirmSubmit} loading={loading} />
       <Footer />
     </div>
   );

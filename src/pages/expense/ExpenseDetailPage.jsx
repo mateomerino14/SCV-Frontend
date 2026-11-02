@@ -20,7 +20,7 @@ import {COLORS} from '../../constants';
 import {routes, tripPath} from '../../constants/routes';
 import {formatReceiptNumber} from '../../utils/documentNumber';
 import {getExpenseWithholdings, roundCents} from '../../utils/withholdings';
-import {usdCurrency, savedBsRateOf, hasOriginCurrencyLines, conversionLabelOf} from '../../utils/expenseCurrency';
+import {usdCurrency, savedBsRateOf, hasOriginCurrencyLines, conversionLabelOf, amountLabelOf, isAmountInBs} from '../../utils/expenseCurrency';
 
 const imageMaxHeight = 720;
 
@@ -79,13 +79,11 @@ function ExpenseDetailPage() {
   const systemReceipt = (expense.Recibo || [])[0];
   const receiptRequired = expense.Categoria_Gasto?.requiere_comprobante !== false;
   const isInternational = !!expense.es_gasto_internacional;
-  let currency = 'Bs';
-  if (isInternational) {
-    currency = 'USD';
-  }
+  const currency = amountLabelOf(expense);
+  const amountInBs = isAmountInBs(expense);
   const installments = expense.Gasto_Tramo_Moneda || [];
   const bsRate = savedBsRateOf(expense);
-  const hasRates = isInternational && bsRate > 0;
+  const hasRates = isInternational && bsRate > 0 && !amountInBs;
   const hasInstallments = isInternational && !hasRates && installments.length > 0;
   let conversionLabel = null;
   if (isInternational && installments.length > 0) {
@@ -167,6 +165,13 @@ function ExpenseDetailPage() {
             <ExpenseFieldRow icon={DollarSign} label="Equivalente en USD" value={`${parseFloat(expense.monto_total).toFixed(2)} USD`} />
             <ExpenseFieldRow icon={ArrowLeftRight} label="Tipo de cambio a bolivianos" value={`1 USD = ${bsRate.toFixed(4)} Bs`} />
             <ExpenseFieldRow icon={DollarSign} label="Equivalente en Bs" value={`${roundCents(parseFloat(expense.monto_total) * bsRate).toFixed(2)} Bs`} last />
+          </ExpenseSectionCard>
+        )}
+        {amountInBs && (
+          <ExpenseSectionCard icon={Globe} title="Cambio de Moneda">
+            <ExpenseFieldRow icon={DollarSign} label={`Monto en ${expense.moneda}`} value={`${parseFloat(expense.monto_moneda_origen).toFixed(2)} ${expense.moneda}`} />
+            <ExpenseFieldRow icon={ArrowLeftRight} label="Tipo de cambio a bolivianos" value={`1 ${expense.moneda} = ${parseFloat(expense.tipo_cambio).toFixed(4)} Bs`} />
+            <ExpenseFieldRow icon={DollarSign} label="Rendido en Bs" value={`${parseFloat(expense.monto_total).toFixed(2)} Bs`} last />
           </ExpenseSectionCard>
         )}
         {hasInstallments && (

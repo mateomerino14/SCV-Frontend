@@ -40,6 +40,6 @@ describe('DailyBreakdownCard', () => {
     expect(screen.queryByText('USD')).not.toBeInTheDocument();
     expect(screen.getByText('límite 696.00')).toBeInTheDocument();
     expect(screen.getByText('Excede en 504.00 Bs')).toBeInTheDocument();
-    expect(screen.getByText(/Fondo solo en Bs: límite de 100.00 USD × T\/C 6.9600/)).toBeInTheDocument();
+    expect(screen.getByText(/Fondo solo en Bs: límite de 100.00 USD × T\/C del fondo 6.9600/)).toBeInTheDocument();
   });
 });

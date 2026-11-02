@@ -1,4 +1,4 @@
-import {MapPin, Navigation} from 'lucide-react';
+import {MapPin, Navigation, UserCheck} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import {avatarDefault} from '../../../constants/defaultImages';
@@ -24,9 +24,10 @@ const styles = {
   routeFull: 'col-span-2 mt-1',
   routeRow: 'flex items-start gap-1.5 flex-wrap',
   routeText: 'break-words min-w-0',
+  submitterBox: 'flex items-center gap-2 rounded-xl px-3 py-2 mb-4 text-xs font-inter',
 };
 
-function ExpenseTripInfoCard({trip}) {
+function ExpenseTripInfoCard({trip, submitter}) {
   const status = getStatusBadge(trip.estado);
   const isInternational = trip.tipo === 'Internacional';
   return (
@@ -44,6 +45,12 @@ function ExpenseTripInfoCard({trip}) {
         </div>
         <span className={styles.statusBadge} style={{backgroundColor: status.bg, color: status.color}}>{status.label}</span>
       </div>
+      {submitter?.esReemplazo && (
+        <p className={styles.submitterBox} style={{backgroundColor: COLORS.warningBackground, color: COLORS.warningText}}>
+          <UserCheck size={14} />
+          <span>Rendición enviada por el reemplazo <strong>{submitter.nombre} {submitter.apellido_paterno}</strong></span>
+        </p>
+      )}
       <p className={styles.reasonLabel} style={{color: COLORS.secondary}}>Motivo del Viaje</p>
       <p className={styles.reasonText} style={{color: COLORS.text}}>{trip.motivo}</p>
       <div className={styles.divider} style={{borderColor: COLORS.dataFields}} />

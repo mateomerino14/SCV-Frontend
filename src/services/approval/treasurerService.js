@@ -56,9 +56,9 @@ export const getTripDetail = async (tripId) => {
   }
 };
 
-export const updateAmounts = async (tripId, assignedAmount, assignedAmountUsd) => {
+export const updateAmounts = async (tripId, assignedAmount, assignedAmountUsd, fundExchangeRate = null) => {
   try {
-    const response = await apiClient.put(`/treasurer/${tripId}/amounts`, {monto_asignado: assignedAmount, monto_asignado_usd: assignedAmountUsd});
+    const response = await apiClient.put(`/treasurer/${tripId}/amounts`, {monto_asignado: assignedAmount, monto_asignado_usd: assignedAmountUsd, tipo_cambio_fondo: fundExchangeRate});
     return response.data;
   }
   catch (error) {

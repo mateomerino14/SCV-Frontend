@@ -5,6 +5,7 @@ import {extractInvoice} from '../../services/expense/invoiceService';
 
 vi.mock('../../services/expense/invoiceService', () => ({extractInvoice: vi.fn(), saveInvoice: vi.fn()}));
 vi.mock('../../services/expense/expenseService', () => ({getCategories: vi.fn(async () => [])}));
+vi.mock('../../services/trip/tripService', () => ({getTripDetail: vi.fn(async () => ({viaje: {fecha_inicio: '2026-10-01', fecha_fin: '2026-10-05'}}))}));
 vi.mock('../../utils/imageCompressor', () => ({compressImage: vi.fn(async (file) => file)}));
 
 const pendingScans = {};

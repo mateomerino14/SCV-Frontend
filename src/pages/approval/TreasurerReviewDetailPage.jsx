@@ -57,7 +57,7 @@ function TreasurerReviewDetailPage() {
     observations, actionCompleted, commentAdded, resetCommentAdded,
     editingComment, setEditingComment, deletingComment, setDeletingComment, editText, setEditText,
     assignedAmount, assignedAmountUsd,
-    handleAssignedAmountChange, handleAssignedAmountUsdChange,
+    handleAssignedAmountChange, handleAssignedAmountUsdChange, fundExchangeRate, handleFundExchangeRateChange,
     editingAmounts, setEditingAmounts, savingAmounts, handleSaveAmounts,
     handleApprove, handleRequestReject, handleReject, handleAddComment,
     handleOpenEdit, handleConfirmEdit, handleOpenDelete, handleConfirmDelete, editObservation,
@@ -124,6 +124,7 @@ function TreasurerReviewDetailPage() {
           editingAmounts={editingAmounts} setEditingAmounts={setEditingAmounts}
           assignedAmount={assignedAmount} assignedAmountUsd={assignedAmountUsd}
           handleAssignedAmountChange={handleAssignedAmountChange} handleAssignedAmountUsdChange={handleAssignedAmountUsdChange}
+          fundExchangeRate={fundExchangeRate} handleFundExchangeRateChange={handleFundExchangeRateChange}
           savingAmounts={savingAmounts} handleSaveAmounts={handleSaveAmounts} />
         <SelectableObservationsList observations={observationComments} canManage={canAct} currentUserId={user?.id_usuario}
           onAdd={() => setShowAddComment(true)} onEdit={handleOpenEdit} onDelete={handleOpenDelete}

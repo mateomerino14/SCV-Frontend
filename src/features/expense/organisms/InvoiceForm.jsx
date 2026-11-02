@@ -24,7 +24,7 @@ const fieldsConfig = [
   {key: 'monto_total', label: 'Total de la factura', type: 'text', required: true},
 ];
 
-function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved = false, categories = [], lockDate = false}) {
+function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved = false, categories = [], lockDate = false, tripRange = {}}) {
   const {vatPercentage, handleFieldChange, handleDocTypeChange} = useInvoiceForm(data, onChange);
   const isInvoice = data.tipo_doc === 'F';
 
@@ -55,7 +55,8 @@ function InvoiceForm({data, onChange, manuallyModified, fieldErrors = {}, saved 
         return (
           <ExpenseField key={key} label={fieldLabel} required={required} error={fieldErrors[key]}>
             {type === 'date' && (
-              <DatePickerInput value={data[key] || ''} disabled={saved || isLockedDate} onChange={(value) => handleFieldChange(key, value)} />
+              <DatePickerInput value={data[key] || ''} disabled={saved || isLockedDate} onChange={(value) => handleFieldChange(key, value)}
+                rangeStart={tripRange.start} rangeEnd={tripRange.end} />
             )}
             {type !== 'date' && <input value={data[key] || ''} type={type} inputMode={key === 'monto_total' ? 'decimal' : 'text'} disabled={saved || isLockedDate}
               className="w-full bg-transparent outline-none font-inter text-sm" style={{color: COLORS.text, opacity: (saved || isLockedDate) ? 0.6 : 1}}
