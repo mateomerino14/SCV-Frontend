@@ -143,7 +143,7 @@ function SupervisorExpenseReviewDetailPage() {
         <button className={styles.backBtn} onClick={() => navigate(originRoute)}>
           <ArrowLeft size={25} style={{color: COLORS.title}} />
         </button>
-        <ExpenseTripInfoCard trip={trip} />
+        <ExpenseTripInfoCard trip={trip} submitter={data.enviadoPor} />
         <div className={styles.card} style={{backgroundColor: COLORS.background}}>
           <ExpenseBudgetBar accumulated={data.gastoAcumulado} assignedAmount={parseFloat(trip.monto_asignado)} isUsd={false} />
         </div>
