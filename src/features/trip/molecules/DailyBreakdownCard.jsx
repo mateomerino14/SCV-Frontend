@@ -113,7 +113,7 @@ function DailyBreakdownCard({dailyBreakdown = [], dailyRate = 0, dailyRateUsd = 
                 <DailyLimitBar currency="Bs" amount={day.montoBs} limit={dayLimitBs(day, dailyRate)} />
                 {day.tipoCambio && (
                   <p className={styles.note} style={{color: COLORS.labels}}>
-                    Fondo solo en Bs: límite de {dayLimitUsd(day, dailyRateUsd).toFixed(2)} USD × T/C {day.tipoCambio.toFixed(4)}
+                    Fondo solo en Bs: límite de {dayLimitUsd(day, dailyRateUsd).toFixed(2)} USD × T/C del fondo {day.tipoCambio.toFixed(4)}
                   </p>
                 )}
                 {showsUsdBar(day, isInternational) && <DailyLimitBar currency="USD" amount={day.montoUsd} limit={dayLimitUsd(day, dailyRateUsd)} />}
