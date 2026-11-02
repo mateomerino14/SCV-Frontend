@@ -23,7 +23,7 @@ function ExpenseHeaderCard({expense, typeLabel, isInternational, currency, conve
         <span className={styles.badge} style={{backgroundColor: COLORS.onColorFill20, color: COLORS.background}}>{typeLabel}</span>
       </div>
       <p className={styles.amount} style={{color: COLORS.background}}>{parseFloat(expense.monto_total).toFixed(2)} {currency}</p>
-      <p className={styles.amountLabel} style={{color: COLORS.onColorText70}}>{isInternational ? 'Monto Total en USD' : 'Monto Total del Gasto'}</p>
+      <p className={styles.amountLabel} style={{color: COLORS.onColorText70}}>{isInternational ? `Monto Total en ${currency}` : 'Monto Total del Gasto'}</p>
       {showTagsRow && (
         <div className={styles.tagsRow}>
           {isInternational && (

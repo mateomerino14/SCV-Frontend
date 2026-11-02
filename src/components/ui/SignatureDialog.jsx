@@ -13,7 +13,7 @@ const styles = {
   message: 'font-inter text-center text-sm mx-2 mt-1',
   warning: 'font-inter text-center text-xs px-2',
   pad: 'w-full mt-3',
-  buttons: 'flex flex-row gap-4 mt-3 w-full',
+  buttons: 'flex flex-col gap-2 mt-3 w-full',
 };
 
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
@@ -36,8 +36,8 @@ function SignatureDialogCard({icon, iconColor, title, message, warning, confirmT
         <SignaturePad onChange={setSignature} disabled={loading} noteColor={COLORS.backgroundHeader} clearColor={COLORS.background} />
       </div>
       <div className={styles.buttons}>
-        <Button text={cancelText} variant="secondary" onClick={onCancel} disabled={loading} />
         <Button text={confirmLabel} variant="primary" onClick={() => onConfirm(signature)} disabled={loading || !signature} />
+        <Button text={cancelText} variant="secondary" onClick={onCancel} disabled={loading} />
       </div>
     </motion.div>
   );

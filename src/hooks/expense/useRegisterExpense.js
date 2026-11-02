@@ -6,7 +6,7 @@ import {compressImage} from '../../utils/imageCompressor';
 import {currencies} from '../../constants/currencies';
 import {calculateWithholdings} from '../../utils/withholdings';
 import {filterValidSubitems, amountWithSubitems, validateSubitems, buildSubitemsPayload} from '../../utils/expenseSubitems';
-import {usdCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
+import {usdCurrency, bsCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
 import {removeControlCharacters} from '../../utils/textCleaner';
 
 const maxDescription = 1000;
@@ -38,7 +38,7 @@ function newItem() {
     currency: usdCurrency,
     exchangeRate: '',
     bsRate: '',
-    renditionCurrency: '',
+    renditionMode: '',
     usesSubitems: false,
     subitems: [newSubitem()],
     fieldErrors: {},
@@ -57,7 +57,8 @@ function useRegisterExpense(tripId) {
   const [categories, setCategories] = useState([]);
   const [isInternational, setIsInternational] = useState(false);
   const [tripRange, setTripRange] = useState({start: null, end: null});
-  const [defaultRenditionCurrency, setDefaultRenditionCurrency] = useState(usdCurrency);
+  const [defaultRenditionMode, setDefaultRenditionMode] = useState(usdCurrency);
+  const [tripHasUsdFund, setTripHasUsdFund] = useState(true);
   const [savingAll, setSavingAll] = useState(false);
   const [saveSummary, setSaveSummary] = useState(null);
   const amountLimit = amountLimitOf(isInternationalExpense);
@@ -83,7 +84,8 @@ function useRegisterExpense(tripId) {
         setIsInternational(true);
       }
       if (!(parseFloat(data.viaje?.monto_asignado_usd) > 0)) {
-        setDefaultRenditionCurrency('BOB');
+        setTripHasUsdFund(false);
+        setDefaultRenditionMode(bsCurrency);
       }
     };
     loadTrip();
@@ -137,7 +139,7 @@ function useRegisterExpense(tripId) {
       currency: original.currency,
       exchangeRate: original.exchangeRate,
       bsRate: original.bsRate,
-      renditionCurrency: original.renditionCurrency,
+      renditionMode: original.renditionMode,
     };
     setItems((prev) => {
       const index = prev.findIndex((item) => item.id === itemId);
@@ -303,12 +305,19 @@ function useRegisterExpense(tripId) {
 
   const handleExchangeRateChange = (itemId, value) => handleRateChange(itemId, 'exchangeRate', value);
   const handleBsRateChange = (itemId, value) => handleRateChange(itemId, 'bsRate', value);
-  const handleRenditionCurrencyChange = (itemId, value) => {
+  const modeOf = (item) => item.renditionMode || defaultRenditionMode;
+
+  const handleRenditionModeChange = (itemId, value) => {
     setItems((prev) => prev.map((item) => {
-      if (item.id === itemId) {
-        return {...item, renditionCurrency: value};
+      if (item.id !== itemId) {
+        return item;
       }
-      return item;
+      const changesRateMeaning = (modeOf(item) === bsCurrency) !== (value === bsCurrency);
+      let exchangeRate = item.exchangeRate;
+      if (changesRateMeaning) {
+        exchangeRate = '';
+      }
+      return {...item, renditionMode: value, exchangeRate, fieldErrors: {...item.fieldErrors, exchangeRate: undefined, bsRate: undefined}};
     }));
   };
 
@@ -409,7 +418,7 @@ function useRegisterExpense(tripId) {
     }
 
     if (isInternationalExpense) {
-      Object.assign(errors, validateForeignCurrency(item.currency, item.exchangeRate, item.bsRate));
+      Object.assign(errors, validateForeignCurrency(item.currency, item.exchangeRate, item.bsRate, modeOf(item), tripHasUsdFund));
     }
 
     let subitemErrors = {};
@@ -454,7 +463,7 @@ function useRegisterExpense(tripId) {
         es_gasto_internacional: isInternationalExpense,
       };
       if (isInternationalExpense) {
-        Object.assign(payload, buildForeignCurrencyPayload(finalAmount, item.currency, item.exchangeRate, item.bsRate), {moneda_rendicion: item.renditionCurrency || defaultRenditionCurrency});
+        Object.assign(payload, buildForeignCurrencyPayload(finalAmount, item.currency, item.exchangeRate, item.bsRate, modeOf(item)));
       }
       if (item.usesSubitems && validSubitems.length > 0) {
         payload.subitems = buildSubitemsPayload(validSubitems);
@@ -505,7 +514,7 @@ function useRegisterExpense(tripId) {
     handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange,
     handleDescriptionChange, handleCategoryChange,
     handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
-    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange, handleRenditionCurrencyChange, defaultRenditionCurrency,
+    handleCurrencyChange, handleExchangeRateChange, handleBsRateChange, handleRenditionModeChange, defaultRenditionMode, tripHasUsdFund,
     handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
     handleSaveAll,
   };

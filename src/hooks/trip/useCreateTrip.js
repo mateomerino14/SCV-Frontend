@@ -1,7 +1,10 @@
 import {useState} from 'react';
-import {createTrip} from '../../services/trip/tripService';
+import {createTrip, submitTripForReview} from '../../services/trip/tripService';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import useTripLogistics, {companyVehicle} from './useTripLogistics';
+
+const draftSavedMessage = 'Se registró el viaje como borrador';
+const sentToReviewMessage = 'Se registró el viaje y se envió a revisión';
 
 function useCreateTrip(user) {
   const [reason, setReason] = useState('');
@@ -15,6 +18,8 @@ function useCreateTrip(user) {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [createdMessage, setCreatedMessage] = useState(draftSavedMessage);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const logistics = useTripLogistics(transport);
   const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
   const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
@@ -113,13 +118,24 @@ function useCreateTrip(user) {
     return {...errors, ...logistics.validateLogistics()};
   };
 
-  const handleSaveDraft = async () => {
+  const isValid = () => {
     const errors = validate();
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-    setFieldErrors({});
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const resetForm = () => {
+    setReason('');
+    setOrigin('');
+    setDestination('');
+    setStartDate('');
+    setEndDate('');
+    setType('Nacional');
+    setTransport('Terrestre');
+    logistics.resetLogistics();
+  };
+
+  const saveTrip = async (sendToReview) => {
     setLoading(true);
     const data = await createTrip({
       motivo: reason.trim(),
@@ -133,20 +149,40 @@ function useCreateTrip(user) {
       monto_asignado_usd: totalAmountUsd,
       ...logistics.logisticsPayload(),
     });
-    setLoading(false);
     if (data.error) {
+      setLoading(false);
       showError(data.error);
       return;
     }
+    let message = draftSavedMessage;
+    if (sendToReview) {
+      const submitted = await submitTripForReview(data.id_viaje);
+      message = sentToReviewMessage;
+      if (submitted.error) {
+        message = `${draftSavedMessage}, pero no se pudo enviar a revisión: ${submitted.error}. Puedes enviarlo desde el borrador.`;
+      }
+    }
+    setLoading(false);
+    setCreatedMessage(message);
     setShowConfirmation(true);
-    setReason('');
-    setOrigin('');
-    setDestination('');
-    setStartDate('');
-    setEndDate('');
-    setType('Nacional');
-    setTransport('Terrestre');
-    logistics.resetLogistics();
+    resetForm();
+  };
+
+  const handleSaveDraft = async () => {
+    if (isValid()) {
+      await saveTrip(false);
+    }
+  };
+
+  const handleRequestSubmit = () => {
+    if (isValid()) {
+      setShowSubmitConfirm(true);
+    }
+  };
+
+  const handleConfirmSubmit = async () => {
+    setShowSubmitConfirm(false);
+    await saveTrip(true);
   };
 
   return {
@@ -159,7 +195,8 @@ function useCreateTrip(user) {
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,
     loading, error, fieldErrors,
-    showConfirmation, setShowConfirmation,
+    showConfirmation, setShowConfirmation, createdMessage,
+    showSubmitConfirm, setShowSubmitConfirm, handleRequestSubmit, handleConfirmSubmit,
     handleReasonChange,
     handleOriginChange,
     handleDestinationChange,

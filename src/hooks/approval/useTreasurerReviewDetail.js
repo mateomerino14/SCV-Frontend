@@ -9,8 +9,16 @@ import {
   deleteTripComment,
 } from '../../services/approval/treasurerService';
 import getCurrentUserId from '../../utils/getCurrentUserId';
+import {isExchangeRateInput, fundExchangeRateOf} from '../../utils/expenseCurrency';
 
 const maxAmount = 999999.99;
+
+const fundRateText = (trip) => {
+  if (parseFloat(trip.tipo_cambio_fondo) > 0) {
+    return String(parseFloat(trip.tipo_cambio_fondo));
+  }
+  return String(fundExchangeRateOf(trip));
+};
 
 function useTreasurerReviewDetail(tripId) {
   const [data, setData] = useState(null);
@@ -30,6 +38,7 @@ function useTreasurerReviewDetail(tripId) {
   const [editText, setEditText] = useState('');
   const [assignedAmount, setAssignedAmount] = useState('');
   const [assignedAmountUsd, setAssignedAmountUsd] = useState('');
+  const [fundExchangeRate, setFundExchangeRate] = useState('');
   const [editingAmounts, setEditingAmounts] = useState(false);
   const [savingAmounts, setSavingAmounts] = useState(false);
 
@@ -49,6 +58,7 @@ function useTreasurerReviewDetail(tripId) {
       setData(result);
       setAssignedAmount(String(result.viaje.monto_asignado));
       setAssignedAmountUsd(String(result.viaje.monto_asignado_usd || 0));
+      setFundExchangeRate(fundRateText(result.viaje));
     };
     load();
   }, [tripId]);
@@ -69,6 +79,7 @@ function useTreasurerReviewDetail(tripId) {
       setData(updated);
       setAssignedAmount(String(updated.viaje.monto_asignado));
       setAssignedAmountUsd(String(updated.viaje.monto_asignado_usd || 0));
+      setFundExchangeRate(fundRateText(updated.viaje));
     }
   };
 
@@ -100,13 +111,19 @@ function useTreasurerReviewDetail(tripId) {
     setAssignedAmountUsd(value);
   };
 
+  const handleFundExchangeRateChange = (value) => {
+    if (isExchangeRateInput(value)) {
+      setFundExchangeRate(value);
+    }
+  };
+
   const handleSaveAmounts = async () => {
     if (!assignedAmount || parseFloat(assignedAmount) < 0 || isNaN(parseFloat(assignedAmount))) {
       showError('El monto en Bs debe ser un número válido');
       return;
     }
     setSavingAmounts(true);
-    const result = await updateAmounts(tripId, parseFloat(assignedAmount), parseFloat(assignedAmountUsd) || 0);
+    const result = await updateAmounts(tripId, parseFloat(assignedAmount), parseFloat(assignedAmountUsd) || 0, parseFloat(fundExchangeRate) || null);
     setSavingAmounts(false);
     if (result.error) {
       showError(result.error);
@@ -252,6 +269,7 @@ function useTreasurerReviewDetail(tripId) {
     editText, setEditText,
     assignedAmount, setAssignedAmount,
     assignedAmountUsd, setAssignedAmountUsd,
+    fundExchangeRate, handleFundExchangeRateChange,
     handleAssignedAmountChange, handleAssignedAmountUsdChange,
     editingAmounts, setEditingAmounts,
     savingAmounts, handleSaveAmounts,

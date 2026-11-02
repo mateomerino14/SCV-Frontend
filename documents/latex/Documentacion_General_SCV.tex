@@ -145,7 +145,7 @@ Fecha: & Octubre de 2026 \\
   \item El sistema contempla dos tipos de viaje según su alcance geográfico:
   \begin{itemize}
     \item \textbf{Nacional}: los gastos se registran íntegramente en bolivianos.
-    \item \textbf{Internacional}: cuenta además con un presupuesto en dólares. Cualquier día se puede gastar en bolivianos o en dólares. Un gasto internacional se escribe en la moneda de su factura (dólares, soles, pesos, etc.) con dos tipos de cambio que escribe el empleado: el de esa moneda a dólares y el de dólares a bolivianos. El sistema guarda el equivalente en dólares. El control diario depende de cómo se entregó el fondo: con fondo en dólares, cada día se controla por moneda; si se entregó todo en bolivianos, el día se controla en bolivianos y en los días intermedios el límite es la tarifa en dólares del cargo pasada a bolivianos con el tipo de cambio de los gastos. El empleado elige si el gasto se rinde en dólares o en bolivianos: así sale en la planilla, en el Excel para Oracle y se descuenta de ese fondo. Los gastos internacionales no llevan impuestos.
+    \item \textbf{Internacional}: cuenta además con un presupuesto en dólares. Cualquier día se puede gastar en bolivianos o en dólares. Un gasto internacional se escribe en la moneda de su factura (dólares, soles, pesos, etc.) y el empleado elige primero cómo lo rinde: en dólares, en bolivianos o con ambos; solo se le pide el tipo de cambio que hace falta (en bolivianos, cuántos Bs vale 1 unidad de esa moneda; en dólares, cuántas unidades vale 1 dólar, y también el de dólares a bolivianos si el fondo se entregó solo en Bs). El control diario depende de cómo se entregó el fondo: con fondo en dólares, cada día se controla por moneda; si se entregó todo en bolivianos, el día se controla en bolivianos y en los días intermedios el límite es la tarifa en dólares del cargo pasada a bolivianos con el tipo de cambio con que tesorería entregó el fondo, que ella anota (6.96 si no lo anota). La forma de rendir decide cómo sale en la planilla, en el Excel para Oracle y se descuenta de ese fondo. Los gastos internacionales no llevan impuestos.
   \end{itemize}
   \item El medio de transporte se registra por viaje (terrestre, aéreo o vehículo de la empresa) y se muestra como distintivo en las vistas de revisión. Con vehículo de la empresa se elige uno de la flota que registra el administrador: solo se ofrecen los libres, y un vehículo se libera cuando el empleado termina su viaje. En ese caso se puede pedir un fondo aparte para combustible, que no cuenta en el control diario.
   \item Cada viaje indica quién gestiona el hospedaje: la empresa o el propio empleado.
@@ -218,7 +218,7 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
 
 \subsection{Primer flujo: autorización del viaje}
 \begin{enumerate}
-  \item \textbf{Registro del viaje:} el empleado crea el viaje en estado \code{BORRADOR}, indicando motivo, origen, destino, fechas, tipo (nacional o internacional), medio de transporte (con el vehículo y el combustible si es de la empresa) y quién gestiona el hospedaje.
+  \item \textbf{Registro del viaje:} el empleado crea el viaje en estado \code{BORRADOR}, indicando motivo, origen, destino, fechas, tipo (nacional o internacional), medio de transporte (con el vehículo y el combustible si es de la empresa) y quién gestiona el hospedaje. Puede guardarlo como borrador o enviarlo a revisión en el mismo paso.
   \item \textbf{Monto del viaje:} el sistema lo calcula con las tarifas del cargo. En un viaje nacional es días × tarifa en bolivianos; en uno internacional, el día de salida y el de regreso se calculan con la tarifa en bolivianos y los días intermedios con la tarifa en dólares.
   \item \textbf{Envío a revisión:} el viaje pasa a \code{EN_REVISION_VIAJE}.
   \item \textbf{Revisión del supervisor:} el supervisor que corresponde por jerarquía toma el viaje, lo evalúa y lo aprueba o lo rechaza con observaciones. Si lo aprueba, pasa a \code{APROBADO_VIAJE}.
@@ -294,7 +294,7 @@ Cerrada automáticamente & El viaje se envió a revisión antes de la respuesta;
 La ampliación extiende el margen para \textit{cargar} gastos, no el rango de fechas admisibles: la fecha de cada gasto debe seguir perteneciendo al período del viaje.
 
 \section{Rendición por terceros}
-Mientras el viaje está en curso o rechazado en la rendición, el empleado puede pedir que otra persona activa de su sección rinda los gastos en su nombre. El revisor aprueba o rechaza la solicitud; con la aprobación se avisa al titular y al reemplazo, y el viaje aparece en el panel del reemplazo como ``Rendición de [nombre]''. El titular conserva siempre el acceso a su viaje, y los documentos oficiales llevan su nombre.
+Mientras el viaje está en curso o rechazado en la rendición, el empleado puede pedir que otra persona activa de su sección rinda los gastos en su nombre. El revisor aprueba o rechaza la solicitud; con la aprobación se avisa al titular y al reemplazo, y el viaje aparece en el panel del reemplazo como ``Rendición de [nombre]''. El titular conserva siempre el acceso a su viaje, y los documentos oficiales llevan su nombre. Si se rechaza una rendición que envió el reemplazo, el aviso llega también a él; quien la vuelva a enviar firma de nuevo, y quien revisa ve que la envió el reemplazo.
 
 \section{Retenciones impositivas}
 El sistema calcula automáticamente las retenciones según el tipo de comprobante, conforme a la normativa boliviana. Las retenciones y el costo se calculan siempre desde lo pagado, de modo que todos los gastos, incluidos los registrados antes de un ajuste del cálculo, se muestran con la misma regla.
@@ -846,6 +846,7 @@ Entidad central del sistema. Su estado gobierna ambos flujos de aprobación.
   \campo{monto_asignado}{Presupuesto en bolivianos, calculado con las tarifas del cargo y ajustado por tesorería; incluye el combustible}{DECIMAL(10,2)}
   \campo{monto_combustible}{Parte del presupuesto para combustible del vehículo de la empresa}{NUMERIC(10,2)}
   \campo{monto_asignado_usd}{Presupuesto en dólares, calculado con las tarifas del cargo y ajustado por tesorería}{NUMERIC(10,2)}
+  \campo{tipo_cambio_fondo}{Bolivianos por 1 dólar con que tesorería entregó un fondo internacional solo en Bs}{NUMERIC(10,4)}
   \campo{estado}{Uno de los diez estados definidos}{VARCHAR(25), CHECK}
   \campo{fue_iniciado}{Distingue un rechazo en la autorización de uno en la rendición}{BOOLEAN}
   \campo{ciclo_revision}{Contador de rondas de revisión}{INTEGER}
@@ -929,7 +930,8 @@ Cada gasto realizado durante un viaje. Guarda los valores de retención calculad
   \campo{tipo_cambio}{Unidades de esa moneda por 1 dólar (1 en dólares)}{NUMERIC(10,4)}
   \campo{monto_moneda_origen}{Importe en la moneda de la factura}{NUMERIC(10,2)}
   \campo{tipo_cambio_bs}{Bolivianos por 1 dólar, para la planilla}{NUMERIC(10,4)}
-  \campo{moneda_rendicion}{Moneda en que se rinde el gasto internacional: USD o BOB}{CHAR(3)}
+  \campo{moneda_rendicion}{Moneda en que se rinde el gasto internacional: USD, BOB o nula si se rinde con ambos tipos de cambio}{CHAR(3)}
+  \campo{monto_en_bs}{El monto total quedó directo en bolivianos (gasto rendido solo en Bs)}{BOOLEAN}
   \campo{base_imponible}{Base de cálculo de las retenciones}{NUMERIC(10,2)}
   \campo{retencion_rc_iva}{Retención RC-IVA}{NUMERIC(10,2)}
   \campo{retencion_iue}{Retención IUE}{NUMERIC(10,2)}

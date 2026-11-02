@@ -12,7 +12,7 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo @celular', a
   await expect(page.getByText('Monto Total Estimado').first()).toBeVisible();
   await expect(page.getByText(/900\.00/).first()).toBeVisible();
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
-  await expect(page.getByText('Se registró el viaje correctamente')).toBeVisible();
+  await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();
 });
 
 test('un día que pasa la tarifa se marca en el control diario y pide justificación', async ({page}) => {
@@ -55,5 +55,19 @@ test('en vehículo de la empresa elige un vehículo libre, el combustible aparte
   await expect(page.getByText(/1300\.00/).first()).toBeVisible();
   await page.getByRole('radio', {name: 'Empresa'}).click();
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
-  await expect(page.getByText('Se registró el viaje correctamente')).toBeVisible();
+  await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();
+});
+
+test('el empleado registra el viaje y lo envía a revisión en un solo paso @celular', async ({page}) => {
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto('/dashboard/empleado/crear-viaje');
+  await page.getByPlaceholder('Inspección técnica y de producción...').fill('Viaje enviado directo');
+  await page.getByPlaceholder('Ciudad de origen...').fill('La Paz');
+  await page.getByPlaceholder('¿A dónde se dirige?').fill('Oruro');
+  await pickDate(page, 0, boliviaDate(8));
+  await pickDate(page, 1, boliviaDate(9));
+  await page.getByRole('button', {name: 'Enviar a Revisión'}).click();
+  await expect(page.getByText('¿Enviar a Revisión?')).toBeVisible();
+  await page.getByRole('button', {name: 'Enviar', exact: true}).click();
+  await expect(page.getByText('Se registró el viaje y se envió a revisión')).toBeVisible();
 });

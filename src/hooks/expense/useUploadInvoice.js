@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from 'react';
 import {extractInvoice, saveInvoice} from '../../services/expense/invoiceService';
 import {getCategories} from '../../services/expense/expenseService';
+import {getTripDetail} from '../../services/trip/tripService';
 import {compressImage} from '../../utils/imageCompressor';
 
 const validationSaveError = 'Completa los campos requeridos';
@@ -29,6 +30,7 @@ const positionOf = (invoices, id) => {
 function useUploadInvoice(tripId) {
   const [invoices, setInvoices] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [tripRange, setTripRange] = useState({start: null, end: null});
   const [currentId, setCurrentId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const lastInvoiceId = useRef(0);
@@ -47,6 +49,16 @@ function useUploadInvoice(tripId) {
     };
     loadCategories();
   }, []);
+
+  useEffect(() => {
+    const loadTripRange = async () => {
+      const data = await getTripDetail(tripId);
+      if (!data.error && data.viaje) {
+        setTripRange({start: data.viaje.fecha_inicio?.slice(0, 10) || null, end: data.viaje.fecha_fin?.slice(0, 10) || null});
+      }
+    };
+    loadTripRange();
+  }, [tripId]);
 
   const createInvoiceId = () => {
     lastInvoiceId.current += 1;
@@ -319,6 +331,7 @@ function useUploadInvoice(tripId) {
   const allSaved = invoices.length > 0 && invoices.every((invoice) => invoice.saved || invoice.loading || invoice.error);
 
   return {
+    tripRange,
     invoices,
     categories,
     currentInvoice,

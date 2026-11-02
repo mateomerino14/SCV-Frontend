@@ -9,7 +9,7 @@ import ReceiptSendingModal from './ReceiptSendingModal';
 import useExpenseReceipt from '../hooks/useExpenseReceipt';
 import useExpenseObservations from '../hooks/useExpenseObservations';
 import useExpenseNavigation from '../hooks/useExpenseNavigation';
-import {conversionLabelOf} from '../../../utils/expenseCurrency';
+import {conversionLabelOf, amountLabelOf, isAmountInBs} from '../../../utils/expenseCurrency';
 import {resolveDocumentNumber, documentSources, systemReceiptNote} from '../../../utils/documentNumber';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
@@ -46,6 +46,10 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
   if (isInternational) {
     conversions = expense.Gasto_Tramo_Moneda || [];
   }
+  let internationalBadge = `${parseFloat(expense.monto_total).toFixed(2)} USD`;
+  if (isAmountInBs(expense)) {
+    internationalBadge = `${parseFloat(expense.monto_moneda_origen).toFixed(2)} ${expense.moneda} → Bs`;
+  }
   const badgeStyle = {display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700, fontFamily: 'Inter, sans-serif', padding: '2px 8px', borderRadius: 6, width: 'fit-content'};
   const documentInfo = resolveDocumentNumber(expense);
   const expenseObservations = observations.filter((observation) => observation.id_gasto === expense.id_gasto);
@@ -56,7 +60,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
         <p style={{color: COLORS.text, fontWeight: 700, fontSize: 13, fontFamily: 'Inter, sans-serif', flex: 1, marginRight: 8, lineHeight: 1.3}}>{displayName}</p>
         <p style={{color: accentColor, fontWeight: 700, fontSize: 14, fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap'}}>
-          {parseFloat(expense.monto_total).toFixed(2)} {isInternational ? 'USD' : 'Bs'}
+          {parseFloat(expense.monto_total).toFixed(2)} {amountLabelOf(expense)}
         </p>
       </div>
       <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px 12px'}}>
@@ -78,7 +82,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
           {isInternational && (
             <span style={{...badgeStyle, backgroundColor: COLORS.primary + '15', color: COLORS.primary}}>
               <Globe size={10} />
-              {parseFloat(expense.monto_total).toFixed(2)} USD
+              {internationalBadge}
             </span>
           )}
           {conversions.length > 0 && (
