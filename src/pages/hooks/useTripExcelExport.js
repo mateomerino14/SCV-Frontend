@@ -13,6 +13,7 @@ import {saveWorkbook} from '../../utils/excelExport';
 import {amountInBsOf, originalAmountLinesOf, summarizeStatement, hasOriginCurrencyLines, isRenderedInUsd} from '../../utils/expenseCurrency';
 import {thinBorder, applyOuterBorder} from '../../utils/excelBorders';
 import {getStatementSignatures} from '../../services/trip/tripService';
+import {trimSignature, signatureAnchor} from '../../utils/excelSignature';
 
 const headerFill = 'FF4A90D9';
 const headerFont = 'FFFFFFFF';
@@ -23,6 +24,7 @@ const nationalRowFill = 'FFF4F9FD';
 const internationalRowFill = 'FFFDEEEE';
 const totalsFill = 'FFBFE0F5';
 const totalsLabelEndCol = 3;
+const signatureRowsAbove = 4;
 const reimburseFont = 'FF9C0006';
 const originalLineHeight = 14;
 const fundLabel = 'SALDO ANTERIOR FONDO RECIBIDO';
@@ -562,7 +564,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   ];
   currentRow += 6;
   const lineRow = currentRow;
-  signatureBlocks.forEach(({startCol, endCol, signature, notRequired}) => {
+  for (const {startCol, endCol, signature, notRequired} of signatureBlocks) {
     let legend = '';
     if (signature?.automatica) {
       legend = 'Aprobación automática';
@@ -571,9 +573,9 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       legend = 'No requiere Vo/ Bo de gerencia';
     }
     if (signature?.imagen && !signature.automatica) {
-      const imageId = workbook.addImage({base64: signature.imagen, extension: 'png'});
-      const blockWidth = endCol - startCol + 1;
-      sheet.addImage(imageId, {tl: {col: startCol - 1 + Math.max(blockWidth / 2 - 1, 0), row: lineRow - 4}, ext: {width: 150, height: 50}});
+      const stroke = await trimSignature(signature.imagen);
+      const imageId = workbook.addImage({base64: stroke.image, extension: 'png'});
+      sheet.addImage(imageId, signatureAnchor(sheet, {startCol, endCol, firstRow: lineRow - signatureRowsAbove, lineRow}, stroke));
     }
     else if (legend) {
       sheet.mergeCells(lineRow - 1, startCol, lineRow - 1, endCol);
@@ -582,7 +584,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       autoCell.font = {italic: true, size: 8, color: {argb: 'FF595959'}};
       autoCell.alignment = {horizontal: 'center', vertical: 'bottom'};
     }
-  });
+  }
   signatureBlocks.forEach(({startCol, endCol}) => {
     sheet.mergeCells(lineRow, startCol, lineRow, endCol);
     const cell = sheet.getCell(lineRow, startCol);
