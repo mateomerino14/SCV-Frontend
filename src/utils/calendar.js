@@ -5,7 +5,7 @@ export const weekdayInitials = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
 const pad = (value) => String(value).padStart(2, '0');
 
-export const toIsoDate = (year, month, day) => `${year}-${pad(month + 1)}-${pad(day)}`;
+const toIsoDate = (year, month, day) => `${year}-${pad(month + 1)}-${pad(day)}`;
 
 export const todayIso = () => {
   const now = new Date();
