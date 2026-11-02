@@ -1,5 +1,5 @@
 import {describe, it, expect} from 'vitest';
-import {convertForeignAmount, validateForeignCurrency, buildForeignCurrencyPayload, isAmountInput, isExchangeRateInput, hasOriginCurrencyLines, conversionLabelOf, hasUsdFund, showsUsdFund, spentAgainstFunds, summarizeStatement} from './expenseCurrency';
+import {convertForeignAmount, validateForeignCurrency, buildForeignCurrencyPayload, isAmountInput, isExchangeRateInput, hasOriginCurrencyLines, conversionLabelOf, hasUsdFund, showsUsdFund, spentAgainstFunds, summarizeStatement, amountInBsOf, savedRenditionModeOf, originalAmountLinesOf} from './expenseCurrency';
 
 describe('Moneda de un gasto internacional', () => {
   it('pasa el monto en soles a USD y a Bs con los tipos de cambio del empleado', () => {
@@ -14,8 +14,25 @@ describe('Moneda de un gasto internacional', () => {
   });
 
   it('arma los datos que se envían con el monto en USD', () => {
-    expect(buildForeignCurrencyPayload(170, 'PEN', '3.78', '6.96')).toEqual({moneda: 'PEN', tipo_cambio: 3.78, tipo_cambio_bs: 6.96, monto_moneda_origen: 170, monto_total: 44.97});
+    expect(buildForeignCurrencyPayload(170, 'PEN', '3.78', '6.96')).toEqual({moneda: 'PEN', moneda_rendicion: 'AMBOS', tipo_cambio: 3.78, tipo_cambio_bs: 6.96, monto_moneda_origen: 170, monto_total: 44.97});
     expect(buildForeignCurrencyPayload(20, 'USD', '9', '6.96').tipo_cambio).toBe(1);
+  });
+
+  it('según cómo se rinde pide solo el tipo de cambio que hace falta', () => {
+    expect(buildForeignCurrencyPayload(170, 'PEN', '1.85', '', 'BOB')).toEqual({moneda: 'PEN', moneda_rendicion: 'BOB', tipo_cambio: 1.85, monto_moneda_origen: 170, monto_total: 314.5});
+    expect(buildForeignCurrencyPayload(150, 'PEN', '3.75', '', 'USD')).toMatchObject({moneda_rendicion: 'USD', tipo_cambio_bs: null, monto_total: 40});
+    expect(validateForeignCurrency('PEN', '', '', 'BOB')).toEqual({exchangeRate: 'Indica cuántos Bs vale 1 PEN'});
+    expect(validateForeignCurrency('PEN', '3.75', '', 'USD', true)).toEqual({});
+    expect(validateForeignCurrency('PEN', '3.75', '', 'USD', false)).toEqual({bsRate: 'El tipo de cambio a bolivianos es requerido'});
+    expect(validateForeignCurrency('USD', '', '6.96', 'AMBOS')).toEqual({});
+  });
+
+  it('un gasto rendido solo en Bs ya está en bolivianos y sale del fondo en Bs', () => {
+    const expense = {es_gasto_internacional: true, monto_en_bs: true, moneda: 'PEN', monto_moneda_origen: 170, tipo_cambio: 1.85, monto_total: 314.5};
+    expect(amountInBsOf(expense)).toBe(314.5);
+    expect(savedRenditionModeOf(expense)).toBe('BOB');
+    expect(originalAmountLinesOf(expense)[0]).toBe('170.00 PEN = 314.50 Bs (T/C 1.8500 Bs por PEN)');
+    expect(spentAgainstFunds({tipo: 'Internacional', monto_asignado_usd: 100}, [expense])).toEqual({spentBs: 314.5, spentUsd: 0, internationalUsd: 0});
   });
 
   it('acepta montos de 2 decimales y tipos de cambio de 4', () => {

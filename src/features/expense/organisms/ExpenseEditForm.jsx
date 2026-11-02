@@ -22,7 +22,7 @@ function ExpenseEditForm({
   usesSubitems, subitems, validSubitems, subitemErrors, currencies, withholdings, hasWithholdings, finalAmount,
   handleTypeChange, handleDateChange, handleSupplierChange, handleReceiptNumberChange, handleAmountChange, handleDescriptionChange, handleCategoryChange,
   handleImageChange, handleRemoveImage, handleAddBackup, handleRemoveBackup,
-  handleCurrencyChange, handleExchangeRateChange, handleBsRateChange, renditionCurrency, setRenditionCurrency,
+  handleCurrencyChange, handleExchangeRateChange, handleBsRateChange, renditionMode, handleRenditionModeChange, tripHasUsdFund,
   handleToggleSubitems, handleAddSubitem, handleRemoveSubitem, handleSubitemDescriptionChange, handleSubitemAmountChange,
 }) {
   const automaticAmount = usesSubitems;
@@ -49,7 +49,7 @@ function ExpenseEditForm({
       {isInternationalExpense && (
         <ForeignCurrencyFields currencies={currencies} currency={currency} exchangeRate={exchangeRate} bsRate={bsRate} amount={finalAmount} errors={fieldErrors} disabled={saved}
           onCurrencyChange={handleCurrencyChange} onExchangeRateChange={handleExchangeRateChange} onBsRateChange={handleBsRateChange}
-          renditionCurrency={renditionCurrency} onRenditionCurrencyChange={setRenditionCurrency} />
+          renditionMode={renditionMode} onRenditionModeChange={handleRenditionModeChange} tripHasUsdFund={tripHasUsdFund} />
       )}
       <ExpenseField label={automaticAmount ? 'Monto (calculado automáticamente)' : 'Monto'} required={!automaticAmount} suffix={amountSuffix} error={fieldErrors.amount}>
         <input type="text" inputMode="decimal" placeholder="0.00" disabled={saved || automaticAmount}

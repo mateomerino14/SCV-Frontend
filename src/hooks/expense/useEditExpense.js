@@ -5,7 +5,7 @@ import {compressImage} from '../../utils/imageCompressor';
 import {currencies} from '../../constants/currencies';
 import {calculateWithholdings} from '../../utils/withholdings';
 import {filterValidSubitems, amountWithSubitems, validateSubitems, buildSubitemsPayload} from '../../utils/expenseSubitems';
-import {usdCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload} from '../../utils/expenseCurrency';
+import {usdCurrency, bsCurrency, amountLimitOf, isAmountInput, isExchangeRateInput, validateForeignCurrency, buildForeignCurrencyPayload, savedRenditionModeOf, isAmountInBs} from '../../utils/expenseCurrency';
 import {removeControlCharacters} from '../../utils/textCleaner';
 
 const maxDescription = 1000;
@@ -31,14 +31,21 @@ function newSubitem(description = '', amount = '') {
 const decimalText = (value) => parseFloat(value || 0).toString();
 
 const savedCurrencyOf = (expense) => {
-  if (!expense.es_gasto_internacional || !(parseFloat(expense.tipo_cambio_bs) > 0)) {
+  if (isAmountInBs(expense)) {
+    return {currency: expense.moneda, amount: decimalText(expense.monto_moneda_origen), exchangeRate: decimalText(expense.tipo_cambio), bsRate: ''};
+  }
+  if (!expense.es_gasto_internacional || !(parseFloat(expense.tipo_cambio_bs) > 0 || expense.moneda_rendicion)) {
     return {currency: usdCurrency, amount: decimalText(expense.monto_total), exchangeRate: '', bsRate: ''};
   }
   let exchangeRate = '';
   if (expense.moneda !== usdCurrency) {
     exchangeRate = decimalText(expense.tipo_cambio);
   }
-  return {currency: expense.moneda, amount: decimalText(expense.monto_moneda_origen), exchangeRate, bsRate: decimalText(expense.tipo_cambio_bs)};
+  let bsRate = '';
+  if (parseFloat(expense.tipo_cambio_bs) > 0) {
+    bsRate = decimalText(expense.tipo_cambio_bs);
+  }
+  return {currency: expense.moneda, amount: decimalText(expense.monto_moneda_origen), exchangeRate, bsRate};
 };
 
 function useEditExpense(expenseId) {
@@ -66,7 +73,8 @@ function useEditExpense(expenseId) {
   const [currency, setCurrency] = useState(usdCurrency);
   const [exchangeRate, setExchangeRate] = useState('');
   const [bsRate, setBsRate] = useState('');
-  const [renditionCurrency, setRenditionCurrency] = useState(usdCurrency);
+  const [renditionMode, setRenditionMode] = useState(usdCurrency);
+  const [tripHasUsdFund, setTripHasUsdFund] = useState(true);
   const [usesSubitems, setUsesSubitems] = useState(false);
   const [subitems, setSubitems] = useState([newSubitem()]);
   const [subitemErrors, setSubitemErrors] = useState({});
@@ -96,12 +104,8 @@ function useEditExpense(expenseId) {
       setCurrency(savedCurrency.currency);
       setExchangeRate(savedCurrency.exchangeRate);
       setBsRate(savedCurrency.bsRate);
-      if (expenseData.moneda_rendicion) {
-        setRenditionCurrency(expenseData.moneda_rendicion);
-      }
-      else if (!(parseFloat(expenseData.Viaje?.monto_asignado_usd) > 0)) {
-        setRenditionCurrency('BOB');
-      }
+      setRenditionMode(savedRenditionModeOf(expenseData));
+      setTripHasUsdFund(parseFloat(expenseData.Viaje?.monto_asignado_usd) > 0);
       const savedSubitems = expenseData.Gasto_Subitem || [];
       if (savedSubitems.length > 0) {
         setUsesSubitems(true);
@@ -192,6 +196,14 @@ function useEditExpense(expenseId) {
   const handleCurrencyChange = (value) => {
     setCurrency(value);
     setFieldErrors((prev) => ({...prev, exchangeRate: undefined}));
+  };
+
+  const handleRenditionModeChange = (value) => {
+    if ((renditionMode === bsCurrency) !== (value === bsCurrency)) {
+      setExchangeRate('');
+    }
+    setRenditionMode(value);
+    setFieldErrors((prev) => ({...prev, exchangeRate: undefined, bsRate: undefined}));
   };
 
   const handleExchangeRateChange = (value) => {
@@ -313,7 +325,7 @@ function useEditExpense(expenseId) {
     }
 
     if (isInternationalExpense) {
-      Object.assign(errors, validateForeignCurrency(currency, exchangeRate, bsRate));
+      Object.assign(errors, validateForeignCurrency(currency, exchangeRate, bsRate, renditionMode, tripHasUsdFund));
     }
 
     let currentSubitemErrors = {};
@@ -347,7 +359,7 @@ function useEditExpense(expenseId) {
       es_gasto_internacional: isInternationalExpense,
     };
     if (isInternationalExpense) {
-      Object.assign(payload, buildForeignCurrencyPayload(finalAmount, currency, exchangeRate, bsRate), {moneda_rendicion: renditionCurrency});
+      Object.assign(payload, buildForeignCurrencyPayload(finalAmount, currency, exchangeRate, bsRate, renditionMode));
     }
     if (usesSubitems && validSubitems.length > 0) {
       payload.subitems = buildSubitemsPayload(validSubitems);
@@ -369,7 +381,7 @@ function useEditExpense(expenseId) {
     imagePreview, backups, loading, loadingData,
     error, fieldErrors, saved, tripId, tripDateRange,
     isInternationalExpense,
-    currency, exchangeRate, bsRate, finalAmount, renditionCurrency, setRenditionCurrency,
+    currency, exchangeRate, bsRate, finalAmount, renditionMode, handleRenditionModeChange, tripHasUsdFund,
     usesSubitems, subitems, validSubitems, subitemErrors,
     currencies,
     withholdings, hasWithholdings,

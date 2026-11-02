@@ -2,7 +2,7 @@ import buildTripCode from './tripCode';
 import {addListRanges, columnLetter} from './excelLists';
 import {toOracleExpenseType} from './expenseTypeCode';
 import {getExpenseTaxValues} from './expenseTaxValues';
-import {isRenderedInUsd, amountInBsOf} from './expenseCurrency';
+import {renditionCurrencyOf, amountInBsOf, usdCurrency} from './expenseCurrency';
 import {resolveDocumentNumber, documentSources, systemReceiptNote} from './documentNumber';
 import {thinBorder, applyOuterBorder, frameTable} from './excelBorders';
 import {oracleDefaults, oracleTaxCodes, oracleTaxLines, oracleWithholdings, oraclePaymentTerms, oracleLists} from '../constants/oracleLists';
@@ -226,7 +226,7 @@ const buildLines = ({trip, expense, description, taxCode, articleAmount, vat, wi
 export function buildOracleInvoice(trip, expense) {
   const tax = getExpenseTaxValues(expense);
   const isInternational = !!expense.es_gasto_internacional;
-  const inUsd = isRenderedInUsd(trip, expense);
+  const inUsd = isInternational && (renditionCurrencyOf(trip, expense) === usdCurrency || amountInBsOf(expense) === null);
   let paid = roundAmount(expense.monto_total);
   if (isInternational && !inUsd) {
     paid = roundAmount(amountInBsOf(expense));
@@ -249,7 +249,7 @@ export function buildOracleInvoice(trip, expense) {
   }
   let currency = oracleDefaults.functionalCurrency;
   if (inUsd) {
-    currency = 'USD';
+    currency = usdCurrency;
   }
   const invoiceDate = formatOracleDate(documentDate(expense));
   const description = buildOracleDescription(trip, expense);

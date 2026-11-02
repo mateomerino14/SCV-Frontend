@@ -49,15 +49,25 @@ describe('Planilla de rendición en Excel', () => {
     expect(findRow(sheet, 'Saldo en mi poder').getCell(6).value).toBe(637.01);
   });
 
-  it('el gasto internacional que el empleado rinde en USD sale en USD y fuera de las sumas en Bs', async () => {
+  it('con fondo en USD el gasto que el empleado rinde en USD sale en USD y fuera de las sumas en Bs', async () => {
     const workbook = new ExcelJS.Workbook();
-    await addStatementSheet(workbook, trip, [expenses[0], {...expenses[1], moneda_rendicion: 'USD'}]);
+    await addStatementSheet(workbook, {...trip, monto_asignado_usd: '100'}, [expenses[0], {...expenses[1], moneda_rendicion: 'USD'}]);
     const sheet = workbook.getWorksheet('RENDICION');
     expect(sheet.getCell(11, 8).value).toBe(44.97);
     expect(sheet.getCell(11, 8).numFmt).toBe('#,##0.00" USD"');
     expect(findRow(sheet, 'Sumas Totales').getCell(8).value).toBe(50);
     expect(findRow(sheet, 'Gastos internacionales').getCell(8).value).toBe(44.97);
     expect(findRow(sheet, 'Total Gastado').getCell(6).value).toBe(50);
+  });
+
+  it('con fondo solo en Bs el gasto rendido en USD se descuenta en Bs y el rendido solo en Bs entra tal cual', async () => {
+    const workbook = new ExcelJS.Workbook();
+    const onlyBs = {...expenses[1], monto_en_bs: true, moneda_rendicion: 'BOB', tipo_cambio: '1.8500', tipo_cambio_bs: '1', monto_total: '314.50'};
+    await addStatementSheet(workbook, trip, [expenses[0], {...expenses[1], moneda_rendicion: 'USD'}, onlyBs]);
+    const sheet = workbook.getWorksheet('RENDICION');
+    expect(sheet.getCell(11, 8).value).toBe(312.99);
+    expect(sheet.getCell(12, 8).value).toBe(314.5);
+    expect(findRow(sheet, 'Sumas Totales').getCell(8).value).toBe(677.49);
   });
 
   it('pone el trazo y los datos de quien firmó en los casilleros de firma', async () => {
