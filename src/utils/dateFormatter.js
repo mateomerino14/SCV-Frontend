@@ -13,3 +13,10 @@ export function formatDateRange(startDate, endDate) {
 export function formatDateTime(dateString) {
   return new Date(dateString).toLocaleDateString('es-ES', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'});
 }
+export function formatDateNumeric(dateString) {
+  if (!dateString) {
+    return '';
+  }
+  const [year, month, day] = String(dateString).slice(0, 10).split('-');
+  return `${day}/${month}/${year}`;
+}

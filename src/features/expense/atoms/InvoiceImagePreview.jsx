@@ -1,4 +1,5 @@
 import {COLORS} from '../../../constants';
+import {formatDateNumeric} from '../../../utils/dateFormatter';
 
 const styles = {
   wrapper: "rounded-xl overflow-hidden shadow-md max-h-200",
@@ -27,7 +28,7 @@ function InvoiceImagePreview({invoice}) {
         </div>
         <div className="text-left">
           <p className={styles.metaLabel} style={{color: COLORS.labels}}>Fecha detectada</p>
-          <p className={styles.metaValue} style={{color: COLORS.text}}>{invoice.data.fecha_emision}</p>
+          <p className={styles.metaValue} style={{color: COLORS.text}}>{formatDateNumeric(invoice.data.fecha_emision)}</p>
         </div>
       </div>
     </div>
