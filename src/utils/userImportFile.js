@@ -29,12 +29,19 @@ const instructions = [
   ['Cómo llenar la plantilla'],
   ['1. Una fila por persona, desde la fila 3 de la hoja USUARIOS. La fila 2 es un ejemplo: bórrala o reemplázala.'],
   ['2. Las columnas en rojo son obligatorias (Nombre, Apellido paterno, Correo corporativo y Cargo).'],
-  ['3. Cargo, Sección y Rol se eligen de la lista. Si el Rol queda vacío, la persona entra como EMPLEADO.'],
+  ['3. Cargo, Sección y Rol se eligen de la lista. Si el Rol queda vacío, la persona entra como EMPLEADO. La sección también se puede escribir solo con su código de Oracle (por ejemplo 230).'],
   ['4. El jefe directo se indica con su correo: puede ser alguien que ya está en el sistema o alguien de este mismo archivo.'],
   ['5. Dependencia Oracle: 3 dígitos (por ejemplo 421). Va en el jefe; quien no tiene jefe, como el gerente general, lleva la suya.'],
   ['6. Antes de crear nada, el sistema muestra cada fila con sus errores: correos o CI repetidos en el archivo o que ya existen, cargos que no existen, jefes que no se encuentran, etc. Solo se crean las filas correctas.'],
   ['7. Cada usuario nuevo recibe por correo una contraseña temporal y la cambia al ingresar por primera vez.'],
 ];
+
+const sectionOption = (section) => {
+  if (section.codigo_seccion) {
+    return `${section.codigo_seccion} - ${section.nombre}`;
+  }
+  return section.nombre;
+};
 
 const solidFill = (argb) => ({type: 'pattern', pattern: 'solid', fgColor: {argb}});
 
@@ -97,7 +104,7 @@ const addInstructionsSheet = (workbook) => {
 export const buildUserImportTemplate = (workbook, {positions = [], sections = []}) => {
   const lists = {
     positions: positions.filter((position) => position.activo).map((position) => position.nombre).sort(),
-    sections: sections.filter((section) => section.activo).map((section) => section.nombre).sort(),
+    sections: sections.filter((section) => section.activo).map(sectionOption).sort(),
     roles: roleNames,
   };
   const sheet = workbook.addWorksheet(sheetName, {properties: {tabColor: {argb: headerFill}}, views: [{state: 'frozen', ySplit: 1}]});
