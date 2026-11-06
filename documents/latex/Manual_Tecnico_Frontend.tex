@@ -729,6 +729,7 @@ El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Ac
   \item Los componentes definen sus estilos en un objeto \code{styles} con clases de Tailwind y toman los colores de \code{COLORS}.
   \item En el frontend no se agregan comentarios por función; el nombre y el contenido deben bastar. Solo se admite un comentario breve, de una línea, donde aclara algo no evidente.
   \item Se prefieren bloques \code{if}/\code{else} explícitos; el operador ternario solo se usa en valores de estilo o del JSX.
+  \item Los efectos (\code{useEffect}) solo sincronizan con algo externo: al cargar datos, el estado se actualiza en la respuesta de la promesa (\code{.then}); lo que se deduce de las props o del estado se calcula al renderizar, y lo que se reinicia al abrir un modal o cambiar un filtro se ajusta comparando con el valor anterior. Los servicios nunca lanzan errores (devuelven \code{\{error\}}), así que no se envuelven en \code{try}/\code{catch}. \code{npm run lint} queda sin avisos.
   \item Punto y coma al final de cada sentencia y literales de objeto sin espacios internos (\texttt{\{dato: valor\}}).
   \item Los commits siguen Conventional Commits: \code{feat}, \code{fix}, \code{style}, \code{refactor}, \code{docs}, \code{test} y \code{chore}.
 \end{itemize}
