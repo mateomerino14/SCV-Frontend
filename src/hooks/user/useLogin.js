@@ -87,29 +87,26 @@ function useLogin() {
   const handleForgotPassword = () => setShowEmailModal(true);
 
   const handleSendEmail = async (emailValue) => {
-    try {
-      const data = await checkEmail(emailValue);
-      if (!data.exists) {
-        setShowEmailModal(false);
-        setShowNonExistentModal(true);
-        return;
-      }
-      const result = await sendCode(emailValue);
-      if (result.error) {
-        setShowEmailModal(false);
-        setInvalidEmailReason(result.error);
-        setShowInvalidEmailModal(true);
-        return;
-      }
-      if (!result.expiracion) {
-        return;
-      }
-      setForgotEmail(emailValue);
-      setCodeExpiresAt(result.expiracion);
+    const data = await checkEmail(emailValue);
+    if (!data.exists) {
       setShowEmailModal(false);
-      setShowConfirmModal(true);
+      setShowNonExistentModal(true);
+      return;
     }
-    catch {}
+    const result = await sendCode(emailValue);
+    if (result.error) {
+      setShowEmailModal(false);
+      setInvalidEmailReason(result.error);
+      setShowInvalidEmailModal(true);
+      return;
+    }
+    if (!result.expiracion) {
+      return;
+    }
+    setForgotEmail(emailValue);
+    setCodeExpiresAt(result.expiracion);
+    setShowEmailModal(false);
+    setShowConfirmModal(true);
   };
 
   const handleVerifyCode = async (codeValue) => {
@@ -137,18 +134,15 @@ function useLogin() {
   };
 
   const handleResendCode = async () => {
-    try {
-      const result = await sendCode(forgotEmail);
-      if (result.error || !result.expiracion) {
-        return;
-      }
-      setCodeExpiresAt(result.expiracion);
-      setCodeError('');
-      setShowErrorModal(false);
-      setShowExpiredModal(false);
-      setShowConfirmModal(true);
+    const result = await sendCode(forgotEmail);
+    if (result.error || !result.expiracion) {
+      return;
     }
-    catch {}
+    setCodeExpiresAt(result.expiracion);
+    setCodeError('');
+    setShowErrorModal(false);
+    setShowExpiredModal(false);
+    setShowConfirmModal(true);
   };
 
   const handleExpired = () => {
