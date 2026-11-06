@@ -316,7 +316,7 @@ npm run storybook
 
 Las pruebas unitarias no necesitan nada más. Las de extremo a extremo necesitan el backend y el frontend levantados con la base de prueba (organización de `pruebas/organizacion_prueba.sql` del backend); `E2E_BASE_URL` y `E2E_API_URL` indican dónde están (por defecto `localhost:5173` y `localhost:5055`). La primera vez hay que instalar el navegador con `npx playwright install chromium`.
 
-En GitHub las pruebas se ejecutan solas en cada `push` y pull request (`.github/workflows/pruebas.yml`): compila el proyecto y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base temporal y levanta todo. Como el repositorio del backend es privado, lo descarga con el secreto `BACKEND_REPO_TOKEN` del repositorio (un token de GitHub con permiso de solo lectura del contenido de SCV-Backend). Si algo falla, el reporte con capturas queda en la pestaña **Actions**.
+En GitHub las pruebas se ejecutan solas en cada `push` y pull request (`.github/workflows/pruebas.yml`): compila el proyecto y Storybook, corre las pruebas unitarias y, para las de extremo a extremo, descarga el backend de la misma rama, crea una base temporal y levanta todo. Si el repositorio del backend es privado, lo descarga con el secreto `BACKEND_REPO_TOKEN` del repositorio (un token de GitHub con permiso de solo lectura del contenido de SCV-Backend); si es público, no hace falta. Si algo falla, el reporte con capturas queda en la pestaña **Actions**.
 
 ## Dependencias y seguridad
 

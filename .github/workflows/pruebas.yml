@@ -48,7 +48,10 @@ jobs:
         env:
           BACKEND_REPO_TOKEN: ${{ secrets.BACKEND_REPO_TOKEN }}
         run: |
-          backend_url="https://x-access-token:${BACKEND_REPO_TOKEN}@github.com/mateomerino14/SCV-Backend.git"
+          backend_url="https://github.com/mateomerino14/SCV-Backend.git"
+          if [ -n "$BACKEND_REPO_TOKEN" ]; then
+            backend_url="https://x-access-token:${BACKEND_REPO_TOKEN}@github.com/mateomerino14/SCV-Backend.git"
+          fi
           git clone --depth 1 -b "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" "$backend_url" backend \
             || git clone --depth 1 -b develop "$backend_url" backend
       - name: Crear la base de prueba
