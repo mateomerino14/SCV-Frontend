@@ -45,9 +45,12 @@ jobs:
           node-version: 22
           cache: npm
       - name: Descargar el backend de la misma rama (o develop)
+        env:
+          BACKEND_REPO_TOKEN: ${{ secrets.BACKEND_REPO_TOKEN }}
         run: |
-          git clone --depth 1 -b "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" https://github.com/mateomerino14/SCV-Backend.git backend \
-            || git clone --depth 1 -b develop https://github.com/mateomerino14/SCV-Backend.git backend
+          backend_url="https://x-access-token:${BACKEND_REPO_TOKEN}@github.com/mateomerino14/SCV-Backend.git"
+          git clone --depth 1 -b "${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}" "$backend_url" backend \
+            || git clone --depth 1 -b develop "$backend_url" backend
       - name: Crear la base de prueba
         run: |
           for script in 01_esquema 02_funciones 03_datos_iniciales 04_seguridad_rls pruebas/organizacion_prueba; do
