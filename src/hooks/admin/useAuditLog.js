@@ -9,6 +9,8 @@ const typeLabels = {
   INGRESO: 'Ingreso',
   SALIDA: 'Salida',
   CAMBIO_CLAVE: 'Cambio de Contraseña',
+  ACTIVAR_VEHICULO: 'Activó un vehículo',
+  SUSPENDER_VEHICULO: 'Suspendió un vehículo',
 };
 
 const pageSize = 20;
@@ -113,11 +115,13 @@ function useAuditLog() {
       {header: 'Usuario', key: 'usuario', width: 30},
       {header: 'Correo', key: 'correo', width: 32},
       {header: 'Evento', key: 'evento', width: 22},
+      {header: 'Detalle', key: 'detalle', width: 30},
     ], allAudits.map((audit) => ({
       fecha: new Date(audit.fecha).toLocaleString('es-BO'),
       usuario: audit.Usuario ? `${audit.Usuario.nombre} ${audit.Usuario.apellido_paterno}` : '',
       correo: audit.Usuario?.email_corporativo || '',
       evento: typeLabels[audit.tipo] || audit.tipo,
+      detalle: audit.detalle || '',
     })));
     await saveWorkbook(workbook, `Auditoria_${todayFileSuffix()}.xlsx`);
     setExporting(false);
