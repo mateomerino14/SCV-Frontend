@@ -511,7 +511,7 @@ El servidor sigue una arquitectura en capas: la ruta declara el endpoint y encad
   \item La sesión usa un token de acceso de 15 minutos guardado en memoria y un token de renovación de 7 días en una cookie \code{httpOnly}. Cambiar el rol, suspender una cuenta o cambiar la contraseña cierra las demás sesiones al instante.
   \item Las contraseñas temporales (cuenta nueva, clave puesta por el administrador o ingreso con código de recuperación) deben cambiarse antes de usar el sistema, y toda contraseña vence a los 90 días.
   \item Los intentos de ingreso, de recuperación y de lectura de facturas tienen un límite por periodo. El de ingreso es por cuenta: si un usuario se equivoca muchas veces, solo su cuenta espera 15 minutos y los demás siguen entrando.
-  \item Cada ingreso, salida y cambio de contraseña queda registrado en el historial de accesos.
+  \item Cada ingreso, salida y cambio de contraseña queda registrado en el historial de accesos, junto con quién activó o suspendió cada vehículo y cuándo.
   \item Los comprobantes, respaldos y fotos de perfil se guardan en un bucket público de Supabase Storage sin políticas de acceso: solo el servidor sube y borra archivos, con su clave de servicio, y los archivos que dejan de usarse se eliminan.
   \item La importación de usuarios desde Excel es solo para el administrador, y el servidor vuelve a revisar cada fila aunque el navegador ya haya mostrado la vista previa.
 \end{itemize}
@@ -1031,12 +1031,13 @@ Códigos de un solo uso para la recuperación de cuenta, válidos por cinco minu
 \end{itemize}
 
 \subsubsection{Auditoria}
-Eventos de acceso y de seguridad, con fines de trazabilidad.
+Eventos de acceso, de seguridad y de cambios en la flota, con fines de trazabilidad. Solo los escribe el sistema: no se pueden crear ni borrar por la API.
 \begin{itemize}
   \campo{id_auditoria}{Identificador único}{SERIAL, clave primaria}
   \campo{fecha}{Fecha del evento}{TIMESTAMPTZ}
-  \campo{tipo}{INGRESO, SALIDA o CAMBIO\_CLAVE}{VARCHAR(15)}
+  \campo{tipo}{INGRESO, SALIDA, CAMBIO\_CLAVE, ACTIVAR\_VEHICULO o SUSPENDER\_VEHICULO}{VARCHAR(20)}
   \campo{id_usuario}{Usuario que generó el evento}{INTEGER}
+  \campo{detalle}{Sobre qué se hizo el evento, por ejemplo «Vehículo 2034-PAP»}{VARCHAR(150), opcional}
 \end{itemize}
 
 \subsubsection{Vehiculo}
