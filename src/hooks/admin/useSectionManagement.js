@@ -30,17 +30,20 @@ function useSectionManagement() {
   const [successMessage, setSuccessMessage] = useState('');
   const [formData, setFormData] = useState(emptyForm);
 
-  const load = async () => {
-    setLoading(true);
-    const data = await getSections();
+  const applySections = (data) => {
     setLoading(false);
     if (!data.error) {
       setAllSections(data);
     }
   };
 
+  const load = async () => {
+    setLoading(true);
+    applySections(await getSections());
+  };
+
   useEffect(() => {
-    load();
+    getSections().then(applySections);
   }, []);
 
   const showError = (message) => {

@@ -1,16 +1,18 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 
 const maxLength = 500;
 
 function useDeadlineRequestModal(isOpen, onConfirm) {
   const [reason, setReason] = useState('');
+  const [wasOpen, setWasOpen] = useState(isOpen);
 
-  useEffect(() => {
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
     if (isOpen) {
       setReason('');
     }
-  }, [isOpen]);
-  
+  }
+
   const exceedsLimit = reason.length > maxLength;
   const handleConfirm = () => {
     if (!reason.trim() || exceedsLimit) {

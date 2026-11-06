@@ -20,11 +20,7 @@ function useSupervisorExpenseReviewHistory() {
     filtersRef.current = filters;
   }, [filters]);
 
-  const load = async (currentFilters = filtersRef.current, showLoading = true) => {
-    if (showLoading) {
-      setLoading(true);
-    }
-    const data = await getMyExpenseReviews(currentFilters);
+  const applyTrips = (data, showLoading) => {
     if (showLoading) {
       setLoading(false);
     }
@@ -36,8 +32,15 @@ function useSupervisorExpenseReviewHistory() {
     setTrips(data);
   };
 
+  const load = async (currentFilters = filtersRef.current, showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
+    applyTrips(await getMyExpenseReviews(currentFilters), showLoading);
+  };
+
   useEffect(() => {
-    load();
+    getMyExpenseReviews(filtersRef.current).then((data) => applyTrips(data, true));
     getReviewEmployees().then((data) => {
       if (!data.error) {
         setEmployees(data);
@@ -48,7 +51,7 @@ function useSupervisorExpenseReviewHistory() {
         setSections(data);
       }
     });
-    const polling = setInterval(() => load(filtersRef.current, false), pollingInterval);
+    const polling = setInterval(() => getMyExpenseReviews(filtersRef.current).then((data) => applyTrips(data, false)), pollingInterval);
     return () => clearInterval(polling);
   }, []);
 

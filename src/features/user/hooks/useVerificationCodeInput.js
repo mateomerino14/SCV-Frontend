@@ -7,13 +7,26 @@ function useVerificationCodeInput(isOpen, expiresAt, onExpired) {
   const [resentMessage, setResentMessage] = useState('');
   const [resending, setResending] = useState(false);
   const inputRefs = useRef([]);
+  const onExpiredRef = useRef(onExpired);
+  const [openedCode, setOpenedCode] = useState(null);
+
+  if (!isOpen && openedCode !== null) {
+    setOpenedCode(null);
+  }
+  if (isOpen && openedCode !== String(expiresAt)) {
+    setOpenedCode(String(expiresAt));
+    setDigits(Array(codeLength).fill(''));
+    setResending(false);
+  }
+
+  useEffect(() => {
+    onExpiredRef.current = onExpired;
+  }, [onExpired]);
 
   useEffect(() => {
     if (!isOpen) {
-      return;
+      return undefined;
     }
-    setDigits(Array(codeLength).fill(''));
-    setResending(false);
 
     const calculateSeconds = () => {
       if (!expiresAt) {
@@ -30,7 +43,7 @@ function useVerificationCodeInput(isOpen, expiresAt, onExpired) {
       const remaining = calculateSeconds();
       if (remaining <= 0) {
         clearInterval(timer);
-        onExpired();
+        onExpiredRef.current();
       }
     }, 1000);
     return () => clearInterval(timer);

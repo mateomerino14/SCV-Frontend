@@ -13,14 +13,7 @@ function useTripHistory() {
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('TODOS');
 
-  const load = async (currentPage, currentFilter, replace) => {
-    if (replace) {
-      setLoading(true);
-    }
-    else {
-      setLoadingMore(true);
-    }
-    const data = await getTripHistory(currentPage, pageSize, currentFilter);
+  const applyPage = (data, replace) => {
     setLoading(false);
     setLoadingMore(false);
     if (data.error) {
@@ -38,9 +31,17 @@ function useTripHistory() {
   };
 
   useEffect(() => {
-    setPage(1);
-    load(1, filter, true);
+    getTripHistory(1, pageSize, filter).then((data) => applyPage(data, true));
   }, [filter]);
+
+  const selectFilter = (value) => {
+    if (value === filter) {
+      return;
+    }
+    setPage(1);
+    setLoading(true);
+    setFilter(value);
+  };
 
   const pollingStateRef = useRef({page, filter});
   useEffect(() => {
@@ -63,7 +64,8 @@ function useTripHistory() {
   const loadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    load(nextPage, filter, false);
+    setLoadingMore(true);
+    getTripHistory(nextPage, pageSize, filter).then((data) => applyPage(data, false));
   };
 
   const hasMorePages = trips.length < total;
@@ -76,7 +78,7 @@ function useTripHistory() {
     loading,
     loadingMore,
     error,
-    filter, setFilter,
+    filter, setFilter: selectFilter,
   };
 }
 

@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {Plus, Pencil, Trash2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateTime} from '../../../utils/dateFormatter';
@@ -17,32 +17,19 @@ const styles = {
 };
 
 function SelectableObservationsList({observations, canManage, currentUserId, onAdd, onEdit, onDelete, editingComment, deletingComment}) {
-  const [selected, setSelected] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [previousEditing, setPreviousEditing] = useState(editingComment);
+  const [previousDeleting, setPreviousDeleting] = useState(deletingComment);
 
-  useEffect(() => {
-    if (selected && !observations.some((observation) => observation.id_comentario === selected.id_comentario)) {
-      setSelected(null);
-      return;
+  if (editingComment !== previousEditing || deletingComment !== previousDeleting) {
+    setPreviousEditing(editingComment);
+    setPreviousDeleting(deletingComment);
+    if ((editingComment !== previousEditing && editingComment === null) || (deletingComment !== previousDeleting && deletingComment === null)) {
+      setSelectedId(null);
     }
-    if (selected) {
-      const fresh = observations.find((observation) => observation.id_comentario === selected.id_comentario);
-      if (fresh && fresh.descripcion !== selected.descripcion) {
-        setSelected(fresh);
-      }
-    }
-  }, [observations]);
+  }
 
-  useEffect(() => {
-    if (editingComment === null) {
-      setSelected(null);
-    }
-  }, [editingComment]);
-
-  useEffect(() => {
-    if (deletingComment === null) {
-      setSelected(null);
-    }
-  }, [deletingComment]);
+  const selected = observations.find((observation) => observation.id_comentario === selectedId) || null;
 
   if (!canManage && observations.length === 0) {
     return null;
@@ -54,11 +41,11 @@ function SelectableObservationsList({observations, canManage, currentUserId, onA
     if (!canManage || !isOwn(observation)) {
       return;
     }
-    if (selected?.id_comentario === observation.id_comentario) {
-      setSelected(null);
+    if (selectedId === observation.id_comentario) {
+      setSelectedId(null);
       return;
     }
-    setSelected(observation);
+    setSelectedId(observation.id_comentario);
   };
 
   let editDeleteOpacity = 0.5;
