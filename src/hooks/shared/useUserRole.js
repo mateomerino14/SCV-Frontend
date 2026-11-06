@@ -1,15 +1,17 @@
 import {jwtDecode} from 'jwt-decode';
 import {getToken} from '../../services/shared/tokenStore';
 
-function useUserRole() {
-  const token = getToken();
-  let role = null;
+const roleFromToken = (token) => {
   try {
-    role = jwtDecode(token)?.id_rol;
+    return jwtDecode(token)?.id_rol ?? null;
   }
   catch {
+    return null;
   }
-  return {role};
+};
+
+function useUserRole() {
+  return {role: roleFromToken(getToken())};
 }
 
 export default useUserRole;

@@ -4,7 +4,7 @@ import {buildUserImportTemplate, readUserImportRows, importColumns} from './user
 
 const catalogs = {
   positions: [{nombre: 'Operador de planta', activo: true}, {nombre: 'Cargo viejo', activo: false}],
-  sections: [{nombre: 'Producción', activo: true}],
+  sections: [{nombre: 'Producción', activo: true}, {nombre: 'NATIONAL SALES', codigo_seccion: '230', activo: true}],
 };
 
 describe('Excel para importar usuarios', () => {
@@ -17,6 +17,13 @@ describe('Excel para importar usuarios', () => {
     expect(sheet.getCell('G3').dataValidation.formulae[0]).toBe('LISTAS!$A$1:$A$1');
     expect(workbook.getWorksheet('LISTAS').getCell('C5').value).toBe('ADMINISTRADOR');
     expect(workbook.getWorksheet('INSTRUCCIONES')).toBeTruthy();
+  });
+
+  it('muestra cada sección con su código de Oracle en la lista', () => {
+    const workbook = new ExcelJS.Workbook();
+    buildUserImportTemplate(workbook, catalogs);
+    const lists = workbook.getWorksheet('LISTAS');
+    expect([lists.getCell('B1').value, lists.getCell('B2').value]).toEqual(['230 - NATIONAL SALES', 'Producción']);
   });
 
   it('lee las filas llenas, salta la de ejemplo y las vacías y limpia los valores', () => {

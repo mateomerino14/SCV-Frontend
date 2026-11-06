@@ -639,7 +639,7 @@ Resumen general con indicadores por fase y gráficos, con filtro de periodo (est
 En \emph{Usuarios}, el botón ``Importar desde Excel'' abre \code{UserImportModal}, que maneja \code{useUserImport}. La plantilla y la lectura del archivo están en \code{utils/userImportFile.js}; la validación la hace siempre el backend.
 
 \begin{enumerate}
-  \item \textbf{Descargar plantilla}: genera un Excel con la hoja \emph{USUARIOS} (columnas obligatorias en rojo y con \code{*}, una fila de ejemplo y 500 filas con listas desplegables de cargos, secciones y roles activos), la hoja \emph{INSTRUCCIONES} y la hoja oculta \emph{LISTAS}.
+  \item \textbf{Descargar plantilla}: genera un Excel con la hoja \emph{USUARIOS} (columnas obligatorias en rojo y con \code{*}, una fila de ejemplo y 500 filas con listas desplegables de cargos, secciones y roles activos; cada sección aparece con su código de Oracle, como \code{230 - NATIONAL SALES}), la hoja \emph{INSTRUCCIONES} y la hoja oculta \emph{LISTAS}.
   \item \textbf{Elegir archivo}: el navegador lee el Excel con ExcelJS, ubica las columnas por su encabezado (sin importar el orden ni el \code{*}), salta la fila de ejemplo y las vacías y envía las filas a \code{/user/import/preview}, que las revisa sin guardar nada.
   \item \textbf{Vista previa}: la ventana muestra cuántas filas están listas y cuántas tienen errores, y cada fila con sus errores en rojo.
   \item \textbf{Crear}: ``Crear N usuarios'' envía el archivo a \code{/user/import}, que vuelve a validar y crea solo las filas correctas; al final se listan las que no se crearon y la lista de usuarios se recarga.
@@ -729,6 +729,7 @@ El archivo \code{.github/workflows/pruebas.yml} ejecuta las pruebas en GitHub Ac
   \item Los componentes definen sus estilos en un objeto \code{styles} con clases de Tailwind y toman los colores de \code{COLORS}.
   \item En el frontend no se agregan comentarios por función; el nombre y el contenido deben bastar. Solo se admite un comentario breve, de una línea, donde aclara algo no evidente.
   \item Se prefieren bloques \code{if}/\code{else} explícitos; el operador ternario solo se usa en valores de estilo o del JSX.
+  \item Los efectos (\code{useEffect}) solo sincronizan con algo externo: al cargar datos, el estado se actualiza en la respuesta de la promesa (\code{.then}); lo que se deduce de las props o del estado se calcula al renderizar, y lo que se reinicia al abrir un modal o cambiar un filtro se ajusta comparando con el valor anterior. Los servicios nunca lanzan errores (devuelven \code{\{error\}}), así que no se envuelven en \code{try}/\code{catch}. \code{npm run lint} queda sin avisos.
   \item Punto y coma al final de cada sentencia y literales de objeto sin espacios internos (\texttt{\{dato: valor\}}).
   \item Los commits siguen Conventional Commits: \code{feat}, \code{fix}, \code{style}, \code{refactor}, \code{docs}, \code{test} y \code{chore}.
 \end{itemize}

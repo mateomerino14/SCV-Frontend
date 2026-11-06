@@ -12,11 +12,9 @@ function useDeadlineAuthorizationRequests() {
   const [result, setResult] = useState(null);
   const [tab, setTab] = useState('PENDIENTES');
 
-  const load = useCallback(async (showLoading = true) => {
-    if (showLoading) {
-      setLoading(true);
-    }
-    const [pendingData, historyData] = await Promise.all([getPendingRequests(), getRequestHistory()]);
+  const fetchRequests = () => Promise.all([getPendingRequests(), getRequestHistory()]);
+
+  const applyRequests = useCallback(([pendingData, historyData], showLoading) => {
     if (showLoading) {
       setLoading(false);
     }
@@ -36,9 +34,16 @@ function useDeadlineAuthorizationRequests() {
     setHistory(historyData);
   }, []);
 
+  const load = useCallback(async (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
+    applyRequests(await fetchRequests(), showLoading);
+  }, [applyRequests]);
+
   useEffect(() => {
-    load(true);
-  }, [load]);
+    fetchRequests().then((data) => applyRequests(data, true));
+  }, [applyRequests]);
 
   useEffect(() => {
     const interval = setInterval(() => {

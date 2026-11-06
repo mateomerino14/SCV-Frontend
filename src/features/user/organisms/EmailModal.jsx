@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {Send, Mail} from 'lucide-react';
 import ModalBase from './ModalBase';
 import Button from '../../../components/ui/Button';
@@ -18,14 +18,16 @@ function EmailModal({isOpen, onClose, onSend}) {
   const [emailValue, setEmailValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [sending, setSending] = useState(false);
+  const [wasOpen, setWasOpen] = useState(isOpen);
 
-  useEffect(() => {
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
     if (isOpen) {
       setEmailValue('');
       setErrorMessage('');
       setSending(false);
     }
-  }, [isOpen]);
+  }
 
   const showError = (message) => {
     setErrorMessage(message);

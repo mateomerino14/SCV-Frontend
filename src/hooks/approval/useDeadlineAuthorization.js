@@ -31,17 +31,9 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
   const [submitting, setSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [showExpiredNotice, setShowExpiredNotice] = useState(false);
-  const [noticeShown, setNoticeShown] = useState(false);
+  const [noticeClosed, setNoticeClosed] = useState(false);
 
-  const load = async (silent = false) => {
-    if (!tripId) {
-      return;
-    }
-    if (!silent) {
-      setLoading(true);
-    }
-    const data = await getRequestStatus(tripId);
+  const applyStatus = (data, silent) => {
     if (!silent) {
       setLoading(false);
     }
@@ -51,8 +43,20 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
     setRequest(data);
   };
 
+  const load = async (silent = false) => {
+    if (!tripId) {
+      return;
+    }
+    if (!silent) {
+      setLoading(true);
+    }
+    applyStatus(await getRequestStatus(tripId), silent);
+  };
+
   useEffect(() => {
-    load();
+    if (tripId) {
+      getRequestStatus(tripId).then((data) => applyStatus(data, false));
+    }
   }, [tripId]);
 
   const waitingResponse = request?.estado === 'PENDIENTE';
@@ -60,7 +64,7 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
     if (!waitingResponse) {
       return undefined;
     }
-    const interval = setInterval(() => load(true), 30000);
+    const interval = setInterval(() => getRequestStatus(tripId).then((data) => applyStatus(data, true)), 30000);
     return () => clearInterval(interval);
   }, [waitingResponse, tripId]);
 
@@ -76,15 +80,7 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
   const isApprovedExpired = request?.estado === 'APROBADA' && !!request?.extension_vencida;
   const canRequest = deadlineExpired && (!request || isClosed || isApprovedExpired);
 
-  useEffect(() => {
-    if (loading || noticeShown || !fechaFin || !tripInProgress) {
-      return;
-    }
-    if (deadlineExpired && !isPending && !isApprovedActive) {
-      setShowExpiredNotice(true);
-      setNoticeShown(true);
-    }
-  }, [loading, deadlineExpired, isPending, isApprovedActive, fechaFin, tripInProgress, noticeShown]);
+  const showExpiredNotice = !noticeClosed && !loading && !!fechaFin && !!tripInProgress && deadlineExpired && !isPending && !isApprovedActive;
 
   const showModalError = (message) => {
     setModalError(message);
@@ -108,7 +104,7 @@ function useDeadlineAuthorization(tripId, fechaFin, tripInProgress) {
     return true;
   };
 
-  const closeExpiredNotice = () => setShowExpiredNotice(false);
+  const closeExpiredNotice = () => setNoticeClosed(true);
 
   return {
     request, loading, submitting, modalError,

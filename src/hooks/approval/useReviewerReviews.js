@@ -17,13 +17,7 @@ function useReviewerReviews() {
   const [tab, setTab] = useState('MIS_PENDIENTES');
   const appliedFiltersRef = useRef(filters);
 
-  const load = useCallback(async (currentFilters, showLoading = true) => {
-    const activeFilters = currentFilters || filters;
-    appliedFiltersRef.current = activeFilters;
-    if (showLoading) {
-      setLoading(true);
-    }
-    const historyData = await getMyReviews(activeFilters);
+  const applyReviews = useCallback((historyData, showLoading) => {
     if (showLoading) {
       setLoading(false);
     }
@@ -38,24 +32,32 @@ function useReviewerReviews() {
     setMyPending((historyData || []).filter(isPendingForMe));
     setApproved((historyData || []).filter((trip) => trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip)));
     setRejected((historyData || []).filter((trip) => trip.resultado_revision === 'RECHAZADO'));
-  }, [filters]);
+  }, []);
+
+  const load = useCallback(async (currentFilters, showLoading = true) => {
+    const activeFilters = currentFilters || filters;
+    appliedFiltersRef.current = activeFilters;
+    if (showLoading) {
+      setLoading(true);
+    }
+    applyReviews(await getMyReviews(activeFilters), showLoading);
+  }, [filters, applyReviews]);
 
   useEffect(() => {
-    const start = async () => {
-      await load(filters, true);
-      const data = await getReviewerEmployees();
+    getMyReviews(appliedFiltersRef.current).then((data) => applyReviews(data, true));
+    getReviewerEmployees().then((data) => {
       if (!data.error) {
         setEmployees(data);
       }
-      const sectionData = await getSections();
-      if (!sectionData.error) {
-        setSections(sectionData);
+    });
+    getSections().then((data) => {
+      if (!data.error) {
+        setSections(data);
       }
-    };
-    start();
-    const polling = setInterval(() => load(appliedFiltersRef.current, false), pollingInterval);
+    });
+    const polling = setInterval(() => getMyReviews(appliedFiltersRef.current).then((data) => applyReviews(data, false)), pollingInterval);
     return () => clearInterval(polling);
-  }, []);
+  }, [applyReviews]);
 
   const applyFilters = async () => {
     setApplyingFilters(true);

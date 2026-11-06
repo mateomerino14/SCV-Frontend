@@ -1,4 +1,4 @@
-import {LogIn, LogOut, KeyRound} from 'lucide-react';
+import {LogIn, LogOut, KeyRound, CarFront, Ban} from 'lucide-react';
 import ExportButton from '../../components/ui/ExportButton';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
@@ -44,18 +44,24 @@ const typeOptions = [
   {value: 'INGRESO', label: 'Ingreso'},
   {value: 'SALIDA', label: 'Salida'},
   {value: 'CAMBIO_CLAVE', label: 'Cambio de Contraseña'},
+  {value: 'ACTIVAR_VEHICULO', label: 'Activó un vehículo'},
+  {value: 'SUSPENDER_VEHICULO', label: 'Suspendió un vehículo'},
 ];
 
 const typeIcon = {
   INGRESO: LogIn,
   SALIDA: LogOut,
   CAMBIO_CLAVE: KeyRound,
+  ACTIVAR_VEHICULO: CarFront,
+  SUSPENDER_VEHICULO: Ban,
 };
 
 const typeColor = {
   INGRESO: COLORS.success,
   SALIDA: COLORS.labels,
   CAMBIO_CLAVE: COLORS.primary,
+  ACTIVAR_VEHICULO: COLORS.success,
+  SUSPENDER_VEHICULO: COLORS.dangerText,
 };
 
 function AuditLogPage() {
@@ -77,7 +83,7 @@ function AuditLogPage() {
       <Navbar text="Historial de Accesos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Historial de Accesos" subtitle="Consulta los ingresos, salidas y cambios de contraseña de los usuarios, y expórtalos a Excel." />
+        <PageHeader title="Historial de Accesos" subtitle="Consulta los ingresos, salidas y cambios de contraseña de los usuarios, y quién activó o suspendió cada vehículo. Expórtalos a Excel." />
 
         <div className={styles.filtersCard} style={{backgroundColor: COLORS.background, border: `1px solid ${COLORS.fields}`}}>
           <p className={styles.cardTitle} style={{color: COLORS.labels}}>Filtros de Búsqueda</p>
@@ -142,6 +148,7 @@ function AuditLogPage() {
                   <span style={{color: typeColor[audit.tipo] || COLORS.text, fontWeight: 'bold'}}>{typeLabels[audit.tipo] || audit.tipo}</span>
                 </p>
                 <p className={styles.rowEmail} style={{color: COLORS.labels}}>{audit.Usuario?.email_corporativo || ''}</p>
+                {audit.detalle && <p className={styles.rowEmail} style={{color: COLORS.text}}>{audit.detalle}</p>}
               </div>
               <p className={styles.rowDate} style={{color: COLORS.labels}}>{formatDateTime(audit.fecha)}</p>
             </div>

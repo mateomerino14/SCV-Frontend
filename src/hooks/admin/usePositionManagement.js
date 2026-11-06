@@ -23,17 +23,20 @@ function usePositionManagement() {
   const [successMessage, setSuccessMessage] = useState('');
   const [formData, setFormData] = useState({nombre: '', monto_diario: '', monto_diario_usd: ''});
 
-  const load = async () => {
-    setLoading(true);
-    const data = await getPositions();
+  const applyPositions = (data) => {
     setLoading(false);
     if (!data.error) {
       setAllPositions(data);
     }
   };
 
+  const load = async () => {
+    setLoading(true);
+    applyPositions(await getPositions());
+  };
+
   useEffect(() => {
-    load();
+    getPositions().then(applyPositions);
   }, []);
 
   const showError = (message) => {
