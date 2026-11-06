@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {changePassword} from '../../../services/user/userService';
 import {setToken} from '../../../services/shared/tokenStore';
 
@@ -12,24 +12,20 @@ function useChangePasswordModal(onClose) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({});
 
-  useEffect(() => {
-    const next = {};
+  const fieldErrors = {};
     if (newPassword && newPassword.length < minLength) {
-      next.newPassword = `La nueva contraseña debe tener al menos ${minLength} caracteres`;
+      fieldErrors.newPassword = `La nueva contraseña debe tener al menos ${minLength} caracteres`;
     }
     else if (newPassword && newPassword.trim() !== newPassword) {
-      next.newPassword = 'La contraseña no puede tener espacios al inicio o al final';
+      fieldErrors.newPassword = 'La contraseña no puede tener espacios al inicio o al final';
     }
     else if (newPassword && currentPassword && newPassword === currentPassword) {
-      next.newPassword = 'La nueva contraseña debe ser diferente a la actual';
+      fieldErrors.newPassword = 'La nueva contraseña debe ser diferente a la actual';
     }
     if (confirmPassword && confirmPassword !== newPassword) {
-      next.confirmPassword = 'Las contraseñas no coinciden';
+      fieldErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
-    setFieldErrors(next);
-  }, [currentPassword, newPassword, confirmPassword]);
 
   const showError = (message) => {
     setError(message);
@@ -41,7 +37,6 @@ function useChangePasswordModal(onClose) {
     setNewPassword('');
     setConfirmPassword('');
     setError('');
-    setFieldErrors({});
     setSuccess(false);
   };
 

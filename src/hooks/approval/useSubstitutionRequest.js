@@ -11,14 +11,7 @@ function useSubstitutionRequest(tripId) {
   const [showModal, setShowModal] = useState(false);
   const [withoutSection, setWithoutSection] = useState(false);
 
-  const load = async (silent = false) => {
-    if (!tripId) {
-      return;
-    }
-    if (!silent) {
-      setLoading(true);
-    }
-    const data = await getSubstitutionStatus(tripId);
+  const applyStatus = (data, silent) => {
     if (!silent) {
       setLoading(false);
     }
@@ -28,8 +21,20 @@ function useSubstitutionRequest(tripId) {
     setRequest(data);
   };
 
+  const load = async (silent = false) => {
+    if (!tripId) {
+      return;
+    }
+    if (!silent) {
+      setLoading(true);
+    }
+    applyStatus(await getSubstitutionStatus(tripId), silent);
+  };
+
   useEffect(() => {
-    load();
+    if (tripId) {
+      getSubstitutionStatus(tripId).then((data) => applyStatus(data, false));
+    }
   }, [tripId]);
 
   const waitingResponse = request?.estado === 'PENDIENTE';
@@ -37,7 +42,7 @@ function useSubstitutionRequest(tripId) {
     if (!waitingResponse) {
       return undefined;
     }
-    const interval = setInterval(() => load(true), 30000);
+    const interval = setInterval(() => getSubstitutionStatus(tripId).then((data) => applyStatus(data, true)), 30000);
     return () => clearInterval(interval);
   }, [waitingResponse, tripId]);
 

@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import InlineDropdown from '../../../components/ui/InlineDropdown';
 import useSimpleSelector from '../../../hooks/shared/useSimpleSelector';
 import {COLORS} from '../../../constants';
@@ -58,10 +58,11 @@ function TripHistoryFilter({activeFilter, onChange}) {
   const stateDropdown = useSimpleSelector();
   const initialCategory = findCategoryByValue(activeFilter);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory.value);
-  useEffect(() => {
-    const category = findCategoryByValue(activeFilter);
-    setSelectedCategory(category.value);
-  }, [activeFilter]);
+  const [previousFilter, setPreviousFilter] = useState(activeFilter);
+  if (activeFilter !== previousFilter) {
+    setPreviousFilter(activeFilter);
+    setSelectedCategory(initialCategory.value);
+  }
   const currentCategory = categories.find((category) => category.value === selectedCategory) || categories[0];
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);

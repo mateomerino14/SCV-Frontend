@@ -22,26 +22,23 @@ function useMenu() {
   const [user, setUser] = useState(null);
   const [sessionExpired, setSessionExpired] = useState(false);
   const originalRoleRef = useRef(getRoleFromToken());
-  const loadUser = useCallback(async () => {
-    try {
-      const data = await getMe();
-      if (!data.error) {
-        if (originalRoleRef.current && data.id_rol !== originalRoleRef.current) {
-          clearToken();
-          window.dispatchEvent(new CustomEvent('session-expired'));
-          return;
-        }
-        setUser(data);
-      }
+  const applyUser = useCallback((data) => {
+    if (data.error) {
+      return;
     }
-    catch (error) {
-      console.error('Error al cargar usuario:', error);
+    if (originalRoleRef.current && data.id_rol !== originalRoleRef.current) {
+      clearToken();
+      window.dispatchEvent(new CustomEvent('session-expired'));
+      return;
     }
+    setUser(data);
   }, []);
 
+  const loadUser = useCallback(() => getMe().then(applyUser), [applyUser]);
+
   useEffect(() => {
-    loadUser();
-  }, [loadUser]);
+    getMe().then(applyUser);
+  }, [applyUser]);
 
   useEffect(() => {
     const handleExpired = () => setSessionExpired(true);
@@ -55,19 +52,16 @@ function useMenu() {
       if (!token || !originalRoleRef.current) {
         return;
       }
-      try {
-        const data = await getMe();
-        if (data.error) {
-          return;
-        }
-        if (data.id_rol !== originalRoleRef.current) {
-          clearToken();
-          window.dispatchEvent(new CustomEvent('session-expired'));
-          return;
-        }
-        setUser(data);
+      const data = await getMe();
+      if (data.error) {
+        return;
       }
-      catch {}
+      if (data.id_rol !== originalRoleRef.current) {
+        clearToken();
+        window.dispatchEvent(new CustomEvent('session-expired'));
+        return;
+      }
+      setUser(data);
     };
 
     const handleTokenRefreshed = () => {

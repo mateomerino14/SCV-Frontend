@@ -25,9 +25,9 @@ function useUserManagement() {
     id_jefe_directo: '', id_seccion: '', carnet_identidad: '', codigo_dependencia: '',
   });
 
-  const load = async () => {
-    setLoading(true);
-    const [usersData, positionsData, sectionsData] = await Promise.all([getUsers(), getPositions(), getSections()]);
+  const fetchCatalogs = () => Promise.all([getUsers(), getPositions(), getSections()]);
+
+  const applyCatalogs = ([usersData, positionsData, sectionsData]) => {
     setLoading(false);
     if (!usersData.error) {
       setUsers(usersData);
@@ -40,8 +40,13 @@ function useUserManagement() {
     }
   };
 
+  const load = async () => {
+    setLoading(true);
+    applyCatalogs(await fetchCatalogs());
+  };
+
   useEffect(() => {
-    load();
+    fetchCatalogs().then(applyCatalogs);
   }, []);
 
   const showError = (message) => {
