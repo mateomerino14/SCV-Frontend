@@ -11,7 +11,10 @@ test('el titular pide un reemplazo y el reemplazo rinde los gastos firmando @cel
   await expect(page.getByText('Tienes una solicitud de reemplazo pendiente de revisión.')).toBeVisible();
   const reviewer = await apiClient('lucia.revisora');
   const pending = await reviewer.get('/substitution/pending');
-  const list = Array.isArray(pending) ? pending : Object.values(pending).find((value) => Array.isArray(value));
+  let list = pending;
+  if (!Array.isArray(pending)) {
+    list = Object.values(pending).find((value) => Array.isArray(value));
+  }
   const request = list.find((item) => item.id_viaje === tripId);
   await reviewer.post(`/substitution/${request.id_solicitud}/approve`);
   const substitute = await apiClient('ana.empleada');

@@ -12,10 +12,19 @@ const styles = {
 function ExpenseBudgetBar({accumulated, assignedAmount, isUsd}) {
   const safeAccumulated = parseFloat(accumulated) || 0;
   const safeAssigned = parseFloat(assignedAmount) || 0;
-  const percentage = safeAssigned > 0 ? Math.min((safeAccumulated / safeAssigned) * 100, 100) : 0;
+  let percentage = 0;
+  if (safeAssigned > 0) {
+    percentage = Math.min((safeAccumulated / safeAssigned) * 100, 100);
+  }
   const exceeds = percentage >= 100;
-  const barColor = exceeds ? COLORS.secondary : COLORS.title;
-  const currency = isUsd ? 'USD' : 'Bs';
+  let barColor = COLORS.title;
+  if (exceeds) {
+    barColor = COLORS.secondary;
+  }
+  let currency = 'Bs';
+  if (isUsd) {
+    currency = 'USD';
+  }
 
   return (
     <div>

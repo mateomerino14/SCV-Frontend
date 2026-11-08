@@ -18,6 +18,7 @@ import {supervisorTripReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import {pluralOf} from '../../utils/plural';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -38,7 +39,10 @@ function SupervisorPendingExpenseReviewsPage() {
 
   if (!loading) {
 
-    mascotMessage = (total > 0 ? `${greetingFor(user?.nombre)} Hay ${total} ${total === 1 ? 'rendición sin asignar esperando' : 'rendiciones sin asignar esperando'} que alguien la${total === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay rendiciones sin asignar por ahora.`);
+    mascotMessage = `${greetingFor(user?.nombre)} No hay rendiciones sin asignar por ahora.`;
+    if (total > 0) {
+      mascotMessage = `${greetingFor(user?.nombre)} Hay ${total} ${pluralOf(total, 'rendición sin asignar esperando que alguien la tome', 'rendiciones sin asignar esperando que alguien las tome')}.`;
+    }
 
   }
 

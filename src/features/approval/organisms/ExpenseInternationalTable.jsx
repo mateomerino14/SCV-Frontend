@@ -5,6 +5,7 @@ import ExpenseObsButton from '../atoms/ExpenseObsButton';
 import DocumentNumberBadge from '../../expense/atoms/DocumentNumberBadge';
 import {resolveDocumentNumber, documentSources} from '../../../utils/documentNumber';
 import {conversionLabelOf, isAmountInBs, amountLabelOf} from '../../../utils/expenseCurrency';
+import {pluralOf} from '../../../utils/plural';
 
 const styles = {
   section: 'mb-6',
@@ -68,7 +69,7 @@ function ExpenseInternationalTable({expenses, onViewExpense, countObservations, 
               let descriptionColor = COLORS.labels;
               let descriptionWeight = 'normal';
               if (hasSubitems) {
-                description = `${subitems.length} subgasto${subitems.length !== 1 ? 's' : ''}`;
+                description = `${subitems.length} ${pluralOf(subitems.length, 'subgasto', 'subgastos')}`;
                 descriptionColor = COLORS.secondary;
                 descriptionWeight = 'bold';
               }

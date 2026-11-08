@@ -5,6 +5,7 @@ import ExpenseObsButton from '../atoms/ExpenseObsButton';
 import DocumentNumberBadge from '../../expense/atoms/DocumentNumberBadge';
 import {resolveDocumentNumber, documentSources} from '../../../utils/documentNumber';
 import {getExpenseWithholdings} from '../../../utils/withholdings';
+import {pluralOf} from '../../../utils/plural';
 
 const typeLabels = {F: 'Factura', R: 'Recibo', C: 'Compra', S: 'Servicio'};
 
@@ -71,7 +72,7 @@ function ExpenseUninvoicedTable({expenses, onViewExpense, countObservations, onO
               let descriptionColor = COLORS.labels;
               let descriptionWeight = 'normal';
               if (subitems.length > 0) {
-                description = `${subitems.length} subgasto${subitems.length !== 1 ? 's' : ''}`;
+                description = `${subitems.length} ${pluralOf(subitems.length, 'subgasto', 'subgastos')}`;
                 descriptionColor = COLORS.secondary;
                 descriptionWeight = 'bold';
               }

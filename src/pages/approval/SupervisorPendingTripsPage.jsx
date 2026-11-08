@@ -17,6 +17,7 @@ import {supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import useClientPagination from '../../hooks/shared/useClientPagination';
+import {pluralOf} from '../../utils/plural';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -37,7 +38,10 @@ function SupervisorPendingTripsPage() {
 
   if (!loading) {
 
-    mascotMessage = (trips.length > 0 ? `${greetingFor(user?.nombre)} Hay ${trips.length} ${trips.length === 1 ? 'viaje sin asignar esperando' : 'viajes sin asignar esperando'} que alguien lo${trips.length === 1 ? '' : 's'} tome.` : `${greetingFor(user?.nombre)} No hay viajes sin asignar por ahora.`);
+    mascotMessage = `${greetingFor(user?.nombre)} No hay viajes sin asignar por ahora.`;
+    if (trips.length > 0) {
+      mascotMessage = `${greetingFor(user?.nombre)} Hay ${trips.length} ${pluralOf(trips.length, 'viaje sin asignar esperando que alguien lo tome', 'viajes sin asignar esperando que alguien los tome')}.`;
+    }
 
   }
 
