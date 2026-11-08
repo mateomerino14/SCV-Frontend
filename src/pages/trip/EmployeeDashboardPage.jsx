@@ -15,6 +15,7 @@ import useEmployeeDashboard from '../../hooks/trip/useEmployeeDashboard';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
+import {pluralOf} from '../../utils/plural';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -33,10 +34,10 @@ const styles = {
 
 function buildDashboardMessage(name, inProgressCount, draftCount) {
   if (inProgressCount > 0) {
-    return `${greetingFor(name)} Tienes ${inProgressCount} ${inProgressCount === 1 ? 'viaje en curso' : 'viajes en curso'}: registra tus gastos a tiempo.`;
+    return `${greetingFor(name)} Tienes ${inProgressCount} ${pluralOf(inProgressCount, 'viaje en curso', 'viajes en curso')}: registra tus gastos a tiempo.`;
   }
   if (draftCount > 0) {
-    return `${greetingFor(name)} Tienes ${draftCount} ${draftCount === 1 ? 'borrador' : 'borradores'} sin enviar a revisión.`;
+    return `${greetingFor(name)} Tienes ${draftCount} ${pluralOf(draftCount, 'borrador', 'borradores')} sin enviar a revisión.`;
   }
   return `${greetingFor(name)} Cuando tengas un viaje, créalo desde aquí.`;
 }

@@ -9,7 +9,10 @@ function SectionDropdown({sections, selectedSection, onSelect, placeholder = 'To
     {value: '', label: placeholder},
     ...activeSections.map((section) => ({value: section.id_seccion, label: section.nombre})),
   ];
-  const label = selected ? selected.nombre : placeholder;
+  let label = placeholder;
+  if (selected) {
+    label = selected.nombre;
+  }
 
   return (
     <InlineDropdown wrapperRef={wrapperRef} triggerRef={triggerRef} open={open} opensUpward={opensUpward} onToggle={toggle}

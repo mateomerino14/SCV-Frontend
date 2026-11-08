@@ -36,8 +36,14 @@ function PendingTripItem({trip, detailRoute, originRoute, onTake, onReturn, taki
   const unassigned = !trip[assignedField];
   const pendingStatus = statusPendingByField[assignedField];
   const canReturn = !!onReturn && !unassigned && trip.estado === pendingStatus;
-  const reviewInfo = trip.estadoRevision ? reviewStatusConfig[trip.estadoRevision] : null;
-  const ReviewIcon = reviewInfo?.label === 'Observado' ? AlertTriangle : CheckCircle2;
+  let reviewInfo = null;
+  if (trip.estadoRevision) {
+    reviewInfo = reviewStatusConfig[trip.estadoRevision];
+  }
+  let ReviewIcon = CheckCircle2;
+  if (reviewInfo?.label === 'Observado') {
+    ReviewIcon = AlertTriangle;
+  }
 
   return (
     <motion.div className={styles.container} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}

@@ -1,3 +1,5 @@
+import {pluralOf} from './plural';
+
 const enabledKey = 'scv_mascota_activa';
 const seenPrefix = 'scv_mascota_vista_';
 
@@ -46,12 +48,15 @@ export function greetingFor(name) {
   else if (hour >= 12 && hour < 19) {
     greeting = 'Buenas tardes';
   }
-  return name ? `¡${greeting}, ${name}!` : `¡${greeting}!`;
+  if (name) {
+    return `¡${greeting}, ${name}!`;
+  }
+  return `¡${greeting}!`;
 }
 
 export function pendingMessage(name, count, singular, plural) {
   if (count > 0) {
-    return `${greetingFor(name)} Tienes ${count} ${count === 1 ? singular : plural}.`;
+    return `${greetingFor(name)} Tienes ${count} ${pluralOf(count, singular, plural)}.`;
   }
   return `${greetingFor(name)} No tienes pendientes aquí por ahora. ¡Todo al día!`;
 }

@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {getReminderSchedule, updateReminderSchedule, previewReminderDigest, sendReminderDigestNow} from '../../services/admin/adminService';
+import {pluralOf} from '../../utils/plural';
 
 const maxTimes = 4;
 const emptySchedule = {activo: true, dias: [1, 2, 3, 4, 5], horas: ['08:00', '12:00', '16:00']};
@@ -129,7 +130,7 @@ function useReminderSettings() {
     setPreview(null);
     let message = 'Nadie tiene pendientes en este momento, así que no se envió ningún correo.';
     if (data.total > 0 && data.fallidos === 0) {
-      message = `Se envió el resumen a ${data.enviados} ${data.enviados === 1 ? 'persona' : 'personas'}.`;
+      message = `Se envió el resumen a ${data.enviados} ${pluralOf(data.enviados, 'persona', 'personas')}.`;
     }
     else if (data.total > 0) {
       message = `Se envió a ${data.enviados} de ${data.total} personas. ${data.fallidos} no se pudo enviar; intenta nuevamente más tarde.`;

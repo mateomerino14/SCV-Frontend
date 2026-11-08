@@ -4,6 +4,7 @@ import ModalIconHeader from '../../../components/ui/ModalIconHeader';
 import ModalActions from '../../../components/ui/ModalActions';
 import InlineAlert from '../../../components/ui/InlineAlert';
 import {COLORS} from '../../../constants';
+import {pluralOf} from '../../../utils/plural';
 
 const styles = {
   overlay: 'fixed inset-0 flex items-center justify-center z-[9999] backdrop-blur-sm',
@@ -30,12 +31,7 @@ const styles = {
   sectionTitle: 'text-xs font-bold font-inter uppercase mt-2',
 };
 
-const countLabel = (count, singular, plural) => {
-  if (count === 1) {
-    return `${count} ${singular}`;
-  }
-  return `${count} ${plural}`;
-};
+const countLabel = (count, singular, plural) => `${count} ${pluralOf(count, singular, plural)}`;
 
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};

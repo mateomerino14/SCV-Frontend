@@ -21,7 +21,10 @@ const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity
 function SubstitutionRequestModal({isOpen, onClose, onConfirm, substituteId, onSelectSubstitute, employees, withoutSection = false, loading, error}) {
   const {open, opensUpward, wrapperRef, triggerRef, toggle, close} = useSimpleSelector();
   const selectedEmployee = employees.find((employee) => String(employee.id_usuario) === String(substituteId));
-  const label = selectedEmployee ? `${selectedEmployee.nombre} ${selectedEmployee.apellido_paterno}` : 'Selecciona un empleado...';
+  let label = 'Selecciona un empleado...';
+  if (selectedEmployee) {
+    label = `${selectedEmployee.nombre} ${selectedEmployee.apellido_paterno}`;
+  }
   const options = employees.map((employee) => ({value: employee.id_usuario, label: `${employee.nombre} ${employee.apellido_paterno}`}));
   const handleConfirm = () => onConfirm(substituteId);
 

@@ -12,7 +12,10 @@ const styles = {
 function BudgetBar({accumulatedExpense, assignedAmount, isUsd = false}) {
   const assignedAmountNum = parseFloat(assignedAmount) || 0;
   const {percentage, exceeds} = useBudgetPercentage(accumulatedExpense, assignedAmountNum);
-  const currency = isUsd ? 'USD' : 'Bs';
+  let currency = 'Bs';
+  if (isUsd) {
+    currency = 'USD';
+  }
 
   return (
     <div className={styles.wrapper}>

@@ -3,9 +3,10 @@ import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import {COLORS} from '../../../constants';
 
 function ReceiptSentModal({isOpen, onClose, success, message}) {
-  const icon = success ? CheckCircle : XCircle;
+  let icon = XCircle;
   let title = 'No se pudo enviar';
   if (success) {
+    icon = CheckCircle;
     title = 'Recibo Enviado';
   }
   return (
