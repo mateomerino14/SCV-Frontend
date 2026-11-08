@@ -11,6 +11,30 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo @celular', a
   await pickDate(page, 1, boliviaDate(7));
   await expect(page.getByText('Monto Total Estimado').first()).toBeVisible();
   await expect(page.getByText(/900\.00/).first()).toBeVisible();
+  await expect(page.getByLabel('Viáticos en Bs')).toHaveCount(0);
+  await page.getByRole('button', {name: 'Guardar Borrador'}).click();
+  await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();
+});
+
+test('el tesorero ve el monto calculado de su viaje y lo puede ajustar @celular', async ({page}) => {
+  await loginInBrowser(page, 'tesoro.prueba');
+  await page.goto('/dashboard/empleado/crear-viaje');
+  const motivo = `Viaje del tesorero ${Date.now()}`;
+  await page.getByPlaceholder('Inspección técnica y de producción...').fill(motivo);
+  await page.getByPlaceholder('Ciudad de origen...').fill('La Paz');
+  await page.getByPlaceholder('¿A dónde se dirige?').fill('Santa Cruz');
+  await pickDate(page, 0, boliviaDate(5));
+  await pickDate(page, 1, boliviaDate(7));
+  await expect(page.getByText('Monto Total Estimado').first()).toBeVisible();
+  const amount = page.getByLabel('Viáticos en Bs');
+  await expect(amount).toHaveValue(/^\d+\.\d{2}$/);
+  const calculated = await amount.inputValue();
+  await amount.fill('1234.50');
+  await expect(page.getByText(/1234\.50/).first()).toBeVisible();
+  await expect(page.getByText(/Monto ajustado por ti como tesorero/)).toBeVisible();
+  await page.getByRole('button', {name: 'Volver al monto calculado'}).click();
+  await expect(amount).toHaveValue(calculated);
+  await amount.fill('1234.50');
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
   await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();
 });
