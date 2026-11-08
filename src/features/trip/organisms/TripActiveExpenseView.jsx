@@ -237,7 +237,7 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
 
       {tripInProgress && (exceededDays.length > 0 || exceedsHotels) && (
         <div className={styles.card} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
-          <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Excesos</p>
+          <p className={styles.justificationLabel} style={{color: COLORS.labels}}>Justificación de Excesos<span style={{color: COLORS.secondary}}> *</span></p>
           {exceededDays.map((day) => (
             <div key={day.fecha} className={styles.justificationItem}>
               <p className={styles.excessAmount} style={{color: COLORS.secondary}}>
