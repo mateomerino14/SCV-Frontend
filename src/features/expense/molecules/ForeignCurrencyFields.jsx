@@ -72,7 +72,7 @@ function ForeignCurrencyFields({currencies, currency, exchangeRate, bsRate, amou
       <CurrencySelector currencies={currencies} currency={currency} onChange={onCurrencyChange} />
       {onRenditionModeChange && (
         <div className={styles.renditionRow} role="radiogroup" aria-label="Rendir el gasto en">
-          <span className={styles.renditionLabel} style={{color: COLORS.labels}}>Rendir el gasto en</span>
+          <span className={styles.renditionLabel} style={{color: COLORS.labels}}>Rendir el gasto en<span style={{color: COLORS.secondary}}> *</span></span>
           <div className={styles.renditionButtons}>
             {renditionModes.map((option) => (
               <button key={option.value} type="button" role="radio" aria-checked={renditionMode === option.value} disabled={disabled}

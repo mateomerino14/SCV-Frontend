@@ -52,6 +52,26 @@ export const changePassword = async (currentPassword, newPassword) => {
   }
 };
 
+export const getMySignature = async () => {
+  try {
+    const response = await apiClient.get('/user/me/signature');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener tu firma'};
+  }
+};
+
+export const saveMySignature = async (signature, password) => {
+  try {
+    const response = await apiClient.put('/user/me/signature', {firma: signature, contrasenia: password});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al guardar tu firma'};
+  }
+};
+
 export const getEmployees = async () => {
   try {
     const response = await apiClient.get('/user/employees');

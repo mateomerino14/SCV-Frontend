@@ -12,7 +12,7 @@ function ApproveTripConfirmModal({isOpen, onClose, onConfirm, loading, title = '
   return (
     <ConfirmDialog isOpen={isOpen} icon={CheckCircle}
       title={title} message={message}
-      confirmText="Aprobar" loading={loading} onConfirm={onConfirm} onCancel={onClose} />
+      confirmText="Aprobar" loading={loading} onConfirm={() => onConfirm()} onCancel={onClose} />
   );
 }
 

@@ -206,7 +206,8 @@ function ReviewerReviewDetailPage() {
         )}
       </div>
 
-      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction} />
+      <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction}
+        title="Aprobar Rendición" signatureMessage="Tu firma va en «Revisado/Registrado por» de la planilla de rendición." />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <ExpenseObservationsModal isOpen={showExpenseObservations} onClose={closeExpenseObservations}

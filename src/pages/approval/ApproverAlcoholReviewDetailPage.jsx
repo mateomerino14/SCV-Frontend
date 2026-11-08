@@ -201,7 +201,7 @@ function ApproverAlcoholReviewDetailPage() {
         )}
       </div>
       <ApproveTripConfirmModal isOpen={showApprove} onClose={() => setShowApprove(false)} onConfirm={handleApprove} loading={savingAction}
-        title="Aprobar Rendición" signatureMessage="Firma para dar tu Vo/ Bo como gerente a la planilla de rendición." />
+        title="Aprobar Rendición" signatureMessage="Firma para aprobar los gastos no deducibles de la rendición." />
       <RejectTripConfirmModal isOpen={showReject} onClose={() => setShowReject(false)} onConfirm={handleReject} loading={savingAction} />
       <NoObservationsModal isOpen={showNoObservations} onClose={() => setShowNoObservations(false)} />
       <TripAlreadyTakenModal isOpen={alreadyTaken} onClose={closeAlreadyTakenModal} />

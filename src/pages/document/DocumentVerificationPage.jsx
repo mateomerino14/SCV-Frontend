@@ -5,8 +5,7 @@ import InputField from '../../components/ui/InputField';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import DocumentVerificationCard from '../../features/document/organisms/DocumentVerificationCard';
 import useDocumentVerification from '../../hooks/shared/useDocumentVerification';
-import logo from '../../assets/logo-maxam.png';
-import {COLORS} from '../../constants';
+import {COLORS, MAXAM_LOGO} from '../../constants';
 
 const styles = {
   page: 'min-h-dvh flex flex-col items-center px-4 py-8',
@@ -34,7 +33,7 @@ function DocumentVerificationPage() {
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.backgroundHeader}}>
       <div className={styles.content}>
-        <img src={logo} alt="MAXAM FANEXA" className={styles.logo} />
+        <img src={MAXAM_LOGO} alt="MAXAM FANEXA" className={styles.logo} />
         <h1 className={styles.title} style={{color: COLORS.title}}>Verificar documento</h1>
         <p className={styles.subtitle} style={{color: COLORS.labels}}>Escanea el QR del documento o escribe el código que figura junto a él.</p>
         <form className={styles.form} onSubmit={handleSubmit}>

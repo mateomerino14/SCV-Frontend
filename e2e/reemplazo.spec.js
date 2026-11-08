@@ -1,5 +1,5 @@
 import {test, expect} from '@playwright/test';
-import {loginInBrowser, apiClient, boliviaDate, createFundedTrip, drawSignature} from './support/helpers';
+import {loginInBrowser, apiClient, boliviaDate, createFundedTrip, signWithPassword} from './support/helpers';
 test('el titular pide un reemplazo y el reemplazo rinde los gastos firmando @celular', async ({page}) => {
   const {tripId} = await createFundedTrip();
   await loginInBrowser(page, 'juan.empleado');
@@ -21,7 +21,7 @@ test('el titular pide un reemplazo y el reemplazo rinde los gastos firmando @cel
   await page.goto(`/dashboard/empleado/viaje/${tripId}`);
   await page.getByRole('button', {name: 'Confirmar Finalización'}).click();
   await expect(page.getByRole('button', {name: 'Firmar y enviar'})).toBeDisabled();
-  await drawSignature(page);
+  await signWithPassword(page);
   await page.getByRole('button', {name: 'Firmar y enviar'}).click();
   const owner = await apiClient('juan.empleado');
   await expect.poll(async () => (await owner.get(`/trip/${tripId}/firmas-planilla`)).preparado?.nombre).toBe('Ana Empleada');

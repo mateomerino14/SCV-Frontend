@@ -1,11 +1,11 @@
 import {motion, AnimatePresence} from 'framer-motion';
-import {Shield} from 'lucide-react';
-import {COLORS} from '../../../constants';
+import {COLORS, MAXAM_LOGO} from '../../../constants';
 
 const styles = {
   overlay: 'fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm',
   card: 'flex flex-col p-6 rounded-2xl w-full max-w-sm md:max-w-lg mx-4 gap-4 shadow-xl max-h-[90vh] overflow-y-auto',
-  iconWrapper: 'flex items-center justify-center rounded-2xl p-4 w-16 h-16 mx-auto',
+  logoWrapper: 'flex items-center justify-center rounded-2xl px-5 py-3 mx-auto',
+  logo: 'h-8 object-contain',
   title: 'text-2xl font-bold font-inter text-center',
   subtitle: 'text-sm font-bold font-inter uppercase text-center tracking-widest',
   sectionWrapper: 'rounded-xl p-4 flex gap-3',
@@ -27,8 +27,8 @@ function TermsModal({isOpen, onClose}) {
           variants={backdropVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.15}}>
           <motion.div className={styles.card} style={{backgroundColor: COLORS.primary}}
             variants={cardVariants} initial="hidden" animate="visible" exit="hidden" transition={{duration: 0.22, ease: [0.22, 1, 0.36, 1]}}>
-            <div className={styles.iconWrapper} style={{backgroundColor: COLORS.onColorFill15}}>
-              <Shield size={36} style={{color: COLORS.background}} />
+            <div className={styles.logoWrapper} style={{backgroundColor: COLORS.background}}>
+              <img src={MAXAM_LOGO} alt="MAXAM FANEXA" className={styles.logo} />
             </div>
             <p className={styles.title} style={{color: COLORS.background}}>MAXAM FANEXA</p>
             <p className={styles.subtitle} style={{color: COLORS.onColorText70}}>Sistema de Gestión Corporativa</p>

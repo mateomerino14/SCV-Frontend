@@ -18,13 +18,11 @@ export const loginInBrowser = async (page, user) => {
   await expect(page).toHaveURL(/\/dashboard\//);
 };
 
-const testSignature = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAoCAYAAAA16j4lAAAB1klEQVR4Xu2Zy3HCQBiDITVQDuWnHHpIZg+eccw+9L83g75LDplgRVrJYG43QgghhBBCCCGZPB7Pn3a94yfJ5R55uV6or9d36DXJX76iDNmxsZ+4JiFtWoVb0eJPXRP3Bq/CrWCkaUetCBLdrg2eteT6u6wWI2ZkabGi8dC9wWfOxl1NRIy3gs5yhhYrPY2IbreANacrklm4vcYiZlXQdI3+F2R5XAJGzalo8cH12ruHPAq2gQR7YA4YncER6OGQgK7JriGPPGl6JeE2TAFrwpUKlCI9MDuFbJ3jHup30Zpwz6Atk2DRZPlbK7NDaS2EqsGVZkimXmJOVZM959ilwZ7herU4UpP0TQ3KLFj0NRBEL+Zp5IE15AxNniFHznEPeKIjjLQSpSlqrqPnWD3RUUZaWhytqeF1jaw5NjX4jOTNi4bZjHkav8LaZK+HFRaWE229RyJIDoxXq1C0IVfMsbjBqyZ5on2MKTkcWiQhRzyssDBscHZTEDLWZMQq5B3muEf3Y1JluKMQKzWdkaxaxrqseAt4ByMREyvNW+mr1HblbaKRr9WqqTZwdv1qbcuAG4fIKrH/wcCrR5qv8jIQParMZIdbBQnmCHl1zyOEEEIIIYQQP34BCsyK1WG1RtkAAAAASUVORK5CYII=';
-
-const signedPaths = [/^\/approver\/trip\/\d+\/approve$/, /^\/review\/(trip|expense)-review\/\d+\/approve$/, /^\/approver\/alcohol-review\/\d+\/approve$/, /^\/trip\/\d+\/confirm-completion$/];
+const signedPaths = [/^\/approver\/trip\/\d+\/approve$/, /^\/review\/(trip|expense)-review\/\d+\/approve$/, /^\/approver\/alcohol-review\/\d+\/approve$/, /^\/trip\/\d+\/confirm-completion$/, /^\/reviewer\/\d+\/approve$/];
 
 const withSignature = (path, data) => {
-  if (signedPaths.some((pattern) => pattern.test(path)) && !('firma' in data)) {
-    return {...data, firma: testSignature};
+  if (signedPaths.some((pattern) => pattern.test(path)) && !('contrasenia' in data)) {
+    return {...data, contrasenia: testPassword};
   }
   return data;
 };
@@ -94,6 +92,11 @@ export const pickDate = async (page, index, isoDate) => {
   }
   await dialog.locator(`[data-date="${isoDate}"]`).click();
   await dialog.waitFor({state: 'hidden'});
+};
+
+export const signWithPassword = async (page, password = testPassword) => {
+  await expect(page.getByAltText('Tu firma digital')).toBeVisible();
+  await page.getByLabel('Tu contraseña').fill(password);
 };
 
 export const drawSignature = async (page) => {

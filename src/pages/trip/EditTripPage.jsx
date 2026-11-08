@@ -12,6 +12,7 @@ import InputField from '../../components/ui/InputField';
 import useEditTrip from '../../hooks/trip/useEditTrip';
 import useCurrentUser from '../../hooks/user/useCurrentUser';
 import useMenu from '../../hooks/shared/useMenu';
+import FieldLabel from '../../components/ui/FieldLabel';
 import {COLORS} from '../../constants';
 import {routes} from '../../constants/routes';
 import {maxTripReasonLength} from '../../constants/tripLimits';
@@ -144,7 +145,7 @@ function EditTripPage() {
             </div>
             <div className={styles.radioRow}>
               <div className={styles.radioGroup}>
-                <p className={styles.radioLabel} style={{color: COLORS.labels}}>Tipo de Viaje</p>
+                <FieldLabel text="Tipo de Viaje" required className={styles.radioLabel} />
                 <div className={styles.radioBtns}>
                   {['Nacional', 'Internacional'].map((option) => (
                     <button key={option} className={styles.radioBtn} onClick={() => handleTypeChange(option)}
@@ -155,7 +156,7 @@ function EditTripPage() {
                 </div>
               </div>
               <div className={styles.radioGroup}>
-                <p className={styles.radioLabel} style={{color: COLORS.labels}}>Medio de Transporte</p>
+                <FieldLabel text="Medio de Transporte" required className={styles.radioLabel} />
                 <div className={styles.radioBtns}>
                   {(type === 'Internacional' ? ['Terrestre', 'Aéreo'] : ['Terrestre', 'Aéreo', 'Vehículo de Empresa']).map((option) => (
                     <button key={option} className={styles.radioBtn} onClick={() => setTransport(option)}

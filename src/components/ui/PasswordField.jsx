@@ -17,7 +17,7 @@ function PasswordField({label, required = false, value, onChange, maxLength, bor
       <FieldLabel text={label} required={required} className={styles.label} color={labelColor || COLORS.labels} />
       <div className={styles.inputRow} style={{borderColor: borderColor || COLORS.dataFields, backgroundColor: backgroundColor || 'transparent'}}>
         <input className={styles.input} style={{color: textColor || COLORS.text, backgroundColor: 'transparent'}} type={visible ? 'text' : 'password'}
-          value={value} maxLength={maxLength} onChange={onChange} />
+          value={value} maxLength={maxLength} onChange={onChange} aria-label={label} />
         <button type="button" onClick={() => setVisible(!visible)}>
           {visible ? <EyeOff size={16} style={{color: iconColor || COLORS.labels}} /> : <Eye size={16} style={{color: iconColor || COLORS.labels}} />}
         </button>
