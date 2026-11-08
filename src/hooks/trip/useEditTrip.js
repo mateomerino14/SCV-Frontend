@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import {getTripDetail, editTrip} from '../../services/trip/tripService';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import useTripLogistics, {companyVehicle} from './useTripLogistics';
+import useTreasurerTripAmount from './useTreasurerTripAmount';
 
 const EDITABLE_STATUSES = ['BORRADOR', 'RECHAZADO'];
 
@@ -19,6 +20,7 @@ function useEditTrip(tripId, user) {
   const [loadError, setLoadError] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [savedAmounts, setSavedAmounts] = useState(null);
 
   const logistics = useTripLogistics(transport);
   const {loadLogistics} = logistics;
@@ -46,6 +48,7 @@ function useEditTrip(tripId, user) {
       setType(trip.tipo || 'Nacional');
       setTransport(trip.transporte || 'Terrestre');
       loadLogistics(trip);
+      setSavedAmounts({bs: parseFloat(trip.monto_asignado || 0) - parseFloat(trip.monto_combustible || 0), usd: parseFloat(trip.monto_asignado_usd || 0)});
       setOriginalStatus(trip.estado || null);
     };
     load();
@@ -83,8 +86,15 @@ function useEditTrip(tripId, user) {
     nationalDays = Math.min(days, 2);
     internationalDays = Math.max(0, days - 2);
   }
-  const totalAmount = nationalDays * dailyRate;
-  const totalAmountUsd = internationalDays * dailyRateUsd;
+  const calculatedAmount = nationalDays * dailyRate;
+  const calculatedAmountUsd = internationalDays * dailyRateUsd;
+  const treasurerAmount = useTreasurerTripAmount(calculatedAmount, calculatedAmountUsd);
+  const totalAmount = treasurerAmount.finalBs;
+  const totalAmountUsd = treasurerAmount.finalUsd;
+  if (savedAmounts) {
+    treasurerAmount.loadSaved(savedAmounts.bs, savedAmounts.usd);
+    setSavedAmounts(null);
+  }
 
   const showError = (message) => {
     setError(message);
@@ -145,7 +155,7 @@ function useEditTrip(tripId, user) {
     if (startDate && endDate && calculateDays() <= 0) {
       errors.endDate = 'La fecha fin debe ser posterior a la fecha de inicio';
     }
-    return {...errors, ...logistics.validateLogistics()};
+    return {...errors, ...logistics.validateLogistics(), ...treasurerAmount.validateAmount(type === 'Internacional')};
   };
 
   const handleSave = async (onSuccess) => {
@@ -186,7 +196,7 @@ function useEditTrip(tripId, user) {
     startDate, endDate,
     type, setType, handleTypeChange,
     transport, setTransport,
-    logistics,
+    logistics, treasurerAmount,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,

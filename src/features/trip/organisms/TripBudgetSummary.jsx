@@ -23,7 +23,7 @@ const styles = {
   citySubtitle: "text-white font-inter text-xs opacity-70 uppercase",
 };
 
-function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport, fuelAmount = 0}) {
+function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport, fuelAmount = 0, adjusted = false}) {
   const isInternational = type === 'Internacional';
   const hasFuel = !isInternational && fuelAmount > 0;
   const borderColor = COLORS.onColorFill20;
@@ -65,9 +65,10 @@ function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, tota
         <div className={styles.infoBox} style={{backgroundColor: COLORS.onColorFill10}}>
           <span style={{color: COLORS.onColorText70, fontSize: 16}}>ⓘ</span>
           <p className={styles.infoText}>
-            {isInternational
+            {adjusted && 'Monto ajustado por ti como tesorero; el sistema había calculado otro con la tarifa de tu cargo.'}
+            {!adjusted && (isInternational
               ? 'Para viajes internacionales, el primer y último día se calculan en Bs. Los días intermedios en USD.'
-              : 'El monto total se calcula automáticamente basado en su nivel jerárquico y la duración seleccionada.'}
+              : 'El monto total se calcula automáticamente basado en su nivel jerárquico y la duración seleccionada.')}
           </p>
         </div>
       </div>
