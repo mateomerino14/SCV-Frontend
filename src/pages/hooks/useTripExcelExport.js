@@ -561,18 +561,15 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
   }
   const signatureBlocks = [
     {startCol: 1, endCol: 4, label: 'Preparado por', role: 'Responsable', signature: signatures?.preparado},
-    {startCol: 6, endCol: 9, label: 'Vo/ Bo', role: 'Jefe de Area', signature: signatures?.jefe},
-    {startCol: 11, endCol: totalCols, label: 'Vo/ Bo', role: 'Gerente de Area', signature: signatures?.gerente, notRequired: !!signatures?.gerenteNoRequerido},
+    {startCol: 6, endCol: 9, label: 'Aprobado por', role: 'Gerente de Área', signature: signatures?.jefe},
+    {startCol: 11, endCol: totalCols, label: 'Revisado/Registrado por', role: 'Asistente Cargos/Descargos', signature: signatures?.revisor},
   ];
   currentRow += 6;
   const lineRow = currentRow;
-  for (const {startCol, endCol, signature, notRequired} of signatureBlocks) {
+  for (const {startCol, endCol, signature} of signatureBlocks) {
     let legend = '';
     if (signature?.automatica) {
       legend = 'Aprobación automática';
-    }
-    else if (!signature && notRequired) {
-      legend = 'No requiere Vo/ Bo de gerencia';
     }
     if (signature?.imagen && !signature.automatica) {
       const stroke = await trimSignature(signature.imagen);
