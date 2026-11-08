@@ -8,7 +8,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Ventana de confirmación con firma: el botón de confirmar se habilita solo cuando la persona firmó en el recuadro. Se usa al aprobar el viaje (memorándum), al enviar la rendición y al dar el Vo/ Bo de la planilla.',
+        component: 'Ventana de confirmación con firma: muestra la firma digital registrada en el perfil y pide la contraseña para firmar; si la persona aún no tiene firma, la dibuja ahí y queda guardada. Se usa al aprobar el viaje (memorándum), al enviar la rendición, al aprobarla y en la revisión final.',
       },
     },
   },

@@ -86,13 +86,16 @@ function useApproverAlcoholReviewDetail(tripId) {
 
   const closeAlreadyTakenModal = () => setAlreadyTaken(false);
 
-  const handleApprove = async (signature = null) => {
+  const handleApprove = async (password = null) => {
     setSavingAction(true);
-    const result = await approveAlcoholReview(tripId, signature);
+    const result = await approveAlcoholReview(tripId, password);
     setSavingAction(false);
+    if (result.error && password !== null) {
+      return result;
+    }
     if (result.error) {
       showError(result.error);
-      return;
+      return result;
     }
     setShowApprove(false);
     setActionCompleted('APROBADO_SUPERVISOR');

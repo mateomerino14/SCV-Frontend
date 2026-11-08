@@ -10,6 +10,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import SuccessModal from '../../components/ui/SuccessModal';
 import InlineAlert from '../../components/ui/InlineAlert';
 import ProfileSummaryCard from '../../features/user/organisms/ProfileSummaryCard';
+import SignatureSettingsCard from '../../features/user/organisms/SignatureSettingsCard';
 import ProfileSectionTitle from '../../features/user/molecules/ProfileSectionTitle';
 import ProfileField from '../../features/user/molecules/ProfileField';
 import ReadOnlyField from '../../features/user/atoms/ReadOnlyField';
@@ -73,7 +74,7 @@ function ProfilePage() {
       <PhotoModal isOpen={showPhotoModal} onClose={closePhotoModal} onNewPhoto={handleNewPhoto} onRemove={handleRemovePhotoModal} saving={saving} />
       <SuccessModal isOpen={!!success} title="Actualizado" message={success} onAccept={closeSuccess} />
       <div className={styles.content}>
-        <PageHeader title="Mi Perfil" subtitle="Consulta tus datos, cambia tu foto y actualiza tu información de contacto." />
+        <PageHeader title="Mi Perfil" subtitle="Consulta tus datos, cambia tu foto, actualiza tu contacto y registra tu firma digital." />
         <div className={styles.grid}>
           <div className={styles.leftCol}>
             <ProfileSummaryCard user={user} onEditPhoto={openPhotoModal} saving={saving} />
@@ -94,6 +95,7 @@ function ProfilePage() {
                 <ReadOnlyField icon={UserCheck} label="Jefe Directo" value={user?.Jefe ? `${user.Jefe.nombre} ${user.Jefe.apellido_paterno}` : '—'} />
               </div>
             </div>
+            <SignatureSettingsCard />
             {error && <InlineAlert type="error">{error}</InlineAlert>}
           </div>
         </div>

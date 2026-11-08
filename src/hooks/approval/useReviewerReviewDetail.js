@@ -53,13 +53,16 @@ function useReviewerReviewDetail(tripId) {
 
   const currentCycle = () => data?.viaje?.ciclo_revision || 1;
 
-  const handleApprove = async () => {
+  const handleApprove = async (password = null) => {
     setSavingAction(true);
-    const result = await approveReview(tripId);
+    const result = await approveReview(tripId, password);
     setSavingAction(false);
+    if (result.error && password !== null) {
+      return result;
+    }
     if (result.error) {
       showError(result.error);
-      return;
+      return result;
     }
     setShowApprove(false);
     setActionCompleted('APROBADO_FINAL');

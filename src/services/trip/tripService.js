@@ -55,9 +55,9 @@ export const downloadStatementPdf = async (tripId) => {
   }
 };
 
-export const confirmCompletion = async (tripId, justifications, signature = null) => {
+export const confirmCompletion = async (tripId, justifications, password = null) => {
   try {
-    const response = await apiClient.put(`/trip/${tripId}/confirm-completion`, {justificaciones: justifications, firma: signature});
+    const response = await apiClient.put(`/trip/${tripId}/confirm-completion`, {justificaciones: justifications, contrasenia: password});
     return response.data;
   }
   catch (error) {
