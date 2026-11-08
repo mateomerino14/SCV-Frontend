@@ -160,6 +160,8 @@ function styleInfoValue(cell, value) {
   cell.border = thinBorder;
 }
 
+const logoWidth = 250;
+const logoHeight = 38;
 let logoPromise = null;
 
 function getLogoBase64() {
@@ -203,7 +205,7 @@ async function addStatementSheet(workbook, trip, expenses, dayJustifications = [
       extension = 'jpeg';
     }
     const imageId = workbook.addImage({base64: logoBase64, extension});
-    sheet.addImage(imageId, {tl: {col: logoStartCol, row: 0}, br: {col: infoStartCol - 1, row: 5}, editAsOneCell: true});
+    sheet.addImage(imageId, {tl: {col: logoStartCol + 0.2, row: 1.6}, ext: {width: logoWidth, height: logoHeight}, editAsOneCell: true});
   }
   sheet.mergeCells(1, infoStartCol, 1, infoEndCol);
   const titleCell = sheet.getCell(1, infoStartCol);
