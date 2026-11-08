@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {createTrip, submitTripForReview} from '../../services/trip/tripService';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import useTripLogistics, {companyVehicle} from './useTripLogistics';
+import useTreasurerTripAmount from './useTreasurerTripAmount';
 
 const draftSavedMessage = 'Se registró el viaje como borrador';
 const sentToReviewMessage = 'Se registró el viaje y se envió a revisión';
@@ -53,8 +54,11 @@ function useCreateTrip(user) {
     nationalDays = Math.min(days, 2);
     internationalDays = Math.max(0, days - 2);
   }
-  const totalAmount = nationalDays * dailyRate;
-  const totalAmountUsd = internationalDays * dailyRateUsd;
+  const calculatedAmount = nationalDays * dailyRate;
+  const calculatedAmountUsd = internationalDays * dailyRateUsd;
+  const treasurerAmount = useTreasurerTripAmount(calculatedAmount, calculatedAmountUsd);
+  const totalAmount = treasurerAmount.finalBs;
+  const totalAmountUsd = treasurerAmount.finalUsd;
 
   const showError = (message) => {
     setError(message);
@@ -115,7 +119,7 @@ function useCreateTrip(user) {
     if (startDate && endDate && calculateDays() <= 0) {
       errors.endDate = 'La fecha fin debe ser posterior a la fecha de inicio';
     }
-    return {...errors, ...logistics.validateLogistics()};
+    return {...errors, ...logistics.validateLogistics(), ...treasurerAmount.validateAmount(type === 'Internacional')};
   };
 
   const isValid = () => {
@@ -133,6 +137,7 @@ function useCreateTrip(user) {
     setType('Nacional');
     setTransport('Terrestre');
     logistics.resetLogistics();
+    treasurerAmount.resetToCalculated();
   };
 
   const saveTrip = async (sendToReview) => {
@@ -190,7 +195,7 @@ function useCreateTrip(user) {
     startDate, endDate,
     type, setType, handleTypeChange,
     transport, setTransport,
-    logistics,
+    logistics, treasurerAmount,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
     dailyRate, dailyRateUsd,
