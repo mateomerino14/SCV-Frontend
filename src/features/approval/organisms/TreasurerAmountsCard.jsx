@@ -51,7 +51,7 @@ function TreasurerAmountsCard({trip, isInternational, canEdit, editingAmounts, s
       ) : (
         <>
           <div className={styles.amountRow}>
-            <p className={styles.amountLabel} style={{color: COLORS.labels}}>Fondo Nacional (Bs)</p>
+            <p className={styles.amountLabel} style={{color: COLORS.labels}}>Fondo Nacional (Bs)<span style={{color: COLORS.secondary}}> *</span></p>
             <input className={styles.amountInput} style={{borderColor: COLORS.dataFields, color: COLORS.text, backgroundColor: COLORS.background}}
               type="text" inputMode="decimal" placeholder="0.00" value={assignedAmount}
               onChange={(event) => handleAssignedAmountChange(event.target.value)} />

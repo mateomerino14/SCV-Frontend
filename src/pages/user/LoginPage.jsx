@@ -49,7 +49,7 @@ function LoginPage() {
         <AppHeader />
       </div>
       <div>
-        <label className={styles.label}>Correo Corporativo</label>
+        <label className={styles.label}>Correo Corporativo<span style={{color: COLORS.secondary}}> *</span></label>
         <div className={styles.inputWrapper} style={{borderColor: fieldErrors.email ? COLORS.danger : COLORS.neutralBackground}}>
           <Mail size={18} className="text-gray-400" />
           <input type="email" placeholder="nombre@empresa.com" className={styles.input} disabled={logging}
@@ -59,7 +59,7 @@ function LoginPage() {
       </div>
       <div>
         <div className="flex justify-between items-center">
-          <label className={styles.label}>Contraseña</label>
+          <label className={styles.label}>Contraseña<span style={{color: COLORS.secondary}}> *</span></label>
           <button type="button" onClick={handleForgotPassword} className={styles.forgotPassword}>¿Olvidaste tu contraseña?</button>
         </div>
         <div className={styles.inputWrapper} style={{borderColor: fieldErrors.password ? COLORS.danger : COLORS.neutralBackground}}>

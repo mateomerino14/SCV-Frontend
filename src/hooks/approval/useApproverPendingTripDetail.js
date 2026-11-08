@@ -59,14 +59,17 @@ function useApproverPendingTripDetail(tripId) {
     setTimeout(() => setModalError(''), 3000);
   };
 
-  const handleApprove = async (signature = null) => {
-    setShowApprove(false);
+  const handleApprove = async (password = null) => {
     setSavingAction(true);
-    const result = await approveTripReview(tripId, signature);
+    const result = await approveTripReview(tripId, password);
     setSavingAction(false);
+    if (result.error && password !== null) {
+      return result;
+    }
+    setShowApprove(false);
     if (result.error) {
       showError(result.error);
-      return;
+      return result;
     }
     setActionCompleted('EN_REVISION_TESORERO');
     setData((prev) => ({...prev, viaje: {...prev.viaje, estado: 'EN_REVISION_TESORERO'}}));

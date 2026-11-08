@@ -49,7 +49,9 @@ test('en vehículo de la empresa elige un vehículo libre, el combustible aparte
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
   await expect(page.getByText('Elige el vehículo de la empresa')).toBeVisible();
   await page.getByRole('button', {name: 'Elige un vehículo libre'}).click();
-  await page.getByText('3456-BCD — Vagoneta Nissan Patrol').click();
+  await page.getByPlaceholder('Busca por placa o descripción...').fill('nissan');
+  await expect(page.getByText('2345-ABC')).toHaveCount(0);
+  await page.getByText('3456-BCD').click();
   await page.getByLabel('Fondo para combustible').fill('400');
   await expect(page.getByText('Combustible (aparte)')).toBeVisible();
   await expect(page.getByText(/1300\.00/).first()).toBeVisible();

@@ -25,7 +25,7 @@ function ManualImageSection({invoice, index, onImageChange, error}) {
   };
   return (
     <div className={styles.imageBox} style={{backgroundColor: COLORS.background}}>
-      <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante</p>
+      <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante<span style={{color: COLORS.secondary}}> *</span></p>
       <div style={{borderColor: error ? COLORS.fieldError : COLORS.dataFields, borderWidth: 1, borderStyle: 'solid', borderRadius: 12, overflow: 'hidden', backgroundColor: COLORS.backgroundHeader, flex: 1}}>
         {invoice.preview && (
           <>
@@ -51,7 +51,7 @@ function ManualImageSection({invoice, index, onImageChange, error}) {
 function AutoImageSection({invoice}) {
   return (
     <div className={styles.imageBox} style={{backgroundColor: COLORS.background}}>
-      <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante</p>
+      <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante<span style={{color: COLORS.secondary}}> *</span></p>
       <InvoiceImagePreview invoice={invoice} />
     </div>
   );

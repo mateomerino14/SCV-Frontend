@@ -86,13 +86,16 @@ function useSupervisorExpenseReviewDetail(tripId) {
 
   const closeAlreadyTakenModal = () => setAlreadyTaken(false);
 
-  const handleApprove = async (signature = null) => {
+  const handleApprove = async (password = null) => {
     setSavingAction(true);
-    const result = await approveExpenseReview(tripId, signature);
+    const result = await approveExpenseReview(tripId, password);
     setSavingAction(false);
+    if (result.error && password !== null) {
+      return result;
+    }
     if (result.error) {
       showError(result.error);
-      return;
+      return result;
     }
     setShowApprove(false);
     let nextState = 'APROBADO_SUPERVISOR';

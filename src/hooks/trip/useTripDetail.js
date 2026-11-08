@@ -124,8 +124,7 @@ function useTripDetail(tripId) {
     setShowSubmitReviewModal(true);
   };
 
-  const handleConfirmSubmitReview = async (signature) => {
-    setShowSubmitReviewModal(false);
+  const handleConfirmSubmitReview = async (password) => {
     setSubmittingReview(true);
     const justificationsToSend = [];
     exceededDays.forEach((day) => {
@@ -138,12 +137,12 @@ function useTripDetail(tripId) {
     if (exceedsHotels && hotelText) {
       justificationsToSend.push({fecha: null, descripcion: hotelText});
     }
-    const data = await confirmCompletion(tripId, justificationsToSend, signature);
+    const data = await confirmCompletion(tripId, justificationsToSend, password);
     setSubmittingReview(false);
     if (data.error) {
-      showError(data.error);
-      return;
+      return data;
     }
+    setShowSubmitReviewModal(false);
     setSubmitted(true);
     setTrip((prev) => ({...prev, estado: 'EN_REVISION'}));
   };

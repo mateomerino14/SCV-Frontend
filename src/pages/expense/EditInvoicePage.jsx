@@ -52,7 +52,7 @@ function EditInvoicePage() {
 
   const imageSection = (
     <div className={styles.imageBox} style={{backgroundColor: COLORS.background}}>
-      <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante</p>
+      <p className={styles.imageLabel} style={{color: COLORS.labels}}>Comprobante<span style={{color: COLORS.secondary}}> *</span></p>
       <ReceiptUpload previewImage={imagePreview} onChange={handleImageChange} onRemove={handleRemoveImage} error={fieldErrors.image} hideLabel />
     </div>
   );

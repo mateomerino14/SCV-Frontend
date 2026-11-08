@@ -43,9 +43,9 @@ export const getReviewDetail = async (tripId) => {
   }
 };
 
-export const approveReview = async (tripId) => {
+export const approveReview = async (tripId, password = null) => {
   try {
-    const response = await apiClient.post(`/reviewer/${tripId}/approve`);
+    const response = await apiClient.post(`/reviewer/${tripId}/approve`, {contrasenia: password});
     return response.data;
   }
   catch (error) {

@@ -17,5 +17,5 @@ export const Firmado = {
 };
 
 export const Automatico = {
-  args: {signer: {etapa: 'Vo/ Bo Gerente de Área', nombre: 'Ricardo Salinas Paredes', cargo: 'Gerente General', fecha: '2026-10-29T23:07:00Z', automatica: true}},
+  args: {signer: {etapa: 'Aprobó la rendición (Gerente de Área)', nombre: 'Ricardo Salinas Paredes', cargo: 'Gerente General', fecha: '2026-10-29T23:07:00Z', automatica: true}},
 };
