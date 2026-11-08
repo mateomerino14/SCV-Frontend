@@ -3,6 +3,7 @@ import {ChevronDown, ChevronUp, CalendarDays} from 'lucide-react';
 import DailyLimitBar from '../atoms/DailyLimitBar';
 import {dailyLimitStatus, getLimitStatus, dayLimitBs, dayLimitUsd} from '../constants/dailyLimitStatus';
 import {COLORS} from '../../../constants';
+import {pluralOf} from '../../../utils/plural';
 
 const styles = {
   wrapper: 'rounded-2xl border mt-3 overflow-hidden',
@@ -73,12 +74,15 @@ function DailyBreakdownCard({dailyBreakdown = [], dailyRate = 0, dailyRateUsd = 
   const justifiedCount = days.filter((day) => day.status === 'JUSTIFIED').length;
   let summary = 'Todos los días dentro del límite';
   if (exceededCount > 0) {
-    summary = `${exceededCount} día${exceededCount === 1 ? '' : 's'} por justificar`;
+    summary = `${exceededCount} ${pluralOf(exceededCount, 'día', 'días')} por justificar`;
   }
   else if (justifiedCount > 0) {
-    summary = `${justifiedCount} día${justifiedCount === 1 ? '' : 's'} justificado${justifiedCount === 1 ? '' : 's'}`;
+    summary = `${justifiedCount} ${pluralOf(justifiedCount, 'día justificado', 'días justificados')}`;
   }
-  const ToggleIcon = open ? ChevronUp : ChevronDown;
+  let ToggleIcon = ChevronDown;
+  if (open) {
+    ToggleIcon = ChevronUp;
+  }
   return (
     <div className={styles.wrapper} style={{backgroundColor: COLORS.background, borderColor: COLORS.dataFields}}>
       <div className={styles.header} onClick={() => setOpen((prev) => !prev)}>
