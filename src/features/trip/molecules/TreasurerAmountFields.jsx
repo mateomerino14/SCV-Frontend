@@ -1,32 +1,35 @@
-import {Wallet, RotateCcw} from 'lucide-react';
+import {Wallet, Banknote, DollarSign, RotateCcw} from 'lucide-react';
 import InputField from '../../../components/ui/InputField';
 import {COLORS} from '../../../constants';
 
 const styles = {
-  card: 'flex flex-col gap-4 rounded-2xl border p-4',
-  header: 'flex items-center gap-2',
-  title: 'text-sm font-bold font-inter uppercase',
-  hint: 'text-xs font-inter -mt-2',
+  card: 'rounded-2xl border p-5 flex flex-col gap-4',
+  header: 'flex items-center gap-2.5',
+  iconBox: 'w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0',
+  title: 'text-[15px] font-bold font-inter',
+  hint: 'text-xs font-inter -mt-1',
   input: 'bg-transparent w-full outline-none font-inter text-sm',
   reset: 'flex items-center gap-1 text-xs font-bold font-inter cursor-pointer self-start',
 };
 
 function TreasurerAmountFields({amount, isInternational, errors = {}}) {
   return (
-    <div className={styles.card} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.backgroundHeader}}>
+    <div className={styles.card} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
       <div className={styles.header}>
-        <Wallet size={16} style={{color: COLORS.primary}} />
-        <p className={styles.title} style={{color: COLORS.labels}}>Monto del viaje</p>
+        <span className={styles.iconBox} style={{backgroundColor: COLORS.primarySoft}}>
+          <Wallet size={16} style={{color: COLORS.primary}} />
+        </span>
+        <p className={styles.title} style={{color: COLORS.text}}>Monto del viaje</p>
       </div>
       <p className={styles.hint} style={{color: COLORS.labels}}>
         El sistema lo calculó con la tarifa de tu cargo. Como tesorero puedes ajustarlo: es el fondo que se te asigna, porque la etapa de tesorería de tu propio viaje se aprueba sola.
       </p>
-      <InputField label="Viáticos (Bs)" required error={errors.treasurerBs}>
+      <InputField label="Viáticos (Bs)" required icon={<Banknote size={16} style={{color: COLORS.primary}} />} error={errors.treasurerBs}>
         <input type="text" inputMode="decimal" className={styles.input} style={{color: COLORS.text}} value={amount.bsText}
           onChange={(event) => amount.setBsText(event.target.value)} aria-label="Viáticos en Bs" />
       </InputField>
       {isInternational && (
-        <InputField label="Fondo internacional (USD)" required error={errors.treasurerUsd}>
+        <InputField label="Fondo internacional (USD)" required icon={<DollarSign size={16} style={{color: COLORS.primary}} />} error={errors.treasurerUsd}>
           <input type="text" inputMode="decimal" className={styles.input} style={{color: COLORS.text}} value={amount.usdText}
             onChange={(event) => amount.setUsdText(event.target.value)} aria-label="Fondo internacional en USD" />
         </InputField>
