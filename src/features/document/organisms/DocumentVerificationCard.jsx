@@ -18,9 +18,36 @@ const styles = {
 };
 
 const summaryLabels = {
-  codigo: 'Código del viaje', ruta: 'Ruta', fechas: 'Fechas', fondo_bs: 'Fondo (Bs)', fondo_usd: 'Fondo (USD)', hospedaje: 'Hospedaje',
+  fechas: 'Fechas', fondo_bs: 'Fondo (Bs)', fondo_usd: 'Fondo (USD)', hospedaje: 'Hospedaje',
   gastos: 'Cantidad de gastos', recibo: 'N° de recibo', pagado: 'Importe pagado (Bs)', fecha: 'Fecha', agrupado: 'Recibo agrupado',
   resultado: 'Resultado', saldo_bs: 'Saldo (Bs)', saldo_usd: 'Saldo (USD)',
+};
+
+const usdKeys = ['fondo_usd', 'saldo_usd'];
+const lodgingLabels = {Empresa: 'La empresa reserva el hospedaje', Propio: 'El empleado gestiona su hospedaje'};
+
+const isEmptyValue = (key, value) => {
+  if (value === null || value === undefined || value === '') {
+    return true;
+  }
+  return usdKeys.includes(key) && !(parseFloat(value) > 0);
+};
+
+const summaryValueOf = (key, value) => {
+  if (key === 'hospedaje') {
+    return lodgingLabels[value] || value;
+  }
+  if (key === 'fecha') {
+    return String(value).split('-').reverse().join('/');
+  }
+  return formatValue(value);
+};
+
+const balanceValueOf = (row, withUsd) => {
+  if (withUsd) {
+    return `Bs ${formatValue(row.bs)} · USD ${formatValue(row.usd)}`;
+  }
+  return `Bs ${formatValue(row.bs)}`;
 };
 
 const formatValue = (value) => {
@@ -61,8 +88,13 @@ function DocumentVerificationCard({document, error}) {
       </div>
     );
   }
-  const summaryEntries = Object.entries(document.resumen || {}).filter(([key, value]) => summaryLabels[key] && !Array.isArray(value));
-  const balances = (document.resumen?.saldos || []);
+  const summaryEntries = Object.entries(document.resumen || {}).filter(([key, value]) => summaryLabels[key] && !Array.isArray(value) && !isEmptyValue(key, value));
+  const balances = document.resumen?.saldos || [];
+  const balancesWithUsd = balances.some((row) => parseFloat(row.usd) > 0);
+  let route = document.viaje?.ruta;
+  if (!route && document.resumen?.ruta) {
+    route = document.resumen.ruta;
+  }
   return (
     <div className={styles.card} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
       <div className={styles.banner} style={{backgroundColor: COLORS.successBackground}}>
@@ -79,7 +111,7 @@ function DocumentVerificationCard({document, error}) {
           <Field label="Emitido" value={formatDateTime(document.emitido)} />
           {document.viaje && <Field label="Viaje" value={document.viaje.codigo} />}
           {document.viaje && <Field label="Empleado" value={document.viaje.empleado} />}
-          {document.viaje && <Field label="Destino" value={document.viaje.destino} />}
+          {route && <Field label="Ruta" value={route} />}
         </div>
         {(summaryEntries.length > 0 || balances.length > 0) && (
           <>
@@ -87,8 +119,8 @@ function DocumentVerificationCard({document, error}) {
             <div className={styles.section}>
               <p className={styles.sectionTitle} style={{color: COLORS.primary}}>Datos al emitirlo</p>
               <div className={styles.grid}>
-                {summaryEntries.map(([key, value]) => <Field key={key} label={summaryLabels[key]} value={formatValue(value)} />)}
-                {balances.map((row) => <Field key={row.concepto} label={row.concepto} value={`Bs ${formatValue(row.bs)} · USD ${formatValue(row.usd)}`} />)}
+                {summaryEntries.map(([key, value]) => <Field key={key} label={summaryLabels[key]} value={summaryValueOf(key, value)} />)}
+                {balances.map((row) => <Field key={row.concepto} label={row.concepto} value={balanceValueOf(row, balancesWithUsd)} />)}
               </div>
               <p className={styles.note} style={{color: COLORS.labels}}>Compara estos datos con los del papel: si no coinciden, el documento fue modificado.</p>
             </div>
