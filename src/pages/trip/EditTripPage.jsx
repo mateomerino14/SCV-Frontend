@@ -5,6 +5,7 @@ import Footer from '../../layouts/Footer';
 import DynamicMenu from '../../layouts/menu/DynamicMenu';
 import PageHeader from '../../components/ui/PageHeader';
 import TripBudgetSummary from '../../features/trip/organisms/TripBudgetSummary';
+import TreasurerAmountFields from '../../features/trip/molecules/TreasurerAmountFields';
 import TripLogisticsSection from '../../features/trip/organisms/TripLogisticsSection';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import SkeletonCard from '../../components/ui/SkeletonCard';
@@ -53,7 +54,7 @@ function EditTripPage() {
   const {menuOpen, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose, user: menuUser} = useMenu();
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
-    logistics,
+    logistics, treasurerAmount,
     nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
     loading, loadingData, loadError, error, fieldErrors,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
@@ -168,6 +169,7 @@ function EditTripPage() {
               </div>
             </div>
             <TripLogisticsSection logistics={logistics} tripId={id} />
+            {treasurerAmount.isTreasurer && <TreasurerAmountFields amount={treasurerAmount} isInternational={type === 'Internacional'} errors={fieldErrors} />}
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
             <div style={{marginTop: 'auto'}}>
               <button className={styles.confirmBtn} style={{backgroundColor: loading ? COLORS.fields : COLORS.secondary}}
@@ -182,7 +184,7 @@ function EditTripPage() {
           <div className={styles.rightCol}>
             <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
               totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport}
-              fuelAmount={logistics.fuelValue} />
+              fuelAmount={logistics.fuelValue} adjusted={treasurerAmount.adjusted} />
           </div>
         </div>
       </div>
