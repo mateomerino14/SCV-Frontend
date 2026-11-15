@@ -10,12 +10,8 @@ test('el titular pide un reemplazo y el reemplazo rinde los gastos firmando @cel
   await page.getByRole('button', {name: 'Enviar Solicitud'}).click();
   await expect(page.getByText('Tienes una solicitud de reemplazo pendiente de revisión.')).toBeVisible();
   const reviewer = await apiClient('lucia.revisora');
-  const pending = await reviewer.get('/substitution/pending');
-  let list = pending;
-  if (!Array.isArray(pending)) {
-    list = Object.values(pending).find((value) => Array.isArray(value));
-  }
-  const request = list.find((item) => item.id_viaje === tripId);
+  const pending = await reviewer.get('/inbox/reemplazos?tab=PENDIENTES&limit=100');
+  const request = pending.items.find((item) => item.id_viaje === tripId);
   await reviewer.post(`/substitution/${request.id_solicitud}/approve`);
   const substitute = await apiClient('ana.empleada');
   await substitute.postForm('/expense/register', {id_viaje: tripId, monto_total: 35, fecha_gasto: boliviaDate(), tipo: 'S', descripcion: 'Taxi del reemplazo', id_categoria: 1});

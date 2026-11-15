@@ -10,52 +10,6 @@ export const getReviewEmployees = async () => {
   }
 };
 
-export const getPendingTripReviews = async (filters = {}) => {
-  try {
-    const params = {};
-    if (filters.fecha_inicio) {
-      params.fecha_inicio = filters.fecha_inicio;
-    }
-    if (filters.fecha_fin) {
-      params.fecha_fin = filters.fecha_fin;
-    }
-    if (filters.id_empleado) {
-      params.id_empleado = filters.id_empleado;
-    }
-    if (filters.id_seccion) {
-      params.id_seccion = filters.id_seccion;
-    }
-    const response = await apiClient.get('/review/trip-review/pending', {params});
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener viajes pendientes'};
-  }
-};
-
-export const getMyTripReviews = async (filters = {}) => {
-  try {
-    const params = {};
-    if (filters.fecha_inicio) {
-      params.fecha_inicio = filters.fecha_inicio;
-    }
-    if (filters.fecha_fin) {
-      params.fecha_fin = filters.fecha_fin;
-    }
-    if (filters.id_empleado) {
-      params.id_empleado = filters.id_empleado;
-    }
-    if (filters.id_seccion) {
-      params.id_seccion = filters.id_seccion;
-    }
-    const response = await apiClient.get('/review/trip-review/mine', {params});
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener mis viajes'};
-  }
-};
-
 export const takeTripReview = async (tripId) => {
   try {
     const response = await apiClient.post(`/review/trip-review/${tripId}/take`);
@@ -133,52 +87,6 @@ export const deleteTripReviewComment = async (tripId, commentId) => {
   }
   catch (error) {
     return {error: error.response?.data?.error || 'Error al eliminar comentario'};
-  }
-};
-
-export const getPendingExpenseReviews = async (filters = {}) => {
-  try {
-    const params = {};
-    if (filters.fecha_inicio) {
-      params.fecha_inicio = filters.fecha_inicio;
-    }
-    if (filters.fecha_fin) {
-      params.fecha_fin = filters.fecha_fin;
-    }
-    if (filters.id_empleado) {
-      params.id_empleado = filters.id_empleado;
-    }
-    if (filters.id_seccion) {
-      params.id_seccion = filters.id_seccion;
-    }
-    const response = await apiClient.get('/review/expense-review/pending', {params});
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener pendientes'};
-  }
-};
-
-export const getMyExpenseReviews = async (filters = {}) => {
-  try {
-    const params = {};
-    if (filters.fecha_inicio) {
-      params.fecha_inicio = filters.fecha_inicio;
-    }
-    if (filters.fecha_fin) {
-      params.fecha_fin = filters.fecha_fin;
-    }
-    if (filters.id_empleado) {
-      params.id_empleado = filters.id_empleado;
-    }
-    if (filters.id_seccion) {
-      params.id_seccion = filters.id_seccion;
-    }
-    const response = await apiClient.get('/review/expense-review/mine', {params});
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener mis revisiones'};
   }
 };
 

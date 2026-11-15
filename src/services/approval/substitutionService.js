@@ -20,26 +20,6 @@ export const getSubstitutionStatus = async (tripId) => {
   }
 };
 
-export const getPendingSubstitutions = async () => {
-  try {
-    const response = await apiClient.get('/substitution/pending');
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener solicitudes'};
-  }
-};
-
-export const getSubstitutionHistory = async () => {
-  try {
-    const response = await apiClient.get('/substitution/history');
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener historial'};
-  }
-};
-
 export const approveSubstitution = async (requestId) => {
   try {
     const response = await apiClient.post(`/substitution/${requestId}/approve`);
