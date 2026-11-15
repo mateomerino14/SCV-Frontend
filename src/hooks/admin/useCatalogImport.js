@@ -7,8 +7,9 @@ const catalogImports = {
   position: {downloadTemplate: downloadPositionImportTemplate, parseFile: parsePositionImportFile, previewRows: previewPositionImport, importRows: importPositions},
 };
 
-function useCatalogImport(catalog, onImported) {
-  return useExcelImport({...catalogImports[catalog], onImported});
+function useCatalogImport(catalog, onImported, scaleTypes) {
+  const config = catalogImports[catalog];
+  return useExcelImport({...config, downloadTemplate: () => config.downloadTemplate(scaleTypes), onImported});
 }
 
 export default useCatalogImport;

@@ -118,3 +118,18 @@ test('el viaje internacional toma la tarifa en USD según la clase del país ele
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
   await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();
 });
+
+test('la lista de países se abre hacia abajo y se acorta para no salirse de la pantalla @celular', async ({page}) => {
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto('/dashboard/empleado/crear-viaje');
+  await page.getByRole('button', {name: 'Internacional'}).click();
+  const trigger = page.getByRole('button', {name: 'Elige el país del viaje'});
+  await trigger.evaluate((element) => element.scrollIntoView({block: 'end'}));
+  await trigger.click();
+  const menu = page.getByPlaceholder('Busca el país o la región...').locator('xpath=../..');
+  await expect(menu).toBeVisible();
+  const triggerBox = await trigger.boundingBox();
+  const menuBox = await menu.boundingBox();
+  expect(menuBox.y).toBeGreaterThanOrEqual(triggerBox.y + triggerBox.height);
+  expect(menuBox.y + menuBox.height).toBeLessThanOrEqual(page.viewportSize().height);
+});

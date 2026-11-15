@@ -9,7 +9,7 @@ const styles = {
 
 function DropdownTrigger({triggerRef, label, open, onClick, error, hasValue, icon, asField = false}) {
   return (
-    <button ref={triggerRef} type="button" className={asField ? styles.fieldButton : styles.button} onClick={onClick}
+    <button ref={triggerRef} type="button" aria-haspopup="listbox" aria-expanded={open} className={asField ? styles.fieldButton : styles.button} onClick={onClick}
       style={{borderColor: error ? COLORS.fieldErrorBorder : COLORS.dataFields, backgroundColor: COLORS.background, color: hasValue ? COLORS.text : COLORS.labels}}>
       <span className={styles.labelGroup}>
         {icon && <span className="flex shrink-0">{icon}</span>}

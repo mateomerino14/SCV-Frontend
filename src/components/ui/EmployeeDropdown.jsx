@@ -12,14 +12,17 @@ const styles = {
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
   list: 'overflow-y-auto',
   emptyText: 'text-xs font-inter text-center py-3',
+  moreText: 'text-xs font-inter text-center py-2',
 };
+
+const maxVisibleEmployees = 100;
 
 const dropdownVariants = {
   hidden: {opacity: 0, y: -8, scaleY: 0.95},
   visible: {opacity: 1, y: 0, scaleY: 1},
 };
 
-function EmployeeDropdown({wrapperRef, triggerRef, open, onToggle, employees, selectedId, onSelect}) {
+function EmployeeDropdown({wrapperRef, triggerRef, open, listHeight = 220, onToggle, employees, selectedId, onSelect}) {
   const [query, setQuery] = useState('');
   const selectedEmployee = employees.find((employee) => String(employee.id_usuario) === String(selectedId));
   let label = 'Todos los empleados';
@@ -27,7 +30,9 @@ function EmployeeDropdown({wrapperRef, triggerRef, open, onToggle, employees, se
     label = `${selectedEmployee.nombre} ${selectedEmployee.apellido_paterno}`;
   }
   const normalizedQuery = query.trim().toLowerCase();
-  const filteredEmployees = employees.filter((employee) => !normalizedQuery || `${employee.nombre} ${employee.apellido_paterno}`.toLowerCase().includes(normalizedQuery));
+  const matchingEmployees = employees.filter((employee) => !normalizedQuery || `${employee.nombre} ${employee.apellido_paterno}`.toLowerCase().includes(normalizedQuery));
+  const filteredEmployees = matchingEmployees.slice(0, maxVisibleEmployees);
+  const hiddenCount = matchingEmployees.length - filteredEmployees.length;
   const handleSelect = (id) => {
     setQuery('');
     onSelect(id);
@@ -45,7 +50,7 @@ function EmployeeDropdown({wrapperRef, triggerRef, open, onToggle, employees, se
               <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar empleado..."
                 value={query} onChange={(event) => setQuery(event.target.value)} autoFocus />
             </div>
-            <div className={styles.list} style={{maxHeight: `${5 * 44}px`}}>
+            <div className={styles.list} style={{maxHeight: listHeight}}>
               {!normalizedQuery && <DropdownListItem label="Todos los empleados" selected={!selectedId} onClick={() => handleSelect('')} />}
               {filteredEmployees.length === 0 ? (
                 <p className={styles.emptyText} style={{color: COLORS.labels}}>Sin resultados</p>
@@ -55,6 +60,7 @@ function EmployeeDropdown({wrapperRef, triggerRef, open, onToggle, employees, se
                     selected={String(selectedId) === String(employee.id_usuario)} onClick={() => handleSelect(employee.id_usuario)} />
                 ))
               )}
+              {hiddenCount > 0 && <p className={styles.moreText} style={{color: COLORS.labels}}>Hay {hiddenCount} más; escribe para encontrarlos</p>}
             </div>
           </motion.div>
         )}

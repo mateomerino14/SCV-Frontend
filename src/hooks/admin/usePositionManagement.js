@@ -1,15 +1,11 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {getPositions, createPosition, updatePosition, suspendPosition, activatePosition} from '../../services/admin/adminService';
+import useServerPagination from '../shared/useServerPagination';
+import useNameSuggestions from '../shared/useNameSuggestions';
 
 const maxName = 100;
 
-function normalizePositionName(name) {
-  return (name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ');
-}
-
-function usePositionManagement() {
-  const [allPositions, setAllPositions] = useState([]);
-  const [loading, setLoading] = useState(true);
+function usePositionManagement(onChanged) {
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -22,58 +18,34 @@ function usePositionManagement() {
   const [successMessage, setSuccessMessage] = useState('');
   const [formData, setFormData] = useState({nombre: '', tipo_viatico: ''});
 
-  const applyPositions = (data) => {
-    setLoading(false);
-    if (!data.error) {
-      setAllPositions(data);
-    }
-  };
+  const list = useServerPagination(getPositions, {search});
+  const suggestions = useNameSuggestions(getPositions, formData.nombre, showCreate || showEdit, 'id_cargo', selectedPosition?.id_cargo);
 
   const load = async () => {
-    setLoading(true);
-    applyPositions(await getPositions());
+    await list.reload();
+    onChanged?.();
   };
-
-  useEffect(() => {
-    getPositions().then(applyPositions);
-  }, []);
 
   const showError = (message) => {
     setError(message);
     setTimeout(() => setError(''), 4000);
   };
 
-  const filteredPositions = allPositions.filter((position) =>
-    position.nombre.toLowerCase().includes(search.toLowerCase())
-  );
-
-  let suggestions = [];
-  if (formData.nombre.length >= 2) {
-    suggestions = allPositions.filter((position) => position.nombre.toLowerCase().includes(formData.nombre.toLowerCase())
-      && position.id_cargo !== selectedPosition?.id_cargo);
-  }
-
-  const positionAlreadyExists = (name, excludeId = null) => {
-    const normalizedName = normalizePositionName(name);
-    return allPositions.some((position) => {
-      const sameName = normalizePositionName(position.nombre) === normalizedName;
-      if (excludeId) {
-        return sameName && position.id_cargo !== excludeId;
-      }
-      return sameName;
-    });
+  const showSaveError = (message) => {
+    if (message.startsWith('Ya existe')) {
+      setFieldErrors((prev) => ({...prev, nombre: message}));
+      return;
+    }
+    showError(message);
   };
 
-  const validateFields = (excludeId = null) => {
+  const validateFields = () => {
     const errors = {};
     if (!formData.nombre.trim()) {
       errors.nombre = 'El nombre del cargo es requerido';
     }
     else if (formData.nombre.trim().length > maxName) {
       errors.nombre = `Máximo ${maxName} caracteres`;
-    }
-    else if (positionAlreadyExists(formData.nombre.trim(), excludeId)) {
-      errors.nombre = 'Ya existe un cargo con ese nombre';
     }
     if (!formData.tipo_viatico) {
       errors.tipo_viatico = 'Elige el tipo de la escala de viáticos';
@@ -82,6 +54,7 @@ function usePositionManagement() {
   };
 
   const openCreate = () => {
+    setSelectedPosition(null);
     setFormData({nombre: '', tipo_viatico: ''});
     setError('');
     setFieldErrors({});
@@ -112,7 +85,7 @@ function usePositionManagement() {
     const data = await createPosition({nombre: formData.nombre.trim(), tipo_viatico: formData.tipo_viatico});
     setSavingAction(false);
     if (data.error) {
-      showError(data.error);
+      showSaveError(data.error);
       return;
     }
     setShowCreate(false);
@@ -122,7 +95,7 @@ function usePositionManagement() {
   };
 
   const handleEdit = async () => {
-    const errors = validateFields(selectedPosition.id_cargo);
+    const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -132,7 +105,7 @@ function usePositionManagement() {
     const data = await updatePosition(selectedPosition.id_cargo, {nombre: formData.nombre.trim(), tipo_viatico: formData.tipo_viatico});
     setSavingAction(false);
     if (data.error) {
-      showError(data.error);
+      showSaveError(data.error);
       return;
     }
     setShowEdit(false);
@@ -168,9 +141,9 @@ function usePositionManagement() {
 
   return {
     reload: load,
-    positions: filteredPositions,
-    allPositions,
-    loading, savingAction, error, fieldErrors, setFieldErrors,
+    positions: list.items, totalPositions: list.total, hasMorePositions: list.hasMore,
+    loadMorePositions: list.loadMore, loadingMorePositions: list.loadingMore, listFilters: list.params,
+    loading: list.loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch,
     selectedPosition,
     showCreate, setShowCreate,

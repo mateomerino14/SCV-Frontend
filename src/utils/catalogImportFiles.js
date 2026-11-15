@@ -1,7 +1,7 @@
 import {buildImportTemplate, downloadImportTemplate, readImportRows, parseImportFile} from './excelImportFile';
 
 const statusOptions = ['Activo', 'Suspendido'];
-const scaleTypes = ['A', 'B', 'C'];
+const defaultScaleTypes = ['A', 'B', 'C'];
 
 const sectionImportConfig = {
   sheetName: 'SECCIONES',
@@ -36,7 +36,7 @@ const positionImportConfig = {
     'Cómo llenar la plantilla de cargos',
     '1. Una fila por cargo, desde la fila 3 de la hoja CARGOS. La fila 2 es un ejemplo: bórrala o reemplázala.',
     '2. Cargo: el nombre tal como figura en la empresa y en Oracle.',
-    '3. Tipo de viático: C para Gerente General y Gerentes de Área, B para Jefes de Área y A para el resto del personal.',
+    '3. Tipo de viático: la letra del tipo de la escala de viáticos (pantalla Cargos), por ejemplo C para Gerente General y Gerentes de Área, B para Jefes de Área y A para el resto del personal.',
     '4. Si el cargo ya existe (mismo nombre, sin importar mayúsculas ni tildes), se actualiza su tipo; si no existe, se crea.',
     '5. Estado: Activo o Suspendido. Si queda vacío, un cargo nuevo entra activo y uno existente queda como está.',
     '6. También puedes subir el Excel que exporta la pantalla de Cargos: las columnas que sobran se ignoran.',
@@ -44,15 +44,15 @@ const positionImportConfig = {
   ],
 };
 
-const listsOf = {status: statusOptions, scaleTypes};
+const listsOf = (scaleTypes) => ({status: statusOptions, scaleTypes});
 
 export const buildSectionImportTemplate = (workbook) => buildImportTemplate(workbook, sectionImportConfig, {status: statusOptions});
 
-export const buildPositionImportTemplate = (workbook) => buildImportTemplate(workbook, positionImportConfig, listsOf);
+export const buildPositionImportTemplate = (workbook, scaleTypes = defaultScaleTypes) => buildImportTemplate(workbook, positionImportConfig, listsOf(scaleTypes));
 
 export const downloadSectionImportTemplate = () => downloadImportTemplate(sectionImportConfig, {status: statusOptions});
 
-export const downloadPositionImportTemplate = () => downloadImportTemplate(positionImportConfig, listsOf);
+export const downloadPositionImportTemplate = (scaleTypes = defaultScaleTypes) => downloadImportTemplate(positionImportConfig, listsOf(scaleTypes));
 
 export const readSectionImportRows = (sheet) => readImportRows(sheet, sectionImportConfig);
 

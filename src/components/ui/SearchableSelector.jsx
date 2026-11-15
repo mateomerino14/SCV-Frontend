@@ -11,8 +11,9 @@ const styles = {
   wrapper: 'relative',
   label: 'text-xs font-bold font-inter uppercase mb-1',
   dropdownMenu: 'fixed z-[10000] rounded-xl border shadow-lg overflow-hidden',
-  list: 'max-h-52 overflow-y-auto',
+  list: 'overflow-y-auto',
   empty: 'px-4 py-3 text-sm font-inter text-center',
+  more: 'px-4 py-2 text-xs font-inter text-center',
   fieldError: 'text-xs font-inter mt-1',
 };
 
@@ -28,7 +29,7 @@ function SearchableSelector({label, required = false, options, value, onChange, 
   }
   const {
     open, search, setSearch, menuPosition, wrapperRef, triggerRef, menuRef, inputRef, selectedOption,
-    filteredOptions, handleToggle, handleSelect,
+    filteredOptions, hiddenCount, handleToggle, handleSelect,
   } = useSearchableSelector(allOptions, value, onChange);
   const hasValue = !!selectedOption && selectedOption !== emptyOption && selectedOption.value !== '';
   return (
@@ -42,12 +43,12 @@ function SearchableSelector({label, required = false, options, value, onChange, 
           {open && menuPosition && (
             <motion.div ref={menuRef} className={styles.dropdownMenu}
               style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background, left: menuPosition.left,
-                width: menuPosition.width, top: menuPosition.top, bottom: menuPosition.bottom, transformOrigin: 'top'}}
+                width: menuPosition.width, top: menuPosition.top, transformOrigin: 'top'}}
               variants={dropdownVariants} initial="hidden" animate="visible" exit="hidden"
               transition={{duration: 0.16, ease: [0.22, 1, 0.36, 1]}}>
               <DropdownSearchInput inputRef={inputRef} value={search} placeholder={searchPlaceholder}
                 onChange={(event) => setSearch(event.target.value)} />
-              <div className={styles.list}>
+              <div className={styles.list} style={{maxHeight: menuPosition.listHeight}}>
                 {filteredOptions.length === 0 ? (
                   <p className={styles.empty} style={{color: COLORS.labels}}>Sin resultados</p>
                 ) : (
@@ -55,6 +56,9 @@ function SearchableSelector({label, required = false, options, value, onChange, 
                     <DropdownListItem key={String(option.value)} label={option.label} description={option.description}
                       selected={String(value ?? '') === String(option.value)} onClick={() => handleSelect(option)} />
                   ))
+                )}
+                {hiddenCount > 0 && (
+                  <p className={styles.more} style={{color: COLORS.labels}}>Hay {hiddenCount} más; escribe para encontrarlos</p>
                 )}
               </div>
             </motion.div>

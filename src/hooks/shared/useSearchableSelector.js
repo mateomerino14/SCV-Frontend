@@ -1,4 +1,9 @@
 import {useState, useRef, useEffect} from 'react';
+import {makeRoomBelow, listHeightBelow, menuTopBelow} from '../../utils/dropdownSpace';
+
+const preferredListHeight = 208;
+const maxVisibleOptions = 100;
+const searchInputHeight = 40;
 
 export function normalizeSearchText(text) {
   return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -15,20 +20,20 @@ function useSearchableSelector(options, selectedValue, onChange) {
 
   const selectedOption = options.find((option) => String(option.value) === String(selectedValue));
   const normalizedSearch = normalizeSearchText(search.trim());
-  const filteredOptions = options.filter((option) => !normalizedSearch || normalizeSearchText(option.searchText || option.label).includes(normalizedSearch));
+  const matchingOptions = options.filter((option) => !normalizedSearch || normalizeSearchText(option.searchText || option.label).includes(normalizedSearch));
+  const filteredOptions = matchingOptions.slice(0, maxVisibleOptions);
+  const hiddenCount = matchingOptions.length - filteredOptions.length;
 
   const calculateMenuPosition = () => {
     if (!triggerRef.current) {
       return;
     }
     const rect = triggerRef.current.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const opensUpward = spaceBelow < 280;
     setMenuPosition({
       left: rect.left,
       width: rect.width,
-      top: opensUpward ? undefined : rect.bottom + 4,
-      bottom: opensUpward ? window.innerHeight - rect.top + 4 : undefined,
+      top: menuTopBelow(triggerRef.current),
+      listHeight: listHeightBelow(triggerRef.current, preferredListHeight, searchInputHeight),
     });
   };
 
@@ -62,6 +67,7 @@ function useSearchableSelector(options, selectedValue, onChange) {
   const handleToggle = () => {
     const nextState = !open;
     if (nextState) {
+      makeRoomBelow(triggerRef.current, searchInputHeight);
       calculateMenuPosition();
       setSearch('');
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -78,7 +84,7 @@ function useSearchableSelector(options, selectedValue, onChange) {
   return {
     open, search, setSearch, menuPosition,
     wrapperRef, triggerRef, menuRef, inputRef,
-    selectedOption, filteredOptions,
+    selectedOption, filteredOptions, hiddenCount,
     handleToggle, handleSelect,
   };
 }

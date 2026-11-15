@@ -1,12 +1,9 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {getSections, createSection, updateSection, suspendSection, activateSection} from '../../services/admin/adminService';
-import {normalizeSearchText} from '../shared/useSearchableSelector';
+import useServerPagination from '../shared/useServerPagination';
+import useNameSuggestions from '../shared/useNameSuggestions';
 
 const maxName = 100;
-
-function normalizeSectionName(name) {
-  return (name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ');
-}
 
 const emptyForm = {nombre: '', codigo_seccion: ''};
 
@@ -16,8 +13,6 @@ const sectionPayload = (formData) => ({
 });
 
 function useSectionManagement() {
-  const [allSections, setAllSections] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -30,43 +25,25 @@ function useSectionManagement() {
   const [successMessage, setSuccessMessage] = useState('');
   const [formData, setFormData] = useState(emptyForm);
 
-  const applySections = (data) => {
-    setLoading(false);
-    if (!data.error) {
-      setAllSections(data);
-    }
-  };
+  const list = useServerPagination(getSections, {search});
+  const suggestions = useNameSuggestions(getSections, formData.nombre, showCreate || showEdit, 'id_seccion', selectedSection?.id_seccion);
 
-  const load = async () => {
-    setLoading(true);
-    applySections(await getSections());
-  };
-
-  useEffect(() => {
-    getSections().then(applySections);
-  }, []);
+  const load = () => list.reload();
 
   const showError = (message) => {
     setError(message);
     setTimeout(() => setError(''), 4000);
   };
 
-  const filteredSections = allSections.filter((section) =>
-    section.nombre.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const sectionAlreadyExists = (name, excludeId = null) => {
-    const normalizedName = normalizeSectionName(name);
-    return allSections.some((section) => {
-      const sameName = normalizeSectionName(section.nombre) === normalizedName;
-      if (excludeId) {
-        return sameName && section.id_seccion !== excludeId;
-      }
-      return sameName;
-    });
+  const showSaveError = (message) => {
+    if (message.startsWith('Ya existe')) {
+      setFieldErrors((prev) => ({...prev, nombre: message}));
+      return;
+    }
+    showError(message);
   };
 
-  const validateFields = (excludeId = null) => {
+  const validateFields = () => {
     const errors = {};
     if (!formData.nombre.trim()) {
       errors.nombre = 'El nombre de la sección es requerido';
@@ -74,13 +51,11 @@ function useSectionManagement() {
     else if (formData.nombre.trim().length > maxName) {
       errors.nombre = 'Máximo 100 caracteres';
     }
-    else if (sectionAlreadyExists(formData.nombre.trim(), excludeId)) {
-      errors.nombre = 'Ya existe una sección con ese nombre';
-    }
     return errors;
   };
 
   const openCreate = () => {
+    setSelectedSection(null);
     setFormData(emptyForm);
     setError('');
     setFieldErrors({});
@@ -111,7 +86,7 @@ function useSectionManagement() {
     const data = await createSection({...sectionPayload(formData), activo: true});
     setSavingAction(false);
     if (data.error) {
-      showError(data.error);
+      showSaveError(data.error);
       return;
     }
     setShowCreate(false);
@@ -121,7 +96,7 @@ function useSectionManagement() {
   };
 
   const handleEdit = async () => {
-    const errors = validateFields(selectedSection.id_seccion);
+    const errors = validateFields();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -131,7 +106,7 @@ function useSectionManagement() {
     const data = await updateSection(selectedSection.id_seccion, sectionPayload(formData));
     setSavingAction(false);
     if (data.error) {
-      showError(data.error);
+      showSaveError(data.error);
       return;
     }
     setShowEdit(false);
@@ -165,19 +140,12 @@ function useSectionManagement() {
     await load();
   };
 
-  const normalizedName = normalizeSearchText(formData.nombre.trim());
-  let suggestions = [];
-  if (normalizedName.length >= 2) {
-    suggestions = allSections.filter((section) => normalizeSearchText(section.nombre).includes(normalizedName)
-      && section.id_seccion !== selectedSection?.id_seccion);
-  }
-
   return {
     reload: load,
     suggestions,
-    sections: filteredSections,
-    allSections,
-    loading, savingAction, error, fieldErrors, setFieldErrors,
+    sections: list.items, totalSections: list.total, hasMoreSections: list.hasMore,
+    loadMoreSections: list.loadMore, loadingMoreSections: list.loadingMore, listFilters: list.params,
+    loading: list.loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch,
     selectedSection,
     showCreate, setShowCreate,

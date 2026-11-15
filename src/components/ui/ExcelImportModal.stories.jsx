@@ -16,7 +16,7 @@ export default {
 const preview = [
   {fila: 2, nombre: 'Jefe de Planta', tipo_viatico: 'B', estado: 'Activo', accion: 'Crear', valido: true, errores: []},
   {fila: 3, nombre: 'Gerente de Ventas', tipo_viatico: 'C', estado: '', accion: 'Actualizar', valido: true, errores: []},
-  {fila: 4, nombre: 'Sin tipo', tipo_viatico: '', estado: '', accion: 'Crear', valido: false, errores: ['El tipo de viático debe ser A, B o C']},
+  {fila: 4, nombre: 'Sin tipo', tipo_viatico: '', estado: '', accion: 'Crear', valido: false, errores: ['El tipo de viático debe ser uno de la escala: A, B, C']},
 ];
 
 const baseArgs = {
@@ -31,5 +31,5 @@ export const ConRevision = {
 };
 
 export const Resultado = {
-  args: {...baseArgs, preview, result: {creados: 1, actualizados: 1, sinCambios: 0, omitidos: [{fila: 4, errores: ['El tipo de viático debe ser A, B o C']}]}},
+  args: {...baseArgs, preview, result: {creados: 1, actualizados: 1, sinCambios: 0, omitidos: [{fila: 4, errores: ['El tipo de viático debe ser uno de la escala: A, B, C']}]}},
 };

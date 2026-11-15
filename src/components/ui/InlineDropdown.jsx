@@ -6,7 +6,7 @@ import {COLORS} from '../../constants';
 const styles = {
   wrapper: 'flex flex-col gap-1 relative flex-1 min-w-[180px]',
   dropdown: 'absolute z-50 w-full rounded-xl border shadow-lg overflow-hidden',
-  list: 'max-h-56 overflow-y-auto',
+  list: 'overflow-y-auto',
 };
 
 const dropdownVariants = {
@@ -14,7 +14,7 @@ const dropdownVariants = {
   visible: {opacity: 1, y: 0, scaleY: 1},
 };
 
-function InlineDropdown({wrapperRef, triggerRef, open, opensUpward, onToggle, label, options, selectedValue, onSelect, hasValue = true, error, icon, asField = false}) {
+function InlineDropdown({wrapperRef, triggerRef, open, listHeight = 224, onToggle, label, options, selectedValue, onSelect, hasValue = true, error, icon, asField = false}) {
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
       <DropdownTrigger triggerRef={triggerRef} open={open} onClick={onToggle} hasValue={hasValue} label={label} error={error} icon={icon} asField={asField} />
@@ -24,15 +24,13 @@ function InlineDropdown({wrapperRef, triggerRef, open, opensUpward, onToggle, la
             style={{
               borderColor: COLORS.dataFields,
               backgroundColor: COLORS.background,
-              transformOrigin: opensUpward ? 'bottom' : 'top',
-              bottom: opensUpward ? '100%' : 'auto',
-              top: opensUpward ? 'auto' : '100%',
-              marginBottom: opensUpward ? '2px' : '0',
-              marginTop: opensUpward ? '0' : '2px',
+              transformOrigin: 'top',
+              top: '100%',
+              marginTop: '2px',
             }}
             variants={dropdownVariants} initial="hidden" animate="visible" exit="hidden"
             transition={{duration: 0.16, ease: [0.22, 1, 0.36, 1]}}>
-            <div className={styles.list}>
+            <div className={styles.list} style={{maxHeight: listHeight}}>
               {options.map((option) => (
                 <DropdownListItem key={option.value} label={option.label} selected={selectedValue === option.value}
                   onClick={() => onSelect(option.value)} />
