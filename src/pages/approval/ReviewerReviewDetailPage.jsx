@@ -155,7 +155,7 @@ function ReviewerReviewDetailPage() {
         )}
 
         <DailyBreakdownCard dailyBreakdown={data.desgloseDiario || []} isInternational={isInternational}
-          dailyRate={parseFloat(trip.Usuario?.Cargo?.monto_diario || 0)} dailyRateUsd={parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0)}
+          dailyRate={parseFloat(trip.tarifa_diaria || 0)} dailyRateUsd={parseFloat(trip.tarifa_diaria_usd || 0)}
           justifiedDays={Object.keys(dayJustifications).filter((key) => dayJustifications[key])} />
 
         <ExpenseSettlementCard

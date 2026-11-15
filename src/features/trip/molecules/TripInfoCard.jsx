@@ -77,6 +77,12 @@ function TripInfoCard({trip, isInternational}) {
             <p className={styles.infoValue} style={{color: COLORS.text}}>{trip.destino}</p>
           </div>
         )}
+        {trip.pais_destino && (
+          <div>
+            <p className={styles.infoLabel} style={{color: COLORS.secondary}}>País de destino</p>
+            <p className={styles.infoValue} style={{color: COLORS.text}}>{trip.pais_destino} (clase {trip.clase_pais})</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -173,6 +173,7 @@ function useSectionManagement() {
     : [];
 
   return {
+    reload: load,
     suggestions,
     sections: filteredSections,
     allSections,

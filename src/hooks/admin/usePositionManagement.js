@@ -1,8 +1,7 @@
 import {useState, useEffect} from 'react';
 import {getPositions, createPosition, updatePosition, suspendPosition, activatePosition} from '../../services/admin/adminService';
 
-const maxAmount = 99999.99;
-const maxName = 50;
+const maxName = 100;
 
 function normalizePositionName(name) {
   return (name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ');
@@ -21,7 +20,7 @@ function usePositionManagement() {
   const [showSuspend, setShowSuspend] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [formData, setFormData] = useState({nombre: '', monto_diario: '', monto_diario_usd: ''});
+  const [formData, setFormData] = useState({nombre: '', tipo_viatico: ''});
 
   const applyPositions = (data) => {
     setLoading(false);
@@ -75,40 +74,19 @@ function usePositionManagement() {
       errors.nombre = 'El nombre del cargo es requerido';
     }
     else if (formData.nombre.trim().length > maxName) {
-      errors.nombre = 'Máximo 50 caracteres';
+      errors.nombre = `Máximo ${maxName} caracteres`;
     }
     else if (positionAlreadyExists(formData.nombre.trim(), excludeId)) {
       errors.nombre = 'Ya existe un cargo con ese nombre';
     }
-    if (!formData.monto_diario) {
-      errors.monto_diario = 'La tarifa diaria en Bs es requerida';
-    }
-    else {
-      const amount = parseFloat(formData.monto_diario);
-      if (isNaN(amount) || amount <= 0) {
-        errors.monto_diario = 'Debe ser mayor a 0';
-      }
-      else if (amount > maxAmount) {
-        errors.monto_diario = `No puede superar ${maxAmount}`;
-      }
-    }
-    if (!formData.monto_diario_usd) {
-      errors.monto_diario_usd = 'La tarifa diaria en USD es requerida';
-    }
-    else {
-      const amount = parseFloat(formData.monto_diario_usd);
-      if (isNaN(amount) || amount <= 0) {
-        errors.monto_diario_usd = 'Debe ser mayor a 0';
-      }
-      else if (amount > maxAmount) {
-        errors.monto_diario_usd = `No puede superar ${maxAmount}`;
-      }
+    if (!formData.tipo_viatico) {
+      errors.tipo_viatico = 'Elige el tipo de la escala de viáticos';
     }
     return errors;
   };
 
   const openCreate = () => {
-    setFormData({nombre: '', monto_diario: '', monto_diario_usd: ''});
+    setFormData({nombre: '', tipo_viatico: ''});
     setError('');
     setFieldErrors({});
     setShowCreate(true);
@@ -116,11 +94,7 @@ function usePositionManagement() {
 
   const openEdit = (position) => {
     setSelectedPosition(position);
-    setFormData({
-      nombre: position.nombre,
-      monto_diario: position.monto_diario,
-      monto_diario_usd: position.monto_diario_usd || '',
-    });
+    setFormData({nombre: position.nombre, tipo_viatico: position.tipo_viatico || ''});
     setError('');
     setFieldErrors({});
     setShowEdit(true);
@@ -139,12 +113,7 @@ function usePositionManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await createPosition({
-      nombre: formData.nombre.trim(),
-      monto_diario: parseFloat(parseFloat(formData.monto_diario).toFixed(2)),
-      monto_diario_usd: parseFloat(parseFloat(formData.monto_diario_usd).toFixed(2)),
-      activo: true,
-    });
+    const data = await createPosition({nombre: formData.nombre.trim(), tipo_viatico: formData.tipo_viatico});
     setSavingAction(false);
     if (data.error) {
       showError(data.error);
@@ -164,11 +133,7 @@ function usePositionManagement() {
     }
     setFieldErrors({});
     setSavingAction(true);
-    const data = await updatePosition(selectedPosition.id_cargo, {
-      nombre: formData.nombre.trim(),
-      monto_diario: parseFloat(parseFloat(formData.monto_diario).toFixed(2)),
-      monto_diario_usd: parseFloat(parseFloat(formData.monto_diario_usd).toFixed(2)),
-    });
+    const data = await updatePosition(selectedPosition.id_cargo, {nombre: formData.nombre.trim(), tipo_viatico: formData.tipo_viatico});
     setSavingAction(false);
     if (data.error) {
       showError(data.error);
@@ -206,6 +171,7 @@ function usePositionManagement() {
   };
 
   return {
+    reload: load,
     positions: filteredPositions,
     allPositions,
     loading, savingAction, error, fieldErrors, setFieldErrors,

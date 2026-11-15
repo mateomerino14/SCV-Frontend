@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {tripRatesOf} from '../../utils/travelScale';
 import {createTrip, submitTripForReview} from '../../services/trip/tripService';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import useTripLogistics, {companyVehicle} from './useTripLogistics';
@@ -14,6 +15,7 @@ function useCreateTrip(user) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [type, setType] = useState('Nacional');
+  const [country, setCountry] = useState('');
   const [transport, setTransport] = useState('Terrestre');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,8 +24,8 @@ function useCreateTrip(user) {
   const [createdMessage, setCreatedMessage] = useState(draftSavedMessage);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const logistics = useTripLogistics(transport);
-  const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
-  const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
+  const {dailyRate, dailyRateUsd, countryClass} = tripRatesOf(user?.Cargo?.Escala_Viatico, type, country);
+  const lodgingCategory = user?.Cargo?.Escala_Viatico?.hospedaje || '';
 
   const handleTypeChange = (newType) => {
     setType(newType);
@@ -89,6 +91,11 @@ function useCreateTrip(user) {
     setFieldErrors((prev) => ({...prev, destination: undefined}));
   };
 
+  const handleCountryChange = (value) => {
+    setCountry(value);
+    setFieldErrors((prev) => ({...prev, country: undefined}));
+  };
+
   const handleStartDateChange = (value) => {
     setStartDate(value);
     setFieldErrors((prev) => ({...prev, startDate: undefined}));
@@ -109,6 +116,9 @@ function useCreateTrip(user) {
     }
     if (!destination.trim()) {
       errors.destination = 'El destino es requerido';
+    }
+    if (type === 'Internacional' && !countryClass) {
+      errors.country = 'Elige el país de destino';
     }
     if (!startDate) {
       errors.startDate = 'La fecha de inicio es requerida';
@@ -135,6 +145,7 @@ function useCreateTrip(user) {
     setStartDate('');
     setEndDate('');
     setType('Nacional');
+    setCountry('');
     setTransport('Terrestre');
     logistics.resetLogistics();
     treasurerAmount.resetToCalculated();
@@ -149,6 +160,7 @@ function useCreateTrip(user) {
       fecha_inicio: startDate,
       fecha_fin: endDate,
       tipo: type,
+      pais_destino: country,
       transporte: transport,
       monto_asignado: totalAmount + logistics.fuelValue,
       monto_asignado_usd: totalAmountUsd,
@@ -198,7 +210,8 @@ function useCreateTrip(user) {
     logistics, treasurerAmount,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
-    dailyRate, dailyRateUsd,
+    dailyRate, dailyRateUsd, countryClass, lodgingCategory,
+    country, handleCountryChange,
     loading, error, fieldErrors,
     showConfirmation, setShowConfirmation, createdMessage,
     showSubmitConfirm, setShowSubmitConfirm, handleRequestSubmit, handleConfirmSubmit,

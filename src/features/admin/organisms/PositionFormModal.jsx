@@ -3,6 +3,7 @@ import {Briefcase} from 'lucide-react';
 import ModalIconHeader from '../../../components/ui/ModalIconHeader';
 import FormField from '../../../components/ui/FormField';
 import ExistingNameSuggestions from '../molecules/ExistingNameSuggestions';
+import ScaleTypePicker from '../molecules/ScaleTypePicker';
 import {COLORS} from '../../../constants';
 import usePositionFormModal from '../hooks/usePositionFormModal';
 
@@ -12,7 +13,6 @@ const styles = {
   card: 'flex flex-col p-6 gap-3',
   title: 'text-2xl font-bold font-inter text-center',
   subtitle: 'text-sm font-inter text-center',
-  currencyGrid: 'grid grid-cols-2 gap-3',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl',
   buttonsRow: 'flex gap-3 mt-2 justify-center',
   cancelBtn: 'flex-1 py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer border-2 transition-colors',
@@ -22,10 +22,8 @@ const styles = {
 const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
-function PositionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel, formData, setFormData, loading, error, fieldErrors = {}, setFieldErrors, suggestions = []}) {
-  const {showSuggestions, setShowSuggestions, handleNameChange, handleAmountChange, handleAmountKeyDown, handleSelectSuggestion} = usePositionFormModal(setFormData, setFieldErrors);
-  const monthlyImpact = ((parseFloat(formData.monto_diario) || 0) * 30).toFixed(2);
-  const monthlyImpactUsd = ((parseFloat(formData.monto_diario_usd) || 0) * 30).toFixed(2);
+function PositionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabel, formData, setFormData, scale = [], loading, error, fieldErrors = {}, setFieldErrors, suggestions = []}) {
+  const {showSuggestions, setShowSuggestions, handleNameChange, handleTypeChange, handleSelectSuggestion} = usePositionFormModal(setFormData, setFieldErrors);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -38,21 +36,14 @@ function PositionFormModal({isOpen, onClose, onConfirm, title, subtitle, btnLabe
               <p className={styles.title} style={{color: COLORS.text}}>{title}</p>
               <p className={styles.subtitle} style={{color: COLORS.labels}}>{subtitle}</p>
               <div>
-                <FormField label="Nombre del Cargo" required placeholder="Ej: Especialista de Marketing" maxLength={50}
+                <FormField label="Nombre del Cargo" required placeholder="Ej: Especialista de Marketing" maxLength={100}
                   value={formData.nombre} onChange={handleNameChange} error={fieldErrors.nombre}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
                 {showSuggestions && suggestions.length > 0 && (
                   <ExistingNameSuggestions suggestions={suggestions.map((position) => ({id: position.id_cargo, nombre: position.nombre}))} onSelect={handleSelectSuggestion} />
                 )}
               </div>
-              <div className={styles.currencyGrid}>
-                <FormField label="Tarifa/Día (Bs.)" required type="text" inputMode="decimal" placeholder="0.00"
-                  value={formData.monto_diario} onChange={handleAmountChange('monto_diario')} onKeyDown={handleAmountKeyDown}
-                  error={fieldErrors.monto_diario} helperText={parseFloat(formData.monto_diario) > 0 ? `~Bs. ${monthlyImpact}/mes` : null} />
-                <FormField label="Tarifa/Día (USD)" required type="text" inputMode="decimal" placeholder="0.00"
-                  value={formData.monto_diario_usd || ''} onChange={handleAmountChange('monto_diario_usd')} onKeyDown={handleAmountKeyDown}
-                  error={fieldErrors.monto_diario_usd} helperText={parseFloat(formData.monto_diario_usd) > 0 ? `~USD ${monthlyImpactUsd}/mes` : null} />
-              </div>
+              <ScaleTypePicker scale={scale} value={formData.tipo_viatico} onChange={handleTypeChange} error={fieldErrors.tipo_viatico} />
               {error && <p className={styles.errorMsg} style={{color: COLORS.secondary, backgroundColor: COLORS.error}}>{error}</p>}
               <div className={styles.buttonsRow}>
                 <button className={styles.cancelBtn} style={{borderColor: COLORS.primary, color: COLORS.primary, backgroundColor: 'transparent'}}

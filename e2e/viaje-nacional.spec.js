@@ -1,7 +1,7 @@
 import {test, expect} from '@playwright/test';
 import {loginInBrowser, boliviaDate, createFundedTrip, pickDate} from './support/helpers';
 
-test('el sistema calcula el monto del viaje con la tarifa del cargo @celular', async ({page}) => {
+test('el sistema calcula el monto del viaje con la escala del cargo @celular', async ({page}) => {
   await loginInBrowser(page, 'juan.empleado');
   await page.goto('/dashboard/empleado/crear-viaje');
   await page.getByPlaceholder('Inspección técnica y de producción...').fill('Prueba de monto');
@@ -10,7 +10,8 @@ test('el sistema calcula el monto del viaje con la tarifa del cargo @celular', a
   await pickDate(page, 0, boliviaDate(5));
   await pickDate(page, 1, boliviaDate(7));
   await expect(page.getByText('Monto Total Estimado').first()).toBeVisible();
-  await expect(page.getByText(/900\.00/).first()).toBeVisible();
+  await expect(page.getByText(/690\.00/).first()).toBeVisible();
+  await expect(page.getByText('Tipo A').first()).toBeVisible();
   await expect(page.getByLabel('Viáticos en Bs')).toHaveCount(0);
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
   await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();
@@ -40,10 +41,10 @@ test('el tesorero ve el monto calculado de su viaje y lo puede ajustar @celular'
 });
 
 test('un día que pasa la tarifa se marca en el control diario y pide justificación', async ({page}) => {
-  const {tripId, employee, position} = await createFundedTrip();
+  const {tripId, employee, rates} = await createFundedTrip();
   await employee.postForm('/expense/register', {
     id_viaje: tripId,
-    monto_total: parseFloat(position.monto_diario) + 50,
+    monto_total: rates.dailyRate + 50,
     fecha_gasto: boliviaDate(),
     tipo: 'S',
     descripcion: 'Taxi y almuerzo',
@@ -78,7 +79,7 @@ test('en vehículo de la empresa elige un vehículo libre, el combustible aparte
   await page.getByText('3456-BCD').click();
   await page.getByLabel('Fondo para combustible').fill('400');
   await expect(page.getByText('Combustible (aparte)')).toBeVisible();
-  await expect(page.getByText(/1300\.00/).first()).toBeVisible();
+  await expect(page.getByText(/1090\.00/).first()).toBeVisible();
   await page.getByRole('radio', {name: 'Empresa'}).click();
   await page.getByRole('button', {name: 'Guardar Borrador'}).click();
   await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();

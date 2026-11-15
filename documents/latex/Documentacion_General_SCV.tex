@@ -166,7 +166,7 @@ Fecha: & Octubre de 2026 \\
   \item Existe un plazo de tolerancia de cuatro días posteriores a la finalización del viaje para completar la carga de gastos. Vencido ese plazo, se debe solicitar una ampliación al revisor.
   \item El empleado puede pedir que otra persona de su sección rinda los gastos de su viaje en su nombre.
   \item Al registrar un gasto sin factura, el sistema le asigna su número de recibo, haya o no recibo en papel; se puede anotar además el número impreso del recibo en papel, si lo tiene. El recibo que emite el sistema muestra los dos, La planilla y el Excel para Oracle usan el número original si existe y, si no, el del sistema, marcado en lila; las pantallas de revisión y la lista de gastos del empleado lo marcan igual, para que todos distingan cuál es cuál. Solo en los gastos internacionales (en dólares, dentro de un viaje internacional) se pueden adjuntar, además del comprobante, hasta dos respaldos para el comprobante del cambio de moneda; los revisores los ven en el detalle del gasto. Los gastos en bolivianos, con o sin factura, no piden respaldos, sea el viaje nacional o internacional.
-  \item El sistema exporta la rendición en Excel, replicando el formato institucional de la planilla de rendición de cuentas y, en el mismo archivo, las hojas FACTURAS y LINEAS con el formato que contabilidad sube a Oracle, también de varios viajes a la vez para el revisor, el tesorero y el administrador; genera en PDF el memorándum, la confirmación de fondos, los recibos y la rendición final. El administrador puede exportar además a Excel el resumen general, los usuarios, los cargos y las secciones, e importar usuarios desde una plantilla de Excel: el sistema revisa cada fila (repetidos, cargos y jefes que no existen, etc.) y solo crea las correctas.
+  \item El sistema exporta la rendición en Excel, replicando el formato institucional de la planilla de rendición de cuentas y, en el mismo archivo, las hojas FACTURAS y LINEAS con el formato que contabilidad sube a Oracle, también de varios viajes a la vez para el revisor, el tesorero y el administrador; genera en PDF el memorándum, la confirmación de fondos, los recibos y la rendición final. El administrador puede exportar además a Excel el resumen general, los usuarios, los cargos y las secciones, e importar usuarios, secciones y cargos desde una plantilla de Excel: el sistema revisa cada fila (repetidos, cargos y jefes que no existen, etc.) y solo guarda las correctas.
 \end{enumerate}
 
 \section{Roles del sistema}
@@ -219,7 +219,8 @@ El sistema opera mediante dos flujos de aprobación consecutivos.
 \subsection{Primer flujo: autorización del viaje}
 \begin{enumerate}
   \item \textbf{Registro del viaje:} el empleado crea el viaje en estado \code{BORRADOR}, indicando motivo, origen, destino, fechas, tipo (nacional o internacional), medio de transporte (con el vehículo y el combustible si es de la empresa) y quién gestiona el hospedaje. Puede guardarlo como borrador o enviarlo a revisión en el mismo paso.
-  \item \textbf{Monto del viaje:} el sistema lo calcula con las tarifas del cargo. En un viaje nacional es días × tarifa en bolivianos; en uno internacional, el día de salida y el de regreso se calculan con la tarifa en bolivianos y los días intermedios con la tarifa en dólares.
+  \item \textbf{Escala de viáticos:} cada cargo pertenece a un tipo de la escala de la empresa: C (Gerente General y Gerentes de Área), B (Jefes de Área) o A (el resto del personal). Cada tipo tiene una tarifa diaria en bolivianos para el interior del país y dos en dólares para el exterior, según la clase del país: clase 1 (Europa, Asia, África y Norte América) y clase 2 (Centro y Sud América y el Caribe). Además indica la categoría de hotel permitida, que se muestra como referencia. El administrador puede actualizar la escala; los viajes ya registrados conservan las tarifas con que se calcularon.
+  \item \textbf{Monto del viaje:} el sistema lo calcula con la escala del cargo. En un viaje nacional es días × tarifa en bolivianos; en uno internacional, donde se elige el país de destino, el día de salida y el de regreso se calculan con la tarifa en bolivianos y los días intermedios con la tarifa en dólares de la clase del país.
   \item \textbf{Envío a revisión:} el viaje pasa a \code{EN_REVISION_VIAJE}.
   \item \textbf{Revisión del supervisor:} el supervisor que corresponde por jerarquía toma el viaje, lo evalúa y lo aprueba o lo rechaza con observaciones. Si lo aprueba, pasa a \code{APROBADO_VIAJE}.
   \item \textbf{Aprobación y memorándum:} el aprobador confirma la solicitud y el sistema emite el memorándum del viaje, que detalla motivo, ruta, fechas, transporte, hospedaje y fondo, y lo envía a tesorería, a las áreas correspondientes y al empleado. El viaje pasa a \code{EN_REVISION_TESORERO}.
@@ -472,7 +473,7 @@ Correo o CI repetido dentro del archivo & Marca todas las filas repetidas, porqu
 \rowcolor{maxamFondo} Archivo subido dos veces & La segunda vez, las personas ya creadas salen como ``ya existe'' y no se crean de nuevo. \\
 \end{xltabular}
 
-El administrador puede crear en el momento las filas correctas y subir después las demás, ya corregidas. La importación es distinta de ``Exportar a Excel'': exportar descarga la lista de los usuarios que ya están, como reporte, y ese archivo no sirve para importar.
+El administrador puede crear en el momento las filas correctas y subir después las demás, ya corregidas. ``Exportar a Excel'' descarga los usuarios que ya están con las mismas columnas de la plantilla; si se sube ese archivo, los que ya existen se marcan y no se modifican. Las secciones y los cargos se importan igual desde sus pantallas: allí, además de crear, se actualizan los que ya existen (las secciones por su código de Oracle y los cargos por su nombre, con su tipo de viático).
 
 \section{Notificaciones}
 \begin{itemize}
@@ -513,7 +514,7 @@ El servidor sigue una arquitectura en capas: la ruta declara el endpoint y encad
   \item Los intentos de ingreso, de recuperación y de lectura de facturas tienen un límite por periodo. El de ingreso es por cuenta: si un usuario se equivoca muchas veces, solo su cuenta espera 15 minutos y los demás siguen entrando.
   \item Cada ingreso, salida y cambio de contraseña queda registrado en el historial de accesos, junto con quién activó o suspendió cada vehículo y cuándo.
   \item Los comprobantes, respaldos y fotos de perfil se guardan en un bucket público de Supabase Storage sin políticas de acceso: solo el servidor sube y borra archivos, con su clave de servicio, y los archivos que dejan de usarse se eliminan.
-  \item La importación de usuarios desde Excel es solo para el administrador, y el servidor vuelve a revisar cada fila aunque el navegador ya haya mostrado la vista previa.
+  \item La importación de usuarios, secciones y cargos desde Excel es solo para el administrador, igual que cambiar la escala de viáticos, y el servidor vuelve a revisar cada fila aunque el navegador ya haya mostrado la vista previa.
 \end{itemize}
 
 \section{Diseño de interfaz}
@@ -678,9 +679,9 @@ Información confidencial, contenida en la documentación de Excel recibida. El 
 \section{Pruebas automáticas}
 El sistema cuenta con tres niveles de pruebas automáticas, que verifican su funcionamiento sin intervención manual:
 \begin{itemize}
-  \item \textbf{Unitarias}: comprueban reglas puntuales, como las retenciones (también por subgasto), el control diario por moneda, el IVA de facturas y recibos, las cantidades con decimales del detalle, la planilla en bolivianos con el monto original y el fondo recibido, el número de recibo original o del sistema, las hojas para Oracle y la revisión de la importación de usuarios (Jest en el servidor y Vitest en el cliente).
+  \item \textbf{Unitarias}: comprueban reglas puntuales, como las retenciones (también por subgasto), el control diario por moneda, el IVA de facturas y recibos, las cantidades con decimales del detalle, la planilla en bolivianos con el monto original y el fondo recibido, el número de recibo original o del sistema, las hojas para Oracle y la revisión de la importación de usuarios, secciones y cargos (Jest en el servidor y Vitest en el cliente).
   \item \textbf{De la API}: ejecutan los servicios del servidor contra una base de prueba y comprueban permisos, montos y respuestas, incluidas las firmas obligatorias, el reemplazo que rinde firmando, los vehículos libres y la verificación de documentos (Jest y Supertest).
-  \item \textbf{De extremo a extremo}: recorren el sistema en un navegador real, en escritorio y celular, como lo haría cada rol, incluida la importación de usuarios desde Excel (Playwright).
+  \item \textbf{De extremo a extremo}: recorren el sistema en un navegador real, en escritorio y celular, como lo haría cada rol, incluida la importación de usuarios, secciones y cargos desde Excel (Playwright).
 \end{itemize}
 Las pruebas se ejecutan automáticamente en GitHub Actions cada vez que se envían cambios al repositorio, sobre una base de datos temporal que se crea y se elimina en cada ejecución, sin tocar la base real.
 
@@ -762,7 +763,7 @@ El sistema utiliza \textbf{PostgreSQL}. Se aprovechan características propias d
 El uso de \texttt{TIMESTAMPTZ} en lugar de \texttt{TIMESTAMP} resultó determinante: con el tipo sin zona horaria, PostgreSQL descartaba el huso al guardar el valor y el cliente lo interpretaba después como hora local, desplazando las fechas cuatro horas respecto del horario de Bolivia.
 
 \subsection{Tablas del esquema}
-El esquema está compuesto por \textbf{31 tablas}, agrupadas según las entidades principales del dominio.
+El esquema está compuesto por \textbf{32 tablas}, agrupadas según las entidades principales del dominio.
 
 \begin{xltabular}{\textwidth}{L{3.2cm} Y}
 \cabecera \tth{Agrupación} & \tth{Tablas} \\
@@ -784,13 +785,23 @@ Roles del sistema, que determinan los permisos de cada usuario. Sus identificado
   \campo{nombre}{Nombre del rol}{VARCHAR(20), único}
 \end{itemize}
 
+\subsubsection{Escala\_Viatico}
+Escala de viáticos de la empresa. Una fila por tipo (C, B y A) con sus tarifas diarias.
+\begin{itemize}
+  \campo{tipo}{Tipo de la escala: A, B o C}{CHAR(1), clave primaria}
+  \campo{descripcion}{A quién corresponde}{VARCHAR(100)}
+  \campo{monto_interior}{Tarifa diaria en el interior del país, en bolivianos}{NUMERIC(10,2)}
+  \campo{monto_clase_1_usd}{Tarifa diaria en países clase 1, en dólares}{NUMERIC(10,2)}
+  \campo{monto_clase_2_usd}{Tarifa diaria en países clase 2, en dólares}{NUMERIC(10,2)}
+  \campo{hospedaje}{Categoría de hotel permitida (informativa)}{VARCHAR(40)}
+\end{itemize}
+
 \subsubsection{Cargo}
-Puestos laborales. Cada cargo tiene un viático diario en ambas monedas, usado para el presupuesto sugerido y el control diario.
+Puestos laborales. Cada cargo tiene su tipo de la escala de viáticos, que da las tarifas para el presupuesto sugerido y el control diario.
 \begin{itemize}
   \campo{id_cargo}{Identificador único}{SERIAL, clave primaria}
   \campo{nombre}{Nombre del cargo}{VARCHAR(100), único}
-  \campo{monto_diario}{Viático diario en bolivianos}{DECIMAL(10,2)}
-  \campo{monto_diario_usd}{Viático diario en dólares}{NUMERIC(10,2)}
+  \campo{tipo_viatico}{Tipo de la escala de viáticos}{CHAR(1), FK a Escala\_Viatico}
   \campo{activo}{Indica si el cargo está habilitado}{BOOLEAN}
 \end{itemize}
 
@@ -841,11 +852,15 @@ Entidad central del sistema. Su estado gobierna ambos flujos de aprobación.
   \campo{placa_vehiculo}{Placa que tenía el vehículo de la empresa al usarlo}{VARCHAR(20)}
   \campo{id_vehiculo}{Vehículo de la empresa, opcional}{INTEGER}
   \campo{gestion_hospedaje}{Empresa o Propio}{VARCHAR(10), CHECK}
+  \campo{pais_destino}{País de destino de un viaje internacional}{VARCHAR(60)}
+  \campo{clase_pais}{Clase del país en la escala: 1 o 2}{SMALLINT, CHECK}
+  \campo{tarifa_diaria}{Tarifa diaria en bolivianos fijada al guardar el viaje}{NUMERIC(10,2)}
+  \campo{tarifa_diaria_usd}{Tarifa diaria en dólares según la clase del país}{NUMERIC(10,2)}
   \campo{numero_viaje}{Número del viaje en su año, para VIA-número/año}{INTEGER}
   \campo{anio_viaje}{Año del número del viaje}{SMALLINT}
-  \campo{monto_asignado}{Presupuesto en bolivianos, calculado con las tarifas del cargo y ajustado por tesorería; incluye el combustible}{DECIMAL(10,2)}
+  \campo{monto_asignado}{Presupuesto en bolivianos, calculado con la escala del cargo y ajustado por tesorería; incluye el combustible}{DECIMAL(10,2)}
   \campo{monto_combustible}{Parte del presupuesto para combustible del vehículo de la empresa}{NUMERIC(10,2)}
-  \campo{monto_asignado_usd}{Presupuesto en dólares, calculado con las tarifas del cargo y ajustado por tesorería}{NUMERIC(10,2)}
+  \campo{monto_asignado_usd}{Presupuesto en dólares, calculado con la escala del cargo y ajustado por tesorería}{NUMERIC(10,2)}
   \campo{tipo_cambio_fondo}{Bolivianos por 1 dólar con que tesorería entregó un fondo internacional solo en Bs}{NUMERIC(10,4)}
   \campo{estado}{Uno de los diez estados definidos}{VARCHAR(25), CHECK}
   \campo{fue_iniciado}{Distingue un rechazo en la autorización de uno en la rendición}{BOOLEAN}
@@ -1078,7 +1093,7 @@ Tabla de una sola fila con los días y horas en que se envía el resumen de pend
 Se definieron índices sobre las columnas más usadas para filtrar o unir: las claves foráneas de las tablas dependientes, el estado del viaje, el supervisor asignado, el jefe directo y la sección del usuario, el estado de las solicitudes y el historial de revisión por persona y etapa.
 
 \subsection{Seguridad a nivel de fila}
-Se habilitó \textbf{Row Level Security} en las 31 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
+Se habilitó \textbf{Row Level Security} en las 32 tablas. El backend accede con la clave de servicio, que omite estas políticas; habilitarlas garantiza que ninguna conexión externa pueda leer o modificar datos directamente, y deja al servidor de aplicaciones como único punto de acceso.
 
 \subsection{Scripts de base de datos}
 El repositorio incluye los scripts para reconstruir el esquema desde cero, que se ejecutan en este orden:

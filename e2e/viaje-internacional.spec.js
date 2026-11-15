@@ -47,10 +47,10 @@ test('con fondo solo en Bs el gasto rendido solo en Bs se guarda en bolivianos',
 });
 
 test('el control diario de un viaje internacional muestra Bs y USD por separado', async ({page}) => {
-  const {tripId, employee, position} = await createFundedTrip({tipo: 'Internacional'});
+  const {tripId, employee, rates} = await createFundedTrip({tipo: 'Internacional'});
   await employee.postForm('/expense/register', {
     id_viaje: tripId,
-    monto_total: parseFloat(position.monto_diario_usd) + 10,
+    monto_total: rates.dailyRateUsd + 10,
     fecha_gasto: boliviaDate(),
     tipo: 'S',
     descripcion: 'Taxi en Lima',
@@ -85,8 +85,8 @@ test('con el fondo solo en Bs el gasto en el exterior se descuenta en Bs con el 
 });
 
 test('con el fondo solo en Bs el control diario de un día intermedio va en Bs con la tarifa en USD por el T/C del fondo', async ({page}) => {
-  const {tripId, employee, position} = await createFundedTrip({tipo: 'Internacional', fecha_inicio: boliviaDate(-1), fecha_fin: boliviaDate(1), monto_asignado: 3000, monto_asignado_usd: 0});
-  const usdRate = parseFloat(position.monto_diario_usd);
+  const {tripId, employee, rates} = await createFundedTrip({tipo: 'Internacional', fecha_inicio: boliviaDate(-1), fecha_fin: boliviaDate(1), monto_asignado: 3000, monto_asignado_usd: 0});
+  const usdRate = rates.dailyRateUsd;
   await employee.postForm('/expense/register', {
     id_viaje: tripId, monto_total: usdRate + 10, fecha_gasto: boliviaDate(), tipo: 'S', descripcion: 'Almuerzo en Lima', id_categoria: 1, es_gasto_internacional: true, tipo_cambio_bs: 10,
   });
@@ -96,4 +96,25 @@ test('con el fondo solo en Bs el control diario de un día intermedio va en Bs c
   const excess = (usdRate + 10) * 10 - usdRate * 6.96;
   await expect(page.getByText(`Excede en ${excess.toFixed(2)} Bs`).first()).toBeVisible();
   await expect(page.getByText(`Fondo solo en Bs: límite de ${usdRate.toFixed(2)} USD × T/C del fondo 6.9600`).first()).toBeVisible();
+});
+
+test('el viaje internacional toma la tarifa en USD según la clase del país elegido @celular', async ({page}) => {
+  await loginInBrowser(page, 'juan.empleado');
+  await page.goto('/dashboard/empleado/crear-viaje');
+  await page.getByPlaceholder('Inspección técnica y de producción...').fill('Feria en Madrid');
+  await page.getByPlaceholder('Ciudad de origen...').fill('La Paz');
+  await page.getByPlaceholder('¿A dónde se dirige?').fill('Madrid');
+  await pickDate(page, 0, boliviaDate(5));
+  await pickDate(page, 1, boliviaDate(8));
+  await page.getByRole('button', {name: 'Internacional'}).click();
+  await page.getByRole('button', {name: 'Guardar Borrador'}).click();
+  await expect(page.getByText('Elige el país de destino')).toBeVisible();
+  await page.getByRole('button', {name: 'Elige el país del viaje'}).click();
+  await page.getByPlaceholder('Busca el país o la región...').fill('España');
+  await page.getByText('Clase 1 · Europa').click();
+  await expect(page.getByText('Tarifa Diaria (USD, clase 1)')).toBeVisible();
+  await expect(page.getByText('460.00').first()).toBeVisible();
+  await expect(page.getByText('Hasta 3 estrellas').first()).toBeVisible();
+  await page.getByRole('button', {name: 'Guardar Borrador'}).click();
+  await expect(page.getByText('Se registró el viaje como borrador')).toBeVisible();
 });
