@@ -75,7 +75,7 @@ function AuditLogPage() {
     periodCaption = `Registros del ${formatDateShort(appliedFilters.fecha_inicio)} al ${formatDateShort(appliedFilters.fecha_fin)}`;
   }
   const typeDropdown = useSimpleSelector();
-  const employeeDropdown = useSimpleSelector();
+  const employeeDropdown = useSimpleSelector(220, 40);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -99,14 +99,14 @@ function AuditLogPage() {
           <div className={styles.fieldGroup}>
             <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Evento</p>
             <InlineDropdown wrapperRef={typeDropdown.wrapperRef} triggerRef={typeDropdown.triggerRef} open={typeDropdown.open}
-              opensUpward={typeDropdown.opensUpward} onToggle={typeDropdown.toggle}
+              listHeight={typeDropdown.listHeight} onToggle={typeDropdown.toggle}
               label={typeOptions.find((option) => option.value === filters.tipo)?.label || 'Todos los eventos'}
               options={typeOptions} selectedValue={filters.tipo}
               onSelect={(value) => {setFilters((prev) => ({...prev, tipo: value})); typeDropdown.close();}} />
           </div>
           <div className={styles.fieldGroup}>
             <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Usuario</p>
-            <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
+            <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open} listHeight={employeeDropdown.listHeight}
               onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_usuario}
               onSelect={(id) => {setFilters((prev) => ({...prev, id_usuario: id})); employeeDropdown.close();}} />
           </div>

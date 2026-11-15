@@ -1,4 +1,8 @@
 import {useState, useRef, useEffect} from 'react';
+import {makeRoomBelow, listHeightBelow, menuTopBelow} from '../../utils/dropdownSpace';
+
+const preferredListHeight = 208;
+const searchInputHeight = 40;
 
 export function normalizeSearchText(text) {
   return String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -22,13 +26,11 @@ function useSearchableSelector(options, selectedValue, onChange) {
       return;
     }
     const rect = triggerRef.current.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const opensUpward = spaceBelow < 280;
     setMenuPosition({
       left: rect.left,
       width: rect.width,
-      top: opensUpward ? undefined : rect.bottom + 4,
-      bottom: opensUpward ? window.innerHeight - rect.top + 4 : undefined,
+      top: menuTopBelow(triggerRef.current),
+      listHeight: listHeightBelow(triggerRef.current, preferredListHeight, searchInputHeight),
     });
   };
 
@@ -62,6 +64,7 @@ function useSearchableSelector(options, selectedValue, onChange) {
   const handleToggle = () => {
     const nextState = !open;
     if (nextState) {
+      makeRoomBelow(triggerRef.current, searchInputHeight);
       calculateMenuPosition();
       setSearch('');
       setTimeout(() => inputRef.current?.focus(), 50);
