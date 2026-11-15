@@ -1,112 +1,32 @@
-import {useState, useEffect, useRef} from 'react';
-import {getSections} from '../../services/admin/adminService';
-import {getMyTripReviews, getReviewEmployees, returnTripReview} from '../../services/approval/reviewService';
-
-const pollingInterval = 30 * 1000;
+import {useState} from 'react';
+import {returnTripReview, getReviewEmployees} from '../../services/approval/reviewService';
+import useReviewInbox from './useReviewInbox';
 
 function useSupervisorTripHistory() {
-  const [trips, setTrips] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [sections, setSections] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [applyingFilters, setApplyingFilters] = useState(false);
-  const [error, setError] = useState('');
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
-  const [statusFilter, setStatusFilter] = useState('EN_REVISION_VIAJE');
-
-  const filtersRef = useRef(filters);
-
-  useEffect(() => {
-    filtersRef.current = filters;
-  }, [filters]);
-
-  const applyTrips = (data, showLoading) => {
-    if (showLoading) {
-      setLoading(false);
-    }
-    if (data.error) {
-      setError(data.error);
-      return;
-    }
-    setError('');
-    setTrips(data);
-  };
-
-  const load = async (currentFilters = filtersRef.current, showLoading = true) => {
-    if (showLoading) {
-      setLoading(true);
-    }
-    applyTrips(await getMyTripReviews(currentFilters), showLoading);
-  };
-
-  useEffect(() => {
-    getMyTripReviews(filtersRef.current).then((data) => applyTrips(data, true));
-    getReviewEmployees().then((data) => {
-      if (!data.error) {
-        setEmployees(data);
-      }
-    });
-    getSections().then((data) => {
-      if (!data.error) {
-        setSections(data);
-      }
-    });
-    const polling = setInterval(() => getMyTripReviews(filtersRef.current).then((data) => applyTrips(data, false)), pollingInterval);
-    return () => clearInterval(polling);
-  }, []);
-
-  const applyFilters = async () => {
-    setApplyingFilters(true);
-    await load(filters, false);
-    setApplyingFilters(false);
-  };
-
-  const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
-    setFilters(emptyFilters);
-    setStatusFilter('EN_REVISION_VIAJE');
-    load(emptyFilters);
-  };
+  const [actionError, setActionError] = useState('');
+  const {counts, error, tab, setTab, clearFilters, ...inbox} = useReviewInbox('jefe-historial-viajes', 'EN_REVISION_VIAJE', getReviewEmployees);
 
   const handleReturn = async (tripId) => {
     const data = await returnTripReview(tripId);
     if (data.error) {
-      setError(data.error);
+      setActionError(data.error);
       return;
     }
-    setError('');
-    await load();
+    setActionError('');
+    await inbox.reload();
   };
 
-  // Pendiente solo si esta asignado a este supervisor; si ya lo aprobo sigue en Aprobados
-  const isPendingForMe = (trip) => trip.estado === 'EN_REVISION_VIAJE' && trip.asignado_a_mi !== false;
-  const filteredTrips = trips.filter((trip) => {
-    if (statusFilter === 'EN_REVISION_VIAJE') {
-      return isPendingForMe(trip);
-    }
-    if (statusFilter === 'APROBADO_VIAJE') {
-      return trip.resultado_revision === 'APROBADO' && !isPendingForMe(trip);
-    }
-    if (statusFilter === 'RECHAZADO') {
-      return trip.resultado_revision === 'RECHAZADO';
-    }
-    return true;
-  });
-
   return {
+    ...inbox,
+    total: counts[tab] || 0,
+    error: actionError || error,
+    statusFilter: tab,
+    setStatusFilter: setTab,
+    clearFilters: () => {
+      clearFilters();
+      setTab('EN_REVISION_VIAJE');
+    },
     handleReturn,
-    trips: filteredTrips,
-    total: filteredTrips.length,
-    employees,
-    sections,
-    loading,
-    applyingFilters,
-    error,
-    filters, setFilters,
-    statusFilter, setStatusFilter,
-    reload: load,
-    applyFilters,
-    clearFilters,
   };
 }
 

@@ -1,120 +1,23 @@
-import {useState, useEffect, useRef} from 'react';
-import {getPendingExpenseReviews, takeExpenseReview} from '../../services/approval/reviewService';
-import {getEmployees} from '../../services/user/userService';
-import {getSections} from '../../services/admin/adminService';
-
-const pollingInterval = 30 * 1000;
+import {useState} from 'react';
+import {takeExpenseReview} from '../../services/approval/reviewService';
+import useReviewInbox from './useReviewInbox';
+import useTakeInbox from './useTakeInbox';
 
 function useSupervisorPendingExpenseReviews() {
-  const [trips, setTrips] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [sections, setSections] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [applyingFilters, setApplyingFilters] = useState(false);
-  const [taking, setTaking] = useState(null);
-  const [error, setError] = useState('');
-  const [alreadyTaken, setAlreadyTaken] = useState(false);
-  const [filters, setFilters] = useState({fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''});
-  const [statusFilter, setStatusFilter] = useState('TODOS');
-
-  const appliedFiltersRef = useRef(filters);
-
-  const load = async (currentFilters = appliedFiltersRef.current) => {
-    appliedFiltersRef.current = currentFilters;
-    const data = await getPendingExpenseReviews(currentFilters);
-    if (data.error) {
-      setError(data.error);
-      return;
-    }
-    setError('');
-    setTrips(data);
-  };
-
-  useEffect(() => {
-    const start = async () => {
-      setLoading(true);
-      await load();
-      const employeeData = await getEmployees();
-      if (!employeeData.error) {
-        setEmployees(employeeData);
-      }
-      const sectionData = await getSections();
-      if (!sectionData.error) {
-        setSections(sectionData);
-      }
-      setLoading(false);
-    };
-    start();
-    const polling = setInterval(() => {
-      load();
-    }, pollingInterval);
-    return () => clearInterval(polling);
-  }, []);
-
-  const applyFilters = async () => {
-    setApplyingFilters(true);
-    await load(filters);
-    setApplyingFilters(false);
-  };
-
-  const clearFilters = () => {
-    const emptyFilters = {fecha_inicio: '', fecha_fin: '', id_empleado: '', id_seccion: ''};
-    setFilters(emptyFilters);
-    setStatusFilter('TODOS');
-    load(emptyFilters);
-  };
-
-  const handleTake = async (tripId) => {
-    setTaking(tripId);
-    const data = await takeExpenseReview(tripId);
-    setTaking(null);
-    if (data.error) {
-      await load();
-      if (data.error.includes('ya fue tomado') || data.error.includes('siendo revisado')) {
-        setAlreadyTaken(true);
-      }
-      else {
-        setError(data.error);
-      }
-      return;
-    }
-    await load();
-  };
-
-  const closeAlreadyTakenModal = () => setAlreadyTaken(false);
-
-  const filteredTrips = trips.filter((trip) => {
-    if (statusFilter === 'TODOS') {
-      return true;
-    }
-    if (statusFilter === 'OBSERVADO') {
-      return trip.estadoRevision === 'OBSERVADO';
-    }
-    if (statusFilter === 'CONFORME') {
-      return trip.estadoRevision === 'CONFORME';
-    }
-    return true;
-  });
-
+  const [actionError, setActionError] = useState('');
+  const {counts, error, tab, setTab, clearFilters, ...inbox} = useReviewInbox('jefe-rendiciones-pendientes', 'TODOS');
+  const take = useTakeInbox(takeExpenseReview, inbox.reload, setActionError);
   return {
-    trips: filteredTrips,
-    total: trips.length,
-    employees,
-    sections,
-    loading,
-    applyingFilters,
-    taking,
-    error,
-    alreadyTaken,
-    closeAlreadyTakenModal,
-    filters,
-    setFilters,
-    statusFilter,
-    setStatusFilter,
-    applyFilters,
-    clearFilters,
-    handleTake,
-    reload: load,
+    ...inbox,
+    ...take,
+    total: counts.TODOS || 0,
+    error: actionError || error,
+    statusFilter: tab,
+    setStatusFilter: setTab,
+    clearFilters: () => {
+      clearFilters();
+      setTab('TODOS');
+    },
   };
 }
 

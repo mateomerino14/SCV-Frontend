@@ -1,7 +1,7 @@
 import {useState, useEffect, useRef, useCallback} from 'react';
 
 const searchDelay = 300;
-const emptyResult = {key: null, items: [], total: 0, page: 1, error: ''};
+const emptyResult = {key: null, items: [], total: 0, counts: {}, page: 1, error: ''};
 
 function useDebouncedValue(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -25,6 +25,7 @@ function useServerPagination(fetchPage, filters, pageSize = 15) {
     requestRef.current = request;
     let items = [];
     let total = 0;
+    let counts = {};
     for (let current = 1; current <= lastPage; current++) {
       const data = await fetchPage({...JSON.parse(paramsKey), page: current, limit: pageSize});
       if (request !== requestRef.current) {
@@ -35,11 +36,12 @@ function useServerPagination(fetchPage, filters, pageSize = 15) {
       }
       items = [...items, ...data.items];
       total = data.total;
+      counts = data.counts || {};
       if (items.length >= total) {
         break;
       }
     }
-    return {key: paramsKey, items, total, page: lastPage, error: ''};
+    return {key: paramsKey, items, total, counts, page: lastPage, error: ''};
   }, [fetchPage, paramsKey, pageSize]);
 
   useEffect(() => {
@@ -50,11 +52,12 @@ function useServerPagination(fetchPage, filters, pageSize = 15) {
     });
   }, [fetchPages]);
 
-  const reload = async () => {
+  const reload = async (silent = false) => {
     const loaded = await fetchPages(result.page);
-    if (loaded) {
-      setResult(loaded);
+    if (!loaded || (silent && loaded.error)) {
+      return;
     }
+    setResult(loaded);
   };
 
   const loadMore = async () => {
@@ -71,12 +74,13 @@ function useServerPagination(fetchPage, filters, pageSize = 15) {
       setResult((previous) => ({...previous, error: data.error}));
       return;
     }
-    setResult((previous) => ({...previous, items: [...previous.items, ...data.items], total: data.total, page: nextPage}));
+    setResult((previous) => ({...previous, items: [...previous.items, ...data.items], total: data.total, counts: data.counts || previous.counts, page: nextPage}));
   };
 
   return {
     items: result.items,
     total: result.total,
+    counts: result.counts,
     error: result.error,
     loading: result.key !== paramsKey,
     loadingMore,

@@ -12,7 +12,6 @@ import {COLORS} from '../../constants';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 import {CheckCircle, AlertCircle} from 'lucide-react';
 
 const styles = {
@@ -30,8 +29,7 @@ const tabs = [
 
 function DeadlineAuthorizationRequestsPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
-  const {trips, totalPending, loading, savingAction, error, tab, setTab, handleApprove, handleReject, result, closeResult} = useDeadlineAuthorizationRequests();
-  const pagination = useClientPagination(trips, 12, tab);
+  const {trips, totalPending, loading, savingAction, error, tab, setTab, handleApprove, handleReject, result, closeResult, pagination} = useDeadlineAuthorizationRequests();
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -68,7 +66,7 @@ function DeadlineAuthorizationRequestsPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <ConfirmDialog isOpen={!!result} compact icon={result?.success ? CheckCircle : AlertCircle} iconColor={COLORS.primary}
         title={result?.success ? 'Listo' : 'No se pudo completar'} message={result?.message} confirmText="Entendido" hideCancel onConfirm={closeResult} />

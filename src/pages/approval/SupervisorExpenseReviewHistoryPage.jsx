@@ -16,7 +16,6 @@ import {COLORS, ROLES} from '../../constants';
 import {supervisorTripReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 import useUserRole from '../../hooks/shared/useUserRole';
 
 const styles = {
@@ -33,8 +32,8 @@ function SupervisorExpenseReviewHistoryPage() {
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
+    pagination,
   } = useSupervisorExpenseReviewHistory();
-  const pagination = useClientPagination(trips, 12, statusFilter);
   let title = 'Rendiciones Asignadas a Mí';
   let subtitle = 'Rendiciones asignadas a ti: revisa los gastos, deja observaciones y apruébalas o recházalas.';
   if (!isSupervisor) {
@@ -84,7 +83,7 @@ function SupervisorExpenseReviewHistoryPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="supervisor-rendiciones" message={mascotMessage} />
       <Footer />
