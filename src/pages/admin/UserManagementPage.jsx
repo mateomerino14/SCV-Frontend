@@ -1,4 +1,5 @@
 import ExportButton from '../../components/ui/ExportButton';
+import ImportButton from '../../components/ui/ImportButton';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
@@ -6,7 +7,8 @@ import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
 import UserFormModal from '../../features/admin/organisms/UserFormModal';
-import UserImportModal from '../../features/admin/organisms/UserImportModal';
+import ExcelImportModal from '../../components/ui/ExcelImportModal';
+import {userImportTexts} from '../../constants/importTexts';
 import useUserImport from '../../hooks/admin/useUserImport';
 import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -44,7 +46,6 @@ const styles = {
   noticeTitle: 'text-sm font-bold font-inter',
   noticeSub: 'text-xs font-inter',
   excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
-  importBtn: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4 border-2',
 };
 
 const tabs = [
@@ -103,10 +104,7 @@ function UserManagementPage() {
           ))}
         </div>
         <div className={styles.excelRow}>
-          <button className={styles.importBtn} onClick={userImport.open} disabled={loading}
-            style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background, opacity: loading ? 0.6 : 1}}>
-            Importar desde Excel
-          </button>
+          <ImportButton onClick={userImport.open} disabled={loading} />
           <ExportButton onClick={() => exportUsers(users)} exporting={exporting} disabled={loading || users.length === 0} />
         </div>
         {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
@@ -171,8 +169,8 @@ function UserManagementPage() {
         message={selectedUser?.activo ? '¿Estás seguro de que deseas suspender este usuario?' : '¿Estás seguro de que deseas activar este usuario?'}
         confirmText={selectedUser?.activo ? 'Suspender' : 'Activar'} loading={savingAction}
         onConfirm={handleToggleActive} onCancel={() => setShowSuspend(false)} />
-      <UserImportModal isOpen={userImport.isOpen} onClose={userImport.close} fileName={userImport.fileName} preview={userImport.preview}
-        result={userImport.result} error={userImport.error} validRows={userImport.validRows} invalidRows={userImport.invalidRows}
+      <ExcelImportModal texts={userImportTexts} isOpen={userImport.isOpen} onClose={userImport.close} fileName={userImport.fileName} preview={userImport.preview}
+        result={userImport.result} error={userImport.error} validRows={userImport.validRows} invalidRows={userImport.invalidRows} actionableRows={userImport.actionableRows}
         checking={userImport.checking} importing={userImport.importing} downloading={userImport.downloading}
         onDownloadTemplate={userImport.downloadTemplate} onSelectFile={userImport.selectFile} onConfirm={userImport.confirmImport} />
       <SuccessModal isOpen={showSuccess} title="Éxito" message={successMessage} onAccept={() => setShowSuccess(false)} />
