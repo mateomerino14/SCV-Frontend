@@ -20,26 +20,6 @@ export const getRequestStatus = async (tripId) => {
   }
 };
 
-export const getPendingRequests = async () => {
-  try {
-    const response = await apiClient.get('/deadline-authorization/pending');
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener solicitudes'};
-  }
-};
-
-export const getRequestHistory = async () => {
-  try {
-    const response = await apiClient.get('/deadline-authorization/history');
-    return response.data;
-  }
-  catch (error) {
-    return {error: error.response?.data?.error || 'Error al obtener historial'};
-  }
-};
-
 export const approveRequest = async (requestId) => {
   try {
     const response = await apiClient.post(`/deadline-authorization/${requestId}/approve`);
