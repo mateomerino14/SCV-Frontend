@@ -1,4 +1,8 @@
 import ExportButton from '../../components/ui/ExportButton';
+import ImportButton from '../../components/ui/ImportButton';
+import ExcelImportModal from '../../components/ui/ExcelImportModal';
+import useCatalogImport from '../../hooks/admin/useCatalogImport';
+import {sectionImportTexts} from '../../constants/importTexts';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
@@ -19,6 +23,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import ListCount from '../../components/ui/ListCount';
 
 const styles = {
+  excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
   subtitle: 'text-sm font-inter mb-5',
@@ -47,7 +52,9 @@ function SectionManagementPage() {
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive, suggestions,
+    reload,
   } = useSectionManagement();
+  const catalogImport = useCatalogImport('section', reload);
   const {exporting, exportError, exportSections} = useAdminExcelExport();
   const pagination = useClientPagination(sections, 15, search);
   return (
@@ -62,7 +69,10 @@ function SectionManagementPage() {
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar secciones..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Secciones Registradas</p>
-        <ExportButton onClick={() => exportSections(sections)} exporting={exporting} disabled={loading || sections.length === 0} />
+        <div className={styles.excelRow}>
+          <ImportButton onClick={catalogImport.open} disabled={loading} />
+          <ExportButton onClick={() => exportSections(sections)} exporting={exporting} disabled={loading || sections.length === 0} />
+        </div>
         {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
@@ -126,6 +136,10 @@ function SectionManagementPage() {
         confirmText={selectedSection?.activo ? 'Bloquear' : 'Activar'} loading={savingAction}
         onConfirm={handleToggleActive} onCancel={() => setShowSuspend(false)} />
       <SuccessModal isOpen={showSuccess} title="Éxito" message={successMessage} onAccept={() => setShowSuccess(false)} />
+      <ExcelImportModal texts={sectionImportTexts} isOpen={catalogImport.isOpen} onClose={catalogImport.close} fileName={catalogImport.fileName} preview={catalogImport.preview}
+        result={catalogImport.result} error={catalogImport.error} validRows={catalogImport.validRows} invalidRows={catalogImport.invalidRows} actionableRows={catalogImport.actionableRows}
+        checking={catalogImport.checking} importing={catalogImport.importing} downloading={catalogImport.downloading}
+        onDownloadTemplate={catalogImport.downloadTemplate} onSelectFile={catalogImport.selectFile} onConfirm={catalogImport.confirmImport} />
       <Footer />
     </div>
   );

@@ -61,8 +61,8 @@ function TripActiveExpenseView({trip, tripId, isInternational, originRoute, navi
   } = deadline;
 
   const isRejectedExpenses = trip.estado === 'RECHAZADO' && !!trip.fue_iniciado;
-  const dailyRate = parseFloat(trip.Usuario?.Cargo?.monto_diario || 0);
-  const dailyRateUsd = parseFloat(trip.Usuario?.Cargo?.monto_diario_usd || 0);
+  const dailyRate = parseFloat(trip.tarifa_diaria || 0);
+  const dailyRateUsd = parseFloat(trip.tarifa_diaria_usd || 0);
   const generalObservations = observations.filter((observation) => !observation.id_gasto);
   const showObservations = trip.estado === 'RECHAZADO' && generalObservations.length > 0;
   const actionsDisabled = deadlineExpired && !hasActiveExtension;

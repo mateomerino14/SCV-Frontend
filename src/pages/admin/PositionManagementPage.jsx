@@ -1,4 +1,8 @@
 import ExportButton from '../../components/ui/ExportButton';
+import ImportButton from '../../components/ui/ImportButton';
+import ExcelImportModal from '../../components/ui/ExcelImportModal';
+import useCatalogImport from '../../hooks/admin/useCatalogImport';
+import {positionImportTexts} from '../../constants/importTexts';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
 import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
@@ -7,6 +11,10 @@ import PageHeader from '../../components/ui/PageHeader';
 import AdminMenu from '../../layouts/menu/AdminMenu';
 import {positionImage} from '../../constants/defaultImages';
 import PositionFormModal from '../../features/admin/organisms/PositionFormModal';
+import TravelScaleCard from '../../features/admin/organisms/TravelScaleCard';
+import TravelScaleFormModal from '../../features/admin/organisms/TravelScaleFormModal';
+import useTravelScale from '../../hooks/admin/useTravelScale';
+import {scaleRatesText} from '../../utils/travelScaleText';
 import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import SuccessModal from '../../components/ui/SuccessModal';
@@ -20,6 +28,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import ListCount from '../../components/ui/ListCount';
 
 const styles = {
+  excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
   subtitle: 'text-sm font-inter mb-5',
@@ -49,8 +58,11 @@ function PositionManagementPage() {
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData, suggestions,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
+    reload,
   } = usePositionManagement();
+  const catalogImport = useCatalogImport('position', reload);
   const {exporting, exportError, exportPositions} = useAdminExcelExport();
+  const travelScale = useTravelScale();
   const pagination = useClientPagination(positions, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -58,13 +70,17 @@ function PositionManagementPage() {
       <Navbar text="Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Cargos" subtitle="Define los cargos y su monto de viático diario en bolivianos y en dólares." />
+        <PageHeader title="Cargos" subtitle="Define los cargos y el tipo de la escala de viáticos (A, B o C) que le corresponde a cada uno." />
+        <TravelScaleCard scale={travelScale.scale} loading={travelScale.loading} loadError={travelScale.loadError} onEdit={travelScale.openEdit} />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />
         </div>
-        <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Puesto y Salario Diario</p>
-        <ExportButton onClick={() => exportPositions(positions)} exporting={exporting} disabled={loading || positions.length === 0} />
+        <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cargos y su Tipo de Viático</p>
+        <div className={styles.excelRow}>
+          <ImportButton onClick={catalogImport.open} disabled={loading} />
+          <ExportButton onClick={() => exportPositions(positions)} exporting={exporting} disabled={loading || positions.length === 0} />
+        </div>
         {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
         {!loading && pagination.total > 0 && (
@@ -75,10 +91,8 @@ function PositionManagementPage() {
             <img src={positionImage} alt="cargo" className={styles.cardImage} />
             <div className={styles.cardInfo}>
               <p className={styles.cardName} style={{color: COLORS.text}}>{position.nombre}</p>
-              <p className={styles.cardAmount} style={{color: COLORS.labels}}>{parseFloat(position.monto_diario).toFixed(2)} Bs / día</p>
-              {position.monto_diario_usd > 0 && (
-                <p className={styles.cardAmountUsd} style={{color: COLORS.primary}}>{parseFloat(position.monto_diario_usd).toFixed(2)} USD / día</p>
-              )}
+              <p className={styles.cardAmountUsd} style={{color: COLORS.primary}}>Tipo {position.tipo_viatico}</p>
+              <p className={styles.cardAmount} style={{color: COLORS.labels}}>{scaleRatesText(position.Escala_Viatico)}</p>
             </div>
             <div className={styles.actionsRow}>
               <div className={styles.actionBtn} style={{backgroundColor: position.activo ? COLORS.successBackground : COLORS.error}}>
@@ -117,11 +131,11 @@ function PositionManagementPage() {
       </div>
       <PositionFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
         title="Agregar Nuevo Cargo" subtitle="Defina las especificaciones del nuevo rol dentro de la estructura organizacional."
-        btnLabel="Registrar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
+        btnLabel="Registrar" formData={formData} setFormData={setFormData} scale={travelScale.scale} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <PositionFormModal isOpen={showEdit} onClose={() => setShowEdit(false)} onConfirm={handleEdit}
         title="Editar Cargo" subtitle="Actualice la información estructural y financiera para la posición seleccionada."
-        btnLabel="Actualizar" formData={formData} setFormData={setFormData} loading={savingAction} error={error}
+        btnLabel="Actualizar" formData={formData} setFormData={setFormData} scale={travelScale.scale} loading={savingAction} error={error}
         fieldErrors={fieldErrors} setFieldErrors={setFieldErrors} suggestions={suggestions} />
       <ConfirmDialog isOpen={showSuspend} icon={selectedPosition?.activo ? Ban : CheckCircle} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}
         title={selectedPosition?.activo ? 'Bloquear Cargo' : 'Activar Cargo'}
@@ -129,6 +143,14 @@ function PositionManagementPage() {
         confirmText={selectedPosition?.activo ? 'Bloquear' : 'Activar'} loading={savingAction}
         onConfirm={handleToggleActive} onCancel={() => setShowSuspend(false)} />
       <SuccessModal isOpen={showSuccess} title="Éxito" message={successMessage} onAccept={() => setShowSuccess(false)} />
+      <TravelScaleFormModal type={travelScale.editingType} form={travelScale.form} fieldErrors={travelScale.fieldErrors} saving={travelScale.saving}
+        error={travelScale.saveError} onAmountChange={travelScale.handleAmountChange} onLodgingChange={travelScale.handleLodgingChange}
+        onClose={travelScale.closeEdit} onSave={travelScale.handleSave} />
+      <SuccessModal isOpen={!!travelScale.savedMessage} title="Escala actualizada" message={travelScale.savedMessage} onAccept={() => travelScale.setSavedMessage('')} />
+      <ExcelImportModal texts={positionImportTexts} isOpen={catalogImport.isOpen} onClose={catalogImport.close} fileName={catalogImport.fileName} preview={catalogImport.preview}
+        result={catalogImport.result} error={catalogImport.error} validRows={catalogImport.validRows} invalidRows={catalogImport.invalidRows} actionableRows={catalogImport.actionableRows}
+        checking={catalogImport.checking} importing={catalogImport.importing} downloading={catalogImport.downloading}
+        onDownloadTemplate={catalogImport.downloadTemplate} onSelectFile={catalogImport.selectFile} onConfirm={catalogImport.confirmImport} />
       <Footer />
     </div>
   );

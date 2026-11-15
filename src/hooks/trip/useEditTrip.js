@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import {tripRatesOf} from '../../utils/travelScale';
 import {getTripDetail, editTrip} from '../../services/trip/tripService';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import useTripLogistics, {companyVehicle} from './useTripLogistics';
@@ -13,6 +14,7 @@ function useEditTrip(tripId, user) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [type, setType] = useState('Nacional');
+  const [country, setCountry] = useState('');
   const [transport, setTransport] = useState('Terrestre');
   const [originalStatus, setOriginalStatus] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,6 +45,7 @@ function useEditTrip(tripId, user) {
       setReason(trip.motivo || '');
       setOrigin(trip.origen || '');
       setDestination(trip.destino || '');
+      setCountry(trip.pais_destino || '');
       setStartDate(trip.fecha_inicio || '');
       setEndDate(trip.fecha_fin || '');
       setType(trip.tipo || 'Nacional');
@@ -54,8 +57,8 @@ function useEditTrip(tripId, user) {
     load();
   }, [tripId, loadLogistics]);
 
-  const dailyRate = parseFloat(user?.Cargo?.monto_diario ?? 0);
-  const dailyRateUsd = parseFloat(user?.Cargo?.monto_diario_usd ?? 0);
+  const {dailyRate, dailyRateUsd, countryClass} = tripRatesOf(user?.Cargo?.Escala_Viatico, type, country);
+  const lodgingCategory = user?.Cargo?.Escala_Viatico?.hospedaje || '';
 
   const handleTypeChange = (newType) => {
     setType(newType);
@@ -125,6 +128,11 @@ function useEditTrip(tripId, user) {
     setFieldErrors((prev) => ({...prev, destination: undefined}));
   };
 
+  const handleCountryChange = (value) => {
+    setCountry(value);
+    setFieldErrors((prev) => ({...prev, country: undefined}));
+  };
+
   const handleStartDateChange = (value) => {
     setStartDate(value);
     setFieldErrors((prev) => ({...prev, startDate: undefined}));
@@ -145,6 +153,9 @@ function useEditTrip(tripId, user) {
     }
     if (!destination.trim()) {
       errors.destination = 'El destino es requerido';
+    }
+    if (type === 'Internacional' && !countryClass) {
+      errors.country = 'Elige el país de destino';
     }
     if (!startDate) {
       errors.startDate = 'La fecha de inicio es requerida';
@@ -176,6 +187,7 @@ function useEditTrip(tripId, user) {
       fecha_inicio: startDate,
       fecha_fin: endDate,
       tipo: type,
+      pais_destino: country,
       transporte: transport,
       monto_asignado: totalAmount + logistics.fuelValue,
       monto_asignado_usd: totalAmountUsd,
@@ -199,7 +211,8 @@ function useEditTrip(tripId, user) {
     logistics, treasurerAmount,
     days, nationalDays, internationalDays,
     totalAmount, totalAmountUsd,
-    dailyRate, dailyRateUsd,
+    dailyRate, dailyRateUsd, countryClass, lodgingCategory,
+    country, handleCountryChange,
     originalStatus,
     loading, loadingData, loadError, error, fieldErrors,
     handleReasonChange, handleOriginChange, handleDestinationChange,

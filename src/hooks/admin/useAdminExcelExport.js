@@ -3,19 +3,20 @@ import ExcelJS from 'exceljs';
 import {getUsers} from '../../services/admin/adminService';
 import {addTableSheet, saveWorkbook, todayFileSuffix, amountFormat} from '../../utils/excelExport';
 import {approvalPhaseStats, expensePhaseStats, rejectedStat} from '../../features/admin/constants/tripPhaseStats';
+import {sectionOption} from '../../utils/userImportFile';
+
+const sectionLabelOf = (section) => {
+  if (!section) {
+    return '';
+  }
+  return sectionOption(section);
+};
 
 const statusText = (active) => {
   if (active === false) {
     return 'Suspendido';
   }
   return 'Activo';
-};
-
-const personName = (person) => {
-  if (!person) {
-    return '';
-  }
-  return `${person.nombre} ${person.apellido_paterno}`;
 };
 
 const countBy = (users, key) => {
@@ -57,26 +58,30 @@ function useAdminExcelExport() {
   const exportUsers = (users) => runExport(async () => {
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Usuarios', [
-      {header: 'Nombre', key: 'nombre', width: 28},
-      {header: 'Correo', key: 'correo', width: 32},
-      {header: 'Teléfono', key: 'telefono', width: 14},
+      {header: 'Nombre', key: 'nombre', width: 20},
+      {header: 'Apellido paterno', key: 'paterno', width: 18},
+      {header: 'Apellido materno', key: 'materno', width: 18},
+      {header: 'Correo corporativo', key: 'correo', width: 32},
       {header: 'CI', key: 'ci', width: 14},
-      {header: 'Dependencia Oracle', key: 'dependencia', width: 12},
+      {header: 'Teléfono', key: 'telefono', width: 14},
+      {header: 'Cargo', key: 'cargo', width: 34},
+      {header: 'Sección', key: 'seccion', width: 30},
       {header: 'Rol', key: 'rol', width: 16},
-      {header: 'Cargo', key: 'cargo', width: 24},
-      {header: 'Sección', key: 'seccion', width: 20},
-      {header: 'Jefe directo', key: 'jefe', width: 26},
+      {header: 'Correo del jefe directo', key: 'jefe', width: 32},
+      {header: 'Dependencia Oracle', key: 'dependencia', width: 12},
       {header: 'Estado', key: 'estado', width: 12},
     ], users.map((user) => ({
-      nombre: personName(user),
+      nombre: user.nombre || '',
+      paterno: user.apellido_paterno || '',
+      materno: user.apellido_materno || '',
       correo: user.email_corporativo,
-      telefono: user.telefono || '',
       ci: user.carnet_identidad || '',
-      dependencia: user.codigo_dependencia || '',
-      rol: user.Rol?.nombre || '',
+      telefono: user.telefono || '',
       cargo: user.Cargo?.nombre || '',
-      seccion: user.Seccion?.nombre || '',
-      jefe: personName(user.Jefe),
+      seccion: sectionLabelOf(user.Seccion),
+      rol: user.Rol?.nombre || '',
+      jefe: user.Jefe?.email_corporativo || '',
+      dependencia: user.codigo_dependencia || '',
       estado: statusText(user.activo),
     })));
     await saveWorkbook(workbook, `Usuarios_${todayFileSuffix()}.xlsx`);
@@ -87,15 +92,19 @@ function useAdminExcelExport() {
     const counts = countBy(users, 'id_cargo');
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Cargos', [
-      {header: 'Cargo', key: 'nombre', width: 30},
-      {header: 'Tarifa diaria Bs', key: 'tarifaBs', width: 16, numFmt: amountFormat},
-      {header: 'Tarifa diaria USD', key: 'tarifaUsd', width: 16, numFmt: amountFormat},
+      {header: 'Cargo', key: 'nombre', width: 40},
+      {header: 'Tipo de viático', key: 'tipo', width: 15},
+      {header: 'Interior Bs/día', key: 'tarifaBs', width: 15, numFmt: amountFormat},
+      {header: 'Clase 1 USD/día', key: 'clase1', width: 15, numFmt: amountFormat},
+      {header: 'Clase 2 USD/día', key: 'clase2', width: 15, numFmt: amountFormat},
       {header: 'Usuarios', key: 'usuarios', width: 11},
       {header: 'Estado', key: 'estado', width: 12},
     ], positions.map((position) => ({
       nombre: position.nombre,
-      tarifaBs: parseFloat(position.monto_diario) || 0,
-      tarifaUsd: parseFloat(position.monto_diario_usd) || 0,
+      tipo: position.tipo_viatico,
+      tarifaBs: parseFloat(position.Escala_Viatico?.monto_interior) || 0,
+      clase1: parseFloat(position.Escala_Viatico?.monto_clase_1_usd) || 0,
+      clase2: parseFloat(position.Escala_Viatico?.monto_clase_2_usd) || 0,
       usuarios: counts[position.id_cargo] || 0,
       estado: statusText(position.activo),
     })));

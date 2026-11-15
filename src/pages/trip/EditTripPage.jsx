@@ -19,6 +19,7 @@ import {routes} from '../../constants/routes';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import AutoResizeTextarea from '../../components/ui/AutoResizeTextarea';
 import DatePickerInput from '../../components/ui/DatePickerInput';
+import CountrySelector from '../../features/trip/molecules/CountrySelector';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -55,7 +56,7 @@ function EditTripPage() {
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     logistics, treasurerAmount,
-    nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, originalStatus,
+    nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, countryClass, lodgingCategory, country, handleCountryChange, originalStatus,
     loading, loadingData, loadError, error, fieldErrors,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
     handleSave,
@@ -168,6 +169,7 @@ function EditTripPage() {
                 </div>
               </div>
             </div>
+            {type === 'Internacional' && <CountrySelector value={country} onChange={handleCountryChange} error={fieldErrors.country} />}
             <TripLogisticsSection logistics={logistics} tripId={id} />
             {treasurerAmount.isTreasurer && <TreasurerAmountFields amount={treasurerAmount} isInternational={type === 'Internacional'} errors={fieldErrors} />}
             {error && <p className={styles.errorMsg} style={{color: COLORS.secondary}}>{error}</p>}
@@ -182,7 +184,8 @@ function EditTripPage() {
             </div>
           </div>
           <div className={styles.rightCol}>
-            <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
+            <TripBudgetSummary position={user?.Cargo?.nombre} scaleType={user?.Cargo?.tipo_viatico} countryClass={countryClass}
+              lodgingCategory={lodgingCategory} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
               totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport}
               fuelAmount={logistics.fuelValue} adjusted={treasurerAmount.adjusted} />
           </div>

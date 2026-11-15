@@ -100,6 +100,26 @@ export const activatePosition = async (id) => {
   }
 };
 
+export const getTravelScale = async () => {
+  try {
+    const response = await apiClient.get('/travel-scale');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener la escala de viáticos'};
+  }
+};
+
+export const updateTravelScale = async (type, data) => {
+  try {
+    const response = await apiClient.put(`/travel-scale/${type}`, data);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al actualizar la escala de viáticos'};
+  }
+};
+
 export const getSections = async () => {
   try {
     const response = await apiClient.get('/section');
@@ -293,5 +313,45 @@ export const activateVehicle = async (id) => {
   }
   catch (error) {
     return {error: error.response?.data?.error || 'Error al activar el vehículo'};
+  }
+};
+
+export const previewSectionImport = async (rows) => {
+  try {
+    const response = await apiClient.post('/section/import/preview', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al revisar el archivo'};
+  }
+};
+
+export const importSections = async (rows) => {
+  try {
+    const response = await apiClient.post('/section/import', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al importar las secciones'};
+  }
+};
+
+export const previewPositionImport = async (rows) => {
+  try {
+    const response = await apiClient.post('/position/import/preview', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al revisar el archivo'};
+  }
+};
+
+export const importPositions = async (rows) => {
+  try {
+    const response = await apiClient.post('/position/import', {filas: rows});
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al importar los cargos'};
   }
 };
