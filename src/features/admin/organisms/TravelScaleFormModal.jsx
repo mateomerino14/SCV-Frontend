@@ -10,7 +10,7 @@ const styles = {
   card: 'flex flex-col p-6 gap-3',
   title: 'text-2xl font-bold font-inter text-center',
   subtitle: 'text-sm font-inter text-center',
-  usdGrid: 'grid grid-cols-2 gap-3',
+  usdGrid: 'grid grid-cols-2 gap-3 items-end',
   errorMsg: 'text-xs font-inter italic text-center py-2 px-3 rounded-xl',
   buttonsRow: 'flex gap-3 mt-2 justify-center',
   button: 'flex-1 py-3 px-8 rounded-xl font-bold font-nunito text-base cursor-pointer border-2 transition-colors',
