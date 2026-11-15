@@ -452,7 +452,7 @@ expense & \code{useRegisterExpense}, \code{useEditExpense}, \code{useUploadInvoi
 \rowcolor{maxamFondo} approval & Uno por bandeja y por detalle de cada revisor (\code{useSupervisorPendingTrips}, \code{useApproverReviews}, \code{useTreasurerReviews}, \code{useReviewerReviews}, \ldots), más \code{useDeadlineAuthorization}, \code{useSubstitutionRequest} y sus pares del revisor; \code{useStatementsExport} para exportar planillas en grupo \\
 admin & \code{useAdminDashboard}, \code{useUserManagement}, \code{usePositionManagement}, \code{useSectionManagement}, \code{useVehicleManagement}, \code{useAuditLog}, \code{useReminderSettings}, \code{useAdminExcelExport}, \code{useUserImport} \\
 \rowcolor{maxamFondo} user & \code{useLogin}, \code{useProfile}, \code{useCurrentUser}, \code{useIsTreasurer}, \code{usePasswordExpiredCheck} \\
-shared & \code{useMenu}, \code{useMenuNavigation}, \code{useClientPagination}, \code{useServerPagination}, \code{useNameSuggestions}, \code{useSimpleSelector}, \code{useUserRole} \\
+shared & \code{useMenu}, \code{useMenuNavigation}, \code{useServerPagination}, \code{useNameSuggestions}, \code{useSimpleSelector}, \code{useUserRole} \\
 \end{xltabular}
 
 Ejemplo de hook con validación previa y ventana de aviso, tomado de la finalización de un viaje:
@@ -486,7 +486,7 @@ const handleRequestSubmitReview = () => {
 \rowcolor{maxamFondo} \code{ModalIconHeader} & Ícono en círculo blanco de las ventanas \\
 \code{InputField}, \code{PasswordField}, \code{FormField}, \code{LimitedTextarea} & Campos de formulario \\
 \rowcolor{maxamFondo} \code{EmployeeDropdown}, \code{SectionDropdown}, \code{InlineDropdown} & Selectores (el vehículo del viaje se busca con \code{SearchableSelector} por placa o descripción); con \code{asField} el disparador tiene el mismo borde, alto e ícono que \code{InputField}. Todas las listas se abren siempre hacia abajo: si no hay espacio, la pantalla se desplaza para dejar el campo más arriba y la lista se acorta para no salirse (\code{utils/dropdownSpace.js}) \\
-\code{ListCount}, \code{LoadMoreButton} & ``Mostrando X de Y'' y paginación. Usuarios, Cargos y Secciones piden al servidor de a 15 filas (\code{useServerPagination}); la búsqueda, el rol y la sección se filtran en el servidor, así la pantalla funciona igual con miles de usuarios \\
+\code{ListCount}, \code{LoadMoreButton} & ``Mostrando X de Y'' y paginación. Usuarios, Cargos y Secciones piden al servidor de a 15 filas (\code{useServerPagination}); la búsqueda, el rol y la sección se filtran en el servidor, así la pantalla funciona igual con miles de usuarios. Las bandejas de revisión, sus historiales y las solicitudes de plazo y de reemplazo piden de a 12 (\code{useInbox}, \code{useReviewInbox}, \code{GET /inbox/:bandeja}), con los contadores de cada pestaña y los filtros aplicados en el servidor \\
 \rowcolor{maxamFondo} \code{SkeletonCard}, \code{SkeletonList} & Indicadores de carga \\
 \code{EmptyState}, \code{InlineAlert}, \code{SuccessModal} & Estados vacíos y avisos \\
 \rowcolor{maxamFondo} \code{SignaturePad}, \code{SignatureDialog} & Recuadro para dibujar la firma y ventana que firma con la firma guardada y la contraseña \\
