@@ -15,9 +15,7 @@ function useSearchableSelector(options, selectedValue, onChange) {
 
   const selectedOption = options.find((option) => String(option.value) === String(selectedValue));
   const normalizedSearch = normalizeSearchText(search.trim());
-  const filteredOptions = normalizedSearch
-    ? options.filter((option) => normalizeSearchText(option.searchText || option.label).includes(normalizedSearch))
-    : options;
+  const filteredOptions = options.filter((option) => !normalizedSearch || normalizeSearchText(option.searchText || option.label).includes(normalizedSearch));
 
   const calculateMenuPosition = () => {
     if (!triggerRef.current) {
