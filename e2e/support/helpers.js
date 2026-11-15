@@ -45,11 +45,12 @@ export const createFundedTrip = async (tripOverrides = {}) => {
   const employee = await apiClient('juan.empleado');
   const me = await employee.get('/user/me');
   const isInternational = tripOverrides.tipo === 'Internacional';
+  const scale = me.Cargo.Escala_Viatico;
   let destination = 'Santa Cruz';
   let assignedUsd = 0;
   if (isInternational) {
     destination = 'Lima';
-    assignedUsd = 2 * parseFloat(me.Cargo.monto_diario_usd);
+    assignedUsd = 2 * parseFloat(scale.monto_clase_2_usd);
   }
   const trip = await employee.post('/trip', {
     motivo: 'Prueba E2E',
@@ -58,8 +59,9 @@ export const createFundedTrip = async (tripOverrides = {}) => {
     fecha_inicio: boliviaDate(),
     fecha_fin: boliviaDate(1),
     tipo: 'Nacional',
+    pais_destino: 'Perú',
     transporte: 'Aéreo',
-    monto_asignado: 2 * parseFloat(me.Cargo.monto_diario),
+    monto_asignado: 2 * parseFloat(scale.monto_interior),
     monto_asignado_usd: assignedUsd,
     ...tripOverrides,
   });
@@ -71,7 +73,7 @@ export const createFundedTrip = async (tripOverrides = {}) => {
   await supervisor.post(`/review/trip-review/${trip.id_viaje}/approve`);
   await approver.post(`/approver/trip/${trip.id_viaje}/approve`);
   await treasurer.post(`/treasurer/${trip.id_viaje}/approve`);
-  return {tripId: trip.id_viaje, employee, position: me.Cargo};
+  return {tripId: trip.id_viaje, employee, rates: {dailyRate: parseFloat(trip.tarifa_diaria), dailyRateUsd: parseFloat(trip.tarifa_diaria_usd)}};
 };
 
 export const pickDate = async (page, index, isoDate) => {

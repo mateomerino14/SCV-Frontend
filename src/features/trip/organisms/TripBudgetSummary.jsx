@@ -23,7 +23,7 @@ const styles = {
   citySubtitle: "text-white font-inter text-xs opacity-70 uppercase",
 };
 
-function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport, fuelAmount = 0, adjusted = false}) {
+function TripBudgetSummary({position, scaleType, countryClass, lodgingCategory, dailyRate, dailyRateUsd, totalAmount, totalAmountUsd, nationalDays, internationalDays, type, transport, fuelAmount = 0, adjusted = false}) {
   const isInternational = type === 'Internacional';
   const hasFuel = !isInternational && fuelAmount > 0;
   const borderColor = COLORS.onColorFill20;
@@ -34,10 +34,13 @@ function TripBudgetSummary({position, dailyRate, dailyRateUsd, totalAmount, tota
         <p className={styles.presupuestoLabel}>Presupuesto Asignado</p>
         <p className={styles.title}>Resumen Corporativo</p>
         <TripBudgetRow label="Cargo" value={position?.toUpperCase() || '—'} borderColor={borderColor} />
+        {scaleType && <TripBudgetRow label="Escala de Viáticos" value={`Tipo ${scaleType}`} borderColor={borderColor} />}
         <TripBudgetRow label="Tarifa Diaria (Bs)" value={`${dailyRate.toFixed(2)} Bs`} borderColor={borderColor} />
         {isInternational && (
-          <TripBudgetRow label="Tarifa Diaria (USD)" value={`${(dailyRateUsd || 0).toFixed(2)} USD`} borderColor={borderColor} />
+          <TripBudgetRow label={countryClass ? `Tarifa Diaria (USD, clase ${countryClass})` : 'Tarifa Diaria (USD)'}
+            value={countryClass ? `${(dailyRateUsd || 0).toFixed(2)} USD` : 'Elige el país'} borderColor={borderColor} />
         )}
+        {lodgingCategory && <TripBudgetRow label="Hospedaje Permitido" value={lodgingCategory} borderColor={borderColor} />}
         <TripBudgetRow label="Transporte" value={transport || '—'} borderColor={borderColor} />
         {isInternational ? (
           <>

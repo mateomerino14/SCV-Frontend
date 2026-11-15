@@ -21,6 +21,7 @@ import {routes} from '../../constants/routes';
 import {maxTripReasonLength} from '../../constants/tripLimits';
 import AutoResizeTextarea from '../../components/ui/AutoResizeTextarea';
 import DatePickerInput from '../../components/ui/DatePickerInput';
+import CountrySelector from '../../features/trip/molecules/CountrySelector';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -54,7 +55,7 @@ function CreateTripPage() {
   const {
     reason, origin, destination, startDate, endDate, type, handleTypeChange, transport, setTransport,
     logistics, treasurerAmount,
-    days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd,
+    days, nationalDays, internationalDays, totalAmount, totalAmountUsd, dailyRate, dailyRateUsd, countryClass, lodgingCategory, country, handleCountryChange,
     loading, error, fieldErrors, showConfirmation, setShowConfirmation, createdMessage,
     showSubmitConfirm, setShowSubmitConfirm, handleRequestSubmit, handleConfirmSubmit,
     handleReasonChange, handleOriginChange, handleDestinationChange, handleStartDateChange, handleEndDateChange,
@@ -133,6 +134,7 @@ function CreateTripPage() {
                 </div>
               </div>
             </div>
+            {type === 'Internacional' && <CountrySelector value={country} onChange={handleCountryChange} error={fieldErrors.country} />}
             <TripLogisticsSection logistics={logistics} tripId={null} />
             {treasurerAmount.isTreasurer && <TreasurerAmountFields amount={treasurerAmount} isInternational={type === 'Internacional'} errors={fieldErrors} />}
             {type === 'Internacional' && days > 0 && (
@@ -155,7 +157,8 @@ function CreateTripPage() {
             </button>
           </div>
           <div className={styles.rightCol}>
-            <TripBudgetSummary position={user?.Cargo?.nombre} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
+            <TripBudgetSummary position={user?.Cargo?.nombre} scaleType={user?.Cargo?.tipo_viatico} countryClass={countryClass}
+              lodgingCategory={lodgingCategory} dailyRate={dailyRate} dailyRateUsd={dailyRateUsd} totalAmount={totalAmount}
               totalAmountUsd={totalAmountUsd} nationalDays={nationalDays} internationalDays={internationalDays} type={type} transport={transport}
               fuelAmount={logistics.fuelValue} adjusted={treasurerAmount.adjusted} />
           </div>
