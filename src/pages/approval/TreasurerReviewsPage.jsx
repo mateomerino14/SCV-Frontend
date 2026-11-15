@@ -17,7 +17,6 @@ import {COLORS} from '../../constants';
 import {treasurerTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -37,9 +36,9 @@ function TreasurerReviewsPage() {
   const {
     trips, totalPending, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
+    pagination,
   } = useTreasurerReviews();
   const {exporting, exportError, exportStatements} = useStatementsExport();
-  const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Viajes aprobados que esperan fondos: revisa o ajusta los montos y apruébalos.';
   if (tab === 'APROBADOS') {
     subtitle = 'Historial de los viajes a los que asignaste fondos, con el estado en que están ahora.';
@@ -87,7 +86,7 @@ function TreasurerReviewsPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="tesorero-fondos" message={mascotMessage} />
       <Footer />

@@ -1,94 +1,37 @@
-import {useState, useEffect, useCallback} from 'react';
-import {getPendingRequests, getRequestHistory, approveRequest, rejectRequest} from '../../services/approval/deadlineAuthorizationService';
+import {useState} from 'react';
+import {approveRequest, rejectRequest} from '../../services/approval/deadlineAuthorizationService';
+import useInbox from './useInbox';
 
-const pollingInterval = 30000;
+const noFilters = {};
 
 function useDeadlineAuthorizationRequests() {
-  const [pending, setPending] = useState([]);
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [savingAction, setSavingAction] = useState(false);
-  const [error, setError] = useState('');
   const [result, setResult] = useState(null);
   const [tab, setTab] = useState('PENDIENTES');
+  const inbox = useInbox('plazos', noFilters, tab);
 
-  const fetchRequests = () => Promise.all([getPendingRequests(), getRequestHistory()]);
-
-  const applyRequests = useCallback(([pendingData, historyData], showLoading) => {
-    if (showLoading) {
-      setLoading(false);
-    }
-    if (pendingData.error) {
-      if (showLoading) {
-        setError(pendingData.error);
-      }
-      return;
-    }
-    if (historyData.error) {
-      if (showLoading) {
-        setError(historyData.error);
-      }
-      return;
-    }
-    setPending(pendingData);
-    setHistory(historyData);
-  }, []);
-
-  const load = useCallback(async (showLoading = true) => {
-    if (showLoading) {
-      setLoading(true);
-    }
-    applyRequests(await fetchRequests(), showLoading);
-  }, [applyRequests]);
-
-  useEffect(() => {
-    fetchRequests().then((data) => applyRequests(data, true));
-  }, [applyRequests]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      load(false);
-    }, pollingInterval);
-    return () => clearInterval(interval);
-  }, [load]);
-
-  const handleApprove = async (requestId) => {
+  const runAction = async (action, successMessage) => {
     setSavingAction(true);
-    const data = await approveRequest(requestId);
+    const data = await action();
     setSavingAction(false);
+    await inbox.reload();
     if (data.error) {
-      await load(false);
       setResult({success: false, message: data.error});
       return false;
     }
-    await load(true);
-    setResult({success: true, message: 'Solicitud aprobada. El empleado ya puede registrar sus gastos fuera de plazo.'});
+    setResult({success: true, message: successMessage});
     return true;
   };
 
-  const handleReject = async (requestId, observation) => {
-    setSavingAction(true);
-    const data = await rejectRequest(requestId, observation);
-    setSavingAction(false);
-    if (data.error) {
-      await load(false);
-      setResult({success: false, message: data.error});
-      return false;
-    }
-    await load(true);
-    setResult({success: true, message: 'Solicitud rechazada. Se notificó al empleado.'});
-    return true;
-  };
+  const handleApprove = (requestId) => runAction(() => approveRequest(requestId), 'Solicitud aprobada. El empleado ya puede registrar sus gastos fuera de plazo.');
 
-  let trips = pending;
-  if (tab !== 'PENDIENTES') {
-    trips = history;
-  }
+  const handleReject = (requestId, observation) => runAction(() => rejectRequest(requestId, observation), 'Solicitud rechazada. Se notificó al empleado.');
 
   return {
-    trips,
-    totalPending: pending.length,
-    loading, savingAction, error,
+    trips: inbox.trips,
+    pagination: inbox.pagination,
+    totalPending: inbox.counts.PENDIENTES || 0,
+    loading: inbox.loading, savingAction, error: inbox.error,
     tab, setTab,
     handleApprove, handleReject,
     result, closeResult: () => setResult(null),

@@ -15,7 +15,6 @@ import {COLORS} from '../../constants';
 import {approverAlcoholReviewPath, supervisorTripReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -35,8 +34,8 @@ function ApproverAlcoholReviewsPage() {
   const {
     trips, totalMyPending, employees, sections, loading, applyingFilters, error,
     tab, setTab, filters, setFilters, applyFilters, clearFilters,
+    pagination,
   } = useApproverAlcoholReviews();
-  const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Bandeja única: rendiciones de tu equipo (como jefe directo) y rendiciones con gastos no deducibles (alcohol o propinas) que necesitan tu revisión.';
   if (tab === 'APROBADOS') {
     subtitle = 'Historial de las rendiciones que aprobaste, con el estado en que están ahora.';
@@ -82,7 +81,7 @@ function ApproverAlcoholReviewsPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="aprobador-alcohol" message={mascotMessage} />
       <Footer />

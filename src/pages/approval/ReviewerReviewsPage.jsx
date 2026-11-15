@@ -17,7 +17,6 @@ import {COLORS} from '../../constants';
 import {reviewerReviewPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -37,9 +36,9 @@ function ReviewerReviewsPage() {
   const {
     trips, totalMyPending, employees, sections, loading, applyingFilters, error, filters, setFilters,
     tab, setTab, applyFilters, clearFilters,
+    pagination,
   } = useReviewerReviews();
   const {exporting, exportError, exportStatements} = useStatementsExport();
-  const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Rendiciones aprobadas por el supervisor: haz la revisión final para aprobarlas o rechazarlas.';
   if (tab === 'APROBADOS') {
     subtitle = 'Historial de las rendiciones que aprobaste en revisión final.';
@@ -86,7 +85,7 @@ function ReviewerReviewsPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="revisor-rendiciones" message={mascotMessage} />
       <Footer />

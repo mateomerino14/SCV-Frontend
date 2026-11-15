@@ -16,7 +16,6 @@ import {COLORS} from '../../constants';
 import {supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 import {pluralOf} from '../../utils/plural';
 
 const styles = {
@@ -31,8 +30,8 @@ function SupervisorPendingTripsPage() {
   const {
     trips, employees, sections, loading, taking, error, alreadyTaken, closeAlreadyTakenModal,
     filters, setFilters, applyingFilters, applyFilters, clearFilters, handleTake,
+    pagination,
   } = useSupervisorPendingTrips();
-  const pagination = useClientPagination(trips, 12, '');
 
   let mascotMessage = null;
 
@@ -74,7 +73,7 @@ function SupervisorPendingTripsPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="supervisor-viajes-sin-asignar" message={mascotMessage} />
       <Footer />

@@ -15,7 +15,6 @@ import {COLORS, ROLES} from '../../constants';
 import {supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 import useUserRole from '../../hooks/shared/useUserRole';
 
 const styles = {
@@ -38,8 +37,8 @@ function SupervisorTripHistoryPage() {
   const {
     trips, total, employees, sections, loading, applyingFilters, error, filters, setFilters,
     statusFilter, setStatusFilter, applyFilters, clearFilters, handleReturn,
+    pagination,
   } = useSupervisorTripHistory();
-  const pagination = useClientPagination(trips, 12, statusFilter);
   let title = 'Viajes Asignados a Mí';
   let subtitle = 'Viajes asignados a ti: revísalos y apruébalos, o recházalos con observaciones.';
   if (!isSupervisor) {
@@ -89,7 +88,7 @@ function SupervisorTripHistoryPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="supervisor-viajes" message={mascotMessage} />
       <Footer />

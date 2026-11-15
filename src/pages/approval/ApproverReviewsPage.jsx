@@ -15,7 +15,6 @@ import {COLORS} from '../../constants';
 import {approverPendingTripPath, supervisorPendingTripPath, routes} from '../../constants/routes';
 import ListCount from '../../components/ui/ListCount';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 
 const styles = {
   page: "min-h-screen flex flex-col",
@@ -35,8 +34,8 @@ function ApproverReviewsPage() {
   const {
     trips, totalMyPending, employees, sections, loading, applyingFilters, error, tab, setTab,
     filters, setFilters, applyFilters, clearFilters,
+    pagination,
   } = useApproverReviews();
-  const pagination = useClientPagination(trips, 12, tab);
   let subtitle = 'Bandeja única: viajes de tu equipo (como jefe directo) y viajes ya revisados por otro supervisor. Al aprobarlos se genera el memorándum y pasan a tesorería.';
   if (tab === 'APROBADOS') {
     subtitle = 'Historial de los viajes que aprobaste, con el estado en que están ahora.';
@@ -83,7 +82,7 @@ function ApproverReviewsPage() {
             ))}
           </div>
         )}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más" />}
+        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} loading={pagination.loadingMore} label="Cargar más" />}
       </div>
       <MascotGreeting pageKey="aprobador-viajes" message={mascotMessage} />
       <Footer />
