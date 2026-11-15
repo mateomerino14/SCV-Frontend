@@ -3,7 +3,7 @@ import {buildImportTemplate, downloadImportTemplate, readImportRows, parseImport
 const statusOptions = ['Activo', 'Suspendido'];
 const scaleTypes = ['A', 'B', 'C'];
 
-export const sectionImportConfig = {
+const sectionImportConfig = {
   sheetName: 'SECCIONES',
   fileName: 'PLANTILLA_SECCIONES',
   emptyMessage: 'El archivo no tiene secciones para importar',
@@ -23,7 +23,7 @@ export const sectionImportConfig = {
   ],
 };
 
-export const positionImportConfig = {
+const positionImportConfig = {
   sheetName: 'CARGOS',
   fileName: 'PLANTILLA_CARGOS',
   emptyMessage: 'El archivo no tiene cargos para importar',

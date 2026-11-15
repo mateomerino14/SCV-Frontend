@@ -84,7 +84,7 @@ export const downloadImportTemplate = async (config, lists) => {
 
 const normalizeHeader = (text) => String(text || '').replace('*', '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-export const cellText = (value) => {
+const cellText = (value) => {
   if (value === null || value === undefined) {
     return '';
   }

@@ -165,12 +165,12 @@ function useSectionManagement() {
     await load();
   };
 
-  // Secciones con el mismo nombre (sin tildes ni mayusculas), para avisar antes de repetir
   const normalizedName = normalizeSearchText(formData.nombre.trim());
-  const suggestions = normalizedName.length >= 2
-    ? allSections.filter((section) => normalizeSearchText(section.nombre).includes(normalizedName)
-        && section.id_seccion !== selectedSection?.id_seccion)
-    : [];
+  let suggestions = [];
+  if (normalizedName.length >= 2) {
+    suggestions = allSections.filter((section) => normalizeSearchText(section.nombre).includes(normalizedName)
+      && section.id_seccion !== selectedSection?.id_seccion);
+  }
 
   return {
     reload: load,

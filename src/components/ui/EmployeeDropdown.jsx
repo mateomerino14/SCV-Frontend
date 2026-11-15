@@ -27,9 +27,7 @@ function EmployeeDropdown({wrapperRef, triggerRef, open, onToggle, employees, se
     label = `${selectedEmployee.nombre} ${selectedEmployee.apellido_paterno}`;
   }
   const normalizedQuery = query.trim().toLowerCase();
-  const filteredEmployees = normalizedQuery
-    ? employees.filter((employee) => `${employee.nombre} ${employee.apellido_paterno}`.toLowerCase().includes(normalizedQuery))
-    : employees;
+  const filteredEmployees = employees.filter((employee) => !normalizedQuery || `${employee.nombre} ${employee.apellido_paterno}`.toLowerCase().includes(normalizedQuery));
   const handleSelect = (id) => {
     setQuery('');
     onSelect(id);

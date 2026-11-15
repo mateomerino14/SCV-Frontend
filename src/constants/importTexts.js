@@ -2,6 +2,16 @@ import {pluralOf} from '../utils/plural';
 
 const countLabel = (count, singular, plural) => `${count} ${pluralOf(count, singular, plural)}`;
 
+const statusDetail = (row) => {
+  if (row.estado) {
+    return row.estado;
+  }
+  if (row.accion === 'Crear') {
+    return 'Activo';
+  }
+  return 'Estado sin cambio';
+};
+
 const catalogResultText = (singular, plural) => (result) => {
   const parts = [`Se crearon ${countLabel(result.creados, singular, plural)}`, `se actualizaron ${result.actualizados}`];
   if (result.sinCambios > 0) {
@@ -37,7 +47,7 @@ export const sectionImportTexts = {
   confirmLabel: (count) => `Guardar ${countLabel(count, 'sección', 'secciones')}`,
   resultText: catalogResultText('sección', 'secciones'),
   rowTitle: (row) => `${row.codigo_seccion || '—'} · ${row.nombre || 'Sin nombre'}`,
-  rowDetail: (row) => row.estado || 'Estado sin cambio',
+  rowDetail: statusDetail,
 };
 
 export const positionImportTexts = {
@@ -49,5 +59,5 @@ export const positionImportTexts = {
   confirmLabel: (count) => `Guardar ${countLabel(count, 'cargo', 'cargos')}`,
   resultText: catalogResultText('cargo', 'cargos'),
   rowTitle: (row) => row.nombre || 'Sin nombre',
-  rowDetail: (row) => `Tipo ${row.tipo_viatico || '—'} · ${row.estado || 'Estado sin cambio'}`,
+  rowDetail: (row) => `Tipo ${row.tipo_viatico || '—'} · ${statusDetail(row)}`,
 };
