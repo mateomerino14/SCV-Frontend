@@ -120,6 +120,26 @@ export const updateTravelScale = async (type, data) => {
   }
 };
 
+export const createTravelScale = async (data) => {
+  try {
+    const response = await apiClient.post('/travel-scale', data);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al agregar el tipo a la escala de viáticos'};
+  }
+};
+
+export const deleteTravelScale = async (type) => {
+  try {
+    const response = await apiClient.delete(`/travel-scale/${type}`);
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al eliminar el tipo de la escala de viáticos'};
+  }
+};
+
 export const getSections = async () => {
   try {
     const response = await apiClient.get('/section');

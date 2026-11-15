@@ -25,7 +25,7 @@ import ListCount from '../../components/ui/ListCount';
 const styles = {
   excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
   page: 'min-h-screen flex flex-col',
-  content: 'flex-1 px-5 py-6 w-full',
+  content: 'flex-1 px-5 pt-6 pb-28 w-full',
   subtitle: 'text-sm font-inter mb-5',
   searchWrapper: 'flex items-center border rounded-xl px-3 py-2 gap-2 mb-4',
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',

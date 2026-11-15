@@ -4,7 +4,7 @@ import ExcelImportModal from '../../components/ui/ExcelImportModal';
 import useCatalogImport from '../../hooks/admin/useCatalogImport';
 import {positionImportTexts} from '../../constants/importTexts';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
-import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
+import {Search, Plus, Pencil, Ban, CheckCircle, Trash2} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -15,6 +15,7 @@ import TravelScaleCard from '../../features/admin/organisms/TravelScaleCard';
 import TravelScaleFormModal from '../../features/admin/organisms/TravelScaleFormModal';
 import useTravelScale from '../../hooks/admin/useTravelScale';
 import {scaleRatesText} from '../../utils/travelScaleText';
+import {countPositionsByType} from '../../utils/travelScale';
 import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import SuccessModal from '../../components/ui/SuccessModal';
@@ -30,7 +31,7 @@ import ListCount from '../../components/ui/ListCount';
 const styles = {
   excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
   page: 'min-h-screen flex flex-col',
-  content: 'flex-1 px-5 py-6 w-full',
+  content: 'flex-1 px-5 pt-6 pb-28 w-full',
   subtitle: 'text-sm font-inter mb-5',
   searchWrapper: 'flex items-center border rounded-xl px-3 py-2 gap-2 mb-4',
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
@@ -60,9 +61,9 @@ function PositionManagementPage() {
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
     reload,
   } = usePositionManagement();
-  const catalogImport = useCatalogImport('position', reload);
-  const {exporting, exportError, exportPositions} = useAdminExcelExport();
   const travelScale = useTravelScale();
+  const catalogImport = useCatalogImport('position', reload, travelScale.scaleTypes);
+  const {exporting, exportError, exportPositions} = useAdminExcelExport();
   const pagination = useClientPagination(positions, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -70,8 +71,9 @@ function PositionManagementPage() {
       <Navbar text="Cargos" onMenuClick={openMenu} profilePhoto={user?.foto_perfil} />
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
-        <PageHeader title="Cargos" subtitle="Define los cargos y el tipo de la escala de viáticos (A, B o C) que le corresponde a cada uno." />
-        <TravelScaleCard scale={travelScale.scale} loading={travelScale.loading} loadError={travelScale.loadError} onEdit={travelScale.openEdit} />
+        <PageHeader title="Cargos" subtitle="Define los cargos y el tipo de la escala de viáticos que le corresponde a cada uno." />
+        <TravelScaleCard scale={travelScale.scale} loading={travelScale.loading} loadError={travelScale.loadError} positionCounts={countPositionsByType(positions)}
+          onAdd={travelScale.openCreate} onEdit={travelScale.openEdit} onDelete={travelScale.openDelete} />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
           <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar cargos..." value={search} onChange={(event) => setSearch(event.target.value)} />
@@ -143,10 +145,14 @@ function PositionManagementPage() {
         confirmText={selectedPosition?.activo ? 'Bloquear' : 'Activar'} loading={savingAction}
         onConfirm={handleToggleActive} onCancel={() => setShowSuspend(false)} />
       <SuccessModal isOpen={showSuccess} title="Éxito" message={successMessage} onAccept={() => setShowSuccess(false)} />
-      <TravelScaleFormModal type={travelScale.editingType} form={travelScale.form} fieldErrors={travelScale.fieldErrors} saving={travelScale.saving}
-        error={travelScale.saveError} onAmountChange={travelScale.handleAmountChange} onLodgingChange={travelScale.handleLodgingChange}
-        onClose={travelScale.closeEdit} onSave={travelScale.handleSave} />
-      <SuccessModal isOpen={!!travelScale.savedMessage} title="Escala actualizada" message={travelScale.savedMessage} onAccept={() => travelScale.setSavedMessage('')} />
+      <TravelScaleFormModal mode={travelScale.formMode} form={travelScale.form} fieldErrors={travelScale.fieldErrors} saving={travelScale.saving}
+        error={travelScale.saveError} onTypeChange={travelScale.handleTypeChange} onAmountChange={travelScale.handleAmountChange}
+        onTextChange={travelScale.handleTextChange} onClose={travelScale.closeForm} onSave={travelScale.handleSave} />
+      <ConfirmDialog isOpen={!!travelScale.deletingType} icon={Trash2} iconColor={COLORS.text} iconBackgroundColor={COLORS.background}
+        title={`Eliminar Tipo ${travelScale.deletingType || ''}`} message="¿Seguro que deseas eliminar este tipo de la escala? Ningún cargo lo usa."
+        warning={travelScale.deleteError} confirmText="Eliminar" loading={travelScale.deleting}
+        onConfirm={travelScale.handleDelete} onCancel={travelScale.closeDelete} />
+      <SuccessModal isOpen={!!travelScale.savedMessage} title="Escala de viáticos" message={travelScale.savedMessage} onAccept={() => travelScale.setSavedMessage('')} />
       <ExcelImportModal texts={positionImportTexts} isOpen={catalogImport.isOpen} onClose={catalogImport.close} fileName={catalogImport.fileName} preview={catalogImport.preview}
         result={catalogImport.result} error={catalogImport.error} validRows={catalogImport.validRows} invalidRows={catalogImport.invalidRows} actionableRows={catalogImport.actionableRows}
         checking={catalogImport.checking} importing={catalogImport.importing} downloading={catalogImport.downloading}

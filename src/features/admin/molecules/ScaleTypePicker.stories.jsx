@@ -7,7 +7,7 @@ export default {
   parameters: {
     docs: {
       description: {
-        component: 'Elige el tipo de la escala de viáticos (A, B o C) de un cargo; cada opción muestra sus tarifas y el hospedaje permitido.',
+        component: 'Elige el tipo de la escala de viáticos (A, B, C u otro tipo agregado) de un cargo; cada opción muestra sus tarifas y el hospedaje permitido.',
       },
     },
   },
