@@ -1,4 +1,4 @@
-import {Pencil, Plus, Scale, Trash2} from 'lucide-react';
+import {Pencil, Scale, Trash2} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {scaleRatesText} from '../../../utils/travelScaleText';
 
@@ -19,7 +19,7 @@ const styles = {
   message: 'text-xs font-inter',
 };
 
-function TravelScaleCard({scale, loading, loadError, positionCounts = {}, onAdd, onEdit, onDelete}) {
+function TravelScaleCard({scale, loading, loadError, onAdd, onEdit, onDelete}) {
   return (
     <div className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
       <div className={styles.header}>
@@ -28,7 +28,6 @@ function TravelScaleCard({scale, loading, loadError, positionCounts = {}, onAdd,
           <p className={styles.title} style={{color: COLORS.text}}>Escala de Viáticos</p>
         </div>
         <button type="button" className={styles.addBtn} style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background}} onClick={onAdd}>
-          <Plus size={14} />
           Agregar tipo
         </button>
       </div>
@@ -45,11 +44,11 @@ function TravelScaleCard({scale, loading, loadError, positionCounts = {}, onAdd,
             <p className={styles.detail} style={{color: COLORS.labels}}>{scaleRatesText(row)}</p>
             <p className={styles.detail} style={{color: COLORS.primary}}>Hospedaje: {row.hospedaje}</p>
             <p className={styles.detail} style={{color: COLORS.labels}}>
-              {positionCounts[row.tipo] ? `${positionCounts[row.tipo]} cargo${positionCounts[row.tipo] === 1 ? '' : 's'}` : 'Sin cargos'}
+              {row.cargos ? `${row.cargos} cargo${row.cargos === 1 ? '' : 's'}` : 'Sin cargos'}
             </p>
           </div>
           <div className={styles.actions}>
-            {!positionCounts[row.tipo] && scale.length > 1 && (
+            {!row.cargos && scale.length > 1 && (
               <button type="button" className={styles.editBtn} style={{backgroundColor: COLORS.error}} onClick={() => onDelete(row)} aria-label={`Eliminar tipo ${row.tipo}`}>
                 <Trash2 size={14} style={{color: COLORS.secondary}} />
               </button>
