@@ -13,6 +13,7 @@ const styles = {
   dropdownMenu: 'fixed z-[10000] rounded-xl border shadow-lg overflow-hidden',
   list: 'overflow-y-auto',
   empty: 'px-4 py-3 text-sm font-inter text-center',
+  more: 'px-4 py-2 text-xs font-inter text-center',
   fieldError: 'text-xs font-inter mt-1',
 };
 
@@ -28,7 +29,7 @@ function SearchableSelector({label, required = false, options, value, onChange, 
   }
   const {
     open, search, setSearch, menuPosition, wrapperRef, triggerRef, menuRef, inputRef, selectedOption,
-    filteredOptions, handleToggle, handleSelect,
+    filteredOptions, hiddenCount, handleToggle, handleSelect,
   } = useSearchableSelector(allOptions, value, onChange);
   const hasValue = !!selectedOption && selectedOption !== emptyOption && selectedOption.value !== '';
   return (
@@ -55,6 +56,9 @@ function SearchableSelector({label, required = false, options, value, onChange, 
                     <DropdownListItem key={String(option.value)} label={option.label} description={option.description}
                       selected={String(value ?? '') === String(option.value)} onClick={() => handleSelect(option)} />
                   ))
+                )}
+                {hiddenCount > 0 && (
+                  <p className={styles.more} style={{color: COLORS.labels}}>Hay {hiddenCount} más; escribe para encontrarlos</p>
                 )}
               </div>
             </motion.div>

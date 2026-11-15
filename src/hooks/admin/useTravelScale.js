@@ -38,6 +38,10 @@ function useTravelScale() {
     getTravelScale().then(applyScale);
   }, []);
 
+  const reloadScale = async () => {
+    applyScale(await getTravelScale());
+  };
+
   const openCreate = () => {
     setFormMode('create');
     setEditingType(null);
@@ -173,7 +177,7 @@ function useTravelScale() {
   };
 
   return {
-    scale, scaleTypes, loading, loadError,
+    scale, scaleTypes, loading, loadError, reloadScale,
     formMode, editingType, form, fieldErrors, saving, saveError, savedMessage, setSavedMessage,
     openCreate, openEdit, closeForm, handleTypeChange, handleAmountChange, handleTextChange, handleSave,
     deletingType, deleting, deleteError, openDelete, closeDelete, handleDelete,

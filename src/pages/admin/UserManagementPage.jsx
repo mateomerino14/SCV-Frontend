@@ -20,7 +20,6 @@ import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import {avatarDefault} from '../../constants/defaultImages';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import ListCount from '../../components/ui/ListCount';
 
@@ -73,11 +72,10 @@ function UserManagementPage() {
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
-    allUsers, reload,
+    allUsers, reload, totalUsers, hasMoreUsers, loadMoreUsers, loadingMoreUsers, listFilters,
   } = useUserManagement();
   const userImport = useUserImport({positions, sections, onImported: reload});
   const {exporting, exportError, exportUsers} = useAdminExcelExport();
-  const pagination = useClientPagination(users, 15, `${search}|${roleFilter}|${sectionFilter}`);
 
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
@@ -105,14 +103,14 @@ function UserManagementPage() {
         </div>
         <div className={styles.excelRow}>
           <ImportButton onClick={userImport.open} disabled={loading} />
-          <ExportButton onClick={() => exportUsers(users)} exporting={exporting} disabled={loading || users.length === 0} />
+          <ExportButton onClick={() => exportUsers(listFilters)} exporting={exporting} disabled={loading || totalUsers === 0} />
         </div>
         {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
-        {!loading && pagination.total > 0 && (
-          <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="usuario" plural="usuarios" />
+        {!loading && totalUsers > 0 && (
+          <ListCount shown={users.length} total={totalUsers} singular="usuario" plural="usuarios" />
         )}
-        {!loading && pagination.visibleItems.map((currentUser) => {
+        {!loading && users.map((currentUser) => {
           const config = roleConfig[currentUser.Rol?.nombre] || roleConfig['EMPLEADO'];
           return (
             <div key={currentUser.id_usuario} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
@@ -137,7 +135,7 @@ function UserManagementPage() {
             </div>
           );
         })}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más usuarios" />}
+        {!loading && hasMoreUsers && <LoadMoreButton onClick={loadMoreUsers} loading={loadingMoreUsers} label="Cargar más usuarios" />}
         {!loading && users.length === 0 && (
           <EmptyState title="Sin usuarios registrados" subtitle="No se encontraron usuarios con los filtros aplicados"
             icon={
@@ -155,7 +153,7 @@ function UserManagementPage() {
           </div>
         </div>
       </div>
-      <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
+      <div className={styles.fab} role="button" aria-label="Agregar usuario" style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
         <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <UserFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}

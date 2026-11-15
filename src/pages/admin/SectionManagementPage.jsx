@@ -18,7 +18,6 @@ import useSectionManagement from '../../hooks/admin/useSectionManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import ListCount from '../../components/ui/ListCount';
 
@@ -52,11 +51,10 @@ function SectionManagementPage() {
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive, suggestions,
-    reload,
+    reload, totalSections, hasMoreSections, loadMoreSections, loadingMoreSections, listFilters,
   } = useSectionManagement();
   const catalogImport = useCatalogImport('section', reload);
   const {exporting, exportError, exportSections} = useAdminExcelExport();
-  const pagination = useClientPagination(sections, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -71,14 +69,14 @@ function SectionManagementPage() {
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Secciones Registradas</p>
         <div className={styles.excelRow}>
           <ImportButton onClick={catalogImport.open} disabled={loading} />
-          <ExportButton onClick={() => exportSections(sections)} exporting={exporting} disabled={loading || sections.length === 0} />
+          <ExportButton onClick={() => exportSections(listFilters)} exporting={exporting} disabled={loading || totalSections === 0} />
         </div>
         {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
-        {!loading && pagination.total > 0 && (
-          <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="sección" plural="secciones" />
+        {!loading && totalSections > 0 && (
+          <ListCount shown={sections.length} total={totalSections} singular="sección" plural="secciones" />
         )}
-        {!loading && pagination.visibleItems.map((section) => (
+        {!loading && sections.map((section) => (
           <div key={section.id_seccion} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
             <div className={styles.cardIcon} style={{backgroundColor: COLORS.positionRole}}>
               <span style={{color: COLORS.primary, fontWeight: 'bold', fontSize: 16}}>{section.nombre.charAt(0).toUpperCase()}</span>
@@ -100,7 +98,7 @@ function SectionManagementPage() {
             </div>
           </div>
         ))}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más secciones" />}
+        {!loading && hasMoreSections && <LoadMoreButton onClick={loadMoreSections} loading={loadingMoreSections} label="Cargar más secciones" />}
         {!loading && sections.length === 0 && (
           <EmptyState title="Sin secciones registradas" subtitle="No se encontraron secciones con los filtros aplicados"
             icon={
@@ -119,7 +117,7 @@ function SectionManagementPage() {
           </div>
         </div>
       </div>
-      <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
+      <div className={styles.fab} role="button" aria-label="Agregar sección" style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
         <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <SectionFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}

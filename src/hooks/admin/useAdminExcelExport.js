@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import ExcelJS from 'exceljs';
-import {getUsers} from '../../services/admin/adminService';
+import {getUsers, getPositions, getSections} from '../../services/admin/adminService';
 import {addTableSheet, saveWorkbook, todayFileSuffix, amountFormat} from '../../utils/excelExport';
 import {approvalPhaseStats, expensePhaseStats, rejectedStat} from '../../features/admin/constants/tripPhaseStats';
 import {sectionOption} from '../../utils/userImportFile';
@@ -19,15 +19,18 @@ const statusText = (active) => {
   return 'Activo';
 };
 
-const countBy = (users, key) => {
-  if (!Array.isArray(users)) {
-    return {};
+const countBy = (users, idOf) => users.reduce((counts, user) => {
+  const id = idOf(user);
+  counts[id] = (counts[id] || 0) + 1;
+  return counts;
+}, {});
+
+const fetchAll = async (fetchList, filters = {}) => {
+  const data = await fetchList(filters);
+  if (!Array.isArray(data)) {
+    throw new Error(data?.error || 'Sin datos');
   }
-  return users.reduce((counts, user) => {
-    const id = user[key];
-    counts[id] = (counts[id] || 0) + 1;
-    return counts;
-  }, {});
+  return data;
 };
 
 const periodText = (period) => {
@@ -55,7 +58,8 @@ function useAdminExcelExport() {
     }
   };
 
-  const exportUsers = (users) => runExport(async () => {
+  const exportUsers = (filters) => runExport(async () => {
+    const users = await fetchAll(getUsers, filters);
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Usuarios', [
       {header: 'Nombre', key: 'nombre', width: 20},
@@ -87,9 +91,9 @@ function useAdminExcelExport() {
     await saveWorkbook(workbook, `Usuarios_${todayFileSuffix()}.xlsx`);
   });
 
-  const exportPositions = (positions) => runExport(async () => {
-    const users = await getUsers();
-    const counts = countBy(users, 'id_cargo');
+  const exportPositions = (filters) => runExport(async () => {
+    const positions = await fetchAll(getPositions, filters);
+    const counts = countBy(await fetchAll(getUsers), (user) => user.Cargo?.id_cargo);
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Cargos', [
       {header: 'Cargo', key: 'nombre', width: 40},
@@ -111,9 +115,9 @@ function useAdminExcelExport() {
     await saveWorkbook(workbook, `Cargos_${todayFileSuffix()}.xlsx`);
   });
 
-  const exportSections = (sections) => runExport(async () => {
-    const users = await getUsers();
-    const counts = countBy(users, 'id_seccion');
+  const exportSections = (filters) => runExport(async () => {
+    const sections = await fetchAll(getSections, filters);
+    const counts = countBy(await fetchAll(getUsers), (user) => user.id_seccion);
     const workbook = new ExcelJS.Workbook();
     addTableSheet(workbook, 'Secciones', [
       {header: 'Sección', key: 'nombre', width: 30},

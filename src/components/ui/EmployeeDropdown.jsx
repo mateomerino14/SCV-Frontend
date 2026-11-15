@@ -12,7 +12,10 @@ const styles = {
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
   list: 'overflow-y-auto',
   emptyText: 'text-xs font-inter text-center py-3',
+  moreText: 'text-xs font-inter text-center py-2',
 };
+
+const maxVisibleEmployees = 100;
 
 const dropdownVariants = {
   hidden: {opacity: 0, y: -8, scaleY: 0.95},
@@ -27,7 +30,9 @@ function EmployeeDropdown({wrapperRef, triggerRef, open, listHeight = 220, onTog
     label = `${selectedEmployee.nombre} ${selectedEmployee.apellido_paterno}`;
   }
   const normalizedQuery = query.trim().toLowerCase();
-  const filteredEmployees = employees.filter((employee) => !normalizedQuery || `${employee.nombre} ${employee.apellido_paterno}`.toLowerCase().includes(normalizedQuery));
+  const matchingEmployees = employees.filter((employee) => !normalizedQuery || `${employee.nombre} ${employee.apellido_paterno}`.toLowerCase().includes(normalizedQuery));
+  const filteredEmployees = matchingEmployees.slice(0, maxVisibleEmployees);
+  const hiddenCount = matchingEmployees.length - filteredEmployees.length;
   const handleSelect = (id) => {
     setQuery('');
     onSelect(id);
@@ -55,6 +60,7 @@ function EmployeeDropdown({wrapperRef, triggerRef, open, listHeight = 220, onTog
                     selected={String(selectedId) === String(employee.id_usuario)} onClick={() => handleSelect(employee.id_usuario)} />
                 ))
               )}
+              {hiddenCount > 0 && <p className={styles.moreText} style={{color: COLORS.labels}}>Hay {hiddenCount} más; escribe para encontrarlos</p>}
             </div>
           </motion.div>
         )}
