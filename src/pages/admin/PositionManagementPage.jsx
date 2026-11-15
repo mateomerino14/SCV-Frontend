@@ -1,10 +1,11 @@
+import AddButton from '../../components/ui/AddButton';
 import ExportButton from '../../components/ui/ExportButton';
 import ImportButton from '../../components/ui/ImportButton';
 import ExcelImportModal from '../../components/ui/ExcelImportModal';
 import useCatalogImport from '../../hooks/admin/useCatalogImport';
 import {positionImportTexts} from '../../constants/importTexts';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
-import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
+import {Search, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -28,7 +29,7 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import ListCount from '../../components/ui/ListCount';
 
 const styles = {
-  excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
+  excelRow: 'grid grid-cols-1 sm:grid-cols-3 gap-3',
   page: 'min-h-screen flex flex-col',
   content: 'flex-1 px-5 py-6 w-full',
   subtitle: 'text-sm font-inter mb-5',
@@ -43,7 +44,6 @@ const styles = {
   cardAmountUsd: 'text-xs font-inter',
   actionsRow: 'flex items-center gap-2 shrink-0',
   actionBtn: 'w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer',
-  fab: 'fixed bottom-24 right-5 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer z-10',
   noticeCard: 'rounded-2xl p-4 flex items-center gap-3 mt-7 mb-4',
   noticeText: 'flex flex-col flex-1',
   noticeTitle: 'text-sm font-bold font-inter',
@@ -78,6 +78,7 @@ function PositionManagementPage() {
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cargos y su Tipo de Viático</p>
         <div className={styles.excelRow}>
+          <AddButton label="Agregar cargo" onClick={openCreate} disabled={loading} />
           <ImportButton onClick={catalogImport.open} disabled={loading} />
           <ExportButton onClick={() => exportPositions(positions)} exporting={exporting} disabled={loading || positions.length === 0} />
         </div>
@@ -125,9 +126,6 @@ function PositionManagementPage() {
             <p className={styles.noticeSub} style={{color: COLORS.secondary}}>Inhabilita el uso temporalmente</p>
           </div>
         </div>
-      </div>
-      <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
-        <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <PositionFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
         title="Agregar Nuevo Cargo" subtitle="Defina las especificaciones del nuevo rol dentro de la estructura organizacional."
