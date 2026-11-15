@@ -62,6 +62,7 @@ test('el administrador importa cargos con su tipo de viático y ve la escala', a
   await expect(page.getByText(/Se crearon 1 cargo, se actualizaron 0, 1 ya estaban igual/)).toBeVisible();
   await page.getByRole('button', {name: 'Cerrar'}).click();
   await page.getByPlaceholder('Buscar cargos...').fill(positionName);
+  await expect(page.getByText('Mostrando 1 de 1 cargo')).toBeVisible();
   await expect(page.getByText(positionName)).toBeVisible();
   await expect(page.getByText('Tipo B')).toBeVisible();
   await removeImported();
@@ -85,6 +86,7 @@ test('el administrador importa secciones por su código de Oracle', async ({page
   await expect(page.getByText(/Se crearon 1 sección/)).toBeVisible();
   await page.getByRole('button', {name: 'Cerrar'}).click();
   await page.getByPlaceholder('Buscar secciones...').fill('IMPORTADA E2E');
+  await expect(page.getByText('Mostrando 1 de 1 sección')).toBeVisible();
   await expect(page.getByText(sectionName)).toBeVisible();
   await removeImported();
 });

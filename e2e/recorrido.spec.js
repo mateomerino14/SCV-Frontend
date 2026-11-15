@@ -24,6 +24,11 @@ const watchProblems = (page) => {
   return problems;
 };
 
+const buttonsWithIconAndText = (page) => page.evaluate(() => [...document.querySelectorAll('button, [role=button]')]
+  .filter((element) => !element.closest('nav') && !element.matches('[aria-haspopup], [data-date-field]'))
+  .filter((element) => element.getBoundingClientRect().width > 0 && element.querySelector('svg') && element.innerText.trim())
+  .map((element) => element.innerText.trim().slice(0, 40)));
+
 const openMenu = async (page) => {
   const nav = page.getByRole('navigation', {name: 'Menú principal'});
   if (!(await nav.isVisible())) {
@@ -45,6 +50,10 @@ for (const user of users) {
       const broken = [...await page.getByText(brokenTextPattern).allInnerTexts(), ...await page.getByText(brokenValuePattern).allInnerTexts()];
       if (broken.length > 0) {
         problems.push(`${label}: ${broken.map((text) => text.slice(0, 120)).join(' | ')}`);
+      }
+      const iconButtons = await buttonsWithIconAndText(page);
+      if (iconButtons.length > 0) {
+        problems.push(`${label}: botones con ícono y texto (${iconButtons.join(' | ')})`);
       }
     }
     expect(problems, problems.join('\n')).toEqual([]);
