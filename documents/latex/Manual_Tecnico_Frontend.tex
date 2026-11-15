@@ -452,7 +452,7 @@ expense & \code{useRegisterExpense}, \code{useEditExpense}, \code{useUploadInvoi
 \rowcolor{maxamFondo} approval & Uno por bandeja y por detalle de cada revisor (\code{useSupervisorPendingTrips}, \code{useApproverReviews}, \code{useTreasurerReviews}, \code{useReviewerReviews}, \ldots), más \code{useDeadlineAuthorization}, \code{useSubstitutionRequest} y sus pares del revisor; \code{useStatementsExport} para exportar planillas en grupo \\
 admin & \code{useAdminDashboard}, \code{useUserManagement}, \code{usePositionManagement}, \code{useSectionManagement}, \code{useVehicleManagement}, \code{useAuditLog}, \code{useReminderSettings}, \code{useAdminExcelExport}, \code{useUserImport} \\
 \rowcolor{maxamFondo} user & \code{useLogin}, \code{useProfile}, \code{useCurrentUser}, \code{useIsTreasurer}, \code{usePasswordExpiredCheck} \\
-shared & \code{useMenu}, \code{useMenuNavigation}, \code{useClientPagination}, \code{useSimpleSelector}, \code{useUserRole} \\
+shared & \code{useMenu}, \code{useMenuNavigation}, \code{useClientPagination}, \code{useServerPagination}, \code{useNameSuggestions}, \code{useSimpleSelector}, \code{useUserRole} \\
 \end{xltabular}
 
 Ejemplo de hook con validación previa y ventana de aviso, tomado de la finalización de un viaje:
@@ -486,7 +486,7 @@ const handleRequestSubmitReview = () => {
 \rowcolor{maxamFondo} \code{ModalIconHeader} & Ícono en círculo blanco de las ventanas \\
 \code{InputField}, \code{PasswordField}, \code{FormField}, \code{LimitedTextarea} & Campos de formulario \\
 \rowcolor{maxamFondo} \code{EmployeeDropdown}, \code{SectionDropdown}, \code{InlineDropdown} & Selectores (el vehículo del viaje se busca con \code{SearchableSelector} por placa o descripción); con \code{asField} el disparador tiene el mismo borde, alto e ícono que \code{InputField}. Todas las listas se abren siempre hacia abajo: si no hay espacio, la pantalla se desplaza para dejar el campo más arriba y la lista se acorta para no salirse (\code{utils/dropdownSpace.js}) \\
-\code{ListCount}, \code{LoadMoreButton} & ``Mostrando X de Y'' y paginación \\
+\code{ListCount}, \code{LoadMoreButton} & ``Mostrando X de Y'' y paginación. Usuarios, Cargos y Secciones piden al servidor de a 15 filas (\code{useServerPagination}); la búsqueda, el rol y la sección se filtran en el servidor, así la pantalla funciona igual con miles de usuarios \\
 \rowcolor{maxamFondo} \code{SkeletonCard}, \code{SkeletonList} & Indicadores de carga \\
 \code{EmptyState}, \code{InlineAlert}, \code{SuccessModal} & Estados vacíos y avisos \\
 \rowcolor{maxamFondo} \code{SignaturePad}, \code{SignatureDialog} & Recuadro para dibujar la firma y ventana que firma con la firma guardada y la contraseña \\
@@ -567,7 +567,7 @@ Cada estado de viaje tiene un único nombre (\code{constants/tripStatusLabels.js
 En las pantallas del empleado, ``En Curso'' usa el rojo institucional porque marca su viaje activo.
 
 \subsection{Botones}
-Los botones con texto no llevan ícono; los que solo tienen ícono (volver, ver, editar o borrar en una fila, quitar un subgasto) sí lo llevan, con \code{aria-label}. Para quitar algo con un botón de solo ícono se usa siempre el basurero (\code{Trash2}).
+Los botones con texto no llevan ícono; los que solo tienen ícono (volver, ver, editar o borrar en una fila, quitar un subgasto) sí lo llevan, con \code{aria-label}. Para quitar algo con un botón de solo ícono se usa siempre el basurero (\code{Trash2}). Los campos desplegables y de fecha llevan su flecha o su calendario porque son campos, no botones. \code{e2e/recorrido.spec.js} revisa en cada pantalla del menú de cada rol que no haya botones con ícono y texto.
 
 \subsection{Fechas, horas y desplazamiento}
 Todas las fechas se eligen con \code{DatePickerInput} (\code{components/ui}, con el hook \code{useDatePicker} y \code{utils/calendar.js}): abre una ventana con cabecera granate y la fecha elegida en grande, semana de lunes a domingo, hoy con anillo, los días fuera de \code{min} o \code{max} en gris y, con \code{rangeStart} y \code{rangeEnd}, los días del viaje como una franja; se confirma con Aceptar y, en los filtros (\code{clearable}), se puede borrar. Lo usan el registro y la edición de gastos y facturas (el calendario de la factura escaneada también marca el lapso del viaje), la creación y edición de viajes y los filtros por periodo. La fecha detectada en una factura se muestra como día/mes/año (\code{formatDateNumeric}). Las horas de los recordatorios se eligen en \code{ReminderTimesPicker}: una cuadrícula de horas frecuentes (07:00 a 22:00) que se marcan o quitan con un toque, hasta cuatro, y ``+ Otra hora'' para hora y minutos de 5 en 5. La barra de desplazamiento es una sola en toda la app (\code{index.css}): 10 px, granate a media transparencia sobre un carril gris cálido; en las ventanas granates se usa la variante \code{scroll-on-color}.

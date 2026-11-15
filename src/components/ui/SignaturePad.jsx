@@ -1,5 +1,4 @@
 import {useRef, useEffect, useState} from 'react';
-import {Eraser} from 'lucide-react';
 import {COLORS} from '../../constants';
 
 const styles = {
@@ -96,7 +95,6 @@ function SignaturePad({onChange, height = 150, disabled = false, noteColor = COL
       <div className={styles.footer}>
         <span className={styles.note} style={{color: noteColor}}>Se guarda con tu nombre, la fecha y la hora</span>
         <button type="button" className={styles.clear} style={{color: clearColor}} onClick={handleClear} disabled={disabled}>
-          <Eraser size={13} />
           Borrar
         </button>
       </div>

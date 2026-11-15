@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion';
-import {Trash2, Pencil, Globe, Calendar, Tag, FileText, ArrowRight, List, Receipt, FolderOpen, ArrowLeftRight} from 'lucide-react';
+import {Trash2, Pencil, Globe, Calendar, Tag, FileText, List, Receipt, FolderOpen, ArrowLeftRight} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {formatDateShort} from '../../../utils/dateFormatter';
 import ExpenseFieldTag from '../atoms/ExpenseFieldTag';
@@ -119,7 +119,7 @@ function ExpenseItem({expense, tripInProgress, isFinalApproved, onDelete, tripId
         )}
         {!tripInProgress && (
           <span style={{fontSize: 12, fontWeight: 700, fontFamily: 'Inter, sans-serif', color: accentColor, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3}} onClick={() => goToDetail(expense.id_gasto)}>
-            Ver Detalle <ArrowRight size={11} />
+            Ver Detalle
           </span>
         )}
       </div>

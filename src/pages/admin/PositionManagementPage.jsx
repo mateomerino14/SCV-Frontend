@@ -15,7 +15,6 @@ import TravelScaleCard from '../../features/admin/organisms/TravelScaleCard';
 import TravelScaleFormModal from '../../features/admin/organisms/TravelScaleFormModal';
 import useTravelScale from '../../hooks/admin/useTravelScale';
 import {scaleRatesText} from '../../utils/travelScaleText';
-import {countPositionsByType} from '../../utils/travelScale';
 import EmptyState from '../../components/ui/EmptyState';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import SuccessModal from '../../components/ui/SuccessModal';
@@ -24,7 +23,6 @@ import usePositionManagement from '../../hooks/admin/usePositionManagement';
 import useMenu from '../../hooks/shared/useMenu';
 import {COLORS} from '../../constants';
 import LoadMoreButton from '../../components/ui/LoadMoreButton';
-import useClientPagination from '../../hooks/shared/useClientPagination';
 import SessionExpiredModal from '../../features/user/organisms/SessionExpiredModal';
 import ListCount from '../../components/ui/ListCount';
 
@@ -53,18 +51,17 @@ const styles = {
 
 function PositionManagementPage() {
   const {menuOpen, user, openMenu, closeMenu, sessionExpired, handleSessionExpiredClose} = useMenu();
+  const travelScale = useTravelScale();
   const {
     positions, loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, selectedPosition,
     showCreate, setShowCreate, showEdit, setShowEdit, showSuspend, setShowSuspend,
     showSuccess, setShowSuccess, successMessage, formData, setFormData, suggestions,
     openCreate, openEdit, openSuspend, handleCreate, handleEdit, handleToggleActive,
-    reload,
-  } = usePositionManagement();
-  const travelScale = useTravelScale();
+    reload, totalPositions, hasMorePositions, loadMorePositions, loadingMorePositions, listFilters,
+  } = usePositionManagement(travelScale.reloadScale);
   const catalogImport = useCatalogImport('position', reload, travelScale.scaleTypes);
   const {exporting, exportError, exportPositions} = useAdminExcelExport();
-  const pagination = useClientPagination(positions, 15, search);
   return (
     <div className={styles.page} style={{backgroundColor: COLORS.background}}>
       <SessionExpiredModal isOpen={sessionExpired} onClose={handleSessionExpiredClose} />
@@ -72,7 +69,7 @@ function PositionManagementPage() {
       <AdminMenu isOpen={menuOpen} onClose={closeMenu} user={user} />
       <div className={styles.content}>
         <PageHeader title="Cargos" subtitle="Define los cargos y el tipo de la escala de viáticos que le corresponde a cada uno." />
-        <TravelScaleCard scale={travelScale.scale} loading={travelScale.loading} loadError={travelScale.loadError} positionCounts={countPositionsByType(positions)}
+        <TravelScaleCard scale={travelScale.scale} loading={travelScale.loading} loadError={travelScale.loadError}
           onAdd={travelScale.openCreate} onEdit={travelScale.openEdit} onDelete={travelScale.openDelete} />
         <div className={styles.searchWrapper} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
           <Search size={16} style={{color: COLORS.labels}} />
@@ -81,14 +78,14 @@ function PositionManagementPage() {
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Cargos y su Tipo de Viático</p>
         <div className={styles.excelRow}>
           <ImportButton onClick={catalogImport.open} disabled={loading} />
-          <ExportButton onClick={() => exportPositions(positions)} exporting={exporting} disabled={loading || positions.length === 0} />
+          <ExportButton onClick={() => exportPositions(listFilters)} exporting={exporting} disabled={loading || totalPositions === 0} />
         </div>
         {exportError && <p className="text-xs font-inter italic text-center mb-3" style={{color: COLORS.secondary}}>{exportError}</p>}
         {loading && <SkeletonList count={4} />}
-        {!loading && pagination.total > 0 && (
-          <ListCount shown={pagination.visibleItems.length} total={pagination.total} singular="cargo" plural="cargos" />
+        {!loading && totalPositions > 0 && (
+          <ListCount shown={positions.length} total={totalPositions} singular="cargo" plural="cargos" />
         )}
-        {!loading && pagination.visibleItems.map((position) => (
+        {!loading && positions.map((position) => (
           <div key={position.id_cargo} className={styles.card} style={{backgroundColor: COLORS.backgroundHeader}}>
             <img src={positionImage} alt="cargo" className={styles.cardImage} />
             <div className={styles.cardInfo}>
@@ -109,7 +106,7 @@ function PositionManagementPage() {
             </div>
           </div>
         ))}
-        {!loading && pagination.hasMorePages && <LoadMoreButton onClick={pagination.loadMore} label="Cargar más cargos" />}
+        {!loading && hasMorePositions && <LoadMoreButton onClick={loadMorePositions} loading={loadingMorePositions} label="Cargar más cargos" />}
         {!loading && positions.length === 0 && (
           <EmptyState title="Sin cargos registrados" subtitle="No se encontraron cargos con los filtros aplicados"
             icon={
@@ -128,7 +125,7 @@ function PositionManagementPage() {
           </div>
         </div>
       </div>
-      <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
+      <div className={styles.fab} role="button" aria-label="Agregar cargo" style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
         <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <PositionFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}

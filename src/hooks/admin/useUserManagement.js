@@ -1,8 +1,20 @@
 import {useState, useEffect} from 'react';
-import {getUsers, createUser, updateUser, suspendUser, activateUser, getPositions, getSections} from '../../services/admin/adminService';
+import {getUsers, getUserOptions, createUser, updateUser, suspendUser, activateUser, getPositions, getSections} from '../../services/admin/adminService';
+import useServerPagination from '../shared/useServerPagination';
+
+const listFiltersOf = (search, roleFilter, sectionFilter) => {
+  const filters = {search};
+  if (roleFilter !== 'TODOS') {
+    filters.rol = roleFilter;
+  }
+  if (sectionFilter) {
+    filters.seccion = sectionFilter;
+  }
+  return filters;
+};
 
 function useUserManagement() {
-  const [users, setUsers] = useState([]);
+  const [userOptions, setUserOptions] = useState([]);
   const [positions, setPositions] = useState([]);
   const [sections, setSections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,13 +37,12 @@ function useUserManagement() {
     id_jefe_directo: '', id_seccion: '', carnet_identidad: '', codigo_dependencia: '',
   });
 
-  const fetchCatalogs = () => Promise.all([getUsers(), getPositions(), getSections()]);
+  const list = useServerPagination(getUsers, listFiltersOf(search, roleFilter, sectionFilter));
 
-  const applyCatalogs = ([usersData, positionsData, sectionsData]) => {
+  const fetchCatalogs = () => Promise.all([getPositions(), getSections()]);
+
+  const applyCatalogs = ([positionsData, sectionsData]) => {
     setLoading(false);
-    if (!usersData.error) {
-      setUsers(usersData);
-    }
     if (!positionsData.error) {
       setPositions(positionsData);
     }
@@ -41,13 +52,20 @@ function useUserManagement() {
   };
 
   const load = async () => {
-    setLoading(true);
     applyCatalogs(await fetchCatalogs());
+    await list.reload();
   };
 
   useEffect(() => {
     fetchCatalogs().then(applyCatalogs);
   }, []);
+
+  const loadUserOptions = async () => {
+    const data = await getUserOptions();
+    if (Array.isArray(data)) {
+      setUserOptions(data);
+    }
+  };
 
   const showError = (message) => {
     setError(message);
@@ -55,7 +73,7 @@ function useUserManagement() {
   };
 
   const emailAlreadyExists = (email, excludeId = null) => {
-    return users.some((user) => {
+    return userOptions.some((user) => {
       const sameEmail = user.email_corporativo.toLowerCase() === email.toLowerCase();
       if (excludeId) {
         return sameEmail && user.id_usuario !== excludeId;
@@ -128,14 +146,6 @@ function useUserManagement() {
     return errors;
   };
 
-  const filteredUsers = users.filter((user) => {
-    const fullName = `${user.nombre} ${user.apellido_paterno}`.toLowerCase();
-    const matchesSearch = fullName.includes(search.toLowerCase());
-    const matchesRole = roleFilter === 'TODOS' || user.Rol?.nombre === roleFilter;
-    const matchesSection = !sectionFilter || String(user.id_seccion) === String(sectionFilter);
-    return matchesSearch && matchesRole && matchesSection;
-  });
-
   const openCreate = () => {
     const firstActivePosition = positions.filter((position) => position.activo)[0];
     setFormData({
@@ -147,6 +157,7 @@ function useUserManagement() {
     setError('');
     setFieldErrors({});
     setShowCreate(true);
+    loadUserOptions();
   };
 
   const openEdit = (user) => {
@@ -167,6 +178,7 @@ function useUserManagement() {
     setError('');
     setFieldErrors({});
     setShowEdit(true);
+    loadUserOptions();
   };
 
   const openSuspend = (user) => {
@@ -253,9 +265,10 @@ function useUserManagement() {
   };
 
   return {
-    users: filteredUsers,
-    allUsers: users,
-    positions, sections, loading, savingAction, error, fieldErrors, setFieldErrors,
+    users: list.items, totalUsers: list.total, hasMoreUsers: list.hasMore, loadMoreUsers: list.loadMore, loadingMoreUsers: list.loadingMore,
+    listFilters: list.params,
+    allUsers: userOptions,
+    positions, sections, loading: loading || list.loading, savingAction, error, fieldErrors, setFieldErrors,
     search, setSearch, roleFilter, setRoleFilter, sectionFilter, setSectionFilter,
     selectedUser,
     showCreate, setShowCreate, showEdit, setShowEdit,

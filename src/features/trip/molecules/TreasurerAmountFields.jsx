@@ -1,4 +1,4 @@
-import {Wallet, Banknote, DollarSign, RotateCcw} from 'lucide-react';
+import {Wallet, Banknote, DollarSign} from 'lucide-react';
 import InputField from '../../../components/ui/InputField';
 import {COLORS} from '../../../constants';
 
@@ -36,7 +36,7 @@ function TreasurerAmountFields({amount, isInternational, errors = {}}) {
       )}
       {amount.adjusted && (
         <button type="button" className={styles.reset} style={{color: COLORS.primary}} onClick={amount.resetToCalculated}>
-          <RotateCcw size={13} /> Volver al monto calculado
+          Volver al monto calculado
         </button>
       )}
     </div>

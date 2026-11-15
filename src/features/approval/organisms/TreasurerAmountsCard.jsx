@@ -1,4 +1,3 @@
-import {Pencil} from 'lucide-react';
 import {COLORS} from '../../../constants';
 import {fundExchangeRateOf} from '../../../utils/expenseCurrency';
 
@@ -25,7 +24,7 @@ function TreasurerAmountsCard({trip, isInternational, canEdit, editingAmounts, s
         <p className={styles.title} style={{color: COLORS.labels}}>Montos Asignados</p>
         {canEdit && !editingAmounts && (
           <p className={styles.editBtn} style={{color: COLORS.secondary}} onClick={() => setEditingAmounts(true)}>
-            <Pencil size={13} /> Editar
+            Editar
           </p>
         )}
       </div>

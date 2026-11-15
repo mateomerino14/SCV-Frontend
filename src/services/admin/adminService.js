@@ -1,12 +1,22 @@
 import apiClient from '../shared/apiClient';
 
-export const getUsers = async () => {
+export const getUsers = async (params = {}) => {
   try {
-    const response = await apiClient.get('/user/all');
+    const response = await apiClient.get('/user/all', {params});
     return response.data;
   }
   catch (error) {
     return {error: error.response?.data?.error || 'Error al obtener usuarios'};
+  }
+};
+
+export const getUserOptions = async () => {
+  try {
+    const response = await apiClient.get('/user/options');
+    return response.data;
+  }
+  catch (error) {
+    return {error: error.response?.data?.error || 'Error al obtener la lista de usuarios'};
   }
 };
 
@@ -50,9 +60,9 @@ export const activateUser = async (id) => {
   }
 };
 
-export const getPositions = async () => {
+export const getPositions = async (params = {}) => {
   try {
-    const response = await apiClient.get('/position');
+    const response = await apiClient.get('/position', {params});
     return response.data;
   }
   catch (error) {
@@ -140,9 +150,9 @@ export const deleteTravelScale = async (type) => {
   }
 };
 
-export const getSections = async () => {
+export const getSections = async (params = {}) => {
   try {
-    const response = await apiClient.get('/section');
+    const response = await apiClient.get('/section', {params});
     return response.data;
   }
   catch (error) {

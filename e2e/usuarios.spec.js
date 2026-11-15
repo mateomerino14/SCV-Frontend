@@ -8,6 +8,7 @@ const motherSurnames = ['López', 'Rojas', 'Vargas', 'Quispe', 'Mamani', 'Flores
 const openEditForm = async (page) => {
   await page.goto('/dashboard/administrador/usuarios');
   await page.getByPlaceholder('Buscar usuarios...').fill(editedUser);
+  await expect(page.getByText('Mostrando 1 de 1 usuario')).toBeVisible();
   await page.getByRole('button', {name: editButtonName}).first().click();
   await expect(page.getByText('Editar Usuario')).toBeVisible();
 };

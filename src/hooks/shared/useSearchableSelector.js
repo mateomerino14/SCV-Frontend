@@ -2,6 +2,7 @@ import {useState, useRef, useEffect} from 'react';
 import {makeRoomBelow, listHeightBelow, menuTopBelow} from '../../utils/dropdownSpace';
 
 const preferredListHeight = 208;
+const maxVisibleOptions = 100;
 const searchInputHeight = 40;
 
 export function normalizeSearchText(text) {
@@ -19,7 +20,9 @@ function useSearchableSelector(options, selectedValue, onChange) {
 
   const selectedOption = options.find((option) => String(option.value) === String(selectedValue));
   const normalizedSearch = normalizeSearchText(search.trim());
-  const filteredOptions = options.filter((option) => !normalizedSearch || normalizeSearchText(option.searchText || option.label).includes(normalizedSearch));
+  const matchingOptions = options.filter((option) => !normalizedSearch || normalizeSearchText(option.searchText || option.label).includes(normalizedSearch));
+  const filteredOptions = matchingOptions.slice(0, maxVisibleOptions);
+  const hiddenCount = matchingOptions.length - filteredOptions.length;
 
   const calculateMenuPosition = () => {
     if (!triggerRef.current) {
@@ -81,7 +84,7 @@ function useSearchableSelector(options, selectedValue, onChange) {
   return {
     open, search, setSearch, menuPosition,
     wrapperRef, triggerRef, menuRef, inputRef,
-    selectedOption, filteredOptions,
+    selectedOption, filteredOptions, hiddenCount,
     handleToggle, handleSelect,
   };
 }
