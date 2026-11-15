@@ -53,7 +53,7 @@ export const sectionImportTexts = {
 export const positionImportTexts = {
   title: 'Importar cargos',
   subtitle: 'Carga o actualiza varios cargos a la vez desde Excel con su tipo de la escala de viáticos. Los que ya existen se reconocen por el nombre.',
-  templateHint: 'Columnas: Cargo, Tipo de viático (A, B o C) y Estado. También sirve el Excel que exporta esta pantalla.',
+  templateHint: 'Columnas: Cargo, Tipo de viático (la letra de la escala) y Estado. También sirve el Excel que exporta esta pantalla.',
   fileHint: 'Excel (.xlsx), hasta 500 cargos.',
   validLabel: (count) => countLabel(count, 'fila correcta', 'filas correctas'),
   confirmLabel: (count) => `Guardar ${countLabel(count, 'cargo', 'cargos')}`,

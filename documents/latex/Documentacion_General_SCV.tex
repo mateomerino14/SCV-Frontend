@@ -789,7 +789,7 @@ Roles del sistema, que determinan los permisos de cada usuario. Sus identificado
 \subsubsection{Escala\_Viatico}
 Escala de viáticos de la empresa. Una fila por tipo (C, B y A) con sus tarifas diarias.
 \begin{itemize}
-  \campo{tipo}{Tipo de la escala: A, B o C}{CHAR(1), clave primaria}
+  \campo{tipo}{Tipo de la escala: una letra (A, B y C al inicio; el administrador puede agregar otras)}{CHAR(1), clave primaria}
   \campo{descripcion}{A quién corresponde}{VARCHAR(100)}
   \campo{monto_interior}{Tarifa diaria en el interior del país, en bolivianos}{NUMERIC(10,2)}
   \campo{monto_clase_1_usd}{Tarifa diaria en países clase 1, en dólares}{NUMERIC(10,2)}

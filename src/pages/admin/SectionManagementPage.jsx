@@ -1,11 +1,10 @@
-import AddButton from '../../components/ui/AddButton';
 import ExportButton from '../../components/ui/ExportButton';
 import ImportButton from '../../components/ui/ImportButton';
 import ExcelImportModal from '../../components/ui/ExcelImportModal';
 import useCatalogImport from '../../hooks/admin/useCatalogImport';
 import {sectionImportTexts} from '../../constants/importTexts';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
-import {Search, Pencil, Ban, CheckCircle} from 'lucide-react';
+import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -24,9 +23,9 @@ import SessionExpiredModal from '../../features/user/organisms/SessionExpiredMod
 import ListCount from '../../components/ui/ListCount';
 
 const styles = {
-  excelRow: 'grid grid-cols-1 sm:grid-cols-3 gap-3',
+  excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
   page: 'min-h-screen flex flex-col',
-  content: 'flex-1 px-5 py-6 w-full',
+  content: 'flex-1 px-5 pt-6 pb-28 w-full',
   subtitle: 'text-sm font-inter mb-5',
   searchWrapper: 'flex items-center border rounded-xl px-3 py-2 gap-2 mb-4',
   searchInput: 'flex-1 text-sm font-inter outline-none bg-transparent',
@@ -38,6 +37,7 @@ const styles = {
   cardCodes: 'text-xs font-inter',
   actionsRow: 'flex items-center gap-2 shrink-0',
   actionBtn: 'w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer',
+  fab: 'fixed bottom-24 right-5 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer z-10',
   noticeCard: 'rounded-2xl p-4 flex items-center gap-3 mt-7 mb-4',
   noticeText: 'flex flex-col flex-1',
   noticeTitle: 'text-sm font-bold font-inter',
@@ -70,7 +70,6 @@ function SectionManagementPage() {
         </div>
         <p className={styles.sectionLabel} style={{color: COLORS.labels}}>Secciones Registradas</p>
         <div className={styles.excelRow}>
-          <AddButton label="Agregar sección" onClick={openCreate} disabled={loading} />
           <ImportButton onClick={catalogImport.open} disabled={loading} />
           <ExportButton onClick={() => exportSections(sections)} exporting={exporting} disabled={loading || sections.length === 0} />
         </div>
@@ -119,6 +118,9 @@ function SectionManagementPage() {
             <p className={styles.noticeSub} style={{color: COLORS.secondary}}>Inhabilita su uso temporalmente; no borra a los usuarios que ya la tienen asignada</p>
           </div>
         </div>
+      </div>
+      <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
+        <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <SectionFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
         title="Agregar Nueva Sección" subtitle="Defina una nueva sección o departamento de la empresa."

@@ -15,3 +15,8 @@ export const tripRatesOf = (scale, type, country) => {
   }
   return {dailyRate, dailyRateUsd, countryClass};
 };
+
+export const countPositionsByType = (positions) => positions.reduce((counts, position) => {
+  counts[position.tipo_viatico] = (counts[position.tipo_viatico] || 0) + 1;
+  return counts;
+}, {});

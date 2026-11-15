@@ -56,7 +56,7 @@ test('el administrador importa cargos con su tipo de viático y ve la escala', a
   await page.locator('input[type=file][accept*=".xlsx"]').setInputFiles(filePath);
   await expect(page.getByText('2 filas correctas')).toBeVisible();
   await expect(page.getByText('1 con errores')).toBeVisible();
-  await expect(page.getByText('El tipo de viático debe ser A, B o C')).toBeVisible();
+  await expect(page.getByText('El tipo de viático debe ser uno de la escala: A, B, C')).toBeVisible();
   await expect(page.getByText('Sin cambios')).toBeVisible();
   await page.getByRole('button', {name: 'Guardar 1 cargo'}).click();
   await expect(page.getByText(/Se crearon 1 cargo, se actualizaron 0, 1 ya estaban igual/)).toBeVisible();
