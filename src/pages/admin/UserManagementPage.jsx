@@ -1,8 +1,7 @@
-import AddButton from '../../components/ui/AddButton';
 import ExportButton from '../../components/ui/ExportButton';
 import ImportButton from '../../components/ui/ImportButton';
 import useAdminExcelExport from '../../hooks/admin/useAdminExcelExport';
-import {Search, Pencil, Ban, CheckCircle} from 'lucide-react';
+import {Search, Plus, Pencil, Ban, CheckCircle} from 'lucide-react';
 import Navbar from '../../layouts/Navbar';
 import Footer from '../../layouts/Footer';
 import PageHeader from '../../components/ui/PageHeader';
@@ -41,11 +40,12 @@ const styles = {
   cardRole: 'text-xs font-bold font-inter px-2 py-0.5 rounded-full uppercase mt-1 self-start',
   actionsRow: 'flex items-center gap-2 shrink-0',
   actionBtn: 'w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer',
+  fab: 'fixed bottom-24 right-5 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg cursor-pointer z-10',
   noticeCard: 'rounded-2xl p-4 flex items-center gap-3 mt-7 mb-4',
   noticeText: 'flex flex-col flex-1',
   noticeTitle: 'text-sm font-bold font-inter',
   noticeSub: 'text-xs font-inter',
-  excelRow: 'grid grid-cols-1 sm:grid-cols-3 gap-3',
+  excelRow: 'grid grid-cols-1 sm:grid-cols-2 gap-3',
 };
 
 const tabs = [
@@ -104,7 +104,6 @@ function UserManagementPage() {
           ))}
         </div>
         <div className={styles.excelRow}>
-          <AddButton label="Agregar usuario" onClick={openCreate} disabled={loading} />
           <ImportButton onClick={userImport.open} disabled={loading} />
           <ExportButton onClick={() => exportUsers(users)} exporting={exporting} disabled={loading || users.length === 0} />
         </div>
@@ -155,6 +154,9 @@ function UserManagementPage() {
             <p className={styles.noticeSub} style={{color: COLORS.secondary}}>Inhabilita el acceso temporalmente</p>
           </div>
         </div>
+      </div>
+      <div className={styles.fab} style={{backgroundColor: COLORS.secondary}} onClick={openCreate}>
+        <Plus size={26} style={{color: COLORS.background}} />
       </div>
       <UserFormModal isOpen={showCreate} onClose={() => setShowCreate(false)} onConfirm={handleCreate}
         title="Nuevo Usuario" btnLabel="Registrar" formData={formData} setFormData={setFormData} positions={positions} allUsers={allUsers} sections={sections}

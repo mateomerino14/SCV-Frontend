@@ -1,14 +1,14 @@
 import {COLORS} from '../../constants';
 
 const styles = {
-  button: 'flex items-center justify-center gap-2 w-full h-11 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4 border-2',
+  button: 'flex items-center justify-center gap-2 w-full h-11 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4',
 };
 
 function ExportButton({onClick, exporting = false, disabled = false, label = 'Exportar a Excel'}) {
   const inactive = disabled || exporting;
   return (
     <button className={styles.button} onClick={onClick} disabled={inactive}
-      style={{borderColor: COLORS.secondary, color: COLORS.secondary, backgroundColor: COLORS.background, opacity: inactive ? 0.6 : 1, cursor: inactive ? 'default' : 'pointer'}}>
+      style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: inactive ? 0.6 : 1, cursor: inactive ? 'default' : 'pointer'}}>
       {exporting ? 'Exportando...' : label}
     </button>
   );
