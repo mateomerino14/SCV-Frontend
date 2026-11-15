@@ -485,14 +485,15 @@ const handleRequestSubmitReview = () => {
 \code{Button}, \code{ModalActions} & Botones primario y secundario \\
 \rowcolor{maxamFondo} \code{ModalIconHeader} & Ícono en círculo blanco de las ventanas \\
 \code{InputField}, \code{PasswordField}, \code{FormField}, \code{LimitedTextarea} & Campos de formulario \\
-\rowcolor{maxamFondo} \code{EmployeeDropdown}, \code{SectionDropdown}, \code{InlineDropdown} & Selectores (el vehículo del viaje se busca con \code{SearchableSelector} por placa o descripción); con \code{asField} el disparador tiene el mismo borde, alto e ícono que \code{InputField} \\
+\rowcolor{maxamFondo} \code{EmployeeDropdown}, \code{SectionDropdown}, \code{InlineDropdown} & Selectores (el vehículo del viaje se busca con \code{SearchableSelector} por placa o descripción); con \code{asField} el disparador tiene el mismo borde, alto e ícono que \code{InputField}. Todas las listas se abren siempre hacia abajo: si no hay espacio, la pantalla se desplaza para dejar el campo más arriba y la lista se acorta para no salirse (\code{utils/dropdownSpace.js}) \\
 \code{ListCount}, \code{LoadMoreButton} & ``Mostrando X de Y'' y paginación \\
 \rowcolor{maxamFondo} \code{SkeletonCard}, \code{SkeletonList} & Indicadores de carga \\
 \code{EmptyState}, \code{InlineAlert}, \code{SuccessModal} & Estados vacíos y avisos \\
 \rowcolor{maxamFondo} \code{SignaturePad}, \code{SignatureDialog} & Recuadro para dibujar la firma y ventana que firma con la firma guardada y la contraseña \\
 \rowcolor{maxamFondo} \code{PageHeader}, \code{AppHeader}, \code{AppLogo} & Encabezados \\
 \code{CommentCard} & Observación de un revisor \\
-\rowcolor{maxamFondo} \code{ExportButton} & Botón ``Exportar a Excel'' con estado de carga \\
+\rowcolor{maxamFondo} \code{ExportButton}, \code{ImportButton} & Botones ``Exportar a Excel'' (con estado de carga) e ``Importar desde Excel'', con borde \\
+\code{AddButton} & Botón principal ``Agregar'' de Usuarios, Cargos, Secciones y Vehículos, en la fila de acciones (no flota sobre la lista) \\
 \end{xltabular}
 
 \subsection{Componentes por dominio}
