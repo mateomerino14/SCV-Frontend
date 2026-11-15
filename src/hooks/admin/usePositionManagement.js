@@ -47,15 +47,11 @@ function usePositionManagement() {
     position.nombre.toLowerCase().includes(search.toLowerCase())
   );
 
-  const suggestions = formData.nombre.length >= 2
-    ? allPositions.filter((position) => {
-        const matchesSearch = position.nombre.toLowerCase().includes(formData.nombre.toLowerCase());
-        if (selectedPosition) {
-          return matchesSearch && position.id_cargo !== selectedPosition.id_cargo;
-        }
-        return matchesSearch;
-      })
-    : [];
+  let suggestions = [];
+  if (formData.nombre.length >= 2) {
+    suggestions = allPositions.filter((position) => position.nombre.toLowerCase().includes(formData.nombre.toLowerCase())
+      && position.id_cargo !== selectedPosition?.id_cargo);
+  }
 
   const positionAlreadyExists = (name, excludeId = null) => {
     const normalizedName = normalizePositionName(name);

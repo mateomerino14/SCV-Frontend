@@ -514,6 +514,7 @@ El servidor sigue una arquitectura en capas: la ruta declara el endpoint y encad
   \item Los intentos de ingreso, de recuperación y de lectura de facturas tienen un límite por periodo. El de ingreso es por cuenta: si un usuario se equivoca muchas veces, solo su cuenta espera 15 minutos y los demás siguen entrando.
   \item Cada ingreso, salida y cambio de contraseña queda registrado en el historial de accesos, junto con quién activó o suspendió cada vehículo y cuándo.
   \item Los comprobantes, respaldos y fotos de perfil se guardan en un bucket público de Supabase Storage sin políticas de acceso: solo el servidor sube y borra archivos, con su clave de servicio, y los archivos que dejan de usarse se eliminan.
+  \item La planilla en PDF y los recibos se generan una sola vez y se guardan en un bucket privado; las descargas siguientes reciben el mismo archivo y el mismo código QR mientras sus datos no cambien. Así se ahorra el trabajo más pesado del servidor cuando muchos descargan a la vez, por ejemplo a fin de mes.
   \item La importación de usuarios, secciones y cargos desde Excel es solo para el administrador, igual que cambiar la escala de viáticos, y el servidor vuelve a revisar cada fila aunque el navegador ya haya mostrado la vista previa.
 \end{itemize}
 

@@ -1,7 +1,7 @@
 import {COLORS} from '../../constants';
 
 const styles = {
-  button: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4',
+  button: 'flex items-center justify-center gap-2 w-full h-11 rounded-xl font-bold font-nunito text-sm cursor-pointer mb-4',
 };
 
 function ExportButton({onClick, exporting = false, disabled = false, label = 'Exportar a Excel'}) {

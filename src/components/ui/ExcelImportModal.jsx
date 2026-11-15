@@ -12,13 +12,14 @@ const styles = {
   title: 'text-2xl font-bold font-inter text-center',
   subtitle: 'text-xs font-inter text-center leading-snug',
   stepsGrid: 'grid grid-cols-1 md:grid-cols-2 gap-3',
-  stepBox: 'rounded-xl border p-4 flex flex-col gap-2 items-center text-center',
+  stepBox: 'h-full rounded-xl border p-4 flex flex-col gap-2 items-center text-center',
   stepTitle: 'text-sm font-bold font-inter',
   stepText: 'text-xs font-inter leading-snug',
-  stepButton: 'flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold font-nunito text-sm cursor-pointer',
+  stepBody: 'flex-1 flex flex-col gap-1 items-center justify-start',
+  stepButton: 'flex items-center justify-center gap-2 w-full h-11 rounded-xl font-bold font-nunito text-sm cursor-pointer border-2',
   fileName: 'text-xs font-inter italic break-all',
   summaryRow: 'grid grid-cols-2 gap-2',
-  summaryBox: 'rounded-xl px-3 py-2 flex items-center gap-2',
+  summaryBox: 'h-full rounded-xl border px-3 py-2 flex items-center gap-2',
   summaryText: 'text-sm font-bold font-inter',
   list: 'flex flex-col gap-2',
   rowCard: 'rounded-xl border px-3 py-2 flex flex-col gap-1',
@@ -34,7 +35,7 @@ const backdropVariants = {hidden: {opacity: 0}, visible: {opacity: 1}};
 const cardVariants = {hidden: {opacity: 0, scale: 0.94, y: 8}, visible: {opacity: 1, scale: 1, y: 0}};
 
 function PreviewRow({row, rowTitle, rowDetail}) {
-  let tone = {border: COLORS.dataFields, badgeBackground: COLORS.successBackground, badgeColor: COLORS.success};
+  let tone = {border: COLORS.dataFields, badgeBackground: COLORS.backgroundHeader, badgeColor: COLORS.labels};
   if (!row.valido) {
     tone = {border: COLORS.secondary, badgeBackground: COLORS.error, badgeColor: COLORS.primary};
   }
@@ -58,13 +59,13 @@ function PreviewRow({row, rowTitle, rowDetail}) {
 function ImportSummary({validCount, invalidCount, validLabel}) {
   return (
     <div className={styles.summaryRow}>
-      <div className={styles.summaryBox} style={{backgroundColor: COLORS.successBackground}}>
+      <div className={styles.summaryBox} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
         <CheckCircle size={18} style={{color: COLORS.success}} />
-        <span className={styles.summaryText} style={{color: COLORS.success}}>{validLabel(validCount)}</span>
+        <span className={styles.summaryText} style={{color: COLORS.text}}>{validLabel(validCount)}</span>
       </div>
-      <div className={styles.summaryBox} style={{backgroundColor: COLORS.error}}>
-        <AlertCircle size={18} style={{color: COLORS.primary}} />
-        <span className={styles.summaryText} style={{color: COLORS.primary}}>{invalidCount} con errores</span>
+      <div className={styles.summaryBox} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.background}}>
+        <AlertCircle size={18} style={{color: invalidCount > 0 ? COLORS.primary : COLORS.labels}} />
+        <span className={styles.summaryText} style={{color: COLORS.text}}>{invalidCount} con errores</span>
       </div>
     </div>
   );
@@ -123,21 +124,25 @@ function ExcelImportModal({texts, isOpen, onClose, fileName, preview, result, er
               {!result && (
                 <div className={styles.stepsGrid}>
                   <div className={styles.stepBox} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.backgroundHeader}}>
-                    <p className={styles.stepTitle} style={{color: COLORS.text}}>1. Descarga la plantilla</p>
-                    <p className={styles.stepText} style={{color: COLORS.labels}}>{texts.templateHint}</p>
+                    <div className={styles.stepBody}>
+                      <p className={styles.stepTitle} style={{color: COLORS.text}}>1. Descarga la plantilla</p>
+                      <p className={styles.stepText} style={{color: COLORS.labels}}>{texts.templateHint}</p>
+                    </div>
                     <button type="button" className={styles.stepButton} onClick={onDownloadTemplate} disabled={downloading}
-                      style={{backgroundColor: COLORS.background, color: COLORS.primary, border: `2px solid ${COLORS.primary}`, opacity: downloading ? 0.6 : 1}}>
+                      style={{backgroundColor: COLORS.background, color: COLORS.primary, borderColor: COLORS.primary, opacity: downloading ? 0.6 : 1}}>
                       {downloading ? 'Descargando...' : 'Descargar plantilla'}
                     </button>
                   </div>
                   <div className={styles.stepBox} style={{borderColor: COLORS.dataFields, backgroundColor: COLORS.backgroundHeader}}>
-                    <p className={styles.stepTitle} style={{color: COLORS.text}}>2. Sube el archivo lleno</p>
-                    <p className={styles.stepText} style={{color: COLORS.labels}}>{texts.fileHint}</p>
-                    <label className={styles.stepButton} style={{backgroundColor: COLORS.secondary, color: COLORS.background, opacity: checking || importing ? 0.6 : 1}}>
+                    <div className={styles.stepBody}>
+                      <p className={styles.stepTitle} style={{color: COLORS.text}}>2. Sube el archivo lleno</p>
+                      <p className={styles.stepText} style={{color: COLORS.labels}}>{texts.fileHint}</p>
+                      {fileName && <p className={styles.fileName} style={{color: COLORS.text}}>{fileName}</p>}
+                    </div>
+                    <label className={styles.stepButton} style={{backgroundColor: COLORS.background, color: COLORS.primary, borderColor: COLORS.primary, opacity: checking || importing ? 0.6 : 1}}>
                       {fileLabel}
                       <input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="hidden" onChange={handleInput} disabled={checking || importing} />
                     </label>
-                    {fileName && <p className={styles.fileName} style={{color: COLORS.labels}}>{fileName}</p>}
                   </div>
                 </div>
               )}
