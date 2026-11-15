@@ -17,7 +17,7 @@ const styles = {
 };
 
 function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onApply, onClear, employees = [], sections = [], tabs, hideStatusTabs = false, hideSectionFilter = false, applyingFilters}) {
-  const employeeDropdown = useSimpleSelector();
+  const employeeDropdown = useSimpleSelector(220, 40);
   let applyLabel = 'Aplicar Filtros';
   if (applyingFilters) {
     applyLabel = 'Filtrando...';
@@ -33,7 +33,7 @@ function ReviewFilters({filters, setFilters, statusFilter, setStatusFilter, onAp
         {/* Todos los filtros se muestran desde el inicio; las listas se completan al cargar */}
         <div className={styles.employeeSection}>
           <p className={styles.employeeLabel} style={{color: COLORS.labels}}>Empleado</p>
-          <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open}
+          <EmployeeDropdown wrapperRef={employeeDropdown.wrapperRef} triggerRef={employeeDropdown.triggerRef} open={employeeDropdown.open} listHeight={employeeDropdown.listHeight}
             onToggle={employeeDropdown.toggle} employees={employees} selectedId={filters.id_empleado}
             onSelect={(id) => {setFilters((prev) => ({...prev, id_empleado: id})); employeeDropdown.close();}} />
         </div>

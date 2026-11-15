@@ -10,13 +10,13 @@ const styles = {
 };
 
 function CurrencySelector({currencies, currency, onChange, error}) {
-  const {open, opensUpward, wrapperRef, triggerRef, toggle, close} = useSimpleSelector();
+  const {open, listHeight, wrapperRef, triggerRef, toggle, close} = useSimpleSelector();
   const selectedCurrency = currencies.find((item) => item.codigo === currency);
   const options = currencies.map((item) => ({value: item.codigo, label: `${item.codigo} — ${item.nombre}`}));
   return (
     <div className={styles.wrapper}>
       <FieldLabel text="Moneda" required className={styles.label} />
-      <InlineDropdown wrapperRef={wrapperRef} triggerRef={triggerRef} open={open} opensUpward={opensUpward} onToggle={toggle}
+      <InlineDropdown wrapperRef={wrapperRef} triggerRef={triggerRef} open={open} listHeight={listHeight} onToggle={toggle}
         label={selectedCurrency ? `${selectedCurrency.codigo} — ${selectedCurrency.nombre}` : 'Seleccione una moneda'} options={options} selectedValue={currency}
         onSelect={(value) => {onChange(value); close();}} />
       {error && <p className={styles.fieldError} style={{color: COLORS.fieldError}}>{error}</p>}

@@ -19,7 +19,7 @@ const dropdownVariants = {
   visible: {opacity: 1, y: 0, scaleY: 1},
 };
 
-function EmployeeDropdown({wrapperRef, triggerRef, open, onToggle, employees, selectedId, onSelect}) {
+function EmployeeDropdown({wrapperRef, triggerRef, open, listHeight = 220, onToggle, employees, selectedId, onSelect}) {
   const [query, setQuery] = useState('');
   const selectedEmployee = employees.find((employee) => String(employee.id_usuario) === String(selectedId));
   let label = 'Todos los empleados';
@@ -45,7 +45,7 @@ function EmployeeDropdown({wrapperRef, triggerRef, open, onToggle, employees, se
               <input className={styles.searchInput} style={{color: COLORS.text}} placeholder="Buscar empleado..."
                 value={query} onChange={(event) => setQuery(event.target.value)} autoFocus />
             </div>
-            <div className={styles.list} style={{maxHeight: `${5 * 44}px`}}>
+            <div className={styles.list} style={{maxHeight: listHeight}}>
               {!normalizedQuery && <DropdownListItem label="Todos los empleados" selected={!selectedId} onClick={() => handleSelect('')} />}
               {filteredEmployees.length === 0 ? (
                 <p className={styles.emptyText} style={{color: COLORS.labels}}>Sin resultados</p>

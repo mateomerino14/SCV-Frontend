@@ -89,7 +89,7 @@ function TripHistoryFilter({activeFilter, onChange}) {
           <div>
             <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Etapa</p>
             <InlineDropdown wrapperRef={categoryDropdown.wrapperRef} triggerRef={categoryDropdown.triggerRef} open={categoryDropdown.open}
-              opensUpward={categoryDropdown.opensUpward} onToggle={categoryDropdown.toggle} label={currentCategory.label}
+              listHeight={categoryDropdown.listHeight} onToggle={categoryDropdown.toggle} label={currentCategory.label}
               options={categoryOptions} selectedValue={selectedCategory}
               onSelect={(value) => {handleCategoryChange(value); categoryDropdown.close();}} />
           </div>
@@ -97,7 +97,7 @@ function TripHistoryFilter({activeFilter, onChange}) {
             <div>
               <p className={styles.fieldLabel} style={{color: COLORS.labels}}>Estado</p>
               <InlineDropdown wrapperRef={stateDropdown.wrapperRef} triggerRef={stateDropdown.triggerRef} open={stateDropdown.open}
-                opensUpward={stateDropdown.opensUpward} onToggle={stateDropdown.toggle} label={stateLabel}
+                listHeight={stateDropdown.listHeight} onToggle={stateDropdown.toggle} label={stateLabel}
                 options={currentCategory.states} selectedValue={activeFilter}
                 onSelect={(value) => {handleStateChange(value); stateDropdown.close();}} />
             </div>

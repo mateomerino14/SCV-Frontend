@@ -1,4 +1,7 @@
 import {useState, useRef, useEffect} from 'react';
+import {makeRoomBelow, listHeightBelow, menuTopBelow} from '../../../utils/dropdownSpace';
+
+const preferredRoleListHeight = 240;
 
 const roleOptions = [
   {value: 3, label: 'Empleado'},
@@ -34,13 +37,11 @@ function useUserFormModal(formData, setFormData, setFieldErrors) {
       return;
     }
     const rect = roleTriggerRef.current.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const opensUpward = spaceBelow < 220;
     setRoleMenuPosition({
       left: rect.left,
       width: rect.width,
-      top: opensUpward ? undefined : rect.bottom + 4,
-      bottom: opensUpward ? window.innerHeight - rect.top + 4 : undefined,
+      top: menuTopBelow(roleTriggerRef.current),
+      listHeight: listHeightBelow(roleTriggerRef.current, preferredRoleListHeight),
     });
   };
 
@@ -73,6 +74,7 @@ function useUserFormModal(formData, setFormData, setFieldErrors) {
   const handleToggleRoleMenu = () => {
     const nextState = !roleMenuOpen;
     if (nextState) {
+      makeRoomBelow(roleTriggerRef.current);
       calculateRoleMenuPosition();
     }
     setRoleMenuOpen(nextState);
